@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package frontendapi;
+
+option go_package = "github.com/curioswitch/cookchat/frontend/api/go;frontendapi";
+
+// The content of a chat message.
+message ChatContent {
+  oneof payload {
+    // A text message.
+    string message = 1;
+
+    // An audio message.
+    bytes audio = 2;
+  }
+}
+
+// A request to send in a chat.
+message ChatRequest {
+  // The content of the chat message.
+  ChatContent content = 1;
+}
+
+// A response in a chat.
+message ChatResponse {
+  // The content of the chat message.
+  ChatContent content = 1;
+}
+
+// A chat service.
+service ChatService {
+  // Chat with a stream of messages.
+  rpc Chat(stream ChatRequest) returns (stream ChatResponse);
+}

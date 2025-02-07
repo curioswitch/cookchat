@@ -2,6 +2,8 @@ go 1.23.6
 
 use (
 	./build
+	./frontend/api
+	./frontend/api/build
 	./frontend/server
 	./frontend/server/build
 )
