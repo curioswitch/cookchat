@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Frontend Client",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "dev"],
+      "outputCapture": "std",
+      "serverReadyAction": {
+        "pattern": "Local:\\s+(.+)",
+        "uriFormat": "%s",
+        "action": "openExternally"
+      }
+    },
+    {
+      "name": "Frontend Client (local)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "dev"],
+      "outputCapture": "std",
+      "env": {
+        "PORT": "3000",
+        "SERVICE_FRONTEND": "http://localhost:8080"
+      },
+      "serverReadyAction": {
+        "pattern": "Local:\\s+(.+)",
+        "uriFormat": "%s",
+        "action": "openExternally"
+      }
+    }
+  ]
+}

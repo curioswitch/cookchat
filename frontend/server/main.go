@@ -7,7 +7,6 @@ import (
 	"context"
 	"embed"
 	"fmt"
-	"net/http"
 	"os"
 
 	"connectrpc.com/connect"
@@ -46,7 +45,7 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		chat.Chat,
 		connect.WithSchema(chatServiceMethods.ByName("Chat")),
 	)
-	mux.Method(http.MethodPost, "/frontendapi.ChatService/Chat", wshttp.WrapHandler(chatHandler))
+	mux.Handle("/frontendapi.ChatService/Chat", wshttp.WrapHandler(chatHandler))
 
 	return server.Start(ctx, s)
 }
