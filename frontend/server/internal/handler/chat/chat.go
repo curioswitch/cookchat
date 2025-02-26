@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"strings"
 
 	"connectrpc.com/connect"
 	"github.com/wandb/parallel"
@@ -62,7 +61,7 @@ func (h *Handler) Chat(ctx context.Context, stream *connect.BidiStream[frontenda
 					RealtimeInput: &genai.LiveClientRealtimeInput{
 						MediaChunks: []*genai.Blob{
 							{
-								MIMEType: "audio/wav",
+								MIMEType: "audio/pcm",
 								Data:     p.Audio,
 							},
 						},
@@ -79,21 +78,23 @@ func (h *Handler) Chat(ctx context.Context, stream *connect.BidiStream[frontenda
 		if err != nil {
 			return fmt.Errorf("chat: receiving message from genai: %w", err)
 		}
-		for _, p := range msg.ServerContent.ModelTurn.Parts {
-			if p.InlineData == nil {
-				continue
-			}
-			if !strings.HasPrefix(p.InlineData.MIMEType, "audio/") {
-				continue
-			}
-			if err := stream.Send(&frontendapi.ChatResponse{
-				Content: &frontendapi.ChatContent{
-					Payload: &frontendapi.ChatContent_Audio{
-						Audio: p.InlineData.Data,
+		if msg.ServerContent != nil && msg.ServerContent.ModelTurn != nil {
+			for _, p := range msg.ServerContent.ModelTurn.Parts {
+				if p.InlineData == nil {
+					continue
+				}
+				if p.InlineData.MIMEType != "audio/pcm" {
+					continue
+				}
+				if err := stream.Send(&frontendapi.ChatResponse{
+					Content: &frontendapi.ChatContent{
+						Payload: &frontendapi.ChatContent_Audio{
+							Audio: p.InlineData.Data,
+						},
 					},
-				},
-			}); err != nil {
-				return fmt.Errorf("chat: sending response to client: %w", err)
+				}); err != nil {
+					return fmt.Errorf("chat: sending response to client: %w", err)
+				}
 			}
 		}
 	}

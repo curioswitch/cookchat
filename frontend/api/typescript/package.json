@@ -1,0 +1,10 @@
+{
+  "name": "@cookchat/frontend-api",
+  "type": "module",
+  "scripts": {
+    "format": "biome format --write . && biome lint --apply-unsafe . && prettier --write ."
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.2.3"
+  }
+}

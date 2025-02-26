@@ -1,0 +1,28 @@
+{
+  "name": "cookchat",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "vike build",
+    "dev": "vike dev",
+    "format": "biome check --apply .",
+    "lint": "biome check ."
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.2.3",
+    "@cookchat/frontend-api": "workspace:*",
+    "@connectrpc/connect": "^2.0.1",
+    "@connectrpc/connect-query": "^2.0.1",
+    "connect-es-ws": "github:curioswitch/connect-es-ws#main",
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "^22.13.1",
+    "@types/react": "^19.0.8",
+    "@vitejs/plugin-react-swc": "^3.8.0",
+    "typescript": "^5.7.3",
+    "vike": "^0.4.221",
+    "vike-react": "^0.5.12"
+  }
+}
