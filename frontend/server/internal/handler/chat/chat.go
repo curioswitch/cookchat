@@ -29,7 +29,7 @@ type Handler struct {
 }
 
 func (h *Handler) Chat(ctx context.Context, stream *connect.BidiStream[frontendapi.ChatRequest, frontendapi.ChatResponse]) error {
-	sess, err := h.genAI.Live.Connect("gemini-2.0-flash-exp", &genai.LiveConnectConfig{
+	sess, err := h.genAI.Live.Connect("gemini-2.0-flash", &genai.LiveConnectConfig{
 		ResponseModalities: []genai.Modality{genai.ModalityAudio},
 		SystemInstruction: &genai.Content{
 			Role: "model",
