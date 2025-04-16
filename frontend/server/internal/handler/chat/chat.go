@@ -29,7 +29,7 @@ type Handler struct {
 }
 
 func (h *Handler) Chat(ctx context.Context, stream *connect.BidiStream[frontendapi.ChatRequest, frontendapi.ChatResponse]) error {
-	sess, err := h.genAI.Live.Connect("gemini-2.0-flash", &genai.LiveConnectConfig{
+	sess, err := h.genAI.Live.Connect(ctx, "gemini-2.0-flash-exp", &genai.LiveConnectConfig{
 		ResponseModalities: []genai.Modality{genai.ModalityAudio},
 		SystemInstruction: &genai.Content{
 			Role: "model",
@@ -57,14 +57,10 @@ func (h *Handler) Chat(ctx context.Context, stream *connect.BidiStream[frontenda
 				return fmt.Errorf("chat: receiving message: %w", err)
 			}
 			if p, ok := msg.GetContent().GetPayload().(*frontendapi.ChatContent_Audio); ok {
-				if err := sess.Send(&genai.LiveClientMessage{
-					RealtimeInput: &genai.LiveClientRealtimeInput{
-						MediaChunks: []*genai.Blob{
-							{
-								MIMEType: "audio/pcm",
-								Data:     p.Audio,
-							},
-						},
+				if err := sess.SendRealtimeInput(genai.LiveRealtimeInput{
+					Media: &genai.Blob{
+						MIMEType: "audio/pcm",
+						Data:     p.Audio,
 					},
 				}); err != nil {
 					return fmt.Errorf("chat: sending audio to genai: %w", err)
