@@ -10,7 +10,7 @@ require (
 	github.com/curioswitch/go-usegcp v0.0.0-20250225012232-fb34f6fa1d4b
 	github.com/curioswitch/wshttp v0.0.0-20250205013245-610a34bac085
 	github.com/wandb/parallel v0.2.2
-	google.golang.org/genai v0.4.0
+	google.golang.org/genai v1.0.0
 )
 
 require (
