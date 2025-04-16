@@ -1,0 +1,35 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+    groups:
+      gha:
+        patterns:
+          - "*"
+  - package-ecosystem: gomod
+    directories:
+      - build
+      - frontend/api
+      - frontend/api/build
+      - frontend/server
+      - frontend/server/build
+    schedule:
+      interval: weekly
+    groups:
+      go:
+        patterns:
+          - "*"
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      node:
+        patterns:
+          - "*"
+    ignore:
+      - dependency-name: "tailwindcss"
+        versions:
+          - ">= 4"

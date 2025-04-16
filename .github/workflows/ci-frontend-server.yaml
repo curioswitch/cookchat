@@ -1,0 +1,30 @@
+name: Frontend Server CI
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - frontend/server/**
+      - frontend/api/go/**
+      - .github/workflows/ci-frontend-server.yaml
+  pull_request:
+    paths:
+      - frontend/server/**
+      - frontend/api/go/**
+      - .github/workflows/ci-frontend-server.yaml
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+jobs:
+  ci:
+    uses: curioswitch/go-curiostack/.github/workflows/export-go-server-ci.yaml@d8ad009d47b81cdf61e6c6bc1e0cbc483cba16ed
+    with:
+      project_dir: frontend/server
+      service: frontend-server
+      deploy_dev: false
+    secrets: inherit
