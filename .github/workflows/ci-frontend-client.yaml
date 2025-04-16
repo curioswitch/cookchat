@@ -1,0 +1,80 @@
+name: Frontend Client CI
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - frontend/client/**
+      - frontend/api/typescript/**
+      - .github/workflows/ci-frontend-client.yaml
+      - bun.lock
+  pull_request:
+    paths:
+      - frontend/client/**
+      - frontend/api/typescript/**
+      - .github/workflows/ci-frontend-client.yaml
+      - bun.lock
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+env:
+  GCP_PROJECT_ID: ${{ startsWith(github.ref_name, 'release/') && vars.GCP_PROJECT_ID_PROD || 'cookchat-dev' }}
+  GCP_PROJECT_NUMBER: ${{ startsWith(github.ref_name, 'release/') && vars.GCP_PROJECT_NUMBER_PROD || vars.GCP_PROJECT_NUMBER_DEV }}
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+
+      - run: bun install
+        working-directory: frontend/client
+
+      - run: bun run lint
+        working-directory: frontend/client
+
+  deploy:
+    needs: check
+    runs-on: ubuntu-24.04
+
+    environment: ${{ github.event_name != 'pull_request' && (startsWith(github.ref_name, 'release/') && 'prod' || 'dev') || null }}
+
+    env:
+      DOCKER_PUSH: ${{ github.event_name != 'pull_request' && 'yes' || 'no' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+
+      - run: bun install
+        working-directory: frontend/client
+
+      - name: build app
+        run: bun run build
+        working-directory: frontend/client
+        env:
+          PUBLIC_ENV__FIREBASE_APP: ${{ env.GCP_PROJECT_ID }}
+
+      - if: ${{ env.DOCKER_PUSH == 'yes' }}
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github/providers/github
+          project_id: ${{ env.GCP_PROJECT_ID }}
+          service_account: firebase-deployer@${{ env.GCP_PROJECT_ID }}.iam.gserviceaccount.com
+
+      - name: deploy app
+        if: ${{ env.DOCKER_PUSH == 'yes' }}
+        run: bun run firebase --project=${{ env.GCP_PROJECT_ID }} deploy
+        working-directory: frontend/client
