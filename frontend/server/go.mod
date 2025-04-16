@@ -8,7 +8,7 @@ require (
 	github.com/curioswitch/cookchat/frontend/api v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/go-curiostack v0.0.0-20250225012200-ad8cc143090b
 	github.com/curioswitch/go-usegcp v0.0.0-20250225012232-fb34f6fa1d4b
-	github.com/curioswitch/wshttp v0.0.0-20250205013245-610a34bac085
+	github.com/curioswitch/wshttp v0.0.0-20250416112330-b6191973cb49
 	github.com/wandb/parallel v0.2.2
 	google.golang.org/genai v1.0.0
 )
