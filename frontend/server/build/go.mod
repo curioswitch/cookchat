@@ -5,13 +5,13 @@ go 1.23.6
 require (
 	github.com/curioswitch/go-build v0.1.0
 	github.com/curioswitch/go-curiostack v0.0.0-20250225012200-ad8cc143090b
-	github.com/goyek/x v0.2.0
+	github.com/goyek/x v0.3.0
 )
 
 require (
-	github.com/fatih/color v1.17.0 // indirect
+	github.com/fatih/color v1.18.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
-	github.com/goyek/goyek/v2 v2.2.0 // indirect
+	github.com/goyek/goyek/v2 v2.3.0 // indirect
 	github.com/knadh/koanf/maps v0.1.1 // indirect
 	github.com/knadh/koanf/parsers/yaml v0.1.0 // indirect
 	github.com/knadh/koanf/providers/env v1.0.0 // indirect
