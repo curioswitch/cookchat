@@ -65,7 +65,7 @@ jobs:
         run: bun run build
         working-directory: frontend/client
         env:
-          PUBLIC_ENV__FIREBASE_APP: ${{ env.GCP_PROJECT_ID }}
+          PUBLIC_ENV__FIREBASE_APP: ${{ env.GCP_PROJECT_ID || 'cookchat-dev' }}
 
       - if: ${{ env.DOCKER_PUSH == 'yes' }}
         uses: google-github-actions/auth@v2
