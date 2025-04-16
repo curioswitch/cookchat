@@ -23,7 +23,7 @@ permissions:
   id-token: write
 
 env:
-  GCP_PROJECT_ID: ${{ startsWith(github.ref_name, 'release/') && vars.GCP_PROJECT_ID_PROD || 'cookchat-dev' }}
+  GCP_PROJECT_ID: ${{ startsWith(github.ref_name, 'release/') && vars.GCP_PROJECT_ID_PROD || vars.GCP_PROJECT_ID_DEV }}
   GCP_PROJECT_NUMBER: ${{ startsWith(github.ref_name, 'release/') && vars.GCP_PROJECT_NUMBER_PROD || vars.GCP_PROJECT_NUMBER_DEV }}
 
 jobs:
@@ -65,7 +65,7 @@ jobs:
         run: bun run build
         working-directory: frontend/client
         env:
-          PUBLIC_ENV__FIREBASE_APP: ${{ env.GCP_PROJECT_ID }}
+          PUBLIC_ENV__FIREBASE_APP: ${{ env.GCP_PROJECT_ID || 'cookchat-dev' }}
 
       - if: ${{ env.DOCKER_PUSH == 'yes' }}
         uses: google-github-actions/auth@v2
