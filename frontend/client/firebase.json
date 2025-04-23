@@ -13,15 +13,6 @@
         "destination": "/",
         "type": 301
       }
-    ],
-    "rewrites": [
-      {
-        "source": "/frontendapi.ChatService/**",
-        "run": {
-          "serviceId": "frontend-server",
-          "region": "asia-northeast1"
-        }
-      }
     ]
   }
 }
