@@ -19,6 +19,9 @@ message ChatContent {
 message ChatRequest {
   // The content of the chat message.
   ChatContent content = 1;
+
+  // The recipe to chat about.
+  string recipe = 2;
 }
 
 // A response in a chat.

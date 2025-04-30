@@ -1,4 +1,4 @@
 {
   "workspaces": ["frontend/api/typescript", "frontend/client"],
-  "packageManager": "bun@1.2.2"
+  "packageManager": "bun@1.2.11"
 }
