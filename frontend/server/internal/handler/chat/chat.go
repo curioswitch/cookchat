@@ -82,6 +82,9 @@ func (s *chatSession) receiveLoop(ctx context.Context) error {
 			`, recipe)
 			chatStream, err := s.genAI.Live.Connect(ctx, "gemini-2.0-flash-exp", &genai.LiveConnectConfig{
 				ResponseModalities: []genai.Modality{genai.ModalityAudio},
+				SpeechConfig: &genai.SpeechConfig{
+					LanguageCode: "ja-JP",
+				},
 				SystemInstruction: &genai.Content{
 					Role: "model",
 					Parts: []*genai.Part{
