@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file frontendapi/frontend.proto.
  */
 export const file_frontendapi_frontend: GenFile = /*@__PURE__*/
-  fileDesc("Chpmcm9udGVuZGFwaS9mcm9udGVuZC5wcm90bxILZnJvbnRlbmRhcGkiPAoLQ2hhdENvbnRlbnQSEQoHbWVzc2FnZRgBIAEoCUgAEg8KBWF1ZGlvGAIgASgMSABCCQoHcGF5bG9hZCI4CgtDaGF0UmVxdWVzdBIpCgdjb250ZW50GAEgASgLMhguZnJvbnRlbmRhcGkuQ2hhdENvbnRlbnQiOQoMQ2hhdFJlc3BvbnNlEikKB2NvbnRlbnQYASABKAsyGC5mcm9udGVuZGFwaS5DaGF0Q29udGVudDJOCgtDaGF0U2VydmljZRI/CgRDaGF0EhguZnJvbnRlbmRhcGkuQ2hhdFJlcXVlc3QaGS5mcm9udGVuZGFwaS5DaGF0UmVzcG9uc2UoATABQj1aO2dpdGh1Yi5jb20vY3VyaW9zd2l0Y2gvY29va2NoYXQvZnJvbnRlbmQvYXBpL2dvO2Zyb250ZW5kYXBpYgZwcm90bzM");
+  fileDesc("Chpmcm9udGVuZGFwaS9mcm9udGVuZC5wcm90bxILZnJvbnRlbmRhcGkiPAoLQ2hhdENvbnRlbnQSEQoHbWVzc2FnZRgBIAEoCUgAEg8KBWF1ZGlvGAIgASgMSABCCQoHcGF5bG9hZCJICgtDaGF0UmVxdWVzdBIpCgdjb250ZW50GAEgASgLMhguZnJvbnRlbmRhcGkuQ2hhdENvbnRlbnQSDgoGcmVjaXBlGAIgASgJIjkKDENoYXRSZXNwb25zZRIpCgdjb250ZW50GAEgASgLMhguZnJvbnRlbmRhcGkuQ2hhdENvbnRlbnQyTgoLQ2hhdFNlcnZpY2USPwoEQ2hhdBIYLmZyb250ZW5kYXBpLkNoYXRSZXF1ZXN0GhkuZnJvbnRlbmRhcGkuQ2hhdFJlc3BvbnNlKAEwAUI9WjtnaXRodWIuY29tL2N1cmlvc3dpdGNoL2Nvb2tjaGF0L2Zyb250ZW5kL2FwaS9nbztmcm9udGVuZGFwaWIGcHJvdG8z");
 
 /**
  * The content of a chat message.
@@ -59,6 +59,13 @@ export type ChatRequest = Message<"frontendapi.ChatRequest"> & {
    * @generated from field: frontendapi.ChatContent content = 1;
    */
   content?: ChatContent;
+
+  /**
+   * The recipe to chat about.
+   *
+   * @generated from field: string recipe = 2;
+   */
+  recipe: string;
 };
 
 /**

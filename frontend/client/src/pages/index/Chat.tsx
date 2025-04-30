@@ -1,6 +1,12 @@
 import { create } from "@bufbuild/protobuf";
 import { ChatRequestSchema } from "@cookchat/frontend-api";
-import { useCallback, useMemo, useState } from "react";
+import {
+  FormEvent,
+  type FormEventHandler,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { ClientOnly } from "vike-react/ClientOnly";
 import { useChatServiceStreaming } from "../../hooks/rpc";
 
@@ -12,7 +18,8 @@ function convertFloat32ToInt16(float32Array: Float32Array): Int16Array {
   return int16Array;
 }
 
-async function* sendMicData(
+async function* chatRequestStream(
+  recipe: string,
   processor: ScriptProcessorNode,
   end: Promise<true>,
 ) {
@@ -23,6 +30,9 @@ async function* sendMicData(
     dataPromise.resolve(dataPCM16);
     dataPromise = Promise.withResolvers();
   };
+  yield create(ChatRequestSchema, {
+    recipe,
+  });
   while (true) {
     const result = await Promise.any([dataPromise.promise, end]);
     if (result === true) {
@@ -132,43 +142,58 @@ export default function Chat() {
 
   const audioPlayer = useMemo(() => new AudioPlayer(), []);
 
-  const onClickStart = useCallback(async () => {
-    if (streamContext) {
-      streamContext.audioProcessor.disconnect();
-      streamContext.end.resolve(true);
-      setStreamContext(undefined);
-    } else {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const audioContext = new AudioContext({ sampleRate: 16000 });
-      const source = audioContext.createMediaStreamSource(stream);
-      const audioProcessor = audioContext.createScriptProcessor(1024, 1, 1);
+  const onSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
+    async (e) => {
+      e.preventDefault();
 
-      const end = Promise.withResolvers<true>();
-      const chatStream = chatService.chat(
-        sendMicData(audioProcessor, end.promise),
-      );
-      setTimeout(async () => {
-        for await (const res of chatStream) {
-          console.log(res);
-          if (res.content?.payload.case === "audio") {
-            audioPlayer.add(res.content.payload.value);
+      const formData = new FormData(e.currentTarget);
+
+      if (streamContext) {
+        streamContext.audioProcessor.disconnect();
+        streamContext.end.resolve(true);
+        setStreamContext(undefined);
+      } else {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        const audioContext = new AudioContext({ sampleRate: 16000 });
+        const source = audioContext.createMediaStreamSource(stream);
+        const audioProcessor = audioContext.createScriptProcessor(1024, 1, 1);
+
+        const end = Promise.withResolvers<true>();
+        const chatStream = chatService.chat(
+          chatRequestStream(
+            formData.get("recipe") as string,
+            audioProcessor,
+            end.promise,
+          ),
+        );
+        setTimeout(async () => {
+          for await (const res of chatStream) {
+            if (res.content?.payload.case === "audio") {
+              audioPlayer.add(res.content.payload.value);
+            }
           }
-        }
-      }, 0);
+        }, 0);
 
-      source.connect(audioProcessor);
-      audioProcessor.connect(audioContext.destination);
+        source.connect(audioProcessor);
+        audioProcessor.connect(audioContext.destination);
 
-      setStreamContext({ audioProcessor, end });
-    }
-    return false;
-  }, [audioPlayer, streamContext, chatService]);
+        setStreamContext({ audioProcessor, end });
+      }
+      return false;
+    },
+    [audioPlayer, streamContext, chatService],
+  );
 
   return (
     <div>
-      <button type="button" onClick={onClickStart}>
-        {streamContext ? "End" : "Start"}
-      </button>
+      <form onSubmit={onSubmit}>
+        <div>
+          <textarea name="recipe" />
+        </div>
+        <button type="submit">{streamContext ? "End" : "Start"}</button>
+      </form>
     </div>
   );
 }

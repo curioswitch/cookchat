@@ -23,7 +23,7 @@
       "outputCapture": "std",
       "env": {
         "PORT": "3000",
-        "SERVICE_FRONTEND": "http://localhost:8080"
+        "PUBLIC_ENV__API_BASE": "http://localhost:8080/"
       },
       "serverReadyAction": {
         "pattern": "Local:\\s+(.+)",
