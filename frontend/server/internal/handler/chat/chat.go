@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"sync/atomic"
 
 	"connectrpc.com/connect"
 	"github.com/wandb/parallel"
@@ -35,7 +36,10 @@ func (h *Handler) Chat(ctx context.Context, stream *connect.BidiStream[frontenda
 		genAI:      h.genAI,
 		initChan:   make(chan struct{}),
 	}
-	return sess.run()
+	if err := sess.run(); err != nil {
+		return err
+	}
+	return nil
 }
 
 type chatSession struct {
@@ -44,21 +48,20 @@ type chatSession struct {
 	genAI      *genai.Client
 	initChan   chan struct{}
 
-	chatStream *genai.Session
+	chatStream       *genai.Session
+	chatStreamClosed atomic.Bool
 }
 
 func (s *chatSession) run() error {
-	defer func() {
-		if s.chatStream != nil {
-			s.chatStream.Close()
-		}
-	}()
+	defer s.closeChatStream()
 	s.grp.Go(s.receiveLoop)
 	<-s.initChan
 	return s.grp.Wait()
 }
 
 func (s *chatSession) receiveLoop(ctx context.Context) error {
+	defer s.closeChatStream()
+
 	for {
 		msg, err := s.userStream.Receive()
 		if errors.Is(err, io.EOF) {
@@ -139,6 +142,11 @@ func (s *chatSession) chatLoop(_ context.Context) error {
 	for {
 		msg, err := s.chatStream.Receive()
 		if err != nil {
+			if s.chatStreamClosed.Load() {
+				// Already intentionally closed so any errors are fine to ignore,
+				// in practice they should be network errors.
+				return nil
+			}
 			return fmt.Errorf("chat: receiving message from genai: %w", err)
 		}
 		if msg.ServerContent != nil && msg.ServerContent.ModelTurn != nil {
@@ -159,6 +167,14 @@ func (s *chatSession) chatLoop(_ context.Context) error {
 					return fmt.Errorf("chat: sending response to client: %w", err)
 				}
 			}
+		}
+	}
+}
+
+func (s *chatSession) closeChatStream() {
+	if s.chatStreamClosed.CompareAndSwap(false, true) {
+		if s.chatStream != nil {
+			s.chatStream.Close()
 		}
 	}
 }
