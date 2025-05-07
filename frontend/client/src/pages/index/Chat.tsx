@@ -1,13 +1,8 @@
 import { create } from "@bufbuild/protobuf";
 import { ChatRequestSchema } from "@cookchat/frontend-api";
-import {
-  FormEvent,
-  type FormEventHandler,
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
-import { ClientOnly } from "vike-react/ClientOnly";
+import { Button } from "@heroui/button";
+import { Textarea } from "@heroui/react";
+import { type FormEventHandler, useCallback, useMemo, useState } from "react";
 import { useChatServiceStreaming } from "../../hooks/rpc";
 
 function convertFloat32ToInt16(float32Array: Float32Array): Int16Array {
@@ -187,12 +182,17 @@ export default function Chat() {
   );
 
   return (
-    <div>
+    <div className="p-10">
+      <h1 className="text-center">Let's cook!</h1>
       <form onSubmit={onSubmit}>
-        <div>
-          <textarea name="recipe" />
+        <div className="flex flex-col gap-4">
+          <div>
+            <Textarea name="recipe" placeholder="Enter recipe" />
+          </div>
+          <Button color="primary" type="submit">
+            {streamContext ? "End" : "Start"}
+          </Button>
         </div>
-        <button type="submit">{streamContext ? "End" : "Start"}</button>
       </form>
     </div>
   );

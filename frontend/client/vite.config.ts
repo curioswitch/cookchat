@@ -1,9 +1,10 @@
+import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react-swc";
 import vike from "vike/plugin";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  plugins: [react({}), vike({ prerender: true })],
+  plugins: [react({}), tailwindcss(), vike({ prerender: true })],
   server: {
     port: process.env.PORT ? Number.parseInt(process.env.PORT) : 8080,
     proxy: {

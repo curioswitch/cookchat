@@ -1,3 +1,6 @@
+import "./styles.css";
+
+import { HeroUIProvider } from "@heroui/system";
 import { usePageContext } from "vike-react/usePageContext";
 import { navigate } from "vike/client/router";
 
@@ -27,7 +30,9 @@ function Authorizer({ children }: { children: React.ReactNode }) {
 export default function Wrapper({ children }: { children: React.ReactNode }) {
   return (
     <FirebaseProvider>
-      <Authorizer>{children}</Authorizer>
+      <Authorizer>
+        <HeroUIProvider navigate={navigate}>{children}</HeroUIProvider>
+      </Authorizer>
     </FirebaseProvider>
   );
 }

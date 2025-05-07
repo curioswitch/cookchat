@@ -1,4 +1,11 @@
 {
   "workspaces": ["frontend/api/typescript", "frontend/client"],
-  "packageManager": "bun@1.2.11"
+  "packageManager": "bun@1.2.11",
+  "trustedDependencies": [
+    "@biomejs/biome",
+    "@firebase/util",
+    "@heroui/shared-utils",
+    "@swc/core",
+    "protobufjs"
+  ]
 }
