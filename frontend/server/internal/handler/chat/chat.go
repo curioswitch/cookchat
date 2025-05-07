@@ -71,12 +71,25 @@ func (s *chatSession) receiveLoop(ctx context.Context) error {
 		if s.chatStream == nil {
 			recipe := msg.GetRecipe()
 			prompt := fmt.Sprintf(`You are a cooking assistant that helps a user work through a recipe. 
-			Wait for the user to greet you before starting to talk to them. Start by acknowledging the recipe they are
-			trying to cook and ask the when they are ready to begin. When they are ready, walk them through the recipe
-			one step at a time, pausing after each step until the user says they are ready to continue. If the user
-			asks any questions, answer them in a friendly and helpful manner.
+			Start by greeting the user and acknowleding the recipe they are trying to cook. Then ask them how many
+			people they are preparing for. When they answer, list out the required ingredients for the specified number
+			of people. Divide or multiply the numbers in the recipe if the number of people doesn't match the recipe.
+			If the recipe does not specify a number of people, assume it matches. After listing out the ingredients,
+			ask the user to tell you when they are ready to begin. When they are ready, walk them through the recipe
+			one action at a time, pausing after each action until the user says they are ready to continue. Many
+			recipes have multiple actions in a single formatted step - proceed through each action individually to
+			avoid overwhelming the user. For any numeric quantities, divide or multiple so it matches the number of
+			people being cooked for, for example if the recipe is for 4 people and the user is cooking for 2, divide
+			by 2.
+
+			If the user asks any questions, answer them in a friendly and helpful manner. Always speak slowly and
+			clearly.
 
 			Always speak in Japanese. If the recipe is in another language, translate it and convey in Japanese.
+
+			When processing an ingredient list, each ingredient is always a word followed by a quantity. Read each
+			ingredient as an item with a three second pause in between each. Ingredient lists never have dates, all
+			fractions such as 1/2 are numbers, not dates.
 
 			The recipe is as follows:\n%s\n\n
 			`, recipe)
@@ -98,6 +111,13 @@ func (s *chatSession) receiveLoop(ctx context.Context) error {
 				return fmt.Errorf("chat: starting genai live session: %w", err)
 			}
 			s.chatStream = chatStream
+			if err := chatStream.SendClientContent(genai.LiveClientContentInput{
+				Turns: []*genai.Content{
+					genai.NewContentFromText("こんにちは", genai.RoleUser),
+				},
+			}); err != nil {
+				return fmt.Errorf("chat: sending initial client content: %w", err)
+			}
 			s.grp.Go(s.chatLoop)
 			s.initChan <- struct{}{}
 		}
