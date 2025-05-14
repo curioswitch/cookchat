@@ -1,0 +1,32 @@
+name: Crawler Server CI
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - common/go/**
+      - crawler/server/**
+      - crawler/api/go/**
+      - .github/workflows/ci-crawler-server.yaml
+  pull_request:
+    paths:
+      - common/go/**
+      - crawler/server/**
+      - crawler/api/go/**
+      - .github/workflows/ci-crawler-server.yaml
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+jobs:
+  ci:
+    uses: curioswitch/go-curiostack/.github/workflows/export-go-server-ci.yaml@d7e0d77a0074b45baa9897100989bffd0c084e92
+    with:
+      project_dir: crawler/server
+      service: crawler-server
+      deploy_dev: false
+    secrets: inherit

@@ -2,6 +2,12 @@ go 1.24.3
 
 use (
 	./build
+	./common/go
+	./common/go/build
+	./crawler/api
+	./crawler/api/build
+	./crawler/server
+	./crawler/server/build
 	./frontend/api
 	./frontend/api/build
 	./frontend/server
