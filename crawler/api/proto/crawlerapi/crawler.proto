@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package crawlerapi;
+
+option go_package = "github.com/curioswitch/cookchat/crawler/api/go;crawlerapi";
+
+message CrawlCookpadRecipeRequest {
+  // The ID of the cookpad recipe to crawl.
+  string recipe_id = 1;
+}
+
+message CrawlCookpadRecipeResponse {}
+
+// A request for CrawlerService.CrawlCookpadUser.
+message CrawlCookpadUserRequest {
+  // The user ID of the cookpad user to crawl.
+  string user_id = 1;
+}
+
+// A response from CrawlerService.CrawlCookpadUser.
+message CrawlCookpadUserResponse {}
+
+// A service for crawling recipes.
+service CrawlerService {
+  // Crawl a cookpad user, crawling all of their recipes.
+  rpc CrawlCookpadUser(CrawlCookpadUserRequest) returns (CrawlCookpadUserResponse);
+
+  // Crawl a cookpad recipe.
+  rpc CrawlCookpadRecipe(CrawlCookpadRecipeRequest) returns (CrawlCookpadRecipeResponse);
+}

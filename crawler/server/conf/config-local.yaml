@@ -1,0 +1,2 @@
+services:
+  crawler: http://localhost:8080

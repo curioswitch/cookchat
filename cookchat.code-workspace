@@ -5,6 +5,10 @@
       "path": "."
     },
     {
+      "name": "crawler/server",
+      "path": "./crawler/server"
+    }
+    {
       "name": "frontend/client",
       "path": "./frontend/client"
     },
