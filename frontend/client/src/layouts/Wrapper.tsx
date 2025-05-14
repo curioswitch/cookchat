@@ -5,6 +5,7 @@ import { usePageContext } from "vike-react/usePageContext";
 import { navigate } from "vike/client/router";
 
 import { FirebaseProvider, useFirebase } from "../hooks/firebase";
+import { FrontendServiceProvider } from "../hooks/rpc";
 
 function Authorizer({ children }: { children: React.ReactNode }) {
   const firebase = useFirebase();
@@ -31,7 +32,9 @@ export default function Wrapper({ children }: { children: React.ReactNode }) {
   return (
     <FirebaseProvider>
       <Authorizer>
-        <HeroUIProvider navigate={navigate}>{children}</HeroUIProvider>
+        <FrontendServiceProvider>
+          <HeroUIProvider navigate={navigate}>{children}</HeroUIProvider>
+        </FrontendServiceProvider>
       </Authorizer>
     </FirebaseProvider>
   );

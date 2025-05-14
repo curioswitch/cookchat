@@ -23,6 +23,8 @@ const _ = connect.IsAtLeastVersion1_13_0
 const (
 	// ChatServiceName is the fully-qualified name of the ChatService service.
 	ChatServiceName = "frontendapi.ChatService"
+	// FrontendServiceName is the fully-qualified name of the FrontendService service.
+	FrontendServiceName = "frontendapi.FrontendService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -35,6 +37,12 @@ const (
 const (
 	// ChatServiceChatProcedure is the fully-qualified name of the ChatService's Chat RPC.
 	ChatServiceChatProcedure = "/frontendapi.ChatService/Chat"
+	// FrontendServiceGetRecipeProcedure is the fully-qualified name of the FrontendService's GetRecipe
+	// RPC.
+	FrontendServiceGetRecipeProcedure = "/frontendapi.FrontendService/GetRecipe"
+	// FrontendServiceListRecipesProcedure is the fully-qualified name of the FrontendService's
+	// ListRecipes RPC.
+	FrontendServiceListRecipesProcedure = "/frontendapi.FrontendService/ListRecipes"
 )
 
 // ChatServiceClient is a client for the frontendapi.ChatService service.
@@ -107,4 +115,104 @@ type UnimplementedChatServiceHandler struct{}
 
 func (UnimplementedChatServiceHandler) Chat(context.Context, *connect.BidiStream[_go.ChatRequest, _go.ChatResponse]) error {
 	return connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.ChatService.Chat is not implemented"))
+}
+
+// FrontendServiceClient is a client for the frontendapi.FrontendService service.
+type FrontendServiceClient interface {
+	// Get the recipe for a given recipe ID.
+	GetRecipe(context.Context, *connect.Request[_go.GetRecipeRequest]) (*connect.Response[_go.GetRecipeResponse], error)
+	// Get the list of recipes.
+	ListRecipes(context.Context, *connect.Request[_go.ListRecipesRequest]) (*connect.Response[_go.ListRecipesResponse], error)
+}
+
+// NewFrontendServiceClient constructs a client for the frontendapi.FrontendService service. By
+// default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
+// and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
+// connect.WithGRPC() or connect.WithGRPCWeb() options.
+//
+// The URL supplied here should be the base URL for the Connect or gRPC server (for example,
+// http://api.acme.com or https://acme.com/grpc).
+func NewFrontendServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) FrontendServiceClient {
+	baseURL = strings.TrimRight(baseURL, "/")
+	frontendServiceMethods := _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods()
+	return &frontendServiceClient{
+		getRecipe: connect.NewClient[_go.GetRecipeRequest, _go.GetRecipeResponse](
+			httpClient,
+			baseURL+FrontendServiceGetRecipeProcedure,
+			connect.WithSchema(frontendServiceMethods.ByName("GetRecipe")),
+			connect.WithClientOptions(opts...),
+		),
+		listRecipes: connect.NewClient[_go.ListRecipesRequest, _go.ListRecipesResponse](
+			httpClient,
+			baseURL+FrontendServiceListRecipesProcedure,
+			connect.WithSchema(frontendServiceMethods.ByName("ListRecipes")),
+			connect.WithClientOptions(opts...),
+		),
+	}
+}
+
+// frontendServiceClient implements FrontendServiceClient.
+type frontendServiceClient struct {
+	getRecipe   *connect.Client[_go.GetRecipeRequest, _go.GetRecipeResponse]
+	listRecipes *connect.Client[_go.ListRecipesRequest, _go.ListRecipesResponse]
+}
+
+// GetRecipe calls frontendapi.FrontendService.GetRecipe.
+func (c *frontendServiceClient) GetRecipe(ctx context.Context, req *connect.Request[_go.GetRecipeRequest]) (*connect.Response[_go.GetRecipeResponse], error) {
+	return c.getRecipe.CallUnary(ctx, req)
+}
+
+// ListRecipes calls frontendapi.FrontendService.ListRecipes.
+func (c *frontendServiceClient) ListRecipes(ctx context.Context, req *connect.Request[_go.ListRecipesRequest]) (*connect.Response[_go.ListRecipesResponse], error) {
+	return c.listRecipes.CallUnary(ctx, req)
+}
+
+// FrontendServiceHandler is an implementation of the frontendapi.FrontendService service.
+type FrontendServiceHandler interface {
+	// Get the recipe for a given recipe ID.
+	GetRecipe(context.Context, *connect.Request[_go.GetRecipeRequest]) (*connect.Response[_go.GetRecipeResponse], error)
+	// Get the list of recipes.
+	ListRecipes(context.Context, *connect.Request[_go.ListRecipesRequest]) (*connect.Response[_go.ListRecipesResponse], error)
+}
+
+// NewFrontendServiceHandler builds an HTTP handler from the service implementation. It returns the
+// path on which to mount the handler and the handler itself.
+//
+// By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
+// and JSON codecs. They also support gzip compression.
+func NewFrontendServiceHandler(svc FrontendServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	frontendServiceMethods := _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods()
+	frontendServiceGetRecipeHandler := connect.NewUnaryHandler(
+		FrontendServiceGetRecipeProcedure,
+		svc.GetRecipe,
+		connect.WithSchema(frontendServiceMethods.ByName("GetRecipe")),
+		connect.WithHandlerOptions(opts...),
+	)
+	frontendServiceListRecipesHandler := connect.NewUnaryHandler(
+		FrontendServiceListRecipesProcedure,
+		svc.ListRecipes,
+		connect.WithSchema(frontendServiceMethods.ByName("ListRecipes")),
+		connect.WithHandlerOptions(opts...),
+	)
+	return "/frontendapi.FrontendService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case FrontendServiceGetRecipeProcedure:
+			frontendServiceGetRecipeHandler.ServeHTTP(w, r)
+		case FrontendServiceListRecipesProcedure:
+			frontendServiceListRecipesHandler.ServeHTTP(w, r)
+		default:
+			http.NotFound(w, r)
+		}
+	})
+}
+
+// UnimplementedFrontendServiceHandler returns CodeUnimplemented from all methods.
+type UnimplementedFrontendServiceHandler struct{}
+
+func (UnimplementedFrontendServiceHandler) GetRecipe(context.Context, *connect.Request[_go.GetRecipeRequest]) (*connect.Response[_go.GetRecipeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.GetRecipe is not implemented"))
+}
+
+func (UnimplementedFrontendServiceHandler) ListRecipes(context.Context, *connect.Request[_go.ListRecipesRequest]) (*connect.Response[_go.ListRecipesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.ListRecipes is not implemented"))
 }

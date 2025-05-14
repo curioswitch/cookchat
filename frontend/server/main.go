@@ -7,6 +7,7 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"strings"
@@ -22,6 +23,7 @@ import (
 	"github.com/curioswitch/cookchat/frontend/api/go/frontendapiconnect"
 	"github.com/curioswitch/cookchat/frontend/server/internal/config"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/chat"
+	"github.com/curioswitch/cookchat/frontend/server/internal/handler/listrecipes"
 )
 
 var confFiles embed.FS // Currently empty
@@ -42,6 +44,16 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 	if err != nil {
 		return fmt.Errorf("main: create firebase auth client: %w", err)
 	}
+
+	firestore, err := fbApp.Firestore(ctx)
+	if err != nil {
+		return fmt.Errorf("main: create firestore client: %w", err)
+	}
+	defer func() {
+		if err := firestore.Close(); err != nil {
+			slog.ErrorContext(ctx, "main: close firestore client", "error", err)
+		}
+	}()
 
 	genAI, err := genai.NewClient(ctx, &genai.ClientConfig{
 		Backend:  genai.BackendVertexAI,
@@ -78,6 +90,16 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		})
 	}
 	mux.Handle("/frontendapi.ChatService/Chat", wshttp.WrapHandler(fbMW(requireCurio(chatHandler))))
+
+	server.HandleConnectUnary(s,
+		frontendapiconnect.FrontendServiceListRecipesProcedure,
+		listrecipes.NewHandler(firestore).ListRecipes,
+		[]*frontendapi.ListRecipesRequest{
+			{},
+		},
+	)
+
+	server.EnableDocsFirebaseAuth(s, "alpha.cookchat.curioswitch.org")
 
 	if err := server.Start(ctx, s); err != nil {
 		return fmt.Errorf("main: starting server: %w", err)

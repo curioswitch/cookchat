@@ -35,3 +35,56 @@ service ChatService {
   // Chat with a stream of messages.
   rpc Chat(stream ChatRequest) returns (stream ChatResponse);
 }
+
+// A request for FrontendService.GetRecipe.
+message GetRecipeRequest {
+  // The ID of the recipe to get.
+  string recipe_id = 1;
+}
+
+// A response for FrontendService.GetRecipe.
+message GetRecipeResponse {}
+
+// A token returned to retrieve a subsequent page of items.
+message Pagination {
+  string last_id = 1;
+}
+
+// A snippet of a recipe for list views.
+message RecipeSnippet {
+  // The ID of the recipe.
+  string id = 1;
+
+  // The title of the recipe.
+  string title = 2;
+
+  // The summary of the recipe.
+  string summary = 3;
+
+  // The image URL of the recipe.
+  string image_url = 4;
+}
+
+// A request for FrontendService.ListRecipes.
+message ListRecipesRequest {
+  // The pagination token for the next page of recipes.
+  // If unset, the first page is returned.
+  Pagination pagination = 1;
+}
+
+// A response for FrontendService.ListRecipes.
+message ListRecipesResponse {
+  // The recipes.
+  repeated RecipeSnippet recipes = 1;
+
+  // The pagination token for the next page of recipes.
+  Pagination pagination = 2;
+}
+
+service FrontendService {
+  // Get the recipe for a given recipe ID.
+  rpc GetRecipe(GetRecipeRequest) returns (GetRecipeResponse);
+
+  // Get the list of recipes.
+  rpc ListRecipes(ListRecipesRequest) returns (ListRecipesResponse);
+}

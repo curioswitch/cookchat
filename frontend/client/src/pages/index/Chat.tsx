@@ -3,7 +3,7 @@ import { ChatRequestSchema } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
 import { Textarea } from "@heroui/react";
 import { type FormEventHandler, useCallback, useMemo, useState } from "react";
-import { useChatServiceStreaming } from "../../hooks/rpc";
+import { useChatService } from "../../hooks/rpc";
 
 function convertFloat32ToInt16(float32Array: Float32Array): Int16Array {
   const int16Array = new Int16Array(float32Array.length);
@@ -133,7 +133,7 @@ export default function Chat() {
     undefined,
   );
 
-  const chatService = useChatServiceStreaming();
+  const chatService = useChatService();
 
   const audioPlayer = useMemo(() => new AudioPlayer(), []);
 
