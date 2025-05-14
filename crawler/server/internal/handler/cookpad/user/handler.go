@@ -48,6 +48,7 @@ func (h *Handler) CrawlCookpadUser(ctx context.Context, req *crawlerapi.CrawlCoo
 	c.OnHTML(fmt.Sprintf(`a[href^="/jp/users/%s/recipes?page="]`, req.GetUserId()), func(e *colly.HTMLElement) {
 		if err := c.Visit(e.Request.AbsoluteURL(e.Attr("href"))); err != nil {
 			// TODO: Log error
+			return
 		}
 	})
 
