@@ -3,8 +3,10 @@ module github.com/curioswitch/cookchat/frontend/server
 go 1.24.3
 
 require (
+	cloud.google.com/go/firestore v1.18.0
 	connectrpc.com/connect v1.18.1
 	firebase.google.com/go/v4 v4.15.2
+	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/frontend/api v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/go-curiostack v0.0.0-20250514020200-d5c05221f00c
 	github.com/curioswitch/go-usegcp v0.0.0-20250225012232-fb34f6fa1d4b
@@ -19,7 +21,6 @@ require (
 	cloud.google.com/go/auth v0.16.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.6.0 // indirect
-	cloud.google.com/go/firestore v1.18.0 // indirect
 	cloud.google.com/go/iam v1.3.1 // indirect
 	cloud.google.com/go/longrunning v0.6.4 // indirect
 	cloud.google.com/go/monitoring v1.23.0 // indirect
@@ -96,4 +97,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/curioswitch/cookchat/frontend/api => ../api
+replace (
+	github.com/curioswitch/cookchat/common => ../../common/go
+	github.com/curioswitch/cookchat/frontend/api => ../api
+)
