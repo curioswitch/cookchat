@@ -65,10 +65,13 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			tok := firebaseauth.TokenFromContext(r.Context())
 			if id, ok := tok.Firebase.Identities["email"]; ok {
-				email := id.([]any)[0].(string)
-				if strings.HasSuffix(email, "@curioswitch.org") {
-					next.ServeHTTP(w, r)
-					return
+				if idAny, ok := id.([]any); ok && len(idAny) > 0 {
+					if email, ok := idAny[0].(string); ok {
+						if strings.HasSuffix(email, "@curioswitch.org") {
+							next.ServeHTTP(w, r)
+							return
+						}
+					}
 				}
 			}
 			http.Error(w, "permission denied", http.StatusForbidden)
@@ -76,5 +79,8 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 	}
 	mux.Handle("/frontendapi.ChatService/Chat", wshttp.WrapHandler(fbMW(requireCurio(chatHandler))))
 
-	return server.Start(ctx, s)
+	if err := server.Start(ctx, s); err != nil {
+		return fmt.Errorf("main: starting server: %w", err)
+	}
+	return nil
 }
