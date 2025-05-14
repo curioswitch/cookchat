@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file frontendapi/frontend.proto.
  */
 export const file_frontendapi_frontend: GenFile = /*@__PURE__*/
-  fileDesc("Chpmcm9udGVuZGFwaS9mcm9udGVuZC5wcm90bxILZnJvbnRlbmRhcGkiPAoLQ2hhdENvbnRlbnQSEQoHbWVzc2FnZRgBIAEoCUgAEg8KBWF1ZGlvGAIgASgMSABCCQoHcGF5bG9hZCJICgtDaGF0UmVxdWVzdBIpCgdjb250ZW50GAEgASgLMhguZnJvbnRlbmRhcGkuQ2hhdENvbnRlbnQSDgoGcmVjaXBlGAIgASgJIjkKDENoYXRSZXNwb25zZRIpCgdjb250ZW50GAEgASgLMhguZnJvbnRlbmRhcGkuQ2hhdENvbnRlbnQyTgoLQ2hhdFNlcnZpY2USPwoEQ2hhdBIYLmZyb250ZW5kYXBpLkNoYXRSZXF1ZXN0GhkuZnJvbnRlbmRhcGkuQ2hhdFJlc3BvbnNlKAEwAUI9WjtnaXRodWIuY29tL2N1cmlvc3dpdGNoL2Nvb2tjaGF0L2Zyb250ZW5kL2FwaS9nbztmcm9udGVuZGFwaWIGcHJvdG8z");
+  fileDesc("Chpmcm9udGVuZGFwaS9mcm9udGVuZC5wcm90bxILZnJvbnRlbmRhcGkiPAoLQ2hhdENvbnRlbnQSEQoHbWVzc2FnZRgBIAEoCUgAEg8KBWF1ZGlvGAIgASgMSABCCQoHcGF5bG9hZCJICgtDaGF0UmVxdWVzdBIpCgdjb250ZW50GAEgASgLMhguZnJvbnRlbmRhcGkuQ2hhdENvbnRlbnQSDgoGcmVjaXBlGAIgASgJIjkKDENoYXRSZXNwb25zZRIpCgdjb250ZW50GAEgASgLMhguZnJvbnRlbmRhcGkuQ2hhdENvbnRlbnQiJQoQR2V0UmVjaXBlUmVxdWVzdBIRCglyZWNpcGVfaWQYASABKAkiEwoRR2V0UmVjaXBlUmVzcG9uc2UiHQoKUGFnaW5hdGlvbhIPCgdsYXN0X2lkGAEgASgJIk4KDVJlY2lwZVNuaXBwZXQSCgoCaWQYASABKAkSDQoFdGl0bGUYAiABKAkSDwoHc3VtbWFyeRgDIAEoCRIRCglpbWFnZV91cmwYBCABKAkiQQoSTGlzdFJlY2lwZXNSZXF1ZXN0EisKCnBhZ2luYXRpb24YASABKAsyFy5mcm9udGVuZGFwaS5QYWdpbmF0aW9uIm8KE0xpc3RSZWNpcGVzUmVzcG9uc2USKwoHcmVjaXBlcxgBIAMoCzIaLmZyb250ZW5kYXBpLlJlY2lwZVNuaXBwZXQSKwoKcGFnaW5hdGlvbhgCIAEoCzIXLmZyb250ZW5kYXBpLlBhZ2luYXRpb24yTgoLQ2hhdFNlcnZpY2USPwoEQ2hhdBIYLmZyb250ZW5kYXBpLkNoYXRSZXF1ZXN0GhkuZnJvbnRlbmRhcGkuQ2hhdFJlc3BvbnNlKAEwATKvAQoPRnJvbnRlbmRTZXJ2aWNlEkoKCUdldFJlY2lwZRIdLmZyb250ZW5kYXBpLkdldFJlY2lwZVJlcXVlc3QaHi5mcm9udGVuZGFwaS5HZXRSZWNpcGVSZXNwb25zZRJQCgtMaXN0UmVjaXBlcxIfLmZyb250ZW5kYXBpLkxpc3RSZWNpcGVzUmVxdWVzdBogLmZyb250ZW5kYXBpLkxpc3RSZWNpcGVzUmVzcG9uc2VCPVo7Z2l0aHViLmNvbS9jdXJpb3N3aXRjaC9jb29rY2hhdC9mcm9udGVuZC9hcGkvZ287ZnJvbnRlbmRhcGliBnByb3RvMw");
 
 /**
  * The content of a chat message.
@@ -97,6 +97,153 @@ export const ChatResponseSchema: GenMessage<ChatResponse> = /*@__PURE__*/
   messageDesc(file_frontendapi_frontend, 2);
 
 /**
+ * A request for FrontendService.GetRecipe.
+ *
+ * @generated from message frontendapi.GetRecipeRequest
+ */
+export type GetRecipeRequest = Message<"frontendapi.GetRecipeRequest"> & {
+  /**
+   * The ID of the recipe to get.
+   *
+   * @generated from field: string recipe_id = 1;
+   */
+  recipeId: string;
+};
+
+/**
+ * Describes the message frontendapi.GetRecipeRequest.
+ * Use `create(GetRecipeRequestSchema)` to create a new message.
+ */
+export const GetRecipeRequestSchema: GenMessage<GetRecipeRequest> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 3);
+
+/**
+ * A response for FrontendService.GetRecipe.
+ *
+ * @generated from message frontendapi.GetRecipeResponse
+ */
+export type GetRecipeResponse = Message<"frontendapi.GetRecipeResponse"> & {
+};
+
+/**
+ * Describes the message frontendapi.GetRecipeResponse.
+ * Use `create(GetRecipeResponseSchema)` to create a new message.
+ */
+export const GetRecipeResponseSchema: GenMessage<GetRecipeResponse> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 4);
+
+/**
+ * A token returned to retrieve a subsequent page of items.
+ *
+ * @generated from message frontendapi.Pagination
+ */
+export type Pagination = Message<"frontendapi.Pagination"> & {
+  /**
+   * @generated from field: string last_id = 1;
+   */
+  lastId: string;
+};
+
+/**
+ * Describes the message frontendapi.Pagination.
+ * Use `create(PaginationSchema)` to create a new message.
+ */
+export const PaginationSchema: GenMessage<Pagination> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 5);
+
+/**
+ * A snippet of a recipe for list views.
+ *
+ * @generated from message frontendapi.RecipeSnippet
+ */
+export type RecipeSnippet = Message<"frontendapi.RecipeSnippet"> & {
+  /**
+   * The ID of the recipe.
+   *
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * The title of the recipe.
+   *
+   * @generated from field: string title = 2;
+   */
+  title: string;
+
+  /**
+   * The summary of the recipe.
+   *
+   * @generated from field: string summary = 3;
+   */
+  summary: string;
+
+  /**
+   * The image URL of the recipe.
+   *
+   * @generated from field: string image_url = 4;
+   */
+  imageUrl: string;
+};
+
+/**
+ * Describes the message frontendapi.RecipeSnippet.
+ * Use `create(RecipeSnippetSchema)` to create a new message.
+ */
+export const RecipeSnippetSchema: GenMessage<RecipeSnippet> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 6);
+
+/**
+ * A request for FrontendService.ListRecipes.
+ *
+ * @generated from message frontendapi.ListRecipesRequest
+ */
+export type ListRecipesRequest = Message<"frontendapi.ListRecipesRequest"> & {
+  /**
+   * The pagination token for the next page of recipes.
+   * If unset, the first page is returned.
+   *
+   * @generated from field: frontendapi.Pagination pagination = 1;
+   */
+  pagination?: Pagination;
+};
+
+/**
+ * Describes the message frontendapi.ListRecipesRequest.
+ * Use `create(ListRecipesRequestSchema)` to create a new message.
+ */
+export const ListRecipesRequestSchema: GenMessage<ListRecipesRequest> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 7);
+
+/**
+ * A response for FrontendService.ListRecipes.
+ *
+ * @generated from message frontendapi.ListRecipesResponse
+ */
+export type ListRecipesResponse = Message<"frontendapi.ListRecipesResponse"> & {
+  /**
+   * The recipes.
+   *
+   * @generated from field: repeated frontendapi.RecipeSnippet recipes = 1;
+   */
+  recipes: RecipeSnippet[];
+
+  /**
+   * The pagination token for the next page of recipes.
+   *
+   * @generated from field: frontendapi.Pagination pagination = 2;
+   */
+  pagination?: Pagination;
+};
+
+/**
+ * Describes the message frontendapi.ListRecipesResponse.
+ * Use `create(ListRecipesResponseSchema)` to create a new message.
+ */
+export const ListRecipesResponseSchema: GenMessage<ListRecipesResponse> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 8);
+
+/**
  * A chat service.
  *
  * @generated from service frontendapi.ChatService
@@ -114,4 +261,31 @@ export const ChatService: GenService<{
   },
 }> = /*@__PURE__*/
   serviceDesc(file_frontendapi_frontend, 0);
+
+/**
+ * @generated from service frontendapi.FrontendService
+ */
+export const FrontendService: GenService<{
+  /**
+   * Get the recipe for a given recipe ID.
+   *
+   * @generated from rpc frontendapi.FrontendService.GetRecipe
+   */
+  getRecipe: {
+    methodKind: "unary";
+    input: typeof GetRecipeRequestSchema;
+    output: typeof GetRecipeResponseSchema;
+  },
+  /**
+   * Get the list of recipes.
+   *
+   * @generated from rpc frontendapi.FrontendService.ListRecipes
+   */
+  listRecipes: {
+    methodKind: "unary";
+    input: typeof ListRecipesRequestSchema;
+    output: typeof ListRecipesResponseSchema;
+  },
+}> = /*@__PURE__*/
+  serviceDesc(file_frontendapi_frontend, 1);
 
