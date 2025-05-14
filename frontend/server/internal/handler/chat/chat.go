@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"sync/atomic"
 
 	"connectrpc.com/connect"
@@ -56,7 +57,10 @@ func (s *chatSession) run() error {
 	defer s.closeChatStream()
 	s.grp.Go(s.receiveLoop)
 	<-s.initChan
-	return s.grp.Wait()
+	if err := s.grp.Wait(); err != nil {
+		return fmt.Errorf("chat: error in chat session: %w", err)
+	}
+	return nil
 }
 
 func (s *chatSession) receiveLoop(ctx context.Context) error {
@@ -174,7 +178,9 @@ func (s *chatSession) chatLoop(_ context.Context) error {
 func (s *chatSession) closeChatStream() {
 	if s.chatStreamClosed.CompareAndSwap(false, true) {
 		if s.chatStream != nil {
-			s.chatStream.Close()
+			if err := s.chatStream.Close(); err != nil {
+				slog.Warn("chat: closing genai stream", "error", err)
+			}
 		}
 	}
 }
