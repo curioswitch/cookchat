@@ -58,6 +58,8 @@ func (h *Handler) CrawlCookpadRecipe(ctx context.Context, req *crawlerapi.CrawlC
 		var curSection *cookchatdb.IngredientSection
 		curIngedients := &baseIngredients
 
+		servingSize := e.ChildText("#serving_recipe_" + req.GetRecipeId())
+
 		e.ForEach(".ingredient-list ol > li", func(_ int, e *colly.HTMLElement) {
 			if strings.Contains(e.Attr("class"), "not-headline") {
 				name := e.ChildText("*:first-child")
@@ -107,6 +109,7 @@ func (h *Handler) CrawlCookpadRecipe(ctx context.Context, req *crawlerapi.CrawlC
 			Ingredients:           baseIngredients,
 			AdditionalIngredients: additionalSections,
 			Steps:                 steps,
+			ServingSize:           servingSize,
 			LanguageCode:          "ja",
 		}
 	})

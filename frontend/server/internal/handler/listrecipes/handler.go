@@ -2,13 +2,13 @@ package listrecipes
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 
 	"cloud.google.com/go/firestore"
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
+	"github.com/curioswitch/cookchat/frontend/server/internal/util"
 )
 
 func NewHandler(store *firestore.Client) *Handler {
@@ -42,10 +42,7 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 			return nil, fmt.Errorf("listrecipes: unmarshalling recipe: %w", err)
 		}
 
-		imageURL := ""
-		if recipe.Image != nil {
-			imageURL = "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(recipe.Image)
-		}
+		imageURL := util.ImageBytesToURL(recipe.Image)
 
 		summary := ""
 		for _, ingredient := range recipe.Ingredients {

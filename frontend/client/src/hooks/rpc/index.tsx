@@ -1,4 +1,4 @@
-import { create } from "@bufbuild/protobuf";
+import { type MessageInitShape, create } from "@bufbuild/protobuf";
 import {
   Code,
   ConnectError,
@@ -9,19 +9,23 @@ import {
 import {
   TransportProvider,
   createInfiniteQueryOptions,
+  createQueryOptions,
   useTransport,
 } from "@connectrpc/connect-query";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { createTransport } from "@connectrpc/connect/protocol-connect";
 import {
   ChatService,
+  type GetRecipeRequestSchema,
   PaginationSchema,
+  getRecipe,
   listRecipes,
 } from "@cookchat/frontend-api";
 import {
   QueryClient,
   QueryClientProvider,
   infiniteQueryOptions,
+  queryOptions,
 } from "@tanstack/react-query";
 import { createWebSocketClient } from "connect-es-ws";
 import type { User as FirebaseUser } from "firebase/auth";
@@ -77,6 +81,12 @@ function canRetry(error: Error): boolean {
 
 class FrontendQueries {
   constructor(private readonly transport: Transport) {}
+
+  getRecipe(req: MessageInitShape<typeof GetRecipeRequestSchema>) {
+    return queryOptions(
+      createQueryOptions(getRecipe, req, { transport: this.transport }),
+    );
+  }
 
   listRecipes() {
     return infiniteQueryOptions(

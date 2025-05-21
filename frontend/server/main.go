@@ -23,6 +23,7 @@ import (
 	"github.com/curioswitch/cookchat/frontend/api/go/frontendapiconnect"
 	"github.com/curioswitch/cookchat/frontend/server/internal/config"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/chat"
+	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getrecipe"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/listrecipes"
 )
 
@@ -90,6 +91,16 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		})
 	}
 	mux.Handle("/frontendapi.ChatService/Chat", wshttp.WrapHandler(fbMW(requireCurio(chatHandler))))
+
+	server.HandleConnectUnary(s,
+		frontendapiconnect.FrontendServiceGetRecipeProcedure,
+		getrecipe.NewHandler(firestore).GetRecipe,
+		[]*frontendapi.GetRecipeRequest{
+			{
+				RecipeId: "02JNMi0W1605TLxzQt6v",
+			},
+		},
+	)
 
 	server.HandleConnectUnary(s,
 		frontendapiconnect.FrontendServiceListRecipesProcedure,

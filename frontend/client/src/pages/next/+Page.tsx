@@ -1,4 +1,5 @@
 import { Image } from "@heroui/image";
+import { Link } from "@heroui/link";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useRef } from "react";
 import { useFrontendQueries } from "../../hooks/rpc";
@@ -10,7 +11,7 @@ export default function Page() {
 
   const observer = useRef<IntersectionObserver | null>(null);
   const handleLastItem = useCallback(
-    (element: HTMLDivElement | null) => {
+    (element: HTMLElement | null) => {
       if (!hasNextPage || isPending || !element) {
         return;
       }
@@ -44,9 +45,11 @@ export default function Page() {
   return (
     <div className="flex flex-col gap-4 p-4">
       {recipes.map((recipe, i) => (
-        <div
+        <Link
+          href={`/recipes/${recipe.id}`}
+          color="foreground"
           key={recipe.id}
-          className="flex p-4 border-1 border-gray-300"
+          className="flex p-4 border-1 border-gray-300 items-start"
           ref={i === recipes.length - 1 ? handleLastItem : null}
         >
           <div className="flex-2/3">
@@ -58,7 +61,7 @@ export default function Page() {
           <div className="flex-1/3">
             <Image src={recipe.imageUrl} alt={recipe.title} />
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

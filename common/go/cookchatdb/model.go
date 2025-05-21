@@ -69,6 +69,9 @@ type Recipe struct {
 	// Notes are additional notes or comments about the recipe.
 	Notes string `firestore:"notes"`
 
+	// ServiceSize is the serving size of the recipe as free-form text.
+	ServingSize string `firestore:"servingSize"`
+
 	// LanuageCode is the language code of the recipe.
 	// For example, "en" for English, "ja" for Japanese.
 	LanguageCode string `firestore:"languageCode"`

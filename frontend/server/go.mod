@@ -12,6 +12,7 @@ require (
 	github.com/curioswitch/go-usegcp v0.0.0-20250225012232-fb34f6fa1d4b
 	github.com/curioswitch/wshttp v0.0.0-20250416112330-b6191973cb49
 	github.com/wandb/parallel v0.2.2
+	google.golang.org/api v0.232.0
 	google.golang.org/genai v1.4.0
 )
 
@@ -87,7 +88,6 @@ require (
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.25.0 // indirect
 	golang.org/x/time v0.11.0 // indirect
-	google.golang.org/api v0.232.0 // indirect
 	google.golang.org/appengine/v2 v2.0.6 // indirect
 	google.golang.org/genproto v0.0.0-20250122153221-138b5a5a4fd4 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250224174004-546df14abb99 // indirect

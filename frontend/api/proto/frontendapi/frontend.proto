@@ -36,6 +36,83 @@ service ChatService {
   rpc Chat(stream ChatRequest) returns (stream ChatResponse);
 }
 
+enum Language {
+  // Unknown language.
+  LANGUAGE_UNSPECIFIED = 0;
+  // English.
+  LANGUAGE_ENGLISH = 1;
+  // Japanese.
+  LANGUAGE_JAPANESE = 2;
+}
+
+// The source of a recipe.
+enum RecipeSource {
+  // Unknown source.
+  RECIPE_SOURCE_UNSPECIFIED = 0;
+  // Recipe from cookpad.
+  RECIPE_SOURCE_COOKPAD = 1;
+}
+
+// An ingredient in a recipe.
+message RecipeIngredient {
+  // The name of the ingredient.
+  string name = 1;
+  // The quantity of the ingredient as free-form text.
+  string quantity = 2;
+}
+
+// A step in a recipe.
+message RecipeStep {
+  // The description of the step.
+  string description = 1;
+  // An image for the step.
+  string image_url = 2;
+}
+
+// A section of ingredients in a recipe.
+message IngredientSection {
+  // The title of the ingredient section.
+  string title = 1;
+  // The ingredients in the section.
+  repeated RecipeIngredient ingredients = 2;
+}
+
+// Full details of a recipe.
+message Recipe {
+  // The unique identifier of the recipe within cookchat.
+  string id = 1;
+
+  // The source of the recipe.
+  RecipeSource source = 2;
+
+  // The title of the recipe.
+  string title = 3;
+
+  // The URL for the main image of the recipe.
+  string image_url = 4;
+
+  // The description of the recipe.
+  string description = 5;
+
+  // The main ingredients of the recipe.
+  repeated RecipeIngredient ingredients = 6;
+
+  // Additional ingredients grouped into sections.
+  repeated IngredientSection additional_ingredients = 7;
+
+  // The steps to prepare the recipe.
+  repeated RecipeStep steps = 8;
+
+  // Additional notes or comments about the recipe.
+  string notes = 9;
+
+  // The serving size of the recipe as free-form text.
+  string serving_size = 10;
+
+  // The language of the recipe.
+  Language language = 11;
+}
+
 // A request for FrontendService.GetRecipe.
 message GetRecipeRequest {
   // The ID of the recipe to get.
@@ -43,7 +120,10 @@ message GetRecipeRequest {
 }
 
 // A response for FrontendService.GetRecipe.
-message GetRecipeResponse {}
+message GetRecipeResponse {
+  // The requested recipe.
+  Recipe recipe = 1;
+}
 
 // A token returned to retrieve a subsequent page of items.
 message Pagination {
