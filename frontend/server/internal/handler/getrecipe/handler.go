@@ -2,7 +2,6 @@ package getrecipe
 
 import (
 	"context"
-	"encoding/base64"
 	"errors"
 	"fmt"
 
@@ -101,13 +100,6 @@ func ingredientSectionsToProto(sections []cookchatdb.IngredientSection) []*front
 		}
 	}
 	return result
-}
-
-func imageBytesToURL(b []byte) string {
-	if len(b) > 0 {
-		return "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(b)
-	}
-	return ""
 }
 
 func languageCodeToProto(code string) frontendapi.Language {
