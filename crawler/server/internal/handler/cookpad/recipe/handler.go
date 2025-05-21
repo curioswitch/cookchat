@@ -177,9 +177,8 @@ func (h *Handler) CrawlCookpadRecipe(ctx context.Context, req *crawlerapi.CrawlC
 func (h *Handler) saveFile(ctx context.Context, path string, contents []byte) error {
 	w := h.storage.Bucket(h.publicBucket).Object(path).NewWriter(ctx)
 	defer func() {
-		if err := w.Close(); err != nil {
-			// TODO: Log error
-		}
+		// TODO: Log error
+		_ = w.Close()
 	}()
 	w.ContentType = "image/jpeg"
 	if _, err := w.Write(contents); err != nil {
