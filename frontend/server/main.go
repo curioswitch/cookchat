@@ -65,7 +65,7 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		return fmt.Errorf("creating genai client: %w", err)
 	}
 
-	chat := chat.NewHandler(genAI)
+	chat := chat.NewHandler(genAI, firestore)
 	chatServiceMethods := frontendapi.File_frontendapi_frontend_proto.Services().ByName("ChatService").Methods()
 	chatHandler := connect.NewBidiStreamHandler(
 		frontendapiconnect.ChatServiceChatProcedure,

@@ -5,29 +5,34 @@ package chat
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"log/slog"
 	"sync/atomic"
 
+	"cloud.google.com/go/firestore"
 	"connectrpc.com/connect"
 	"github.com/wandb/parallel"
+	"google.golang.org/api/iterator"
 	"google.golang.org/genai"
 
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
 )
 
 // NewHandler returns a Handler.
-func NewHandler(genAI *genai.Client) *Handler {
+func NewHandler(genAI *genai.Client, store *firestore.Client) *Handler {
 	return &Handler{
 		genAI: genAI,
+		store: store,
 	}
 }
 
 // Handler handles chat streams.
 type Handler struct {
 	genAI *genai.Client
+	store *firestore.Client
 }
 
 func (h *Handler) Chat(ctx context.Context, stream *connect.BidiStream[frontendapi.ChatRequest, frontendapi.ChatResponse]) error {
@@ -35,6 +40,7 @@ func (h *Handler) Chat(ctx context.Context, stream *connect.BidiStream[frontenda
 		userStream: stream,
 		grp:        parallel.ErrGroup(parallel.Unlimited(ctx)),
 		genAI:      h.genAI,
+		store:      h.store,
 		initChan:   make(chan struct{}),
 	}
 	if err := sess.run(); err != nil {
@@ -47,6 +53,7 @@ type chatSession struct {
 	userStream *connect.BidiStream[frontendapi.ChatRequest, frontendapi.ChatResponse]
 	grp        parallel.ErrGroupExecutor
 	genAI      *genai.Client
+	store      *firestore.Client
 	initChan   chan struct{}
 
 	chatStream       *genai.Session
@@ -76,7 +83,24 @@ func (s *chatSession) receiveLoop(ctx context.Context) error {
 		}
 
 		if s.chatStream == nil {
-			recipe := msg.GetRecipe()
+			recipePrompt := ""
+			if r := msg.GetRecipeText(); r != "" {
+				recipePrompt = "The recipe is as follows:\n" + r
+			} else if rid := msg.GetRecipeId(); rid != "" {
+				recipeDoc, err := s.store.Collection("recipes").Where("id", "==", rid).Limit(1).Documents(ctx).Next()
+				if err != nil {
+					if errors.Is(err, iterator.Done) {
+						return connect.NewError(connect.CodeNotFound, fmt.Errorf("chat: recipe not found: %w", err))
+					}
+					return fmt.Errorf("chat: getting recipe from firestore: %w", err)
+				}
+				recipeJSON, err := json.Marshal(recipeDoc.Data())
+				if err != nil {
+					return fmt.Errorf("chat: marshalling recipe to JSON: %w", err)
+				}
+				recipePrompt = "The recipe in structured JSON format is as follows:\n" + string(recipeJSON)
+			}
+
 			prompt := fmt.Sprintf(`You are a cooking assistant that helps a user work through a recipe. 
 			Start by greeting the user and acknowleding the recipe they are trying to cook. Then ask them how many
 			people they are preparing for. When they answer, list out the required ingredients for the specified number
@@ -98,8 +122,8 @@ func (s *chatSession) receiveLoop(ctx context.Context) error {
 			ingredient as an item with a three second pause in between each. Ingredient lists never have dates, all
 			fractions such as 1/2 are numbers, not dates.
 
-			The recipe is as follows:\n%s\n\n
-			`, recipe)
+			%s\n\n
+			`, recipePrompt)
 			chatStream, err := s.genAI.Live.Connect(ctx, "gemini-2.0-flash-exp", &genai.LiveConnectConfig{
 				ResponseModalities: []genai.Modality{genai.ModalityAudio},
 				SpeechConfig: &genai.SpeechConfig{

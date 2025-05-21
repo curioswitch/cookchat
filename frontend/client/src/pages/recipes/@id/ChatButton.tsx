@@ -1,9 +1,16 @@
 import { create } from "@bufbuild/protobuf";
 import { ChatRequestSchema } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
-import { Textarea } from "@heroui/react";
-import { type FormEventHandler, useCallback, useMemo, useState } from "react";
-import { useChatService } from "../../hooks/rpc";
+import { PressEvent, Textarea } from "@heroui/react";
+import type { OnPressEndEvent } from "framer-motion";
+import {
+  EventHandler,
+  type FormEventHandler,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
+import { useChatService } from "../../../hooks/rpc";
 
 function convertFloat32ToInt16(float32Array: Float32Array): Int16Array {
   const int16Array = new Int16Array(float32Array.length);
@@ -14,7 +21,7 @@ function convertFloat32ToInt16(float32Array: Float32Array): Int16Array {
 }
 
 async function* chatRequestStream(
-  recipe: string,
+  recipeId: string,
   processor: ScriptProcessorNode,
   end: Promise<true>,
 ) {
@@ -27,8 +34,8 @@ async function* chatRequestStream(
   };
   yield create(ChatRequestSchema, {
     recipe: {
-      case: "recipeText",
-      value: recipe,
+      case: "recipeId",
+      value: recipeId,
     },
   });
   while (true) {
@@ -131,7 +138,7 @@ class AudioPlayer {
   }
 }
 
-export default function Chat() {
+export default function ChatButton({ recipeId }: { recipeId: string }) {
   const [streamContext, setStreamContext] = useState<StreamContext | undefined>(
     undefined,
   );
@@ -140,63 +147,42 @@ export default function Chat() {
 
   const audioPlayer = useMemo(() => new AudioPlayer(), []);
 
-  const onSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
-    async (e) => {
-      e.preventDefault();
+  const onClick = useCallback(async () => {
+    if (streamContext) {
+      streamContext.audioProcessor.disconnect();
+      streamContext.end.resolve(true);
+      setStreamContext(undefined);
+    } else {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+      const audioContext = new AudioContext({ sampleRate: 16000 });
+      const source = audioContext.createMediaStreamSource(stream);
+      const audioProcessor = audioContext.createScriptProcessor(1024, 1, 1);
 
-      const formData = new FormData(e.currentTarget);
-
-      if (streamContext) {
-        streamContext.audioProcessor.disconnect();
-        streamContext.end.resolve(true);
-        setStreamContext(undefined);
-      } else {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-        });
-        const audioContext = new AudioContext({ sampleRate: 16000 });
-        const source = audioContext.createMediaStreamSource(stream);
-        const audioProcessor = audioContext.createScriptProcessor(1024, 1, 1);
-
-        const end = Promise.withResolvers<true>();
-        const chatStream = chatService.chat(
-          chatRequestStream(
-            formData.get("recipe") as string,
-            audioProcessor,
-            end.promise,
-          ),
-        );
-        setTimeout(async () => {
-          for await (const res of chatStream) {
-            if (res.content?.payload.case === "audio") {
-              audioPlayer.add(res.content.payload.value);
-            }
+      const end = Promise.withResolvers<true>();
+      const chatStream = chatService.chat(
+        chatRequestStream(recipeId, audioProcessor, end.promise),
+      );
+      setTimeout(async () => {
+        for await (const res of chatStream) {
+          if (res.content?.payload.case === "audio") {
+            audioPlayer.add(res.content.payload.value);
           }
-        }, 0);
+        }
+      }, 0);
 
-        source.connect(audioProcessor);
-        audioProcessor.connect(audioContext.destination);
+      source.connect(audioProcessor);
+      audioProcessor.connect(audioContext.destination);
 
-        setStreamContext({ audioProcessor, end });
-      }
-      return false;
-    },
-    [audioPlayer, streamContext, chatService],
-  );
+      setStreamContext({ audioProcessor, end });
+    }
+    return false;
+  }, [audioPlayer, streamContext, chatService, recipeId]);
 
   return (
-    <div className="p-10">
-      <h1 className="text-center">Let's cook!</h1>
-      <form onSubmit={onSubmit}>
-        <div className="flex flex-col gap-4">
-          <div>
-            <Textarea name="recipe" placeholder="Enter recipe" />
-          </div>
-          <Button color="primary" type="submit">
-            {streamContext ? "End" : "Start"}
-          </Button>
-        </div>
-      </form>
-    </div>
+    <Button color="primary" fullWidth onPress={onClick}>
+      お喋り{streamContext ? "終了" : "スタート"}
+    </Button>
   );
 }
