@@ -11,6 +11,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { usePageContext } from "vike-react/usePageContext";
 import { useFrontendQueries } from "../../../hooks/rpc";
+import ChatButton from "./ChatButton";
 
 function Ingredients({ ingredients }: { ingredients: RecipeIngredient[] }) {
   return (
@@ -61,15 +62,12 @@ export default function Page() {
 
   return (
     <div className="p-4">
-      <div className="flex gap-2">
-        <div className="flex-1/3 not-prose">
-          <Image src={recipe.imageUrl} />
-        </div>
-        <div className="flex-2/3">
-          <h1 className="text-large">{recipe.title}</h1>
-          <p className="px-2 mt-0 mb-0">{recipe.description}</p>
-        </div>
+      <Image src={recipe.imageUrl} />
+      <div>
+        <h1 className="text-large">{recipe.title}</h1>
+        <p className="px-2 mt-0 mb-0">{recipe.description}</p>
       </div>
+      <ChatButton recipeId={recipe.id} />
       <h3>材料</h3>
       <p className="not-prose">{recipe.servingSize}</p>
       <Ingredients ingredients={recipe.ingredients} />

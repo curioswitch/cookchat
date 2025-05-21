@@ -26,7 +26,10 @@ async function* chatRequestStream(
     dataPromise = Promise.withResolvers();
   };
   yield create(ChatRequestSchema, {
-    recipe,
+    recipe: {
+      case: "recipeText",
+      value: recipe,
+    },
   });
   while (true) {
     const result = await Promise.any([dataPromise.promise, end]);

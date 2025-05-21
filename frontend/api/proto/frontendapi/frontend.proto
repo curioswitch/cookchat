@@ -21,7 +21,13 @@ message ChatRequest {
   ChatContent content = 1;
 
   // The recipe to chat about.
-  string recipe = 2;
+  oneof recipe {
+    // Free-form text of the recipe.
+    string recipe_text = 2;
+
+    // The ID of a cookchat recipe.
+    string recipe_id = 3;
+  }
 }
 
 // A response in a chat.
