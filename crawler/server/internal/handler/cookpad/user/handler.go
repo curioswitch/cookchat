@@ -29,6 +29,7 @@ func (h *Handler) CrawlCookpadUser(ctx context.Context, req *crawlerapi.CrawlCoo
 	c := colly.NewCollector(
 		colly.UserAgent(h.baseCollector.UserAgent),
 		colly.StdlibContext(ctx),
+		colly.Async(true),
 	)
 
 	c.OnHTML(`a[href^="/jp/recipes/"]`, func(e *colly.HTMLElement) {
@@ -55,6 +56,8 @@ func (h *Handler) CrawlCookpadUser(ctx context.Context, req *crawlerapi.CrawlCoo
 	if err := c.Visit(fmt.Sprintf("https://cookpad.com/jp/users/%s/recipes", req.GetUserId())); err != nil {
 		return nil, fmt.Errorf("cookpad:user: crawl user page: %w", err)
 	}
+
+	c.Wait()
 
 	return &crawlerapi.CrawlCookpadUserResponse{}, nil
 }

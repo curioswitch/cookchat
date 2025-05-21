@@ -2,15 +2,15 @@
 // @generated from file frontendapi/frontend.proto (package frontendapi, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv1";
-import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv1";
+import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv1";
+import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv1";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file frontendapi/frontend.proto.
  */
 export const file_frontendapi_frontend: GenFile = /*@__PURE__*/
-  fileDesc("Chpmcm9udGVuZGFwaS9mcm9udGVuZC5wcm90bxILZnJvbnRlbmRhcGkiPAoLQ2hhdENvbnRlbnQSEQoHbWVzc2FnZRgBIAEoCUgAEg8KBWF1ZGlvGAIgASgMSABCCQoHcGF5bG9hZCJICgtDaGF0UmVxdWVzdBIpCgdjb250ZW50GAEgASgLMhguZnJvbnRlbmRhcGkuQ2hhdENvbnRlbnQSDgoGcmVjaXBlGAIgASgJIjkKDENoYXRSZXNwb25zZRIpCgdjb250ZW50GAEgASgLMhguZnJvbnRlbmRhcGkuQ2hhdENvbnRlbnQiJQoQR2V0UmVjaXBlUmVxdWVzdBIRCglyZWNpcGVfaWQYASABKAkiEwoRR2V0UmVjaXBlUmVzcG9uc2UiHQoKUGFnaW5hdGlvbhIPCgdsYXN0X2lkGAEgASgJIk4KDVJlY2lwZVNuaXBwZXQSCgoCaWQYASABKAkSDQoFdGl0bGUYAiABKAkSDwoHc3VtbWFyeRgDIAEoCRIRCglpbWFnZV91cmwYBCABKAkiQQoSTGlzdFJlY2lwZXNSZXF1ZXN0EisKCnBhZ2luYXRpb24YASABKAsyFy5mcm9udGVuZGFwaS5QYWdpbmF0aW9uIm8KE0xpc3RSZWNpcGVzUmVzcG9uc2USKwoHcmVjaXBlcxgBIAMoCzIaLmZyb250ZW5kYXBpLlJlY2lwZVNuaXBwZXQSKwoKcGFnaW5hdGlvbhgCIAEoCzIXLmZyb250ZW5kYXBpLlBhZ2luYXRpb24yTgoLQ2hhdFNlcnZpY2USPwoEQ2hhdBIYLmZyb250ZW5kYXBpLkNoYXRSZXF1ZXN0GhkuZnJvbnRlbmRhcGkuQ2hhdFJlc3BvbnNlKAEwATKvAQoPRnJvbnRlbmRTZXJ2aWNlEkoKCUdldFJlY2lwZRIdLmZyb250ZW5kYXBpLkdldFJlY2lwZVJlcXVlc3QaHi5mcm9udGVuZGFwaS5HZXRSZWNpcGVSZXNwb25zZRJQCgtMaXN0UmVjaXBlcxIfLmZyb250ZW5kYXBpLkxpc3RSZWNpcGVzUmVxdWVzdBogLmZyb250ZW5kYXBpLkxpc3RSZWNpcGVzUmVzcG9uc2VCPVo7Z2l0aHViLmNvbS9jdXJpb3N3aXRjaC9jb29rY2hhdC9mcm9udGVuZC9hcGkvZ287ZnJvbnRlbmRhcGliBnByb3RvMw");
+  fileDesc("Chpmcm9udGVuZGFwaS9mcm9udGVuZC5wcm90bxILZnJvbnRlbmRhcGkiPAoLQ2hhdENvbnRlbnQSEQoHbWVzc2FnZRgBIAEoCUgAEg8KBWF1ZGlvGAIgASgMSABCCQoHcGF5bG9hZCJICgtDaGF0UmVxdWVzdBIpCgdjb250ZW50GAEgASgLMhguZnJvbnRlbmRhcGkuQ2hhdENvbnRlbnQSDgoGcmVjaXBlGAIgASgJIjkKDENoYXRSZXNwb25zZRIpCgdjb250ZW50GAEgASgLMhguZnJvbnRlbmRhcGkuQ2hhdENvbnRlbnQiMgoQUmVjaXBlSW5ncmVkaWVudBIMCgRuYW1lGAEgASgJEhAKCHF1YW50aXR5GAIgASgJIjQKClJlY2lwZVN0ZXASEwoLZGVzY3JpcHRpb24YASABKAkSEQoJaW1hZ2VfdXJsGAIgASgJIlYKEUluZ3JlZGllbnRTZWN0aW9uEg0KBXRpdGxlGAEgASgJEjIKC2luZ3JlZGllbnRzGAIgAygLMh0uZnJvbnRlbmRhcGkuUmVjaXBlSW5ncmVkaWVudCLgAgoGUmVjaXBlEgoKAmlkGAEgASgJEikKBnNvdXJjZRgCIAEoDjIZLmZyb250ZW5kYXBpLlJlY2lwZVNvdXJjZRINCgV0aXRsZRgDIAEoCRIRCglpbWFnZV91cmwYBCABKAkSEwoLZGVzY3JpcHRpb24YBSABKAkSMgoLaW5ncmVkaWVudHMYBiADKAsyHS5mcm9udGVuZGFwaS5SZWNpcGVJbmdyZWRpZW50Ej4KFmFkZGl0aW9uYWxfaW5ncmVkaWVudHMYByADKAsyHi5mcm9udGVuZGFwaS5JbmdyZWRpZW50U2VjdGlvbhImCgVzdGVwcxgIIAMoCzIXLmZyb250ZW5kYXBpLlJlY2lwZVN0ZXASDQoFbm90ZXMYCSABKAkSFAoMc2VydmluZ19zaXplGAogASgJEicKCGxhbmd1YWdlGAsgASgOMhUuZnJvbnRlbmRhcGkuTGFuZ3VhZ2UiJQoQR2V0UmVjaXBlUmVxdWVzdBIRCglyZWNpcGVfaWQYASABKAkiOAoRR2V0UmVjaXBlUmVzcG9uc2USIwoGcmVjaXBlGAEgASgLMhMuZnJvbnRlbmRhcGkuUmVjaXBlIh0KClBhZ2luYXRpb24SDwoHbGFzdF9pZBgBIAEoCSJOCg1SZWNpcGVTbmlwcGV0EgoKAmlkGAEgASgJEg0KBXRpdGxlGAIgASgJEg8KB3N1bW1hcnkYAyABKAkSEQoJaW1hZ2VfdXJsGAQgASgJIkEKEkxpc3RSZWNpcGVzUmVxdWVzdBIrCgpwYWdpbmF0aW9uGAEgASgLMhcuZnJvbnRlbmRhcGkuUGFnaW5hdGlvbiJvChNMaXN0UmVjaXBlc1Jlc3BvbnNlEisKB3JlY2lwZXMYASADKAsyGi5mcm9udGVuZGFwaS5SZWNpcGVTbmlwcGV0EisKCnBhZ2luYXRpb24YAiABKAsyFy5mcm9udGVuZGFwaS5QYWdpbmF0aW9uKlEKCExhbmd1YWdlEhgKFExBTkdVQUdFX1VOU1BFQ0lGSUVEEAASFAoQTEFOR1VBR0VfRU5HTElTSBABEhUKEUxBTkdVQUdFX0pBUEFORVNFEAIqSAoMUmVjaXBlU291cmNlEh0KGVJFQ0lQRV9TT1VSQ0VfVU5TUEVDSUZJRUQQABIZChVSRUNJUEVfU09VUkNFX0NPT0tQQUQQATJOCgtDaGF0U2VydmljZRI/CgRDaGF0EhguZnJvbnRlbmRhcGkuQ2hhdFJlcXVlc3QaGS5mcm9udGVuZGFwaS5DaGF0UmVzcG9uc2UoATABMq8BCg9Gcm9udGVuZFNlcnZpY2USSgoJR2V0UmVjaXBlEh0uZnJvbnRlbmRhcGkuR2V0UmVjaXBlUmVxdWVzdBoeLmZyb250ZW5kYXBpLkdldFJlY2lwZVJlc3BvbnNlElAKC0xpc3RSZWNpcGVzEh8uZnJvbnRlbmRhcGkuTGlzdFJlY2lwZXNSZXF1ZXN0GiAuZnJvbnRlbmRhcGkuTGlzdFJlY2lwZXNSZXNwb25zZUI9WjtnaXRodWIuY29tL2N1cmlvc3dpdGNoL2Nvb2tjaGF0L2Zyb250ZW5kL2FwaS9nbztmcm9udGVuZGFwaWIGcHJvdG8z");
 
 /**
  * The content of a chat message.
@@ -97,6 +97,181 @@ export const ChatResponseSchema: GenMessage<ChatResponse> = /*@__PURE__*/
   messageDesc(file_frontendapi_frontend, 2);
 
 /**
+ * An ingredient in a recipe.
+ *
+ * @generated from message frontendapi.RecipeIngredient
+ */
+export type RecipeIngredient = Message<"frontendapi.RecipeIngredient"> & {
+  /**
+   * The name of the ingredient.
+   *
+   * @generated from field: string name = 1;
+   */
+  name: string;
+
+  /**
+   * The quantity of the ingredient as free-form text.
+   *
+   * @generated from field: string quantity = 2;
+   */
+  quantity: string;
+};
+
+/**
+ * Describes the message frontendapi.RecipeIngredient.
+ * Use `create(RecipeIngredientSchema)` to create a new message.
+ */
+export const RecipeIngredientSchema: GenMessage<RecipeIngredient> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 3);
+
+/**
+ * A step in a recipe.
+ *
+ * @generated from message frontendapi.RecipeStep
+ */
+export type RecipeStep = Message<"frontendapi.RecipeStep"> & {
+  /**
+   * The description of the step.
+   *
+   * @generated from field: string description = 1;
+   */
+  description: string;
+
+  /**
+   * An image for the step.
+   *
+   * @generated from field: string image_url = 2;
+   */
+  imageUrl: string;
+};
+
+/**
+ * Describes the message frontendapi.RecipeStep.
+ * Use `create(RecipeStepSchema)` to create a new message.
+ */
+export const RecipeStepSchema: GenMessage<RecipeStep> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 4);
+
+/**
+ * A section of ingredients in a recipe.
+ *
+ * @generated from message frontendapi.IngredientSection
+ */
+export type IngredientSection = Message<"frontendapi.IngredientSection"> & {
+  /**
+   * The title of the ingredient section.
+   *
+   * @generated from field: string title = 1;
+   */
+  title: string;
+
+  /**
+   * The ingredients in the section.
+   *
+   * @generated from field: repeated frontendapi.RecipeIngredient ingredients = 2;
+   */
+  ingredients: RecipeIngredient[];
+};
+
+/**
+ * Describes the message frontendapi.IngredientSection.
+ * Use `create(IngredientSectionSchema)` to create a new message.
+ */
+export const IngredientSectionSchema: GenMessage<IngredientSection> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 5);
+
+/**
+ * Full details of a recipe.
+ *
+ * @generated from message frontendapi.Recipe
+ */
+export type Recipe = Message<"frontendapi.Recipe"> & {
+  /**
+   * The unique identifier of the recipe within cookchat.
+   *
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * The source of the recipe.
+   *
+   * @generated from field: frontendapi.RecipeSource source = 2;
+   */
+  source: RecipeSource;
+
+  /**
+   * The title of the recipe.
+   *
+   * @generated from field: string title = 3;
+   */
+  title: string;
+
+  /**
+   * The URL for the main image of the recipe.
+   *
+   * @generated from field: string image_url = 4;
+   */
+  imageUrl: string;
+
+  /**
+   * The description of the recipe.
+   *
+   * @generated from field: string description = 5;
+   */
+  description: string;
+
+  /**
+   * The main ingredients of the recipe.
+   *
+   * @generated from field: repeated frontendapi.RecipeIngredient ingredients = 6;
+   */
+  ingredients: RecipeIngredient[];
+
+  /**
+   * Additional ingredients grouped into sections.
+   *
+   * @generated from field: repeated frontendapi.IngredientSection additional_ingredients = 7;
+   */
+  additionalIngredients: IngredientSection[];
+
+  /**
+   * The steps to prepare the recipe.
+   *
+   * @generated from field: repeated frontendapi.RecipeStep steps = 8;
+   */
+  steps: RecipeStep[];
+
+  /**
+   * Additional notes or comments about the recipe.
+   *
+   * @generated from field: string notes = 9;
+   */
+  notes: string;
+
+  /**
+   * The serving size of the recipe as free-form text.
+   *
+   * @generated from field: string serving_size = 10;
+   */
+  servingSize: string;
+
+  /**
+   * The language of the recipe.
+   *
+   * @generated from field: frontendapi.Language language = 11;
+   */
+  language: Language;
+};
+
+/**
+ * Describes the message frontendapi.Recipe.
+ * Use `create(RecipeSchema)` to create a new message.
+ */
+export const RecipeSchema: GenMessage<Recipe> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 6);
+
+/**
  * A request for FrontendService.GetRecipe.
  *
  * @generated from message frontendapi.GetRecipeRequest
@@ -115,7 +290,7 @@ export type GetRecipeRequest = Message<"frontendapi.GetRecipeRequest"> & {
  * Use `create(GetRecipeRequestSchema)` to create a new message.
  */
 export const GetRecipeRequestSchema: GenMessage<GetRecipeRequest> = /*@__PURE__*/
-  messageDesc(file_frontendapi_frontend, 3);
+  messageDesc(file_frontendapi_frontend, 7);
 
 /**
  * A response for FrontendService.GetRecipe.
@@ -123,6 +298,12 @@ export const GetRecipeRequestSchema: GenMessage<GetRecipeRequest> = /*@__PURE__*
  * @generated from message frontendapi.GetRecipeResponse
  */
 export type GetRecipeResponse = Message<"frontendapi.GetRecipeResponse"> & {
+  /**
+   * The requested recipe.
+   *
+   * @generated from field: frontendapi.Recipe recipe = 1;
+   */
+  recipe?: Recipe;
 };
 
 /**
@@ -130,7 +311,7 @@ export type GetRecipeResponse = Message<"frontendapi.GetRecipeResponse"> & {
  * Use `create(GetRecipeResponseSchema)` to create a new message.
  */
 export const GetRecipeResponseSchema: GenMessage<GetRecipeResponse> = /*@__PURE__*/
-  messageDesc(file_frontendapi_frontend, 4);
+  messageDesc(file_frontendapi_frontend, 8);
 
 /**
  * A token returned to retrieve a subsequent page of items.
@@ -149,7 +330,7 @@ export type Pagination = Message<"frontendapi.Pagination"> & {
  * Use `create(PaginationSchema)` to create a new message.
  */
 export const PaginationSchema: GenMessage<Pagination> = /*@__PURE__*/
-  messageDesc(file_frontendapi_frontend, 5);
+  messageDesc(file_frontendapi_frontend, 9);
 
 /**
  * A snippet of a recipe for list views.
@@ -191,7 +372,7 @@ export type RecipeSnippet = Message<"frontendapi.RecipeSnippet"> & {
  * Use `create(RecipeSnippetSchema)` to create a new message.
  */
 export const RecipeSnippetSchema: GenMessage<RecipeSnippet> = /*@__PURE__*/
-  messageDesc(file_frontendapi_frontend, 6);
+  messageDesc(file_frontendapi_frontend, 10);
 
 /**
  * A request for FrontendService.ListRecipes.
@@ -213,7 +394,7 @@ export type ListRecipesRequest = Message<"frontendapi.ListRecipesRequest"> & {
  * Use `create(ListRecipesRequestSchema)` to create a new message.
  */
 export const ListRecipesRequestSchema: GenMessage<ListRecipesRequest> = /*@__PURE__*/
-  messageDesc(file_frontendapi_frontend, 7);
+  messageDesc(file_frontendapi_frontend, 11);
 
 /**
  * A response for FrontendService.ListRecipes.
@@ -241,7 +422,66 @@ export type ListRecipesResponse = Message<"frontendapi.ListRecipesResponse"> & {
  * Use `create(ListRecipesResponseSchema)` to create a new message.
  */
 export const ListRecipesResponseSchema: GenMessage<ListRecipesResponse> = /*@__PURE__*/
-  messageDesc(file_frontendapi_frontend, 8);
+  messageDesc(file_frontendapi_frontend, 12);
+
+/**
+ * @generated from enum frontendapi.Language
+ */
+export enum Language {
+  /**
+   * Unknown language.
+   *
+   * @generated from enum value: LANGUAGE_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * English.
+   *
+   * @generated from enum value: LANGUAGE_ENGLISH = 1;
+   */
+  ENGLISH = 1,
+
+  /**
+   * Japanese.
+   *
+   * @generated from enum value: LANGUAGE_JAPANESE = 2;
+   */
+  JAPANESE = 2,
+}
+
+/**
+ * Describes the enum frontendapi.Language.
+ */
+export const LanguageSchema: GenEnum<Language> = /*@__PURE__*/
+  enumDesc(file_frontendapi_frontend, 0);
+
+/**
+ * The source of a recipe.
+ *
+ * @generated from enum frontendapi.RecipeSource
+ */
+export enum RecipeSource {
+  /**
+   * Unknown source.
+   *
+   * @generated from enum value: RECIPE_SOURCE_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * Recipe from cookpad.
+   *
+   * @generated from enum value: RECIPE_SOURCE_COOKPAD = 1;
+   */
+  COOKPAD = 1,
+}
+
+/**
+ * Describes the enum frontendapi.RecipeSource.
+ */
+export const RecipeSourceSchema: GenEnum<RecipeSource> = /*@__PURE__*/
+  enumDesc(file_frontendapi_frontend, 1);
 
 /**
  * A chat service.
