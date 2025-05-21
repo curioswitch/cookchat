@@ -21,8 +21,8 @@ type RecipeStep struct {
 	// Description is the description of the step.
 	Description string `firestore:"description"`
 
-	// Image is an image of the step.
-	Image []byte `firestore:"image"`
+	// ImageURL is the URL of an image of the step.
+	ImageURL string `firestore:"imageUrl"`
 }
 
 // IngredientSection represents a section of ingredients in a recipe.
@@ -51,8 +51,8 @@ type Recipe struct {
 	// Title is the title of the recipe.
 	Title string `firestore:"title"`
 
-	// Image is the main image of the recipe.
-	Image []byte `firestore:"image"`
+	// ImageURL is the URL for the main image of the recipe.
+	ImageURL string `firestore:"imageUrl"`
 
 	// Description is the description of the recipe.
 	Description string `firestore:"description"`

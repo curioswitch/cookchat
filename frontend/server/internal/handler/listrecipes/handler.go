@@ -8,7 +8,6 @@ import (
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
-	"github.com/curioswitch/cookchat/frontend/server/internal/util"
 )
 
 func NewHandler(store *firestore.Client) *Handler {
@@ -42,8 +41,6 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 			return nil, fmt.Errorf("listrecipes: unmarshalling recipe: %w", err)
 		}
 
-		imageURL := util.ImageBytesToURL(recipe.Image)
-
 		summary := ""
 		for _, ingredient := range recipe.Ingredients {
 			summary += ingredient.Name + "・"
@@ -56,7 +53,7 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 			Id:       recipe.ID,
 			Title:    recipe.Title,
 			Summary:  summary,
-			ImageUrl: imageURL,
+			ImageUrl: recipe.ImageURL,
 		}
 	}
 

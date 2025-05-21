@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 
+	"cloud.google.com/go/storage"
 	"connectrpc.com/connect"
 	firebase "firebase.google.com/go/v4"
 	"github.com/curioswitch/go-curiostack/otel"
@@ -46,6 +47,17 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		}
 	}()
 
+	storage, err := storage.NewGRPCClient(ctx)
+	if err != nil {
+		return fmt.Errorf("main: create storage client: %w", err)
+	}
+	defer func() {
+		if err := storage.Close(); err != nil {
+			slog.ErrorContext(ctx, "main: close storage client", "error", err)
+		}
+	}()
+	publicBucket := conf.Google.Project + "-public"
+
 	crawlerClient := crawlerapiconnect.NewCrawlerServiceClient(
 		http.DefaultClient,
 		conf.Services.Crawler,
@@ -58,7 +70,7 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 
 	server.HandleConnectUnary(s,
 		crawlerapiconnect.CrawlerServiceCrawlCookpadRecipeProcedure,
-		recipe.NewHandler(baseCollector, firestore).CrawlCookpadRecipe,
+		recipe.NewHandler(baseCollector, firestore, storage, publicBucket).CrawlCookpadRecipe,
 		[]*crawlerapi.CrawlCookpadRecipeRequest{
 			{
 				RecipeId: "24664122",

@@ -9,7 +9,9 @@ import (
 	"strings"
 
 	"cloud.google.com/go/firestore"
+	"cloud.google.com/go/storage"
 	"github.com/gocolly/colly/v2"
+	"github.com/wandb/parallel"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -19,16 +21,20 @@ import (
 
 var errMalformedID = errors.New("cookpad:recipe: malformed ID in existing recipe")
 
-func NewHandler(baseCollector *colly.Collector, store *firestore.Client) *Handler {
+func NewHandler(baseCollector *colly.Collector, store *firestore.Client, storage *storage.Client, publicBucket string) *Handler {
 	return &Handler{
 		baseCollector: baseCollector,
 		store:         store,
+		storage:       storage,
+		publicBucket:  publicBucket,
 	}
 }
 
 type Handler struct {
 	baseCollector *colly.Collector
 	store         *firestore.Client
+	storage       *storage.Client
+	publicBucket  string
 }
 
 func (h *Handler) CrawlCookpadRecipe(ctx context.Context, req *crawlerapi.CrawlCookpadRecipeRequest) (*crawlerapi.CrawlCookpadRecipeResponse, error) {
@@ -40,16 +46,25 @@ func (h *Handler) CrawlCookpadRecipe(ctx context.Context, req *crawlerapi.CrawlC
 
 	var recipe *cookchatdb.Recipe
 
+	recipes := h.store.Collection("recipes")
+	recipeID := recipes.NewDoc().ID
+
 	c.OnHTML("div[id=recipe]", func(e *colly.HTMLElement) {
 		title := e.ChildText("h1")
 		userID := strings.TrimPrefix(e.ChildAttr(`a[href^="/jp/users/"]`, "href"), "/jp/users/")
 		description := e.ChildText("h1 ~ div:last-child")
 
-		var recipeImage []byte
-		recipeImageURL := e.ChildAttr("img", "src")
-		if recipeImageURL != "" {
+		recipeImageFetchURL := e.ChildAttr("img", "src")
+		recipeImageURL := ""
+		if recipeImageFetchURL != "" {
 			// TODO: Log errors
-			recipeImage, _ = fetchImage(ctx, recipeImageURL)
+			recipeImage, _ := fetchImage(ctx, recipeImageFetchURL)
+			path := fmt.Sprintf("recipes/%s/main-image.jpg", recipeID)
+			if err := h.saveFile(ctx, path, recipeImage); err != nil {
+				// TODO: Log errors
+				return
+			}
+			recipeImageURL = fmt.Sprintf("https://storage.googleapis.com/%s/%s", h.publicBucket, path)
 		}
 
 		var baseIngredients []cookchatdb.RecipeIngredient
@@ -84,27 +99,42 @@ func (h *Handler) CrawlCookpadRecipe(ctx context.Context, req *crawlerapi.CrawlC
 			additionalSections = append(additionalSections, *curSection)
 		}
 
-		var steps []cookchatdb.RecipeStep
-		e.ForEach("#steps ol > li", func(_ int, e *colly.HTMLElement) {
-			step := strings.TrimSpace(e.DOM.Children().Last().Text())
-			imageURL := e.ChildAttr("img", "src")
-			var image []byte
-			if imageURL != "" {
-				// TODO: Log errors
-				image, _ = fetchImage(ctx, imageURL)
-			}
-			steps = append(steps, cookchatdb.RecipeStep{
-				Description: step,
-				Image:       image,
+		grp := parallel.CollectWithErrs[cookchatdb.RecipeStep](parallel.Unlimited(ctx))
+		e.ForEach("#steps ol > li", func(i int, e *colly.HTMLElement) {
+			grp.Go(func(ctx context.Context) (cookchatdb.RecipeStep, error) {
+				step := strings.TrimSpace(e.DOM.Children().Last().Text())
+				imageFetchURL := e.ChildAttr("img", "src")
+				stepImageURL := ""
+				if imageFetchURL != "" {
+					image, err := fetchImage(ctx, imageFetchURL)
+					// TODO: Log errors
+					if err != nil {
+						return cookchatdb.RecipeStep{}, fmt.Errorf("cookpad:recipe: fetch step image: %w", err)
+					}
+					path := fmt.Sprintf("recipes/%s/step-%03d.jpg", recipeID, i)
+					if err := h.saveFile(ctx, path, image); err != nil {
+						return cookchatdb.RecipeStep{}, fmt.Errorf("cookpad:recipe: save step image: %w", err)
+					}
+					stepImageURL = fmt.Sprintf("https://storage.googleapis.com/%s/%s", h.publicBucket, path)
+				}
+				return cookchatdb.RecipeStep{
+					Description: step,
+					ImageURL:    stepImageURL,
+				}, nil
 			})
 		})
+		steps, err := grp.Wait()
+		if err != nil {
+			// TODO: Log errors
+			return
+		}
 
 		recipe = &cookchatdb.Recipe{
 			Source:                cookchatdb.RecipeSourceCookpad,
 			SourceID:              req.GetRecipeId(),
 			UserID:                userID,
 			Title:                 title,
-			Image:                 recipeImage,
+			ImageURL:              recipeImageURL,
 			Description:           description,
 			Ingredients:           baseIngredients,
 			AdditionalIngredients: additionalSections,
@@ -118,7 +148,6 @@ func (h *Handler) CrawlCookpadRecipe(ctx context.Context, req *crawlerapi.CrawlC
 		return nil, fmt.Errorf("cookpad:recipe: failed to scrape page: %w", err)
 	}
 
-	recipes := h.store.Collection("recipes")
 	// Follow firestore conventions for IDs, though we don't use it in the actual document ID.
 	recipe.ID = recipes.NewDoc().ID
 	doc := recipes.Doc("cookpad-" + recipe.SourceID)
@@ -145,7 +174,24 @@ func (h *Handler) CrawlCookpadRecipe(ctx context.Context, req *crawlerapi.CrawlC
 	return &crawlerapi.CrawlCookpadRecipeResponse{}, nil
 }
 
+func (h *Handler) saveFile(ctx context.Context, path string, contents []byte) error {
+	w := h.storage.Bucket(h.publicBucket).Object(path).NewWriter(ctx)
+	defer func() {
+		// TODO: Log error
+		_ = w.Close()
+	}()
+	w.ContentType = "image/jpeg"
+	if _, err := w.Write(contents); err != nil {
+		return fmt.Errorf("cookpad:recipe: save image: %w", err)
+	}
+	return nil
+}
+
 func fetchImage(ctx context.Context, imageURL string) ([]byte, error) {
+	if base, ok := imageURLBase(imageURL); ok {
+		imageURL = base + "/640x640sq70/photo.jpg"
+	}
+
 	imageReq, _ := http.NewRequestWithContext(ctx, http.MethodGet, imageURL, nil)
 	res, err := http.DefaultClient.Do(imageReq)
 	if err != nil {
@@ -159,4 +205,22 @@ func fetchImage(ctx context.Context, imageURL string) ([]byte, error) {
 		return nil, fmt.Errorf("cookpad:recipe: failed to read image body: %w", err)
 	}
 	return image, nil
+}
+
+func imageURLBase(imageURL string) (string, bool) {
+	if !strings.HasPrefix(imageURL, "https://img-global-jp.cpcdn.com/") {
+		return imageURL, false
+	}
+
+	slashIdx := strings.LastIndexByte(imageURL, '/')
+	if slashIdx == -1 {
+		return imageURL, false
+	}
+
+	imageURL = imageURL[:slashIdx]
+	slashIdx = strings.LastIndexByte(imageURL, '/')
+	if slashIdx == -1 {
+		return imageURL, false
+	}
+	return imageURL[:slashIdx], true
 }
