@@ -11,7 +11,6 @@ import (
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
-	"github.com/curioswitch/cookchat/frontend/server/internal/util"
 )
 
 var errRecipeNotFound = errors.New("recipe not found")
@@ -49,7 +48,7 @@ func recipeToProto(recipe *cookchatdb.Recipe) *frontendapi.Recipe {
 		Id:                    recipe.ID,
 		Source:                recipeSourceToProto(recipe.Source),
 		Title:                 recipe.Title,
-		ImageUrl:              util.ImageBytesToURL(recipe.Image),
+		ImageUrl:              recipe.ImageURL,
 		Description:           recipe.Description,
 		Ingredients:           ingredientsToProto(recipe.Ingredients),
 		AdditionalIngredients: ingredientSectionsToProto(recipe.AdditionalIngredients),
@@ -85,7 +84,7 @@ func stepsToProto(steps []cookchatdb.RecipeStep) []*frontendapi.RecipeStep {
 	for i, step := range steps {
 		result[i] = &frontendapi.RecipeStep{
 			Description: step.Description,
-			ImageUrl:    util.ImageBytesToURL(step.Image),
+			ImageUrl:    step.ImageURL,
 		}
 	}
 	return result

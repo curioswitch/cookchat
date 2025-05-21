@@ -72,6 +72,7 @@ require (
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d // indirect
 	github.com/spiffe/go-spiffe/v2 v2.5.0 // indirect
 	github.com/temoto/robotstxt v1.1.2 // indirect
+	github.com/wandb/parallel v0.2.2 // indirect
 	github.com/zeebo/errs v1.4.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/contrib/detectors/gcp v1.35.0 // indirect
