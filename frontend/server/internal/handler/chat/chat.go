@@ -85,7 +85,7 @@ func (s *chatSession) receiveLoop(ctx context.Context) error {
 		if s.chatStream == nil {
 			recipePrompt := ""
 			if r := msg.GetRecipeText(); r != "" {
-				recipePrompt = fmt.Sprintf("The recipe is as follows:\n%s", r)
+				recipePrompt = "The recipe is as follows:\n" + r
 			} else if rid := msg.GetRecipeId(); rid != "" {
 				recipeDoc, err := s.store.Collection("recipes").Where("id", "==", rid).Limit(1).Documents(ctx).Next()
 				if err != nil {
@@ -95,7 +95,10 @@ func (s *chatSession) receiveLoop(ctx context.Context) error {
 					return fmt.Errorf("chat: getting recipe from firestore: %w", err)
 				}
 				recipeJSON, err := json.Marshal(recipeDoc.Data())
-				recipePrompt = fmt.Sprintf("The recipe in structured JSON format is as follows:\n%s", recipeJSON)
+				if err != nil {
+					return fmt.Errorf("chat: marshalling recipe to JSON: %w", err)
+				}
+				recipePrompt = "The recipe in structured JSON format is as follows:\n" + string(recipeJSON)
 			}
 
 			prompt := fmt.Sprintf(`You are a cooking assistant that helps a user work through a recipe. 
