@@ -3,24 +3,37 @@ package listrecipes
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"strings"
 
+	discoveryengine "cloud.google.com/go/discoveryengine/apiv1"
+	"cloud.google.com/go/discoveryengine/apiv1/discoveryenginepb"
 	"cloud.google.com/go/firestore"
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
 )
 
-func NewHandler(store *firestore.Client) *Handler {
+func NewHandler(store *firestore.Client, search *discoveryengine.SearchClient, searchEngine string) *Handler {
 	return &Handler{
-		store: store,
+		store:        store,
+		search:       search,
+		searchEngine: searchEngine,
 	}
 }
 
 type Handler struct {
-	store *firestore.Client
+	store        *firestore.Client
+	search       *discoveryengine.SearchClient
+	searchEngine string
 }
 
 func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesRequest) (*frontendapi.ListRecipesResponse, error) {
+	// TODO: Consider only using search service even without query.
+	if req.GetQuery() != "" {
+		return h.searchRecipes(ctx, req)
+	}
+
 	q := h.store.Collection("recipes").Query
 	if p := req.GetPagination(); p != nil {
 		q = q.Where("id", ">", p.GetLastId())
@@ -61,6 +74,59 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 		Recipes: snippets,
 		Pagination: &frontendapi.Pagination{
 			LastId: snippets[len(snippets)-1].GetId(),
+		},
+	}, nil
+}
+
+func (h *Handler) searchRecipes(ctx context.Context, req *frontendapi.ListRecipesRequest) (*frontendapi.ListRecipesResponse, error) {
+	response := h.search.Search(ctx, &discoveryenginepb.SearchRequest{
+		ServingConfig: h.searchEngine + "/servingConfigs/default_search",
+		Query:         req.GetQuery(),
+		QueryExpansionSpec: &discoveryenginepb.SearchRequest_QueryExpansionSpec{
+			Condition: discoveryenginepb.SearchRequest_QueryExpansionSpec_AUTO,
+		},
+		PageSize:  5,
+		PageToken: req.GetPagination().GetLastId(),
+	})
+	var snippets []*frontendapi.RecipeSnippet
+	for result, err := range response.All() {
+		if err != nil {
+			return nil, fmt.Errorf("listrecipes: searching recipes: %w", err)
+		}
+		data := result.GetDocument().GetStructData()
+		if data == nil {
+			slog.WarnContext(ctx, "listrecipes: search result has no struct data", "result", result)
+			continue
+		}
+		id := data.Fields["id"].GetStringValue()
+		title := data.Fields["title"].GetStringValue()
+		imageURL := data.Fields["imageUrl"].GetStringValue()
+		var summaryBuilder strings.Builder
+		for _, ingredient := range data.Fields["ingredients"].GetListValue().GetValues() {
+			name := ingredient.GetStructValue().Fields["name"].GetStringValue()
+			summaryBuilder.WriteString(name)
+			summaryBuilder.WriteString("・")
+		}
+		summary := summaryBuilder.String()
+		if len(summary) > 0 {
+			summary = summary[:len(summary)-len("・")]
+		}
+		snippets = append(snippets, &frontendapi.RecipeSnippet{
+			Id:       id,
+			Title:    title,
+			Summary:  summary,
+			ImageUrl: imageURL,
+		})
+
+		if response.PageInfo().Remaining() == 0 {
+			break
+		}
+	}
+
+	return &frontendapi.ListRecipesResponse{
+		Recipes: snippets,
+		Pagination: &frontendapi.Pagination{
+			LastId: response.PageInfo().Token,
 		},
 	}, nil
 }
