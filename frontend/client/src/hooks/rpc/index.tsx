@@ -88,11 +88,12 @@ class FrontendQueries {
     );
   }
 
-  listRecipes() {
+  listRecipes(query: string) {
     return infiniteQueryOptions(
       createInfiniteQueryOptions(
         listRecipes,
         {
+          query,
           pagination: create(PaginationSchema),
         },
         {
