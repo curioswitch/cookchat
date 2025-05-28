@@ -124,7 +124,7 @@ func (s *chatSession) receiveLoop(ctx context.Context) error {
 
 			%s\n\n
 			`, recipePrompt)
-			chatStream, err := s.genAI.Live.Connect(ctx, "gemini-2.0-flash-exp", &genai.LiveConnectConfig{
+			chatStream, err := s.genAI.Live.Connect(ctx, "gemini-2.0-flash-live-preview-04-09", &genai.LiveConnectConfig{
 				ResponseModalities: []genai.Modality{genai.ModalityAudio},
 				SpeechConfig: &genai.SpeechConfig{
 					LanguageCode: "ja-JP",
@@ -134,6 +134,26 @@ func (s *chatSession) receiveLoop(ctx context.Context) error {
 					Parts: []*genai.Part{
 						{
 							Text: prompt,
+						},
+					},
+				},
+				Tools: []*genai.Tool{
+					{
+						FunctionDeclarations: []*genai.FunctionDeclaration{
+							{
+								Name:        "navigate_to_step",
+								Description: "Navigate the UI to a specific step in the recipe.",
+								Parameters: &genai.Schema{
+									Type: "object",
+									Properties: map[string]*genai.Schema{
+										"step": {
+											Type:        "integer",
+											Description: "The index of the step to navigate to, starting from 0.",
+										},
+									},
+									Required: []string{"step"},
+								},
+							},
 						},
 					},
 				},
