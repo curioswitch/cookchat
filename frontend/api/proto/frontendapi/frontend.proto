@@ -153,9 +153,12 @@ message RecipeSnippet {
 
 // A request for FrontendService.ListRecipes.
 message ListRecipesRequest {
+  // A text query to filter by.
+  string query = 1;
+
   // The pagination token for the next page of recipes.
   // If unset, the first page is returned.
-  Pagination pagination = 1;
+  Pagination pagination = 2;
 }
 
 // A response for FrontendService.ListRecipes.

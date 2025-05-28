@@ -7,11 +7,13 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"io/fs"
 	"log/slog"
 	"net/http"
 	"os"
 	"strings"
 
+	discoveryengine "cloud.google.com/go/discoveryengine/apiv1"
 	"connectrpc.com/connect"
 	firebase "firebase.google.com/go/v4"
 	"github.com/curioswitch/go-curiostack/server"
@@ -27,10 +29,12 @@ import (
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/listrecipes"
 )
 
-var confFiles embed.FS // Currently empty
+//go:embed conf/*.yaml
+var confFiles embed.FS
 
 func main() {
-	os.Exit(server.Main(&config.Config{}, confFiles, setupServer))
+	conf, _ := fs.Sub(confFiles, "conf")
+	os.Exit(server.Main(&config.Config{}, conf, setupServer))
 }
 
 func setupServer(ctx context.Context, conf *config.Config, s *server.Server) error {
@@ -53,6 +57,16 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 	defer func() {
 		if err := firestore.Close(); err != nil {
 			slog.ErrorContext(ctx, "main: close firestore client", "error", err)
+		}
+	}()
+
+	search, err := discoveryengine.NewSearchClient(ctx)
+	if err != nil {
+		return fmt.Errorf("main: create discovery engine search client: %w", err)
+	}
+	defer func() {
+		if err := search.Close(); err != nil {
+			slog.ErrorContext(ctx, "main: close discovery engine search client", "error", err)
 		}
 	}()
 
@@ -104,9 +118,12 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 
 	server.HandleConnectUnary(s,
 		frontendapiconnect.FrontendServiceListRecipesProcedure,
-		listrecipes.NewHandler(firestore).ListRecipes,
+		listrecipes.NewHandler(firestore, search, conf.Search.Engine).ListRecipes,
 		[]*frontendapi.ListRecipesRequest{
 			{},
+			{
+				Query: "玉ねぎ",
+			},
 		},
 	)
 
