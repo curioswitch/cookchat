@@ -13,7 +13,7 @@ require (
 	github.com/curioswitch/wshttp v0.0.0-20250416112330-b6191973cb49
 	github.com/wandb/parallel v0.2.2
 	google.golang.org/api v0.232.0
-	google.golang.org/genai v1.4.0
+	google.golang.org/genai v1.6.0
 )
 
 require (
