@@ -88,7 +88,7 @@ func (h *Handler) searchRecipes(ctx context.Context, req *frontendapi.ListRecipe
 		PageSize:  5,
 		PageToken: req.GetPagination().GetLastId(),
 	})
-	var snippets []*frontendapi.RecipeSnippet
+	snippets := make([]*frontendapi.RecipeSnippet, 0, 5)
 	for result, err := range response.All() {
 		if err != nil {
 			return nil, fmt.Errorf("listrecipes: searching recipes: %w", err)
@@ -98,12 +98,12 @@ func (h *Handler) searchRecipes(ctx context.Context, req *frontendapi.ListRecipe
 			slog.WarnContext(ctx, "listrecipes: search result has no struct data", "result", result)
 			continue
 		}
-		id := data.Fields["id"].GetStringValue()
-		title := data.Fields["title"].GetStringValue()
-		imageURL := data.Fields["imageUrl"].GetStringValue()
+		id := data.GetFields()["id"].GetStringValue()
+		title := data.GetFields()["title"].GetStringValue()
+		imageURL := data.GetFields()["imageUrl"].GetStringValue()
 		var summaryBuilder strings.Builder
-		for _, ingredient := range data.Fields["ingredients"].GetListValue().GetValues() {
-			name := ingredient.GetStructValue().Fields["name"].GetStringValue()
+		for _, ingredient := range data.GetFields()["ingredients"].GetListValue().GetValues() {
+			name := ingredient.GetStructValue().GetFields()["name"].GetStringValue()
 			summaryBuilder.WriteString(name)
 			summaryBuilder.WriteString("・")
 		}

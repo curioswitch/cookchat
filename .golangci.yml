@@ -43,9 +43,8 @@ linters:
     # - gomoddirectives - must be explicitly configured
     # - gomodguard - must be explicitly configured
     - goprintffuncname
-    # - gosmopolitan - sometimes want to use Japanese text
     - gosec
-    - gosmopolitan
+    # - gosmopolitan - sometimes want to use Japanese text
     # - grouper - requiring group for single item conflicts with gofumpt
     - iface
     # - importas - must be explicitly configured
