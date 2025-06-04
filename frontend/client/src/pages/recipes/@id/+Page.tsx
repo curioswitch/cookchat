@@ -11,6 +11,7 @@ import {
 } from "@heroui/table";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { usePageContext } from "vike-react/usePageContext";
 import { useFrontendQueries } from "../../../hooks/rpc";
 import ChatButton from "./ChatButton";
@@ -41,6 +42,8 @@ function Ingredients({ ingredients }: { ingredients: RecipeIngredient[] }) {
 }
 
 export default function Page() {
+  const { t } = useTranslation();
+
   const pageContext = usePageContext();
   const recipeId = pageContext.routeParams.id;
 
@@ -97,7 +100,7 @@ ${ingredients
       </div>
       <ChatButton recipeId={recipe.id} />
       <h3 className="flex items-center justify-between">
-        材料
+        {t("Ingredients")}
         <Button onPress={onIngredientsShare}>材料共有</Button>
       </h3>
       <p className="not-prose">{recipe.servingSize}</p>

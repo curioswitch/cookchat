@@ -1,11 +1,14 @@
 import "./styles.css";
 
 import { HeroUIProvider } from "@heroui/system";
+import { I18nextProvider } from "react-i18next";
 import { usePageContext } from "vike-react/usePageContext";
 import { navigate } from "vike/client/router";
 
 import { FirebaseProvider, useFirebase } from "../hooks/firebase";
 import { FrontendServiceProvider } from "../hooks/rpc";
+
+import i18n from "./i18n";
 
 function Authorizer({ children }: { children: React.ReactNode }) {
   const firebase = useFirebase();
@@ -30,12 +33,14 @@ function Authorizer({ children }: { children: React.ReactNode }) {
 
 export default function Wrapper({ children }: { children: React.ReactNode }) {
   return (
-    <FirebaseProvider>
-      <Authorizer>
-        <FrontendServiceProvider>
-          <HeroUIProvider navigate={navigate}>{children}</HeroUIProvider>
-        </FrontendServiceProvider>
-      </Authorizer>
-    </FirebaseProvider>
+    <I18nextProvider i18n={i18n}>
+      <FirebaseProvider>
+        <Authorizer>
+          <FrontendServiceProvider>
+            <HeroUIProvider navigate={navigate}>{children}</HeroUIProvider>
+          </FrontendServiceProvider>
+        </Authorizer>
+      </FirebaseProvider>
+    </I18nextProvider>
   );
 }

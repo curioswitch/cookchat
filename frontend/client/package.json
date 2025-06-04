@@ -25,9 +25,12 @@
     "@tanstack/react-pacer": "^0.8.0",
     "connect-es-ws": "github:curioswitch/connect-es-ws#main",
     "firebase": "^11.6.0",
+    "i18next-browser-languagedetector": "^8.1.0",
+    "i18next-resources-to-backend": "^1.2.1",
     "framer-motion": "^12.10.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-i18next": "^15.5.2"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
