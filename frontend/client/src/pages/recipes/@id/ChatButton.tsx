@@ -181,7 +181,7 @@ export default function ChatButton({ recipeId }: { recipeId: string }) {
   }, [audioPlayer, streamContext, chatService, recipeId]);
 
   return (
-    <Button color="primary" fullWidth onPress={onClick}>
+    <Button fullWidth onPress={onClick}>
       お喋り{streamContext ? "終了" : "スタート"}
     </Button>
   );
