@@ -99,31 +99,34 @@ func (h *Handler) CrawlCookpadRecipe(ctx context.Context, req *crawlerapi.CrawlC
 			additionalSections = append(additionalSections, *curSection)
 		}
 
-		grp := parallel.CollectWithErrs[cookchatdb.RecipeStep](parallel.Unlimited(ctx))
-		e.ForEach("#steps ol > li", func(i int, e *colly.HTMLElement) {
-			grp.Go(func(ctx context.Context) (cookchatdb.RecipeStep, error) {
-				step := strings.TrimSpace(e.DOM.Children().Last().Text())
-				imageFetchURL := e.ChildAttr("img", "src")
+		grp := parallel.GatherErrs(parallel.Unlimited(ctx))
+		stepNodes := e.DOM.Find("#steps ol > li")
+		steps := make([]cookchatdb.RecipeStep, stepNodes.Length())
+		for i, node := range stepNodes.EachIter() {
+			grp.Go(func(ctx context.Context) error {
+				step := strings.TrimSpace(node.Children().Last().Text())
 				stepImageURL := ""
-				if imageFetchURL != "" {
+				if imageFetchURL, ok := node.Find("img").Attr("src"); ok {
 					image, err := fetchImage(ctx, imageFetchURL)
 					// TODO: Log errors
 					if err != nil {
-						return cookchatdb.RecipeStep{}, fmt.Errorf("cookpad:recipe: fetch step image: %w", err)
+						return fmt.Errorf("cookpad:recipe: fetch step image: %w", err)
 					}
 					path := fmt.Sprintf("recipes/%s/step-%03d.jpg", recipeID, i)
 					if err := h.saveFile(ctx, path, image); err != nil {
-						return cookchatdb.RecipeStep{}, fmt.Errorf("cookpad:recipe: save step image: %w", err)
+						return fmt.Errorf("cookpad:recipe: save step image: %w", err)
 					}
 					stepImageURL = fmt.Sprintf("https://storage.googleapis.com/%s/%s", h.publicBucket, path)
 				}
-				return cookchatdb.RecipeStep{
+				steps[i] = cookchatdb.RecipeStep{
 					Description: step,
 					ImageURL:    stepImageURL,
-				}, nil
+				}
+				return nil
 			})
-		})
-		steps, err := grp.Wait()
+		}
+
+		err := grp.Wait()
 		if err != nil {
 			// TODO: Log errors
 			return
