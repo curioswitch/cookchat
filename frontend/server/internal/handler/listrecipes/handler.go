@@ -16,7 +16,7 @@ import (
 
 func NewHandler(store *firestore.Client, search *discoveryengine.SearchClient, searchEngine string) *Handler {
 	return &Handler{
-		store:        store,
+		// store:        store,
 		search:       search,
 		searchEngine: searchEngine,
 	}
