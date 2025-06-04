@@ -12,6 +12,7 @@ require (
 	github.com/curioswitch/go-curiostack v0.0.0-20250604062046-c155c874eee4
 	github.com/curioswitch/go-usegcp v0.0.0-20250604060028-0b20524c22f7
 	github.com/curioswitch/wshttp v0.0.0-20250416112330-b6191973cb49
+	github.com/go-chi/chi/v5 v5.2.1
 	github.com/wandb/parallel v0.2.2
 	google.golang.org/api v0.235.0
 	google.golang.org/genai v1.8.0
@@ -42,7 +43,6 @@ require (
 	github.com/envoyproxy/go-control-plane/envoy v1.32.4 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.2.1 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
-	github.com/go-chi/chi/v5 v5.2.1 // indirect
 	github.com/go-jose/go-jose/v4 v4.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
