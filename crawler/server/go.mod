@@ -9,7 +9,7 @@ require (
 	firebase.google.com/go/v4 v4.15.2
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/crawler/api v0.0.0-00010101000000-000000000000
-	github.com/curioswitch/go-curiostack v0.0.0-20250604062046-c155c874eee4
+	github.com/curioswitch/go-curiostack v0.0.0-20250604080001-7dd4ae9f57cd
 	github.com/gocolly/colly/v2 v2.2.0
 	github.com/wandb/parallel v0.2.2
 	google.golang.org/grpc v1.72.1
@@ -41,7 +41,7 @@ require (
 	github.com/cncf/xds/go v0.0.0-20250121191232-2f005788dc42 // indirect
 	github.com/curioswitch/go-docs-handler v0.1.5 // indirect
 	github.com/curioswitch/go-docs-handler/plugins/proto v0.1.5 // indirect
-	github.com/curioswitch/go-usegcp v0.0.0-20250604060028-0b20524c22f7 // indirect
+	github.com/curioswitch/go-usegcp v0.0.0-20250604073322-8fa0305d8da6 // indirect
 	github.com/envoyproxy/go-control-plane/envoy v1.32.4 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.2.1 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
