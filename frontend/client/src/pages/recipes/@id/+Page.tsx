@@ -1,4 +1,5 @@
 import type { RecipeIngredient } from "@cookchat/frontend-api";
+import { Button } from "@heroui/button";
 import { Image } from "@heroui/image";
 import {
   Table,
@@ -9,6 +10,7 @@ import {
   TableRow,
 } from "@heroui/table";
 import { useQuery } from "@tanstack/react-query";
+import { useCallback } from "react";
 import { usePageContext } from "vike-react/usePageContext";
 import { useFrontendQueries } from "../../../hooks/rpc";
 import ChatButton from "./ChatButton";
@@ -47,6 +49,32 @@ export default function Page() {
 
   const { data: recipeRes, isPending } = useQuery(getRecipeQuery);
 
+  const onIngredientsShare = useCallback(() => {
+    if (!recipeRes) {
+      return;
+    }
+    const recipe = recipeRes.recipe;
+    if (!recipe) {
+      return;
+    }
+
+    const ingredients = [
+      ...recipe.ingredients,
+      ...recipe.additionalIngredients.flatMap((section) => section.ingredients),
+    ];
+
+    const text = `
+${recipe.title}
+
+${ingredients
+  .map((ingredient) => `${ingredient.name} ${ingredient.quantity}`)
+  .join("\n")
+  .trim()}
+    `.trim();
+
+    navigator.share({ text });
+  }, [recipeRes]);
+
   if (isPending) {
     return <div>Loading...</div>;
   }
@@ -63,12 +91,15 @@ export default function Page() {
   return (
     <div className="p-4">
       <Image src={recipe.imageUrl} />
-      <div>
+      <div className="mb-4">
         <h1 className="text-large">{recipe.title}</h1>
         <p className="px-2 mt-0 mb-0">{recipe.description}</p>
       </div>
       <ChatButton recipeId={recipe.id} />
-      <h3>材料</h3>
+      <h3 className="flex items-center justify-between">
+        材料
+        <Button onPress={onIngredientsShare}>材料共有</Button>
+      </h3>
       <p className="not-prose">{recipe.servingSize}</p>
       <Ingredients ingredients={recipe.ingredients} />
       {recipe.additionalIngredients.map((section, i) => (
