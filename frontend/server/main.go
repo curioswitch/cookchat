@@ -11,6 +11,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"slices"
 	"strings"
 
 	discoveryengine "cloud.google.com/go/discoveryengine/apiv1"
@@ -19,6 +20,7 @@ import (
 	"github.com/curioswitch/go-curiostack/server"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
 	"github.com/curioswitch/wshttp"
+	"github.com/go-chi/chi/v5/middleware"
 	"google.golang.org/genai"
 
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
@@ -87,14 +89,16 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		connect.WithSchema(chatServiceMethods.ByName("Chat")),
 	)
 
+	authorizedEmails := strings.Split(conf.Authorization.EmailsCSV, ",")
+
 	fbMW := firebaseauth.NewMiddleware(fbAuth)
-	requireCurio := func(next http.Handler) http.Handler {
+	requireAccess := func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			tok := firebaseauth.TokenFromContext(r.Context())
 			if id, ok := tok.Firebase.Identities["email"]; ok {
 				if idAny, ok := id.([]any); ok && len(idAny) > 0 {
 					if email, ok := idAny[0].(string); ok {
-						if strings.HasSuffix(email, "@curioswitch.org") {
+						if strings.HasSuffix(email, "@curioswitch.org") || slices.Contains(authorizedEmails, email) {
 							next.ServeHTTP(w, r)
 							return
 						}
@@ -104,7 +108,23 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 			http.Error(w, "permission denied", http.StatusForbidden)
 		})
 	}
-	mux.Handle("/frontendapi.ChatService/Chat", wshttp.WrapHandler(fbMW(requireCurio(chatHandler))))
+
+	mux.Use(middleware.Maybe(func(h http.Handler) http.Handler {
+		return fbMW(requireAccess(h))
+	}, func(r *http.Request) bool {
+		switch {
+		case strings.HasPrefix(r.URL.Path, "/frontendapi.ChatService/Chat"):
+			// Websocket won't have Authorization header at HTTP level so we set the middleware
+			// ourselves after wshttp.
+			return false
+		case strings.HasPrefix(r.URL.Path, "/internal/"):
+			return false
+		default:
+			return true
+		}
+	}))
+
+	mux.Handle("/frontendapi.ChatService/Chat", wshttp.WrapHandler(fbMW(requireAccess(chatHandler))))
 
 	server.HandleConnectUnary(s,
 		frontendapiconnect.FrontendServiceGetRecipeProcedure,
