@@ -44,6 +44,7 @@ func (h *Handler) Chat(ctx context.Context, stream *connect.BidiStream[frontenda
 		initChan:   make(chan struct{}),
 	}
 	if err := sess.run(); err != nil {
+		slog.ErrorContext(ctx, "chat: error in chat session", "error", err)
 		return err
 	}
 	return nil

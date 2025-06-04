@@ -9,8 +9,8 @@ require (
 	firebase.google.com/go/v4 v4.15.2
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/frontend/api v0.0.0-00010101000000-000000000000
-	github.com/curioswitch/go-curiostack v0.0.0-20250604062046-c155c874eee4
-	github.com/curioswitch/go-usegcp v0.0.0-20250604060028-0b20524c22f7
+	github.com/curioswitch/go-curiostack v0.0.0-20250604080001-7dd4ae9f57cd
+	github.com/curioswitch/go-usegcp v0.0.0-20250604073322-8fa0305d8da6
 	github.com/curioswitch/wshttp v0.0.0-20250416112330-b6191973cb49
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/wandb/parallel v0.2.2
