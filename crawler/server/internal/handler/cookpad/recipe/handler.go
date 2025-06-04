@@ -100,9 +100,9 @@ func (h *Handler) CrawlCookpadRecipe(ctx context.Context, req *crawlerapi.CrawlC
 		}
 
 		grp := parallel.GatherErrs(parallel.Unlimited(ctx))
-		stepsSel := e.DOM.Find("#steps ol > li")
-		steps := make([]cookchatdb.RecipeStep, stepsSel.Length())
-		for i, node := range stepsSel.EachIter() {
+		stepNodes := e.DOM.Find("#steps ol > li")
+		steps := make([]cookchatdb.RecipeStep, stepNodes.Length())
+		for i, node := range stepNodes.EachIter() {
 			grp.Go(func(ctx context.Context) error {
 				step := strings.TrimSpace(node.Children().Last().Text())
 				stepImageURL := ""
