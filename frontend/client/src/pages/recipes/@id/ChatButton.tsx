@@ -1,15 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { ChatRequestSchema } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
-import { PressEvent, Textarea } from "@heroui/react";
-import type { OnPressEndEvent } from "framer-motion";
-import {
-  EventHandler,
-  type FormEventHandler,
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useChatService } from "../../../hooks/rpc";
 
 function convertFloat32ToInt16(float32Array: Float32Array): Int16Array {
