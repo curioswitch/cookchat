@@ -15,6 +15,8 @@
     "@connectrpc/connect-query": "^2.1.0",
     "@connectrpc/connect-web": "^2.0.2",
     "@heroui/button": "^2.2.21",
+    "@heroui/checkbox": "^2.3.20",
+    "@heroui/divider": "^2.2.15",
     "@heroui/image": "^2.2.13",
     "@heroui/input": "^2.4.21",
     "@heroui/link": "^2.2.18",
@@ -24,12 +26,16 @@
     "@tanstack/react-pacer": "^0.8.0",
     "connect-es-ws": "github:curioswitch/connect-es-ws#main",
     "firebase": "^11.9.1",
+    "framer-motion": "^12.16.0",
     "i18next-browser-languagedetector": "^8.1.0",
     "i18next-resources-to-backend": "^1.2.1",
-    "framer-motion": "^12.16.0",
+    "jotai": "^2.12.5",
+    "jotai-optics": "^0.4.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-i18next": "^15.5.2"
+    "react-i18next": "^15.5.2",
+    "react-icons": "^5.5.0",
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

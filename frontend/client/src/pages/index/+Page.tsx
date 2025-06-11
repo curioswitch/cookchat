@@ -1,3 +1,4 @@
+import { Divider } from "@heroui/divider";
 import { Image } from "@heroui/image";
 import { Input } from "@heroui/input";
 import { Link } from "@heroui/link";
@@ -42,30 +43,31 @@ export default function Page() {
   );
 
   return (
-    <div>
+    <div className="p-4">
+      <h1 className="text-2xl font-semibold">COOKCHAT</h1>
+      <Divider className="mt-0 mb-4 -ml-4 w-screen bg-gray-100" />
       <Input
-        className="p-4"
-        placeholder="使いたい素材は？"
+        placeholder="作りたい料理は？"
         value={rawQuery}
         onValueChange={setRawQuery}
       />
       {(isPending && <div>Loading...</div>) || (
-        <div className="flex flex-col gap-4 px-4">
+        <div className="flex flex-col">
           {recipes?.map((recipe, i) => (
             <Link
               href={`/recipes/${recipe.id}`}
               color="foreground"
               key={recipe.id}
-              className="flex p-4 border-1 border-gray-300 items-start"
+              className="flex p-4 border-b-1 border-gray-100 items-center gap-4"
               ref={i === recipes.length - 1 ? handleLastItem : null}
             >
-              <div className="flex-2/3">
-                <h3 className="font-light">{recipe.title}</h3>
+              <div className="flex-3/4">
+                <h3 className="font-semibold">{recipe.title}</h3>
                 <p className="text-small font-thin line-clamp-1">
                   {recipe.summary}
                 </p>
               </div>
-              <div className="flex-1/3">
+              <div className="flex-1/4">
                 <Image src={recipe.imageUrl} alt={recipe.title} />
               </div>
             </Link>
