@@ -1,45 +1,31 @@
 import type { RecipeIngredient } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
+import { Divider } from "@heroui/divider";
 import { Image } from "@heroui/image";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-} from "@heroui/table";
 import { useQuery } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { HiShoppingCart } from "react-icons/hi";
 import { usePageContext } from "vike-react/usePageContext";
 import { type CartIngredient, cartAtom } from "../../../atoms";
+import { BackButton } from "../../../components/BackButton";
 import { useFrontendQueries } from "../../../hooks/rpc";
 import ChatButton from "./ChatButton";
 
 function Ingredients({ ingredients }: { ingredients: RecipeIngredient[] }) {
   return (
-    <Table
-      className="not-prose"
-      hideHeader
-      radius="none"
-      shadow="none"
-      aria-label="Recipe Ingredients"
-    >
-      <TableHeader>
-        <TableColumn>名前</TableColumn>
-        <TableColumn>量</TableColumn>
-      </TableHeader>
-      <TableBody>
-        {ingredients.map((ingredient) => (
-          <TableRow key={ingredient.name}>
-            <TableCell>{ingredient.name}</TableCell>
-            <TableCell>{ingredient.quantity}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <>
+      {ingredients.map((ingredient) => (
+        <div
+          className="flex justify-between py-2 border-b-1 border-gray-100"
+          key={ingredient.name}
+        >
+          <div>{ingredient.name}</div>
+          <div>{ingredient.quantity}</div>
+        </div>
+      ))}
+    </>
   );
 }
 
@@ -91,32 +77,6 @@ export default function Page() {
     }
   }, [recipeRes, inCart, setCart]);
 
-  const onIngredientsShare = useCallback(() => {
-    if (!recipeRes) {
-      return;
-    }
-    const recipe = recipeRes.recipe;
-    if (!recipe) {
-      return;
-    }
-
-    const ingredients = [
-      ...recipe.ingredients,
-      ...recipe.additionalIngredients.flatMap((section) => section.ingredients),
-    ];
-
-    const text = `
-${recipe.title}
-
-${ingredients
-  .map((ingredient) => `${ingredient.name} ${ingredient.quantity}`)
-  .join("\n")
-  .trim()}
-    `.trim();
-
-    navigator.share({ text });
-  }, [recipeRes]);
-
   if (isPending) {
     return <div>Loading...</div>;
   }
@@ -132,15 +92,17 @@ ${ingredients
 
   return (
     <div className="p-4">
-      <Image src={recipe.imageUrl} />
-      <div className="mb-4">
-        <h1 className="text-large">{recipe.title}</h1>
-        <p className="px-2 mt-0 mb-0">{recipe.description}</p>
+      <div className="flex items-center gap-2">
+        <BackButton className="size-6" />
+        <h1 className="text-2xl font-semibold">{recipe.title}</h1>
       </div>
+      <Divider className="mt-0 mb-4 -ml-4 w-screen bg-gray-100" />
+      <Image src={recipe.imageUrl} />
       <ChatButton recipeId={recipe.id} />
       <h3 className="flex items-center justify-between">
         {t("Ingredients")}
-        <Button onPress={onCartToggle}>
+        <Button color="primary" className="text-white" onPress={onCartToggle}>
+          <HiShoppingCart className="size-5" />
           買い物リスト{inCart ? "から削除" : "に追加"}
         </Button>
       </h3>
@@ -154,12 +116,19 @@ ${ingredients
         </div>
       ))}
       <h3>作り方</h3>
-      <ol className="[&_li]:marker:font-bold">
+      <ol className="marker:font-bold list-none px-0">
         {recipe.steps.map((step, i) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-          <li key={i}>
-            <p>{step.description}</p>
-            {step.imageUrl && <Image width="100%" src={step.imageUrl} />}
+          // biome-ignore lint/suspicious/noArrayIndexKey: steps are unique
+          <li key={i} className="flex items-baseline gap-3 px-0">
+            <div className="flex-1/10 bg-orange-400 text-white w-8 h-8 rounded-full flex justify-center items-center">
+              {i + 1}
+            </div>
+            <div className="flex-9/10">
+              <p className="text-xl font-light">{step.description}</p>
+              {step.imageUrl && (
+                <Image className="mt-0 mb-0" width="100%" src={step.imageUrl} />
+              )}
+            </div>
           </li>
         ))}
       </ol>
