@@ -7,5 +7,8 @@ export default {
   Layout,
   Wrapper,
   title: "Let's Cook!",
+  prerender: {
+    partial: true,
+  },
   extends: vikeReact,
 } satisfies Config;
