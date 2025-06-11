@@ -47,6 +47,7 @@ export default function Page() {
       <h1 className="text-2xl font-semibold">COOKCHAT</h1>
       <Divider className="mt-0 mb-4 -ml-4 w-screen bg-gray-100" />
       <Input
+        fullWidth
         placeholder="作りたい料理は？"
         value={rawQuery}
         onValueChange={setRawQuery}
