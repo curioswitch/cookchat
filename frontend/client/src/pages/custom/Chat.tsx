@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { ChatRequestSchema } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
-import { Textarea } from "@heroui/react";
+import { Textarea } from "@heroui/input";
 import { type FormEventHandler, useCallback, useMemo, useState } from "react";
 import { useChatService } from "../../hooks/rpc";
 
