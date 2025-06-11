@@ -10,9 +10,11 @@ import {
   TableRow,
 } from "@heroui/table";
 import { useQuery } from "@tanstack/react-query";
+import { useAtom } from "jotai";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { usePageContext } from "vike-react/usePageContext";
+import { type CartIngredient, cartAtom } from "../../../atoms";
 import { useFrontendQueries } from "../../../hooks/rpc";
 import ChatButton from "./ChatButton";
 
@@ -51,6 +53,43 @@ export default function Page() {
   const getRecipeQuery = queries.getRecipe({ recipeId });
 
   const { data: recipeRes, isPending } = useQuery(getRecipeQuery);
+
+  const [cart, setCart] = useAtom(cartAtom);
+  const inCart = cart.some((recipe) => recipe.id === recipeId);
+
+  const onCartToggle = useCallback(() => {
+    if (!recipeRes) {
+      return;
+    }
+    const recipe = recipeRes.recipe;
+    if (!recipe) {
+      return;
+    }
+
+    if (inCart) {
+      setCart((prev) => prev.filter((r) => r.id !== recipe.id));
+    } else {
+      const ingredients: CartIngredient[] = [
+        ...recipe.ingredients.map((ingredient) => ({
+          ...ingredient,
+          selected: false,
+        })),
+        ...recipe.additionalIngredients.flatMap((section) =>
+          section.ingredients.map((ingredient) => ({
+            ...ingredient,
+            selected: false,
+          })),
+        ),
+      ];
+      const cartRecipe = {
+        id: recipe.id,
+        title: recipe.title,
+        servingSize: recipe.servingSize,
+        ingredients,
+      };
+      setCart((prev) => [...prev, cartRecipe]);
+    }
+  }, [recipeRes, inCart, setCart]);
 
   const onIngredientsShare = useCallback(() => {
     if (!recipeRes) {
@@ -101,7 +140,9 @@ ${ingredients
       <ChatButton recipeId={recipe.id} />
       <h3 className="flex items-center justify-between">
         {t("Ingredients")}
-        <Button onPress={onIngredientsShare}>材料共有</Button>
+        <Button onPress={onCartToggle}>
+          買い物リスト{inCart ? "から削除" : "に追加"}
+        </Button>
       </h3>
       <p className="not-prose">{recipe.servingSize}</p>
       <Ingredients ingredients={recipe.ingredients} />
