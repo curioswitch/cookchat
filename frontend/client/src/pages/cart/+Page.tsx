@@ -67,9 +67,6 @@ ${recipe.ingredients
     navigator.share({ text: texts.join("\n\n") });
   }, [cart]);
 
-  if (recipeAtoms.length === 0) {
-    return <div className="p-4">カートは空です</div>;
-  }
   return (
     <div className="p-4">
       <div className="flex justify-between items-center">
@@ -77,6 +74,7 @@ ${recipe.ingredients
         <h3 className="mt-0 mb-0">買い物リスト</h3>
         <HiShare onClick={onShareClick} className="size-6 text-orange-400" />
       </div>
+      {recipeAtoms.length === 0 && <div className="p-4">カートは空です</div>}
       {recipeAtoms.map((recipeAtom) => {
         const recipe = useAtomValue(recipeAtom);
         const ingredientAtomsAtom = useMemo(
