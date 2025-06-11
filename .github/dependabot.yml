@@ -17,7 +17,7 @@ updates:
       go:
         patterns:
           - "*"
-  - package-ecosystem: npm
+  - package-ecosystem: bun
     directory: /
     schedule:
       interval: weekly
@@ -25,7 +25,3 @@ updates:
       node:
         patterns:
           - "*"
-    ignore:
-      - dependency-name: "tailwindcss"
-        versions:
-          - ">= 4"
