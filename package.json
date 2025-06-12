@@ -7,5 +7,8 @@
     "@heroui/shared-utils",
     "@swc/core",
     "protobufjs"
-  ]
+  ],
+  "overrides": {
+    "vite": "npm:rolldown-vite@latest"
+  }
 }
