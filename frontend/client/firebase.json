@@ -38,7 +38,7 @@
         ]
       },
       {
-        "source": "/assets/**/*.@(js|jpg|jpeg|gif|ogg|png|svg)",
+        "source": "/assets/**/*.@(css|js|jpg|jpeg|gif|ogg|png|svg)",
         "headers": [
           {
             "key": "Cache-Control",
