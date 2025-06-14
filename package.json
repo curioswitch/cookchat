@@ -6,10 +6,7 @@
     "@firebase/util",
     "@heroui/shared-utils",
     "@swc/core",
-    "@tailwindcss/oxide",
-    "esbuild",
-    "protobufjs",
-    "re2"
+    "protobufjs"
   ],
   "overrides": {
     "vite": "npm:rolldown-vite@latest"
