@@ -27,7 +27,7 @@
     "@tanstack/react-pacer": "^0.8.0",
     "connect-es-ws": "github:curioswitch/connect-es-ws#main",
     "firebase": "^11.9.1",
-    "framer-motion": "^12.16.0",
+    "framer-motion": "^12.18.0",
     "i18next-browser-languagedetector": "^8.1.0",
     "i18next-resources-to-backend": "^1.2.1",
     "jotai": "^2.12.5",
