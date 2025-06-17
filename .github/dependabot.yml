@@ -25,3 +25,6 @@ updates:
       node:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "@heroui/theme"
+        versions: ["2.4.17"] # Not tailwind 4 compatible
