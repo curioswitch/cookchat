@@ -73,9 +73,8 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 	}()
 
 	genAI, err := genai.NewClient(ctx, &genai.ClientConfig{
-		Backend:  genai.BackendVertexAI,
-		Project:  conf.Google.Project,
-		Location: "us-central1",
+		Backend: genai.BackendGeminiAPI,
+		Project: conf.Google.Project,
 	})
 	if err != nil {
 		return fmt.Errorf("creating genai client: %w", err)
