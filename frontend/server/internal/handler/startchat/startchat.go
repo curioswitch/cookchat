@@ -92,6 +92,11 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 				ResponseModalities: []genai.Modality{genai.ModalityAudio},
 				SpeechConfig: &genai.SpeechConfig{
 					LanguageCode: "ja-JP",
+					VoiceConfig: &genai.VoiceConfig{
+						PrebuiltVoiceConfig: &genai.PrebuiltVoiceConfig{
+							VoiceName: "Leda",
+						},
+					},
 				},
 			},
 		},
