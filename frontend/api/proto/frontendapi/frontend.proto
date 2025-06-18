@@ -170,10 +170,34 @@ message ListRecipesResponse {
   Pagination pagination = 2;
 }
 
+// A request to start a chat session.
+message StartChatRequest {
+  // The recipe to chat about.
+  oneof recipe {
+    // Free-form text of the recipe.
+    string recipe_text = 2;
+
+    // The ID of a cookchat recipe.
+    string recipe_id = 3;
+  }
+}
+
+// A response to start a chat session.
+message StartChatResponse {
+  // The ephemeral API key to use to start the chat.
+  string chat_api_key = 1;
+
+  // The chat model to use for the session.
+  string chat_model = 2;
+}
+
 service FrontendService {
   // Get the recipe for a given recipe ID.
   rpc GetRecipe(GetRecipeRequest) returns (GetRecipeResponse);
 
   // Get the list of recipes.
   rpc ListRecipes(ListRecipesRequest) returns (ListRecipesResponse);
+
+  // Start a chat session.
+  rpc StartChat(StartChatRequest) returns (StartChatResponse);
 }

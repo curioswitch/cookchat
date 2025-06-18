@@ -17,3 +17,10 @@ export const getRecipe = FrontendService.method.getRecipe;
  * @generated from rpc frontendapi.FrontendService.ListRecipes
  */
 export const listRecipes = FrontendService.method.listRecipes;
+
+/**
+ * Start a chat session.
+ *
+ * @generated from rpc frontendapi.FrontendService.StartChat
+ */
+export const startChat = FrontendService.method.startChat;

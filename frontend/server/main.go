@@ -15,20 +15,18 @@ import (
 	"strings"
 
 	discoveryengine "cloud.google.com/go/discoveryengine/apiv1"
-	"connectrpc.com/connect"
 	firebase "firebase.google.com/go/v4"
 	"github.com/curioswitch/go-curiostack/server"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
-	"github.com/curioswitch/wshttp"
 	"github.com/go-chi/chi/v5/middleware"
 	"google.golang.org/genai"
 
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
 	"github.com/curioswitch/cookchat/frontend/api/go/frontendapiconnect"
 	"github.com/curioswitch/cookchat/frontend/server/internal/config"
-	"github.com/curioswitch/cookchat/frontend/server/internal/handler/chat"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getrecipe"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/listrecipes"
+	"github.com/curioswitch/cookchat/frontend/server/internal/handler/startchat"
 )
 
 //go:embed conf/*.yaml
@@ -80,14 +78,6 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		return fmt.Errorf("creating genai client: %w", err)
 	}
 
-	chat := chat.NewHandler(genAI, firestore)
-	chatServiceMethods := frontendapi.File_frontendapi_frontend_proto.Services().ByName("ChatService").Methods()
-	chatHandler := connect.NewBidiStreamHandler(
-		frontendapiconnect.ChatServiceChatProcedure,
-		chat.Chat,
-		connect.WithSchema(chatServiceMethods.ByName("Chat")),
-	)
-
 	authorizedEmails := strings.Split(conf.Authorization.EmailsCSV, ",")
 
 	fbMW := firebaseauth.NewMiddleware(fbAuth)
@@ -112,18 +102,12 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		return fbMW(requireAccess(h))
 	}, func(r *http.Request) bool {
 		switch {
-		case strings.HasPrefix(r.URL.Path, "/frontendapi.ChatService/Chat"):
-			// Websocket won't have Authorization header at HTTP level so we set the middleware
-			// ourselves after wshttp.
-			return false
 		case strings.HasPrefix(r.URL.Path, "/internal/"):
 			return false
 		default:
 			return true
 		}
 	}))
-
-	mux.Handle("/frontendapi.ChatService/Chat", wshttp.WrapHandler(fbMW(requireAccess(chatHandler))))
 
 	server.HandleConnectUnary(s,
 		frontendapiconnect.FrontendServiceGetRecipeProcedure,
@@ -145,6 +129,17 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 			},
 		},
 	)
+
+	server.HandleConnectUnary(s,
+		frontendapiconnect.FrontendServiceStartChatProcedure,
+		startchat.NewHandler(genAI, firestore).StartChat,
+		[]*frontendapi.StartChatRequest{
+			{
+				Recipe: &frontendapi.StartChatRequest_RecipeId{
+					RecipeId: "02JNMi0W1605TLxzQt6v",
+				},
+			},
+		})
 
 	server.EnableDocsFirebaseAuth(s, "alpha.cookchat.curioswitch.org")
 

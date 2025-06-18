@@ -18,8 +18,10 @@ import {
   ChatService,
   type GetRecipeRequestSchema,
   PaginationSchema,
+  type StartChatRequestSchema,
   getRecipe,
   listRecipes,
+  startChat,
 } from "@cookchat/frontend-api";
 import {
   QueryClient,
@@ -103,6 +105,10 @@ class FrontendQueries {
         },
       ),
     );
+  }
+
+  startChat(req: MessageInitShape<typeof StartChatRequestSchema>) {
+    return createQueryOptions(startChat, req, { transport: this.transport });
   }
 }
 
