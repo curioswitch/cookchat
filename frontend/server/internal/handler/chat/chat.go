@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"strings"
 	"sync/atomic"
 
 	"cloud.google.com/go/firestore"
@@ -125,7 +126,7 @@ func (s *chatSession) receiveLoop(ctx context.Context) error {
 
 			%s\n\n
 			`, recipePrompt)
-			chatStream, err := s.genAI.Live.Connect(ctx, "gemini-2.0-flash-live-preview-04-09", &genai.LiveConnectConfig{
+			chatStream, err := s.genAI.Live.Connect(ctx, "gemini-2.5-flash-preview-native-audio-dialog", &genai.LiveConnectConfig{
 				ResponseModalities: []genai.Modality{genai.ModalityAudio},
 				SpeechConfig: &genai.SpeechConfig{
 					LanguageCode: "ja-JP",
@@ -203,7 +204,7 @@ func (s *chatSession) chatLoop(_ context.Context) error {
 				if p.InlineData == nil {
 					continue
 				}
-				if p.InlineData.MIMEType != "audio/pcm" {
+				if !strings.HasPrefix(p.InlineData.MIMEType, "audio/pcm") {
 					continue
 				}
 				if err := s.userStream.Send(&frontendapi.ChatResponse{
