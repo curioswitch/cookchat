@@ -186,6 +186,9 @@ message StartChatRequest {
 message StartChatResponse {
   // The ephemeral API key to use to start the chat.
   string chat_api_key = 1;
+
+  // The chat model to use for the session.
+  string chat_model = 2;
 }
 
 service FrontendService {

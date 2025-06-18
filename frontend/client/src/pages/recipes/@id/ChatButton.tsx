@@ -177,7 +177,10 @@ class ChatStream {
 
   private stopped?: boolean;
 
-  constructor(private readonly genAI: GoogleGenAI) {
+  constructor(
+    private readonly genAI: GoogleGenAI,
+    private readonly model: string,
+  ) {
     this.audioPlayer = new AudioPlayer();
     this.audioContext = new AudioContext({ sampleRate: 16_000 });
   }
@@ -193,7 +196,7 @@ class ChatStream {
     this.audioProcessor.connect(audioContext.destination);
 
     this.session = await this.genAI.live.connect({
-      model: "gemini-2.0-flash-live-001",
+      model: this.model,
       callbacks: {
         onmessage: (e: LiveServerMessage) => {
           if (e.setupComplete) {
@@ -288,7 +291,7 @@ export default function ChatButton({ recipeId }: { recipeId: string }) {
       apiKey: res.chatApiKey,
       apiVersion: "v1alpha",
     });
-    const s = new ChatStream(genai);
+    const s = new ChatStream(genai, res.chatModel);
     await s.start();
     setStream(s);
     return false;

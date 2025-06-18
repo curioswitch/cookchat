@@ -11,9 +11,10 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"connectrpc.com/connect"
-	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genai"
+
+	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
 )
 
 // NewHandler returns a Handler.
@@ -74,10 +75,11 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 			`, recipePrompt)
 
 	// Until genai Go SDK supports token creation, issue request manually.
+	model := "gemini-2.0-flash-live-001"
 	cfg := tokenConfig{
 		Uses: 1,
 		BidiGenerateContentSetup: &bidiGenerateContentSetup{
-			Model: "models/gemini-2.0-flash-live-001",
+			Model: "models/" + model,
 			SystemInstruction: &genai.Content{
 				Role: "model",
 				Parts: []*genai.Part{
@@ -104,18 +106,20 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 		return nil, fmt.Errorf("chat: creating token request: %w", err)
 	}
 	tokReq.Header.Set("Content-Type", "application/json")
-	tokReq.Header.Set("X-goog-api-key", h.genAI.ClientConfig().APIKey)
+	tokReq.Header.Set("X-Goog-Api-Key", h.genAI.ClientConfig().APIKey)
 	tokRes, err := http.DefaultClient.Do(tokReq)
 	if err != nil {
 		return nil, fmt.Errorf("chat: sending token request: %w", err)
 	}
-	defer tokRes.Body.Close()
+	defer func() {
+		_ = tokRes.Body.Close()
+	}()
 	if tokRes.StatusCode != http.StatusOK {
 		body, err := io.ReadAll(tokRes.Body)
 		if err != nil {
 			return nil, fmt.Errorf("chat: reading token response body: %w", err)
 		}
-		return nil, fmt.Errorf("chat: token request failed with status %d: %s", tokRes.StatusCode, body)
+		return nil, fmt.Errorf("chat: token request failed with status %d: %s", tokRes.StatusCode, body) //nolint:err113
 	}
 	var tokenResp tokenResponse
 	if err := json.NewDecoder(tokRes.Body).Decode(&tokenResp); err != nil {
@@ -123,6 +127,7 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 	}
 	return &frontendapi.StartChatResponse{
 		ChatApiKey: tokenResp.Name,
+		ChatModel:  model,
 	}, nil
 }
 
