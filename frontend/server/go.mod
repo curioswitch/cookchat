@@ -11,9 +11,7 @@ require (
 	github.com/curioswitch/cookchat/frontend/api v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/go-curiostack v0.0.0-20250604080001-7dd4ae9f57cd
 	github.com/curioswitch/go-usegcp v0.0.0-20250604073322-8fa0305d8da6
-	github.com/curioswitch/wshttp v0.0.0-20250416112330-b6191973cb49
 	github.com/go-chi/chi/v5 v5.2.1
-	github.com/wandb/parallel v0.2.2
 	google.golang.org/api v0.237.0
 	google.golang.org/genai v1.11.1
 )
@@ -37,7 +35,6 @@ require (
 	github.com/cenkalti/backoff/v5 v5.0.2 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cncf/xds/go v0.0.0-20250501225837-2ac532fd4443 // indirect
-	github.com/coder/websocket v1.8.12 // indirect
 	github.com/curioswitch/go-docs-handler v0.1.5 // indirect
 	github.com/curioswitch/go-docs-handler/plugins/proto v0.1.5 // indirect
 	github.com/envoyproxy/go-control-plane/envoy v1.32.4 // indirect
