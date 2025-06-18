@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { ChatRequestSchema } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useChatService } from "../../../hooks/rpc";
 
 function convertFloat32ToInt16(float32Array: Float32Array): Int16Array {
@@ -47,8 +47,11 @@ async function* chatRequestStream(
 }
 
 interface StreamContext {
+  audioContext: AudioContext;
   audioProcessor: ScriptProcessorNode;
+  source: MediaStreamAudioSourceNode;
   end: PromiseWithResolvers<true>;
+  closed?: boolean;
 }
 
 function mergeUint8Array(arrays: Uint8Array[]) {
@@ -67,15 +70,19 @@ class AudioPlayer {
   private readonly audio = new Audio();
 
   private playing = false;
+  private closed = false;
   private queue: Uint8Array[] = [];
 
   add(chunk: Uint8Array) {
+    if (this.closed) {
+      return;
+    }
     this.queue.push(chunk);
     this.play();
   }
 
   play() {
-    if (!this.playing && this.queue.length > 0) {
+    if (!this.closed && !this.playing && this.queue.length > 0) {
       this.playing = true;
       const audioWav = AudioPlayer.encodeAudio(this.queue, 24_000, 16, 1);
       this.queue = [];
@@ -86,6 +93,20 @@ class AudioPlayer {
       };
       this.audio.play();
     }
+  }
+
+  start() {
+    this.closed = false;
+  }
+
+  stop() {
+    if (this.playing) {
+      this.audio.pause();
+      this.audio.src = "";
+      this.playing = false;
+    }
+    this.queue = [];
+    this.closed = true;
   }
 
   private static encodeAudio(
@@ -141,10 +162,15 @@ export default function ChatButton({ recipeId }: { recipeId: string }) {
 
   const onClick = useCallback(async () => {
     if (streamContext) {
+      audioPlayer.stop();
       streamContext.audioProcessor.disconnect();
+      streamContext.source.disconnect();
+      await streamContext.audioContext.close();
       streamContext.end.resolve(true);
+      streamContext.closed = true;
       setStreamContext(undefined);
     } else {
+      audioPlayer.start();
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
       });
@@ -157,20 +183,36 @@ export default function ChatButton({ recipeId }: { recipeId: string }) {
         chatRequestStream(recipeId, audioProcessor, end.promise),
       );
       setTimeout(async () => {
-        for await (const res of chatStream) {
-          if (res.content?.payload.case === "audio") {
-            audioPlayer.add(res.content.payload.value);
+        try {
+          for await (const res of chatStream) {
+            if (res.content?.payload.case === "audio") {
+              audioPlayer.add(res.content.payload.value);
+            }
           }
+        } catch (e) {
+          console.error("Error in chat stream:", e);
         }
       }, 0);
 
       source.connect(audioProcessor);
       audioProcessor.connect(audioContext.destination);
 
-      setStreamContext({ audioProcessor, end });
+      setStreamContext({ audioContext, audioProcessor, source, end });
     }
     return false;
   }, [audioPlayer, streamContext, chatService, recipeId]);
+
+  useEffect(() => {
+    return () => {
+      if (streamContext && !streamContext.closed) {
+        audioPlayer.stop();
+        streamContext.audioProcessor.disconnect();
+        streamContext.source.disconnect();
+        streamContext.audioContext.close();
+        streamContext.end.resolve(true);
+      }
+    };
+  }, [streamContext, audioPlayer]);
 
   return (
     <Button fullWidth onPress={onClick}>
