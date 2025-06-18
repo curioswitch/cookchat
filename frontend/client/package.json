@@ -14,6 +14,7 @@
     "@connectrpc/connect": "^2.0.2",
     "@connectrpc/connect-query": "^2.1.0",
     "@connectrpc/connect-web": "^2.0.2",
+    "@google/genai": "^1.5.1",
     "@heroui/badge": "^2.2.13",
     "@heroui/button": "^2.2.21",
     "@heroui/checkbox": "^2.3.20",

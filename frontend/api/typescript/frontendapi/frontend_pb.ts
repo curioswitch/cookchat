@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file frontendapi/frontend.proto.
  */
 export const file_frontendapi_frontend: GenFile = /*@__PURE__*/
-  fileDesc("Chpmcm9udGVuZGFwaS9mcm9udGVuZC5wcm90bxILZnJvbnRlbmRhcGkiPAoLQ2hhdENvbnRlbnQSEQoHbWVzc2FnZRgBIAEoCUgAEg8KBWF1ZGlvGAIgASgMSABCCQoHcGF5bG9hZCJuCgtDaGF0UmVxdWVzdBIpCgdjb250ZW50GAEgASgLMhguZnJvbnRlbmRhcGkuQ2hhdENvbnRlbnQSFQoLcmVjaXBlX3RleHQYAiABKAlIABITCglyZWNpcGVfaWQYAyABKAlIAEIICgZyZWNpcGUiOQoMQ2hhdFJlc3BvbnNlEikKB2NvbnRlbnQYASABKAsyGC5mcm9udGVuZGFwaS5DaGF0Q29udGVudCIyChBSZWNpcGVJbmdyZWRpZW50EgwKBG5hbWUYASABKAkSEAoIcXVhbnRpdHkYAiABKAkiNAoKUmVjaXBlU3RlcBITCgtkZXNjcmlwdGlvbhgBIAEoCRIRCglpbWFnZV91cmwYAiABKAkiVgoRSW5ncmVkaWVudFNlY3Rpb24SDQoFdGl0bGUYASABKAkSMgoLaW5ncmVkaWVudHMYAiADKAsyHS5mcm9udGVuZGFwaS5SZWNpcGVJbmdyZWRpZW50IuACCgZSZWNpcGUSCgoCaWQYASABKAkSKQoGc291cmNlGAIgASgOMhkuZnJvbnRlbmRhcGkuUmVjaXBlU291cmNlEg0KBXRpdGxlGAMgASgJEhEKCWltYWdlX3VybBgEIAEoCRITCgtkZXNjcmlwdGlvbhgFIAEoCRIyCgtpbmdyZWRpZW50cxgGIAMoCzIdLmZyb250ZW5kYXBpLlJlY2lwZUluZ3JlZGllbnQSPgoWYWRkaXRpb25hbF9pbmdyZWRpZW50cxgHIAMoCzIeLmZyb250ZW5kYXBpLkluZ3JlZGllbnRTZWN0aW9uEiYKBXN0ZXBzGAggAygLMhcuZnJvbnRlbmRhcGkuUmVjaXBlU3RlcBINCgVub3RlcxgJIAEoCRIUCgxzZXJ2aW5nX3NpemUYCiABKAkSJwoIbGFuZ3VhZ2UYCyABKA4yFS5mcm9udGVuZGFwaS5MYW5ndWFnZSIlChBHZXRSZWNpcGVSZXF1ZXN0EhEKCXJlY2lwZV9pZBgBIAEoCSI4ChFHZXRSZWNpcGVSZXNwb25zZRIjCgZyZWNpcGUYASABKAsyEy5mcm9udGVuZGFwaS5SZWNpcGUiHQoKUGFnaW5hdGlvbhIPCgdsYXN0X2lkGAEgASgJIk4KDVJlY2lwZVNuaXBwZXQSCgoCaWQYASABKAkSDQoFdGl0bGUYAiABKAkSDwoHc3VtbWFyeRgDIAEoCRIRCglpbWFnZV91cmwYBCABKAkiUAoSTGlzdFJlY2lwZXNSZXF1ZXN0Eg0KBXF1ZXJ5GAEgASgJEisKCnBhZ2luYXRpb24YAiABKAsyFy5mcm9udGVuZGFwaS5QYWdpbmF0aW9uIm8KE0xpc3RSZWNpcGVzUmVzcG9uc2USKwoHcmVjaXBlcxgBIAMoCzIaLmZyb250ZW5kYXBpLlJlY2lwZVNuaXBwZXQSKwoKcGFnaW5hdGlvbhgCIAEoCzIXLmZyb250ZW5kYXBpLlBhZ2luYXRpb24qUQoITGFuZ3VhZ2USGAoUTEFOR1VBR0VfVU5TUEVDSUZJRUQQABIUChBMQU5HVUFHRV9FTkdMSVNIEAESFQoRTEFOR1VBR0VfSkFQQU5FU0UQAipICgxSZWNpcGVTb3VyY2USHQoZUkVDSVBFX1NPVVJDRV9VTlNQRUNJRklFRBAAEhkKFVJFQ0lQRV9TT1VSQ0VfQ09PS1BBRBABMk4KC0NoYXRTZXJ2aWNlEj8KBENoYXQSGC5mcm9udGVuZGFwaS5DaGF0UmVxdWVzdBoZLmZyb250ZW5kYXBpLkNoYXRSZXNwb25zZSgBMAEyrwEKD0Zyb250ZW5kU2VydmljZRJKCglHZXRSZWNpcGUSHS5mcm9udGVuZGFwaS5HZXRSZWNpcGVSZXF1ZXN0Gh4uZnJvbnRlbmRhcGkuR2V0UmVjaXBlUmVzcG9uc2USUAoLTGlzdFJlY2lwZXMSHy5mcm9udGVuZGFwaS5MaXN0UmVjaXBlc1JlcXVlc3QaIC5mcm9udGVuZGFwaS5MaXN0UmVjaXBlc1Jlc3BvbnNlQj1aO2dpdGh1Yi5jb20vY3VyaW9zd2l0Y2gvY29va2NoYXQvZnJvbnRlbmQvYXBpL2dvO2Zyb250ZW5kYXBpYgZwcm90bzM");
+  fileDesc("Chpmcm9udGVuZGFwaS9mcm9udGVuZC5wcm90bxILZnJvbnRlbmRhcGkiPAoLQ2hhdENvbnRlbnQSEQoHbWVzc2FnZRgBIAEoCUgAEg8KBWF1ZGlvGAIgASgMSABCCQoHcGF5bG9hZCJuCgtDaGF0UmVxdWVzdBIpCgdjb250ZW50GAEgASgLMhguZnJvbnRlbmRhcGkuQ2hhdENvbnRlbnQSFQoLcmVjaXBlX3RleHQYAiABKAlIABITCglyZWNpcGVfaWQYAyABKAlIAEIICgZyZWNpcGUiOQoMQ2hhdFJlc3BvbnNlEikKB2NvbnRlbnQYASABKAsyGC5mcm9udGVuZGFwaS5DaGF0Q29udGVudCIyChBSZWNpcGVJbmdyZWRpZW50EgwKBG5hbWUYASABKAkSEAoIcXVhbnRpdHkYAiABKAkiNAoKUmVjaXBlU3RlcBITCgtkZXNjcmlwdGlvbhgBIAEoCRIRCglpbWFnZV91cmwYAiABKAkiVgoRSW5ncmVkaWVudFNlY3Rpb24SDQoFdGl0bGUYASABKAkSMgoLaW5ncmVkaWVudHMYAiADKAsyHS5mcm9udGVuZGFwaS5SZWNpcGVJbmdyZWRpZW50IuACCgZSZWNpcGUSCgoCaWQYASABKAkSKQoGc291cmNlGAIgASgOMhkuZnJvbnRlbmRhcGkuUmVjaXBlU291cmNlEg0KBXRpdGxlGAMgASgJEhEKCWltYWdlX3VybBgEIAEoCRITCgtkZXNjcmlwdGlvbhgFIAEoCRIyCgtpbmdyZWRpZW50cxgGIAMoCzIdLmZyb250ZW5kYXBpLlJlY2lwZUluZ3JlZGllbnQSPgoWYWRkaXRpb25hbF9pbmdyZWRpZW50cxgHIAMoCzIeLmZyb250ZW5kYXBpLkluZ3JlZGllbnRTZWN0aW9uEiYKBXN0ZXBzGAggAygLMhcuZnJvbnRlbmRhcGkuUmVjaXBlU3RlcBINCgVub3RlcxgJIAEoCRIUCgxzZXJ2aW5nX3NpemUYCiABKAkSJwoIbGFuZ3VhZ2UYCyABKA4yFS5mcm9udGVuZGFwaS5MYW5ndWFnZSIlChBHZXRSZWNpcGVSZXF1ZXN0EhEKCXJlY2lwZV9pZBgBIAEoCSI4ChFHZXRSZWNpcGVSZXNwb25zZRIjCgZyZWNpcGUYASABKAsyEy5mcm9udGVuZGFwaS5SZWNpcGUiHQoKUGFnaW5hdGlvbhIPCgdsYXN0X2lkGAEgASgJIk4KDVJlY2lwZVNuaXBwZXQSCgoCaWQYASABKAkSDQoFdGl0bGUYAiABKAkSDwoHc3VtbWFyeRgDIAEoCRIRCglpbWFnZV91cmwYBCABKAkiUAoSTGlzdFJlY2lwZXNSZXF1ZXN0Eg0KBXF1ZXJ5GAEgASgJEisKCnBhZ2luYXRpb24YAiABKAsyFy5mcm9udGVuZGFwaS5QYWdpbmF0aW9uIm8KE0xpc3RSZWNpcGVzUmVzcG9uc2USKwoHcmVjaXBlcxgBIAMoCzIaLmZyb250ZW5kYXBpLlJlY2lwZVNuaXBwZXQSKwoKcGFnaW5hdGlvbhgCIAEoCzIXLmZyb250ZW5kYXBpLlBhZ2luYXRpb24iSAoQU3RhcnRDaGF0UmVxdWVzdBIVCgtyZWNpcGVfdGV4dBgCIAEoCUgAEhMKCXJlY2lwZV9pZBgDIAEoCUgAQggKBnJlY2lwZSIpChFTdGFydENoYXRSZXNwb25zZRIUCgxjaGF0X2FwaV9rZXkYASABKAkqUQoITGFuZ3VhZ2USGAoUTEFOR1VBR0VfVU5TUEVDSUZJRUQQABIUChBMQU5HVUFHRV9FTkdMSVNIEAESFQoRTEFOR1VBR0VfSkFQQU5FU0UQAipICgxSZWNpcGVTb3VyY2USHQoZUkVDSVBFX1NPVVJDRV9VTlNQRUNJRklFRBAAEhkKFVJFQ0lQRV9TT1VSQ0VfQ09PS1BBRBABMk4KC0NoYXRTZXJ2aWNlEj8KBENoYXQSGC5mcm9udGVuZGFwaS5DaGF0UmVxdWVzdBoZLmZyb250ZW5kYXBpLkNoYXRSZXNwb25zZSgBMAEy+wEKD0Zyb250ZW5kU2VydmljZRJKCglHZXRSZWNpcGUSHS5mcm9udGVuZGFwaS5HZXRSZWNpcGVSZXF1ZXN0Gh4uZnJvbnRlbmRhcGkuR2V0UmVjaXBlUmVzcG9uc2USUAoLTGlzdFJlY2lwZXMSHy5mcm9udGVuZGFwaS5MaXN0UmVjaXBlc1JlcXVlc3QaIC5mcm9udGVuZGFwaS5MaXN0UmVjaXBlc1Jlc3BvbnNlEkoKCVN0YXJ0Q2hhdBIdLmZyb250ZW5kYXBpLlN0YXJ0Q2hhdFJlcXVlc3QaHi5mcm9udGVuZGFwaS5TdGFydENoYXRSZXNwb25zZUI9WjtnaXRodWIuY29tL2N1cmlvc3dpdGNoL2Nvb2tjaGF0L2Zyb250ZW5kL2FwaS9nbztmcm9udGVuZGFwaWIGcHJvdG8z");
 
 /**
  * The content of a chat message.
@@ -448,6 +448,64 @@ export const ListRecipesResponseSchema: GenMessage<ListRecipesResponse> = /*@__P
   messageDesc(file_frontendapi_frontend, 12);
 
 /**
+ * A request to start a chat session.
+ *
+ * @generated from message frontendapi.StartChatRequest
+ */
+export type StartChatRequest = Message<"frontendapi.StartChatRequest"> & {
+  /**
+   * The recipe to chat about.
+   *
+   * @generated from oneof frontendapi.StartChatRequest.recipe
+   */
+  recipe: {
+    /**
+     * Free-form text of the recipe.
+     *
+     * @generated from field: string recipe_text = 2;
+     */
+    value: string;
+    case: "recipeText";
+  } | {
+    /**
+     * The ID of a cookchat recipe.
+     *
+     * @generated from field: string recipe_id = 3;
+     */
+    value: string;
+    case: "recipeId";
+  } | { case: undefined; value?: undefined };
+};
+
+/**
+ * Describes the message frontendapi.StartChatRequest.
+ * Use `create(StartChatRequestSchema)` to create a new message.
+ */
+export const StartChatRequestSchema: GenMessage<StartChatRequest> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 13);
+
+/**
+ * A response to start a chat session.
+ *
+ * @generated from message frontendapi.StartChatResponse
+ */
+export type StartChatResponse = Message<"frontendapi.StartChatResponse"> & {
+  /**
+   * The ephemeral API key to use to start the chat.
+   *
+   * @generated from field: string chat_api_key = 1;
+   */
+  chatApiKey: string;
+};
+
+/**
+ * Describes the message frontendapi.StartChatResponse.
+ * Use `create(StartChatResponseSchema)` to create a new message.
+ */
+export const StartChatResponseSchema: GenMessage<StartChatResponse> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 14);
+
+/**
  * @generated from enum frontendapi.Language
  */
 export enum Language {
@@ -548,6 +606,16 @@ export const FrontendService: GenService<{
     methodKind: "unary";
     input: typeof ListRecipesRequestSchema;
     output: typeof ListRecipesResponseSchema;
+  },
+  /**
+   * Start a chat session.
+   *
+   * @generated from rpc frontendapi.FrontendService.StartChat
+   */
+  startChat: {
+    methodKind: "unary";
+    input: typeof StartChatRequestSchema;
+    output: typeof StartChatResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_frontendapi_frontend, 1);
