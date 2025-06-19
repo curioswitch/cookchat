@@ -1,5 +1,3 @@
-import { create } from "@bufbuild/protobuf";
-import { ChatRequestSchema } from "@cookchat/frontend-api";
 import {
   GoogleGenAI,
   type LiveServerMessage,
@@ -7,8 +5,8 @@ import {
 } from "@google/genai";
 import { Button } from "@heroui/button";
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useChatService, useFrontendQueries } from "../../../hooks/rpc";
+import { useCallback, useEffect, useState } from "react";
+import { useFrontendQueries } from "../../../hooks/rpc";
 
 function convertFloat32ToInt16(float32Array: Float32Array): Int16Array {
   const int16Array = new Int16Array(float32Array.length);
@@ -16,6 +14,20 @@ function convertFloat32ToInt16(float32Array: Float32Array): Int16Array {
     int16Array[i] = Math.max(-32768, Math.min(32767, float32Array[i] * 32768)); // Scale and clamp
   }
   return int16Array;
+}
+
+function convertPCM16ToFloat32(pcm: Uint8Array): Float32Array {
+  const length = pcm.length / 2; // 16-bit audio, so 2 bytes per sample
+  const float32AudioData = new Float32Array(length);
+
+  for (let i = 0; i < length; i++) {
+    // Combine two bytes into one 16-bit signed integer (little-endian)
+    let sample = pcm[i * 2] | (pcm[i * 2 + 1] << 8);
+    // Convert from 16-bit PCM to Float32 (range -1 to 1)
+    if (sample >= 32768) sample -= 65536;
+    float32AudioData[i] = sample / 32768;
+  }
+  return float32AudioData;
 }
 
 function base64Decode(base64: string): Uint8Array {
@@ -28,142 +40,54 @@ function base64Decode(base64: string): Uint8Array {
   return bytes;
 }
 
-async function* chatRequestStream(
-  recipeId: string,
-  processor: ScriptProcessorNode,
-  end: Promise<true>,
-) {
-  let dataPromise: PromiseWithResolvers<Int16Array> = Promise.withResolvers();
-  processor.onaudioprocess = (e: AudioProcessingEvent) => {
-    const dataFloat32 = e.inputBuffer.getChannelData(0);
-    const dataPCM16 = convertFloat32ToInt16(dataFloat32);
-    dataPromise.resolve(dataPCM16);
-    dataPromise = Promise.withResolvers();
-  };
-  yield create(ChatRequestSchema, {
-    recipe: {
-      case: "recipeId",
-      value: recipeId,
-    },
-  });
-  while (true) {
-    const result = await Promise.any([dataPromise.promise, end]);
-    if (result === true) {
-      return;
-    }
-    yield create(ChatRequestSchema, {
-      content: {
-        payload: {
-          case: "audio",
-          value: new Uint8Array(result.buffer),
-        },
-      },
-    });
-  }
-}
-
-interface StreamContext {
-  audioContext: AudioContext;
-  audioProcessor: ScriptProcessorNode;
-  source: MediaStreamAudioSourceNode;
-  end: PromiseWithResolvers<true>;
-  closed?: boolean;
-}
-
-function mergeUint8Array(arrays: Uint8Array[]) {
-  const totalSize = arrays.reduce((acc, e) => acc + e.length, 0);
-  const merged = new Uint8Array(totalSize);
-
-  arrays.forEach((array, i, arrays) => {
-    const offset = arrays.slice(0, i).reduce((acc, e) => acc + e.length, 0);
-    merged.set(array, offset);
-  });
-
-  return merged;
-}
-
 class AudioPlayer {
+  private readonly audioCtx = new AudioContext();
   private readonly audio = new Audio();
 
+  private nextStartTime = this.audioCtx.currentTime;
+
   private playing = false;
-  private closed = false;
-  private queue: Uint8Array[] = [];
+  private queue: Float32Array[] = [];
 
   add(chunk: Uint8Array) {
-    if (this.closed) {
+    if (this.audioCtx.state === "closed") {
       return;
     }
-    this.queue.push(chunk);
-    this.play();
+    this.queue.push(convertPCM16ToFloat32(chunk));
+    if (!this.playing) {
+      this.play();
+    }
   }
 
   play() {
-    if (!this.closed && !this.playing && this.queue.length > 0) {
-      this.playing = true;
-      const audioWav = AudioPlayer.encodeAudio(this.queue, 24_000, 16, 1);
-      this.queue = [];
-      this.audio.src = URL.createObjectURL(audioWav);
-      this.audio.onended = () => {
-        this.playing = false;
-        this.play();
-      };
-      this.audio.play();
-    }
-  }
-
-  start() {
-    this.closed = false;
-  }
-
-  stop() {
-    if (this.playing) {
-      this.audio.pause();
-      this.audio.src = "";
-      this.playing = false;
-    }
-    this.queue = [];
-    this.closed = true;
-  }
-
-  private static encodeAudio(
-    queue: Uint8Array[],
-    sampleRate: number,
-    bitDepth: number,
-    numChannels: number,
-  ) {
-    const audioData = mergeUint8Array(queue);
-
-    const dataSize = audioData.length;
-    const fileSize = dataSize + 36;
-    const blockAlign = (numChannels * bitDepth) / 8;
-    const byteRate = sampleRate * blockAlign;
-
-    const buffer = new ArrayBuffer(44);
-    const view = new DataView(buffer);
-
-    function writeString(offset: number, string: string) {
-      for (let i = 0; i < string.length; i++) {
-        view.setUint8(offset + i, string.charCodeAt(i));
+    this.playing = true;
+    while (this.queue.length > 0) {
+      if (this.audioCtx.state === "closed") {
+        this.queue = [];
+        break;
       }
+
+      const chunk = this.queue.shift();
+      if (!chunk) {
+        break;
+      }
+      // Create an AudioBuffer (Assuming 1 channel and 24k sample rate)
+      const audioBuffer = this.audioCtx.createBuffer(1, chunk.length, 24000);
+      audioBuffer.copyToChannel(chunk, 0);
+      const source = this.audioCtx.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(this.audioCtx.destination);
+      if (this.nextStartTime < this.audioCtx.currentTime) {
+        this.nextStartTime = this.audioCtx.currentTime;
+      }
+      source.start(this.nextStartTime);
+      this.nextStartTime += audioBuffer.duration;
     }
+    this.playing = false;
+  }
 
-    writeString(0, "RIFF");
-    view.setUint32(4, fileSize, true);
-    writeString(8, "WAVE");
-    writeString(12, "fmt ");
-    view.setUint32(16, 16, true);
-    view.setUint16(20, 1, true);
-    view.setUint16(22, 1, true);
-    view.setUint32(24, sampleRate, true);
-    view.setUint32(28, byteRate, true);
-    view.setUint16(32, blockAlign, true);
-    view.setUint16(34, bitDepth, true);
-    writeString(36, "data");
-    view.setUint32(40, dataSize, true);
-
-    const mergedData = mergeUint8Array([new Uint8Array(buffer), audioData]);
-
-    return new Blob([mergedData.buffer], { type: "audio/wav" });
+  async stop() {
+    await this.audioCtx.close();
   }
 }
 
@@ -256,7 +180,7 @@ class ChatStream {
       return;
     }
     this.stopped = true;
-    this.audioPlayer.stop();
+    await this.audioPlayer.stop();
     this.audioSource.disconnect();
     this.audioProcessor.disconnect();
     await this.audioContext.close();
