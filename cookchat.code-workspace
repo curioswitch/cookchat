@@ -7,7 +7,7 @@
     {
       "name": "crawler/server",
       "path": "./crawler/server"
-    }
+    },
     {
       "name": "frontend/client",
       "path": "./frontend/client"
@@ -40,8 +40,7 @@
   },
   "settings": {
     "editor.codeActionsOnSave": {
-      "source.organizeImports.biome": "explicit",
-      "quickfix.biome": "explicit"
+      "source.fixAll.biome": "explicit"
     },
     "editor.formatOnSave": true,
     "editor.tabSize": 2,

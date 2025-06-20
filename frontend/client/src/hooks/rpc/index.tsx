@@ -1,32 +1,32 @@
-import { type MessageInitShape, create } from "@bufbuild/protobuf";
+import { create, type MessageInitShape } from "@bufbuild/protobuf";
 import {
   Code,
   ConnectError,
+  createClient,
   type Interceptor,
   type Transport,
-  createClient,
 } from "@connectrpc/connect";
+import { createTransport } from "@connectrpc/connect/protocol-connect";
 import {
-  TransportProvider,
   createInfiniteQueryOptions,
   createQueryOptions,
+  TransportProvider,
   useTransport,
 } from "@connectrpc/connect-query";
 import { createConnectTransport } from "@connectrpc/connect-web";
-import { createTransport } from "@connectrpc/connect/protocol-connect";
 import {
   ChatService,
   type GetRecipeRequestSchema,
-  PaginationSchema,
-  type StartChatRequestSchema,
   getRecipe,
   listRecipes,
+  PaginationSchema,
+  type StartChatRequestSchema,
   startChat,
 } from "@cookchat/frontend-api";
 import {
+  infiniteQueryOptions,
   QueryClient,
   QueryClientProvider,
-  infiniteQueryOptions,
   queryOptions,
 } from "@tanstack/react-query";
 import { createWebSocketClient } from "connect-es-ws";
@@ -119,7 +119,9 @@ export function useFrontendQueries(): FrontendQueries {
 
 export function FrontendServiceProvider({
   children,
-}: { children: React.ReactNode }) {
+}: {
+  children: React.ReactNode;
+}) {
   const fbUser = useFirebase()?.user;
 
   const transport = useMemo(() => {

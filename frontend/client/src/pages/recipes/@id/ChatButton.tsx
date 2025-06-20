@@ -150,7 +150,7 @@ class ChatStream {
           }
         },
 
-        onclose: (e: CloseEvent) => {},
+        onclose: (_e: CloseEvent) => {},
 
         onerror: (e: ErrorEvent) => {
           console.error("Error in live connection:", e);

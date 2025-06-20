@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { type User, getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, type User } from "firebase/auth";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import { getFirebaseConfig } from "./config";

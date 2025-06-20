@@ -1,27 +1,26 @@
-import { Checkbox, CheckboxGroup } from "@heroui/checkbox";
+import { Checkbox } from "@heroui/checkbox";
 import { Link } from "@heroui/link";
-import { type PrimitiveAtom, useAtom, useAtomValue } from "jotai";
-import { focusAtom } from "jotai-optics";
-import { splitAtom } from "jotai/utils";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { HiShare } from "react-icons/hi";
+import { BackButton } from "../../components/BackButton";
 import {
   type CartIngredient,
-  cartAtom,
-  cartRecipeAtomsAtom,
-} from "../../atoms";
-import { BackButton } from "../../components/BackButton";
+  toggleCartIngredientSelection,
+  useCartStore,
+} from "../../stores";
 
 function IngredientSelect({
-  ingredientAtom,
-}: { ingredientAtom: PrimitiveAtom<CartIngredient> }) {
-  const [ingredient, setIngredient] = useAtom(ingredientAtom);
+  ingredient,
+  recipeId,
+  ingredientIndex,
+}: {
+  ingredient: CartIngredient;
+  recipeId: string;
+  ingredientIndex: number;
+}) {
   const onValueChange = useCallback(() => {
-    setIngredient((prev) => ({
-      ...prev,
-      selected: !prev.selected,
-    }));
-  }, [setIngredient]);
+    toggleCartIngredientSelection(recipeId, ingredientIndex);
+  }, [recipeId, ingredientIndex]);
 
   return (
     <Checkbox
@@ -46,12 +45,11 @@ function IngredientSelect({
 }
 
 export default function Page() {
-  const cart = useAtomValue(cartAtom);
-  const recipeAtoms = useAtomValue(cartRecipeAtomsAtom);
+  const cart = useCartStore();
 
   const onShareClick = useCallback(() => {
     const texts = [];
-    for (const recipe of cart) {
+    for (const recipe of cart.recipes) {
       texts.push(
         `
 ${recipe.title}
@@ -74,17 +72,8 @@ ${recipe.ingredients
         <h3 className="mt-0 mb-0">買い物リスト</h3>
         <HiShare onClick={onShareClick} className="size-6 text-orange-400" />
       </div>
-      {recipeAtoms.length === 0 && <div className="p-4">カートは空です</div>}
-      {recipeAtoms.map((recipeAtom) => {
-        const recipe = useAtomValue(recipeAtom);
-        const ingredientAtomsAtom = useMemo(
-          () =>
-            splitAtom(
-              focusAtom(recipeAtom, (optic) => optic.prop("ingredients")),
-            ),
-          [recipeAtom],
-        );
-        const ingredientAtoms = useAtomValue(ingredientAtomsAtom);
+      {cart.recipes.length === 0 && <div className="p-4">カートは空です</div>}
+      {cart.recipes.map((recipe) => {
         return (
           <div key={recipe.id} className="mt-4">
             <Link
@@ -98,12 +87,13 @@ ${recipe.ingredients
                 </div>
               </div>
             </Link>
-            {ingredientAtoms.map((ingredientAtom) => {
-              const ingredient = useAtomValue(ingredientAtom);
+            {recipe.ingredients.map((ingredient, i) => {
               return (
                 <IngredientSelect
                   key={ingredient.name}
-                  ingredientAtom={ingredientAtom}
+                  ingredient={ingredient}
+                  recipeId={recipe.id}
+                  ingredientIndex={i}
                 />
               );
             })}
