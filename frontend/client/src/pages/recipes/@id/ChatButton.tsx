@@ -7,14 +7,7 @@ import { Button } from "@heroui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { useFrontendQueries } from "../../../hooks/rpc";
-
-function convertFloat32ToInt16(float32Array: Float32Array): Int16Array {
-  const int16Array = new Int16Array(float32Array.length);
-  for (let i = 0; i < float32Array.length; i++) {
-    int16Array[i] = Math.max(-32768, Math.min(32767, float32Array[i] * 32768)); // Scale and clamp
-  }
-  return int16Array;
-}
+import MicWorkletURL from "./MicWorklet.js?url";
 
 function convertPCM16ToFloat32(pcm: Uint8Array): Float32Array {
   const length = pcm.length / 2; // 16-bit audio, so 2 bytes per sample
@@ -96,7 +89,7 @@ class ChatStream {
   private readonly audioContext: AudioContext;
 
   private audioSource!: MediaStreamAudioSourceNode;
-  private audioProcessor!: ScriptProcessorNode;
+  private micWorklet!: AudioWorkletNode;
   private session!: Session;
 
   private stopped?: boolean;
@@ -115,9 +108,10 @@ class ChatStream {
     });
     const audioContext = new AudioContext({ sampleRate: 16000 });
     this.audioSource = audioContext.createMediaStreamSource(stream);
-    this.audioProcessor = audioContext.createScriptProcessor(1024, 1, 1);
-    this.audioSource.connect(this.audioProcessor);
-    this.audioProcessor.connect(audioContext.destination);
+    await audioContext.audioWorklet.addModule(MicWorkletURL);
+    this.micWorklet = new AudioWorkletNode(audioContext, "mic-worklet");
+    this.audioSource.connect(this.micWorklet);
+    this.micWorklet.connect(audioContext.destination);
 
     this.session = await this.genAI.live.connect({
       model: this.model,
@@ -137,25 +131,15 @@ class ChatStream {
               ],
               turnComplete: true,
             });
-            this.audioProcessor.onaudioprocess = (e: AudioProcessingEvent) => {
-              const dataFloat32 = e.inputBuffer.getChannelData(0);
-              const dataPCM16 = convertFloat32ToInt16(dataFloat32);
-              const data = new Uint8Array(
-                dataPCM16.buffer,
-                dataPCM16.byteOffset,
-                dataPCM16.byteLength,
-              );
-              this.session.sendRealtimeInput({
-                audio: {
-                  mimeType: "audio/pcm",
-                  data: btoa(
-                    data.reduce(
-                      (acc, val) => acc + String.fromCharCode(val),
-                      "",
-                    ),
-                  ),
-                },
-              });
+            this.micWorklet.port.onmessage = (e) => {
+              if (e.data.event === "chunk") {
+                this.session.sendRealtimeInput({
+                  audio: {
+                    mimeType: "audio/pcm",
+                    data: btoa(e.data.data.str),
+                  },
+                });
+              }
             };
             return;
           }
@@ -182,7 +166,7 @@ class ChatStream {
     this.stopped = true;
     await this.audioPlayer.stop();
     this.audioSource.disconnect();
-    this.audioProcessor.disconnect();
+    this.micWorklet.disconnect();
     await this.audioContext.close();
     if (this.session) {
       this.session.close();
