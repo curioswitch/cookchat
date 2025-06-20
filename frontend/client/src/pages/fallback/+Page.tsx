@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { usePageContext } from "vike-react/usePageContext";
 import { navigate } from "vike/client/router";
+import { usePageContext } from "vike-react/usePageContext";
 
 export default function Page() {
   const pageContext = usePageContext();

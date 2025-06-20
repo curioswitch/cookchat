@@ -3,14 +3,17 @@ import { Button } from "@heroui/button";
 import { Divider } from "@heroui/divider";
 import { Image } from "@heroui/image";
 import { useQuery } from "@tanstack/react-query";
-import { useAtom } from "jotai";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { HiShoppingCart } from "react-icons/hi";
 import { usePageContext } from "vike-react/usePageContext";
-import { type CartIngredient, cartAtom } from "../../../atoms";
 import { BackButton } from "../../../components/BackButton";
 import { useFrontendQueries } from "../../../hooks/rpc";
+import {
+  addRecipeToCart,
+  removeRecipeFromCart,
+  useCartStore,
+} from "../../../stores";
 import ChatButton from "./ChatButton";
 
 function Ingredients({ ingredients }: { ingredients: RecipeIngredient[] }) {
@@ -40,8 +43,8 @@ export default function Page() {
 
   const { data: recipeRes, isPending } = useQuery(getRecipeQuery);
 
-  const [cart, setCart] = useAtom(cartAtom);
-  const inCart = cart.some((recipe) => recipe.id === recipeId);
+  const cart = useCartStore();
+  const inCart = cart.recipes.some((recipe) => recipe.id === recipeId);
 
   const onCartToggle = useCallback(() => {
     if (!recipeRes) {
@@ -53,29 +56,11 @@ export default function Page() {
     }
 
     if (inCart) {
-      setCart((prev) => prev.filter((r) => r.id !== recipe.id));
+      removeRecipeFromCart(recipe.id);
     } else {
-      const ingredients: CartIngredient[] = [
-        ...recipe.ingredients.map((ingredient) => ({
-          ...ingredient,
-          selected: false,
-        })),
-        ...recipe.additionalIngredients.flatMap((section) =>
-          section.ingredients.map((ingredient) => ({
-            ...ingredient,
-            selected: false,
-          })),
-        ),
-      ];
-      const cartRecipe = {
-        id: recipe.id,
-        title: recipe.title,
-        servingSize: recipe.servingSize,
-        ingredients,
-      };
-      setCart((prev) => [...prev, cartRecipe]);
+      addRecipeToCart(recipe);
     }
-  }, [recipeRes, inCart, setCart]);
+  }, [recipeRes, inCart]);
 
   if (isPending) {
     return <div>Loading...</div>;
@@ -108,9 +93,8 @@ export default function Page() {
       </h3>
       <p className="not-prose">{recipe.servingSize}</p>
       <Ingredients ingredients={recipe.ingredients} />
-      {recipe.additionalIngredients.map((section, i) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-        <div key={i}>
+      {recipe.additionalIngredients.map((section) => (
+        <div key={section.title}>
           <h3>{section.title}</h3>
           <Ingredients ingredients={section.ingredients} />
         </div>

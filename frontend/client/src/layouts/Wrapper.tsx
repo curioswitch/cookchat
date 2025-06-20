@@ -2,8 +2,8 @@ import "./styles.css";
 
 import { HeroUIProvider } from "@heroui/system";
 import { I18nextProvider } from "react-i18next";
-import { usePageContext } from "vike-react/usePageContext";
 import { navigate } from "vike/client/router";
+import { usePageContext } from "vike-react/usePageContext";
 
 import { FirebaseProvider, useFirebase } from "../hooks/firebase";
 import { FrontendServiceProvider } from "../hooks/rpc";
