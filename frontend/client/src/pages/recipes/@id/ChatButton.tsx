@@ -7,7 +7,7 @@ import { Button } from "@heroui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { useFrontendQueries } from "../../../hooks/rpc";
-import MicWorkletURL from "./MicWorklet.js?url";
+import MicWorkletURL from "./MicWorklet?worker&url";
 
 function convertPCM16ToFloat32(pcm: Uint8Array): Float32Array {
   const length = pcm.length / 2; // 16-bit audio, so 2 bytes per sample
