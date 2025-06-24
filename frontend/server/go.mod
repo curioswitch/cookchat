@@ -11,9 +11,9 @@ require (
 	github.com/curioswitch/cookchat/frontend/api v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/go-curiostack v0.0.0-20250604080001-7dd4ae9f57cd
 	github.com/curioswitch/go-usegcp v0.0.0-20250604073322-8fa0305d8da6
-	github.com/go-chi/chi/v5 v5.2.1
-	google.golang.org/api v0.237.0
-	google.golang.org/genai v1.11.1
+	github.com/go-chi/chi/v5 v5.2.2
+	google.golang.org/api v0.238.0
+	google.golang.org/genai v1.12.0
 )
 
 require (
