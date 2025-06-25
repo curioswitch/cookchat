@@ -3,7 +3,7 @@ import { Button } from "@heroui/button";
 import { Divider } from "@heroui/divider";
 import { Image } from "@heroui/image";
 import { useQuery } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { HiShoppingCart } from "react-icons/hi";
 import { usePageContext } from "vike-react/usePageContext";
@@ -64,6 +64,15 @@ export default function Page() {
     }
   }, [recipeRes, inCart]);
 
+  const stepRefs = useRef<Array<HTMLElement | null>>([]);
+
+  const navigateToStep = useCallback((idx: number) => {
+    stepRefs.current[idx]?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, []);
+
   if (isPending) {
     return <div>Loading...</div>;
   }
@@ -85,7 +94,7 @@ export default function Page() {
       </div>
       <Divider className="mt-0 mb-4 -ml-4 w-screen bg-gray-100" />
       <Image src={recipe.imageUrl} />
-      <ChatButton recipeId={recipe.id} />
+      <ChatButton recipeId={recipe.id} navigateToStep={navigateToStep} />
       <h3 className="flex items-center justify-between">
         {t("Ingredients")}
         <Button color="primary" className="text-white" onPress={onCartToggle}>
@@ -104,8 +113,14 @@ export default function Page() {
       <h3>作り方</h3>
       <ol className="marker:font-bold list-none px-0">
         {recipe.steps.map((step, i) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: steps are unique
-          <li key={i} className="flex items-baseline gap-3 px-0">
+          <li
+            // biome-ignore lint/suspicious/noArrayIndexKey: steps are unique
+            key={i}
+            ref={(node) => {
+              stepRefs.current[i] = node;
+            }}
+            className="flex items-baseline gap-3 px-0"
+          >
             <div className="flex-1/10 bg-orange-400 text-white w-8 h-8 rounded-full flex justify-center items-center">
               {i + 1}
             </div>

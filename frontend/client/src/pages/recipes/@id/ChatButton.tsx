@@ -99,6 +99,7 @@ class ChatStream {
   constructor(
     private readonly genAI: GoogleGenAI,
     private readonly model: string,
+    private readonly navigateToStep: (idx: number) => void,
   ) {
     this.audioPlayer = new AudioPlayer();
     this.audioContext = new AudioContext({ sampleRate: 16_000 });
@@ -145,6 +146,12 @@ class ChatStream {
             };
             return;
           }
+          const toolCall = e.toolCall?.functionCalls?.[0];
+          if (toolCall?.name === "navigate_to_step" && toolCall.args) {
+            const idx = toolCall.args.step as number;
+            this.navigateToStep(idx);
+          }
+
           const inlineData = e.serverContent?.modelTurn?.parts?.[0]?.inlineData;
           const mimeType = inlineData?.mimeType;
           if (inlineData?.data && mimeType?.startsWith("audio/pcm")) {
@@ -176,7 +183,13 @@ class ChatStream {
   }
 }
 
-export default function ChatButton({ recipeId }: { recipeId: string }) {
+export default function ChatButton({
+  recipeId,
+  navigateToStep,
+}: {
+  recipeId: string;
+  navigateToStep: (idx: number) => void;
+}) {
   const [stream, setStream] = useState<ChatStream | undefined>(undefined);
 
   const frontendQueries = useFrontendQueries();
@@ -201,11 +214,11 @@ export default function ChatButton({ recipeId }: { recipeId: string }) {
       apiKey: res.chatApiKey,
       apiVersion: "v1alpha",
     });
-    const s = new ChatStream(genai, res.chatModel);
+    const s = new ChatStream(genai, res.chatModel, navigateToStep);
     await s.start();
     setStream(s);
     return false;
-  }, [queryClient, frontendQueries, stream, recipeId]);
+  }, [queryClient, frontendQueries, stream, recipeId, navigateToStep]);
 
   useEffect(() => {
     return () => {
