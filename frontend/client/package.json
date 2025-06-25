@@ -42,7 +42,7 @@
     "@biomejs/biome": "^2.0.5",
     "@tailwindcss/typography": "^0.5.16",
     "@tailwindcss/vite": "^4.1.10",
-    "@types/node": "^24.0.3",
+    "@types/node": "^24.0.4",
     "@types/react": "^19.1.8",
     "@vitejs/plugin-react-oxc": "^0.2.3",
     "firebase-tools": "^14.8.0",
