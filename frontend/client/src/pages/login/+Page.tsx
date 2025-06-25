@@ -1,3 +1,4 @@
+import { Button } from "@heroui/button";
 import { getApp } from "firebase/app";
 import {
   GoogleAuthProvider,
@@ -6,38 +7,34 @@ import {
   signInWithPopup,
   signInWithRedirect,
 } from "firebase/auth";
-import { useEffect, useRef } from "react";
+import { useCallback } from "react";
 import { navigate } from "vike/client/router";
 
 export default function Page() {
-  const initialized = useRef(false);
-  useEffect(() => {
-    if (initialized.current) {
-      return;
-    }
-    initialized.current = true;
-    const signin = async () => {
-      const auth = getAuth(getApp());
-      const provider = new GoogleAuthProvider();
-      if (import.meta.env.PROD) {
-        try {
-          const result = await getRedirectResult(auth);
-          if (result) {
-            navigate("/");
-            return;
-          }
-        } catch (error) {
-          console.error("Error during sign-in redirect:", error);
+  const onLoginClick = useCallback(async () => {
+    const auth = getAuth(getApp());
+    const provider = new GoogleAuthProvider();
+    if (import.meta.env.PROD) {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          navigate("/");
           return;
         }
-        await signInWithRedirect(auth, provider);
-      } else {
-        await signInWithPopup(auth, provider);
-        navigate("/");
+      } catch (error) {
+        console.error("Error during sign-in redirect:", error);
+        return;
       }
-    };
-    signin();
+      await signInWithRedirect(auth, provider);
+    } else {
+      await signInWithPopup(auth, provider);
+      navigate("/");
+    }
   }, []);
 
-  return <>Authenticating...</>;
+  return (
+    <Button className="mx-4 mt-4" onPress={onLoginClick} color="primary">
+      Login with Google
+    </Button>
+  );
 }
