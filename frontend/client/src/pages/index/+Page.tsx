@@ -5,6 +5,7 @@ import { Link } from "@heroui/link";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useRef, useState } from "react";
+
 import { useFrontendQueries } from "../../hooks/rpc";
 
 export default function Page() {

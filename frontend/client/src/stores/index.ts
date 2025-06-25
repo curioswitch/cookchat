@@ -1,6 +1,6 @@
 import type { Recipe } from "@cookchat/frontend-api";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 
 export type CartIngredient = {
   name: string;

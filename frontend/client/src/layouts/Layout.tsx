@@ -4,6 +4,7 @@ import { Link } from "@heroui/link";
 import { HiHeart, HiShoppingCart, HiUser, HiViewList } from "react-icons/hi";
 import { twMerge } from "tailwind-merge";
 import { usePageContext } from "vike-react/usePageContext";
+
 import { useCartStore } from "../stores";
 
 export default function Layout({ children }: { children: React.ReactNode }) {

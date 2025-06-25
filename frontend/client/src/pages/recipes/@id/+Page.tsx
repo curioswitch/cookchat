@@ -7,6 +7,7 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { HiShoppingCart } from "react-icons/hi";
 import { usePageContext } from "vike-react/usePageContext";
+
 import { BackButton } from "../../../components/BackButton";
 import { useFrontendQueries } from "../../../hooks/rpc";
 import {
@@ -14,6 +15,7 @@ import {
   removeRecipeFromCart,
   useCartStore,
 } from "../../../stores";
+
 import ChatButton from "./ChatButton";
 
 function Ingredients({ ingredients }: { ingredients: RecipeIngredient[] }) {
