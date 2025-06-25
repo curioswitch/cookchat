@@ -61,7 +61,9 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 			avoid overwhelming the user. For any numeric quantities, divide or multiple so it matches the number of
 			people being cooked for, for example if the recipe is for 4 people and the user is cooking for 2, divide
 			by 2. Ingredient names may be prefaced by a symbol such as a star. When a recipe step uses the symbol,
-			speak the ingredient names instead of the symbol.
+			speak the ingredient names instead of the symbol. When proceeding to the next step of the recipe, use the
+			"navigate_to_step" tool to navigate the UI to the step index, starting from 0 for the first step. You will
+			call the tool before reading the first step after reading the ingredients.
 
 			If the user asks any questions, answer them in a friendly and helpful manner. Always speak slowly and
 			clearly.
@@ -86,6 +88,27 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 				Parts: []*genai.Part{
 					{
 						Text: prompt,
+					},
+				},
+			},
+			Tools: []*genai.Tool{
+				{
+					FunctionDeclarations: []*genai.FunctionDeclaration{
+						{
+							Name:        "navigate_to_step",
+							Description: "Navigate the UI to a specific step in the recipe.",
+							Behavior:    genai.BehaviorNonBlocking,
+							Parameters: &genai.Schema{
+								Type: "object",
+								Properties: map[string]*genai.Schema{
+									"step": {
+										Type:        "integer",
+										Description: "The index of the step to navigate to, starting from 0.",
+									},
+								},
+								Required: []string{"step"},
+							},
+						},
 					},
 				},
 			},
@@ -140,6 +163,7 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 type bidiGenerateContentSetup struct {
 	Model             string                  `json:"model"`
 	SystemInstruction *genai.Content          `json:"systemInstruction,omitempty"`
+	Tools             []*genai.Tool           `json:"tools,omitempty"`
 	GenerationConfig  genai.LiveConnectConfig `json:"generationConfig"`
 }
 
