@@ -22,10 +22,13 @@ function Authorizer({ children }: { children: React.ReactNode }) {
     if (firebase.user) {
       const next = pageCtx.urlParsed.search.next;
       if (next) {
-        navigate(decodeURIComponent(next));
-      } else {
-        navigate("/");
+        const nextDecoded = decodeURIComponent(next);
+        if (nextDecoded.startsWith("/")) {
+          navigate(decodeURIComponent(next));
+          return;
+        }
       }
+      navigate("/");
       return;
     }
   } else if (!firebase.user) {
