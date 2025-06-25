@@ -14,8 +14,12 @@ function Authorizer({ children }: { children: React.ReactNode }) {
   const firebase = useFirebase();
   const pageCtx = usePageContext();
 
+  if (import.meta.env.SSR) {
+    return <div>{children}</div>;
+  }
+
   if (!firebase?.userResolved) {
-    return;
+    return <div />;
   }
 
   if (pageCtx.urlPathname === "/login") {
@@ -24,19 +28,19 @@ function Authorizer({ children }: { children: React.ReactNode }) {
       if (next) {
         const nextDecoded = decodeURIComponent(next);
         if (nextDecoded.startsWith("/")) {
-          navigate(decodeURIComponent(next));
-          return;
+          navigate(nextDecoded);
+          return <div />;
         }
       }
       navigate("/");
-      return;
+      return <div />;
     }
   } else if (!firebase.user) {
     navigate(`/login?next=${encodeURIComponent(pageCtx.urlPathname)}`);
-    return;
+    return <div />;
   }
 
-  return <>{children}</>;
+  return <div>{children}</div>;
 }
 
 export default function Wrapper({ children }: { children: React.ReactNode }) {
