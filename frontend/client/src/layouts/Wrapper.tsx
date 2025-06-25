@@ -20,11 +20,16 @@ function Authorizer({ children }: { children: React.ReactNode }) {
 
   if (pageCtx.urlPathname === "/login") {
     if (firebase.user) {
-      navigate("/");
+      const next = pageCtx.urlParsed.search.next;
+      if (next) {
+        navigate(decodeURIComponent(next));
+      } else {
+        navigate("/");
+      }
       return;
     }
   } else if (!firebase.user) {
-    navigate("/login");
+    navigate(`/login?next=${encodeURIComponent(pageCtx.urlPathname)}`);
     return;
   }
 
