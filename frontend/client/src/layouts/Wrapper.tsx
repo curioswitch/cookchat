@@ -1,6 +1,7 @@
 import "./styles.css";
 
 import { HeroUIProvider } from "@heroui/system";
+import { useEffect } from "react";
 import { I18nextProvider } from "react-i18next";
 import { navigate } from "vike/client/router";
 import { usePageContext } from "vike-react/usePageContext";
@@ -14,31 +15,29 @@ function Authorizer({ children }: { children: React.ReactNode }) {
   const firebase = useFirebase();
   const pageCtx = usePageContext();
 
-  if (import.meta.env.SSR) {
-    return <div>{children}</div>;
-  }
-
-  if (!firebase?.userResolved) {
-    return <div />;
-  }
-
-  if (pageCtx.urlPathname === "/login") {
-    if (firebase.user) {
-      const next = pageCtx.urlParsed.search.next;
-      if (next) {
-        const nextDecoded = decodeURIComponent(next);
-        if (nextDecoded.startsWith("/")) {
-          navigate(nextDecoded);
-          return <div />;
-        }
-      }
-      navigate("/");
-      return <div />;
+  useEffect(() => {
+    if (!firebase) {
+      return;
     }
-  } else if (!firebase.user) {
-    navigate(`/login?next=${encodeURIComponent(pageCtx.urlPathname)}`);
-    return <div />;
-  }
+
+    if (pageCtx.urlPathname === "/login") {
+      if (firebase.user) {
+        const next = pageCtx.urlParsed.search.next;
+        if (next) {
+          const nextDecoded = decodeURIComponent(next);
+          if (nextDecoded.startsWith("/")) {
+            navigate(nextDecoded);
+            return;
+          }
+        }
+        navigate("/");
+        return;
+      }
+    } else if (!firebase.user) {
+      navigate(`/login?next=${encodeURIComponent(pageCtx.urlPathname)}`);
+      return;
+    }
+  }, [firebase, pageCtx]);
 
   return <div>{children}</div>;
 }
