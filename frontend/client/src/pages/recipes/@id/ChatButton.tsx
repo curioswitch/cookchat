@@ -64,7 +64,7 @@ class AudioPlayer {
 
       const chunk = this.queue.shift();
       if (!chunk) {
-        break;
+        continue;
       }
       // Create an AudioBuffer (Assuming 1 channel and 24k sample rate)
       const audioBuffer = this.audioCtx.createBuffer(1, chunk.length, 24000);

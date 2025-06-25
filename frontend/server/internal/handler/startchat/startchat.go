@@ -60,7 +60,8 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 			recipes have multiple actions in a single formatted step - proceed through each action individually to
 			avoid overwhelming the user. For any numeric quantities, divide or multiple so it matches the number of
 			people being cooked for, for example if the recipe is for 4 people and the user is cooking for 2, divide
-			by 2.
+			by 2. Ingredient names may be prefaced by a symbol such as a star. When a recipe step uses the symbol,
+			speak the ingredient names instead of the symbol.
 
 			If the user asks any questions, answer them in a friendly and helpful manner. Always speak slowly and
 			clearly.
@@ -75,7 +76,7 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 			`, recipePrompt)
 
 	// Until genai Go SDK supports token creation, issue request manually.
-	model := "gemini-2.0-flash-live-001"
+	model := "gemini-live-2.5-flash-preview"
 	cfg := tokenConfig{
 		Uses: 1,
 		BidiGenerateContentSetup: &bidiGenerateContentSetup{
