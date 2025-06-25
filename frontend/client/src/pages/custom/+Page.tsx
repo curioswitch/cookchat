@@ -1,7 +1,26 @@
-import { clientOnly } from "vike-react/clientOnly";
+import { Textarea } from "@heroui/input";
+import { useCallback, useState } from "react";
 
-const Chat = clientOnly(() => import("./Chat.jsx"));
+import ChatButton from "./ChatButton";
 
 export default function Page() {
-  return <Chat />;
+  const [recipeText, setRecipeText] = useState("");
+
+  const navigateToStep = useCallback(() => {}, []);
+
+  return (
+    <div className="p-10">
+      <h1 className="text-center">Let's cook!</h1>
+      <div className="flex flex-col gap-4">
+        <div>
+          <Textarea
+            name="recipe"
+            placeholder="Enter recipe"
+            onValueChange={setRecipeText}
+          />
+        </div>
+        <ChatButton recipeText={recipeText} navigateToStep={navigateToStep} />
+      </div>
+    </div>
+  );
 }

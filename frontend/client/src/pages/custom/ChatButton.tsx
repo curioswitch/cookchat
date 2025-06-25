@@ -7,8 +7,8 @@ import { Button } from "@heroui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 
-import { useFrontendQueries } from "../../../hooks/rpc";
-import MicWorkletURL from "../../../workers/MicWorklet?worker&url";
+import { useFrontendQueries } from "../../hooks/rpc";
+import MicWorkletURL from "../../workers/MicWorklet?worker&url";
 
 function convertPCM16ToFloat32(pcm: Uint8Array): Float32Array {
   const length = pcm.length / 2; // 16-bit audio, so 2 bytes per sample
@@ -183,10 +183,10 @@ class ChatStream {
 }
 
 export default function ChatButton({
-  recipeId,
+  recipeText,
   navigateToStep,
 }: {
-  recipeId: string;
+  recipeText: string;
   navigateToStep: (idx: number) => void;
 }) {
   const [stream, setStream] = useState<ChatStream | undefined>(undefined);
@@ -203,8 +203,8 @@ export default function ChatButton({
     const res = await queryClient.fetchQuery({
       ...frontendQueries.startChat({
         recipe: {
-          case: "recipeId",
-          value: recipeId,
+          case: "recipeText",
+          value: recipeText,
         },
       }),
       staleTime: 0,
@@ -217,7 +217,7 @@ export default function ChatButton({
     await s.start();
     setStream(s);
     return false;
-  }, [queryClient, frontendQueries, stream, recipeId, navigateToStep]);
+  }, [queryClient, frontendQueries, stream, recipeText, navigateToStep]);
 
   useEffect(() => {
     return () => {

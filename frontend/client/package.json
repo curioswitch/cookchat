@@ -5,7 +5,7 @@
   "scripts": {
     "build": "vike build",
     "dev": "vike dev",
-    "format": "biome check --fix --unsafe .",
+    "format": "biome check --write .",
     "lint": "biome check ."
   },
   "dependencies": {
