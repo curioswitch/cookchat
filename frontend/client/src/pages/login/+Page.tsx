@@ -7,28 +7,29 @@ import {
   signInWithPopup,
   signInWithRedirect,
 } from "firebase/auth";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { navigate } from "vike/client/router";
 
 export default function Page() {
+  useEffect(() => {
+    async function checkRedirectResult() {
+      const auth = getAuth(getApp());
+      try {
+        await getRedirectResult(auth);
+      } catch {
+        console.error("Error logging in");
+      }
+    }
+    checkRedirectResult();
+  }, []);
+
   const onLoginClick = useCallback(async () => {
     const auth = getAuth(getApp());
     const provider = new GoogleAuthProvider();
     if (import.meta.env.PROD) {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result) {
-          navigate("/");
-          return;
-        }
-      } catch (error) {
-        console.error("Error during sign-in redirect:", error);
-        return;
-      }
       await signInWithRedirect(auth, provider);
     } else {
       await signInWithPopup(auth, provider);
-      navigate("/");
     }
   }, []);
 
