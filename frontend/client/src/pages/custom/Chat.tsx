@@ -3,6 +3,7 @@ import { ChatRequestSchema } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
 import { Textarea } from "@heroui/input";
 import { type FormEventHandler, useCallback, useMemo, useState } from "react";
+
 import { useChatService } from "../../hooks/rpc";
 
 function convertFloat32ToInt16(float32Array: Float32Array): Int16Array {

@@ -32,6 +32,7 @@ import {
 import { createWebSocketClient } from "connect-es-ws";
 import type { User as FirebaseUser } from "firebase/auth";
 import { useMemo } from "react";
+
 import { useFirebase } from "../firebase";
 
 function createFirebaseAuthInterceptor(user: FirebaseUser): Interceptor {
