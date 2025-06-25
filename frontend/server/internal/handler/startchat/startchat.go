@@ -65,6 +65,9 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 			"navigate_to_step" tool to navigate the UI to the step index, starting from 0 for the first step. You will
 			call the tool before reading the first step after reading the ingredients.
 
+			When reading ingredients, 大# should be read as おおさじ#, 小# should be read as こさじ#,
+			#片 should be read as #へん。
+
 			If the user asks any questions, answer them in a friendly and helpful manner. Always speak slowly and
 			clearly.
 
