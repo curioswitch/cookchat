@@ -8,7 +8,6 @@ import {
   signInWithRedirect,
 } from "firebase/auth";
 import { useCallback, useEffect } from "react";
-import { navigate } from "vike/client/router";
 
 export default function Page() {
   useEffect(() => {

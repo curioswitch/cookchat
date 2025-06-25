@@ -2,10 +2,11 @@
   "hosting": {
     "public": "dist/client",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "trailingSlash": false,
     "redirects": [
       {
         "source": "/:path**/index.html",
-        "destination": "/:path/",
+        "destination": "/:path",
         "type": 301
       },
       {
