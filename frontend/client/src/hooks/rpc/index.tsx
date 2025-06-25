@@ -2,11 +2,9 @@ import { create, type MessageInitShape } from "@bufbuild/protobuf";
 import {
   Code,
   ConnectError,
-  createClient,
   type Interceptor,
   type Transport,
 } from "@connectrpc/connect";
-import { createTransport } from "@connectrpc/connect/protocol-connect";
 import {
   createInfiniteQueryOptions,
   createQueryOptions,
@@ -15,7 +13,6 @@ import {
 } from "@connectrpc/connect-query";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import {
-  ChatService,
   type GetRecipeRequestSchema,
   getRecipe,
   listRecipes,
@@ -29,7 +26,6 @@ import {
   QueryClientProvider,
   queryOptions,
 } from "@tanstack/react-query";
-import { createWebSocketClient } from "connect-es-ws";
 import type { User as FirebaseUser } from "firebase/auth";
 import { useMemo } from "react";
 
@@ -41,29 +37,6 @@ function createFirebaseAuthInterceptor(user: FirebaseUser): Interceptor {
     request.header.set("authorization", `Bearer ${idToken}`);
     return next(request);
   };
-}
-
-export function useChatService() {
-  const fbUser = useFirebase()?.user;
-
-  const transport = useMemo(() => {
-    const interceptors = fbUser ? [createFirebaseAuthInterceptor(fbUser)] : [];
-    return createTransport({
-      httpClient: createWebSocketClient(),
-      baseUrl: import.meta.env.PUBLIC_ENV__API_BASE ?? "/",
-      useBinaryFormat: true,
-      interceptors,
-      sendCompression: null,
-      acceptCompression: [],
-      compressMinBytes: 0,
-      readMaxBytes: 0xffffffff,
-      writeMaxBytes: 0xffffffff,
-    });
-  }, [fbUser]);
-
-  return useMemo(() => {
-    return createClient(ChatService, transport);
-  }, [transport]);
 }
 
 const MAX_RETRIES = 3;
