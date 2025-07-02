@@ -122,6 +122,58 @@ func (RecipeSource) EnumDescriptor() ([]byte, []int) {
 	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{1}
 }
 
+type StartChatRequest_ModelProvider int32
+
+const (
+	// The default model.
+	StartChatRequest_MODEL_PROVIDER_UNSPECIFIED StartChatRequest_ModelProvider = 0
+	// Google GenAI model.
+	StartChatRequest_MODEL_PROVIDER_GOOGLE_GENAI StartChatRequest_ModelProvider = 1
+	// OpenAI model.
+	StartChatRequest_MODEL_PROVIDER_OPENAI StartChatRequest_ModelProvider = 2
+)
+
+// Enum value maps for StartChatRequest_ModelProvider.
+var (
+	StartChatRequest_ModelProvider_name = map[int32]string{
+		0: "MODEL_PROVIDER_UNSPECIFIED",
+		1: "MODEL_PROVIDER_GOOGLE_GENAI",
+		2: "MODEL_PROVIDER_OPENAI",
+	}
+	StartChatRequest_ModelProvider_value = map[string]int32{
+		"MODEL_PROVIDER_UNSPECIFIED":  0,
+		"MODEL_PROVIDER_GOOGLE_GENAI": 1,
+		"MODEL_PROVIDER_OPENAI":       2,
+	}
+)
+
+func (x StartChatRequest_ModelProvider) Enum() *StartChatRequest_ModelProvider {
+	p := new(StartChatRequest_ModelProvider)
+	*p = x
+	return p
+}
+
+func (x StartChatRequest_ModelProvider) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (StartChatRequest_ModelProvider) Descriptor() protoreflect.EnumDescriptor {
+	return file_frontendapi_frontend_proto_enumTypes[2].Descriptor()
+}
+
+func (StartChatRequest_ModelProvider) Type() protoreflect.EnumType {
+	return &file_frontendapi_frontend_proto_enumTypes[2]
+}
+
+func (x StartChatRequest_ModelProvider) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use StartChatRequest_ModelProvider.Descriptor instead.
+func (StartChatRequest_ModelProvider) EnumDescriptor() ([]byte, []int) {
+	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{13, 0}
+}
+
 // The content of a chat message.
 type ChatContent struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -980,7 +1032,9 @@ type StartChatRequest struct {
 	//
 	//	*StartChatRequest_RecipeText
 	//	*StartChatRequest_RecipeId
-	Recipe        isStartChatRequest_Recipe `protobuf_oneof:"recipe"`
+	Recipe isStartChatRequest_Recipe `protobuf_oneof:"recipe"`
+	// The model provider to use for the chat.
+	ModelProvider StartChatRequest_ModelProvider `protobuf:"varint,4,opt,name=model_provider,json=modelProvider,proto3,enum=frontendapi.StartChatRequest_ModelProvider" json:"model_provider,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1040,6 +1094,13 @@ func (x *StartChatRequest) GetRecipeId() string {
 	return ""
 }
 
+func (x *StartChatRequest) GetModelProvider() StartChatRequest_ModelProvider {
+	if x != nil {
+		return x.ModelProvider
+	}
+	return StartChatRequest_MODEL_PROVIDER_UNSPECIFIED
+}
+
 type isStartChatRequest_Recipe interface {
 	isStartChatRequest_Recipe()
 }
@@ -1064,9 +1125,11 @@ type StartChatResponse struct {
 	// The ephemeral API key to use to start the chat.
 	ChatApiKey string `protobuf:"bytes,1,opt,name=chat_api_key,json=chatApiKey,proto3" json:"chat_api_key,omitempty"`
 	// The chat model to use for the session.
-	ChatModel     string `protobuf:"bytes,2,opt,name=chat_model,json=chatModel,proto3" json:"chat_model,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	ChatModel string `protobuf:"bytes,2,opt,name=chat_model,json=chatModel,proto3" json:"chat_model,omitempty"`
+	// Instructions for the chat session.
+	ChatInstructions string `protobuf:"bytes,3,opt,name=chat_instructions,json=chatInstructions,proto3" json:"chat_instructions,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *StartChatResponse) Reset() {
@@ -1109,6 +1172,13 @@ func (x *StartChatResponse) GetChatApiKey() string {
 func (x *StartChatResponse) GetChatModel() string {
 	if x != nil {
 		return x.ChatModel
+	}
+	return ""
+}
+
+func (x *StartChatResponse) GetChatInstructions() string {
+	if x != nil {
+		return x.ChatInstructions
 	}
 	return ""
 }
@@ -1213,18 +1283,33 @@ var file_frontendapi_frontend_proto_rawDesc = string([]byte{
 	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e,
 	0x66, 0x72, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x64, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x67, 0x69,
 	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x22, 0x5e, 0x0a, 0x10, 0x53, 0x74, 0x61, 0x72, 0x74, 0x43, 0x68, 0x61, 0x74, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x21, 0x0a, 0x0b, 0x72, 0x65, 0x63, 0x69, 0x70, 0x65,
-	0x5f, 0x74, 0x65, 0x78, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x48, 0x00, 0x52, 0x0a, 0x72,
-	0x65, 0x63, 0x69, 0x70, 0x65, 0x54, 0x65, 0x78, 0x74, 0x12, 0x1d, 0x0a, 0x09, 0x72, 0x65, 0x63,
-	0x69, 0x70, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x48, 0x00, 0x52, 0x08,
-	0x72, 0x65, 0x63, 0x69, 0x70, 0x65, 0x49, 0x64, 0x42, 0x08, 0x0a, 0x06, 0x72, 0x65, 0x63, 0x69,
-	0x70, 0x65, 0x22, 0x54, 0x0a, 0x11, 0x53, 0x74, 0x61, 0x72, 0x74, 0x43, 0x68, 0x61, 0x74, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x20, 0x0a, 0x0c, 0x63, 0x68, 0x61, 0x74, 0x5f,
-	0x61, 0x70, 0x69, 0x5f, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x63,
-	0x68, 0x61, 0x74, 0x41, 0x70, 0x69, 0x4b, 0x65, 0x79, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x68, 0x61,
-	0x74, 0x5f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x63,
-	0x68, 0x61, 0x74, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x2a, 0x51, 0x0a, 0x08, 0x4c, 0x61, 0x6e, 0x67,
+	0x6f, 0x6e, 0x22, 0x9f, 0x02, 0x0a, 0x10, 0x53, 0x74, 0x61, 0x72, 0x74, 0x43, 0x68, 0x61, 0x74,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x21, 0x0a, 0x0b, 0x72, 0x65, 0x63, 0x69, 0x70,
+	0x65, 0x5f, 0x74, 0x65, 0x78, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x48, 0x00, 0x52, 0x0a,
+	0x72, 0x65, 0x63, 0x69, 0x70, 0x65, 0x54, 0x65, 0x78, 0x74, 0x12, 0x1d, 0x0a, 0x09, 0x72, 0x65,
+	0x63, 0x69, 0x70, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x48, 0x00, 0x52,
+	0x08, 0x72, 0x65, 0x63, 0x69, 0x70, 0x65, 0x49, 0x64, 0x12, 0x52, 0x0a, 0x0e, 0x6d, 0x6f, 0x64,
+	0x65, 0x6c, 0x5f, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28,
+	0x0e, 0x32, 0x2b, 0x2e, 0x66, 0x72, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x64, 0x61, 0x70, 0x69, 0x2e,
+	0x53, 0x74, 0x61, 0x72, 0x74, 0x43, 0x68, 0x61, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x2e, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x0d,
+	0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x22, 0x6b, 0x0a,
+	0x0d, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x12, 0x1e,
+	0x0a, 0x1a, 0x4d, 0x4f, 0x44, 0x45, 0x4c, 0x5f, 0x50, 0x52, 0x4f, 0x56, 0x49, 0x44, 0x45, 0x52,
+	0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x1f,
+	0x0a, 0x1b, 0x4d, 0x4f, 0x44, 0x45, 0x4c, 0x5f, 0x50, 0x52, 0x4f, 0x56, 0x49, 0x44, 0x45, 0x52,
+	0x5f, 0x47, 0x4f, 0x4f, 0x47, 0x4c, 0x45, 0x5f, 0x47, 0x45, 0x4e, 0x41, 0x49, 0x10, 0x01, 0x12,
+	0x19, 0x0a, 0x15, 0x4d, 0x4f, 0x44, 0x45, 0x4c, 0x5f, 0x50, 0x52, 0x4f, 0x56, 0x49, 0x44, 0x45,
+	0x52, 0x5f, 0x4f, 0x50, 0x45, 0x4e, 0x41, 0x49, 0x10, 0x02, 0x42, 0x08, 0x0a, 0x06, 0x72, 0x65,
+	0x63, 0x69, 0x70, 0x65, 0x22, 0x81, 0x01, 0x0a, 0x11, 0x53, 0x74, 0x61, 0x72, 0x74, 0x43, 0x68,
+	0x61, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x20, 0x0a, 0x0c, 0x63, 0x68,
+	0x61, 0x74, 0x5f, 0x61, 0x70, 0x69, 0x5f, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0a, 0x63, 0x68, 0x61, 0x74, 0x41, 0x70, 0x69, 0x4b, 0x65, 0x79, 0x12, 0x1d, 0x0a, 0x0a,
+	0x63, 0x68, 0x61, 0x74, 0x5f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x09, 0x63, 0x68, 0x61, 0x74, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x12, 0x2b, 0x0a, 0x11, 0x63,
+	0x68, 0x61, 0x74, 0x5f, 0x69, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x10, 0x63, 0x68, 0x61, 0x74, 0x49, 0x6e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2a, 0x51, 0x0a, 0x08, 0x4c, 0x61, 0x6e, 0x67,
 	0x75, 0x61, 0x67, 0x65, 0x12, 0x18, 0x0a, 0x14, 0x4c, 0x41, 0x4e, 0x47, 0x55, 0x41, 0x47, 0x45,
 	0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x14,
 	0x0a, 0x10, 0x4c, 0x41, 0x4e, 0x47, 0x55, 0x41, 0x47, 0x45, 0x5f, 0x45, 0x4e, 0x47, 0x4c, 0x49,
@@ -1274,53 +1359,55 @@ func file_frontendapi_frontend_proto_rawDescGZIP() []byte {
 	return file_frontendapi_frontend_proto_rawDescData
 }
 
-var file_frontendapi_frontend_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_frontendapi_frontend_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
 var file_frontendapi_frontend_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_frontendapi_frontend_proto_goTypes = []any{
-	(Language)(0),               // 0: frontendapi.Language
-	(RecipeSource)(0),           // 1: frontendapi.RecipeSource
-	(*ChatContent)(nil),         // 2: frontendapi.ChatContent
-	(*ChatRequest)(nil),         // 3: frontendapi.ChatRequest
-	(*ChatResponse)(nil),        // 4: frontendapi.ChatResponse
-	(*RecipeIngredient)(nil),    // 5: frontendapi.RecipeIngredient
-	(*RecipeStep)(nil),          // 6: frontendapi.RecipeStep
-	(*IngredientSection)(nil),   // 7: frontendapi.IngredientSection
-	(*Recipe)(nil),              // 8: frontendapi.Recipe
-	(*GetRecipeRequest)(nil),    // 9: frontendapi.GetRecipeRequest
-	(*GetRecipeResponse)(nil),   // 10: frontendapi.GetRecipeResponse
-	(*Pagination)(nil),          // 11: frontendapi.Pagination
-	(*RecipeSnippet)(nil),       // 12: frontendapi.RecipeSnippet
-	(*ListRecipesRequest)(nil),  // 13: frontendapi.ListRecipesRequest
-	(*ListRecipesResponse)(nil), // 14: frontendapi.ListRecipesResponse
-	(*StartChatRequest)(nil),    // 15: frontendapi.StartChatRequest
-	(*StartChatResponse)(nil),   // 16: frontendapi.StartChatResponse
+	(Language)(0),                       // 0: frontendapi.Language
+	(RecipeSource)(0),                   // 1: frontendapi.RecipeSource
+	(StartChatRequest_ModelProvider)(0), // 2: frontendapi.StartChatRequest.ModelProvider
+	(*ChatContent)(nil),                 // 3: frontendapi.ChatContent
+	(*ChatRequest)(nil),                 // 4: frontendapi.ChatRequest
+	(*ChatResponse)(nil),                // 5: frontendapi.ChatResponse
+	(*RecipeIngredient)(nil),            // 6: frontendapi.RecipeIngredient
+	(*RecipeStep)(nil),                  // 7: frontendapi.RecipeStep
+	(*IngredientSection)(nil),           // 8: frontendapi.IngredientSection
+	(*Recipe)(nil),                      // 9: frontendapi.Recipe
+	(*GetRecipeRequest)(nil),            // 10: frontendapi.GetRecipeRequest
+	(*GetRecipeResponse)(nil),           // 11: frontendapi.GetRecipeResponse
+	(*Pagination)(nil),                  // 12: frontendapi.Pagination
+	(*RecipeSnippet)(nil),               // 13: frontendapi.RecipeSnippet
+	(*ListRecipesRequest)(nil),          // 14: frontendapi.ListRecipesRequest
+	(*ListRecipesResponse)(nil),         // 15: frontendapi.ListRecipesResponse
+	(*StartChatRequest)(nil),            // 16: frontendapi.StartChatRequest
+	(*StartChatResponse)(nil),           // 17: frontendapi.StartChatResponse
 }
 var file_frontendapi_frontend_proto_depIdxs = []int32{
-	2,  // 0: frontendapi.ChatRequest.content:type_name -> frontendapi.ChatContent
-	2,  // 1: frontendapi.ChatResponse.content:type_name -> frontendapi.ChatContent
-	5,  // 2: frontendapi.IngredientSection.ingredients:type_name -> frontendapi.RecipeIngredient
+	3,  // 0: frontendapi.ChatRequest.content:type_name -> frontendapi.ChatContent
+	3,  // 1: frontendapi.ChatResponse.content:type_name -> frontendapi.ChatContent
+	6,  // 2: frontendapi.IngredientSection.ingredients:type_name -> frontendapi.RecipeIngredient
 	1,  // 3: frontendapi.Recipe.source:type_name -> frontendapi.RecipeSource
-	5,  // 4: frontendapi.Recipe.ingredients:type_name -> frontendapi.RecipeIngredient
-	7,  // 5: frontendapi.Recipe.additional_ingredients:type_name -> frontendapi.IngredientSection
-	6,  // 6: frontendapi.Recipe.steps:type_name -> frontendapi.RecipeStep
+	6,  // 4: frontendapi.Recipe.ingredients:type_name -> frontendapi.RecipeIngredient
+	8,  // 5: frontendapi.Recipe.additional_ingredients:type_name -> frontendapi.IngredientSection
+	7,  // 6: frontendapi.Recipe.steps:type_name -> frontendapi.RecipeStep
 	0,  // 7: frontendapi.Recipe.language:type_name -> frontendapi.Language
-	8,  // 8: frontendapi.GetRecipeResponse.recipe:type_name -> frontendapi.Recipe
-	11, // 9: frontendapi.ListRecipesRequest.pagination:type_name -> frontendapi.Pagination
-	12, // 10: frontendapi.ListRecipesResponse.recipes:type_name -> frontendapi.RecipeSnippet
-	11, // 11: frontendapi.ListRecipesResponse.pagination:type_name -> frontendapi.Pagination
-	3,  // 12: frontendapi.ChatService.Chat:input_type -> frontendapi.ChatRequest
-	9,  // 13: frontendapi.FrontendService.GetRecipe:input_type -> frontendapi.GetRecipeRequest
-	13, // 14: frontendapi.FrontendService.ListRecipes:input_type -> frontendapi.ListRecipesRequest
-	15, // 15: frontendapi.FrontendService.StartChat:input_type -> frontendapi.StartChatRequest
-	4,  // 16: frontendapi.ChatService.Chat:output_type -> frontendapi.ChatResponse
-	10, // 17: frontendapi.FrontendService.GetRecipe:output_type -> frontendapi.GetRecipeResponse
-	14, // 18: frontendapi.FrontendService.ListRecipes:output_type -> frontendapi.ListRecipesResponse
-	16, // 19: frontendapi.FrontendService.StartChat:output_type -> frontendapi.StartChatResponse
-	16, // [16:20] is the sub-list for method output_type
-	12, // [12:16] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	9,  // 8: frontendapi.GetRecipeResponse.recipe:type_name -> frontendapi.Recipe
+	12, // 9: frontendapi.ListRecipesRequest.pagination:type_name -> frontendapi.Pagination
+	13, // 10: frontendapi.ListRecipesResponse.recipes:type_name -> frontendapi.RecipeSnippet
+	12, // 11: frontendapi.ListRecipesResponse.pagination:type_name -> frontendapi.Pagination
+	2,  // 12: frontendapi.StartChatRequest.model_provider:type_name -> frontendapi.StartChatRequest.ModelProvider
+	4,  // 13: frontendapi.ChatService.Chat:input_type -> frontendapi.ChatRequest
+	10, // 14: frontendapi.FrontendService.GetRecipe:input_type -> frontendapi.GetRecipeRequest
+	14, // 15: frontendapi.FrontendService.ListRecipes:input_type -> frontendapi.ListRecipesRequest
+	16, // 16: frontendapi.FrontendService.StartChat:input_type -> frontendapi.StartChatRequest
+	5,  // 17: frontendapi.ChatService.Chat:output_type -> frontendapi.ChatResponse
+	11, // 18: frontendapi.FrontendService.GetRecipe:output_type -> frontendapi.GetRecipeResponse
+	15, // 19: frontendapi.FrontendService.ListRecipes:output_type -> frontendapi.ListRecipesResponse
+	17, // 20: frontendapi.FrontendService.StartChat:output_type -> frontendapi.StartChatResponse
+	17, // [17:21] is the sub-list for method output_type
+	13, // [13:17] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_frontendapi_frontend_proto_init() }
@@ -1345,7 +1432,7 @@ func file_frontendapi_frontend_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_frontendapi_frontend_proto_rawDesc), len(file_frontendapi_frontend_proto_rawDesc)),
-			NumEnums:      2,
+			NumEnums:      3,
 			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   2,
