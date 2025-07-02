@@ -64,12 +64,11 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 			recipes have multiple actions in a single formatted step - proceed through each action individually to
 			avoid overwhelming the user. For any numeric quantities, divide or multiple so it matches the number of
 			people being cooked for, for example if the recipe is for 4 people and the user is cooking for 2, divide
-			by 2.
-			
-			Ingredient names may be prefaced by a symbol such as a star. When a recipe step uses the symbol,
-			speak the ingredient names instead of the symbol. When proceeding to the next step of the recipe, use the
+			by 2. Ingredient names may be prefaced by a symbol such as a star. When a recipe step uses the symbol,
+			speak the ingredient names instead of the symbol. When proceeding to a step of the recipe, use the
 			"navigate_to_step" tool to navigate the UI to the step index, starting from 0 for the first step. You will
-			call the tool before reading the first step after reading the ingredients.
+			call the tool before reading the first step after reading the ingredients and anytime you navigate forward
+			or backward to a step.
 
 			When reading ingredients, 大# should be read as おおさじ#, 小# should be read as こさじ#,
 			#片 should be read as #へん。
