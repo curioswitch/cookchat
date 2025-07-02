@@ -57,7 +57,7 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 			of people. Divide or multiply the numbers in the recipe if the number of people doesn't match the recipe.
 			If the recipe does not specify a number of people, assume it matches. After listing out the ingredients,
 			ask the user to tell you when they are ready to begin. Do not proceed if they only acknowledge you with
-			something like "はい" or "わかりました". Wait for them to say more clearly they are ready, for example.
+			something like "はい" or "わかりました". Wait for them to say more clearly they are ready.
 			
 			When they are ready, walk them through the recipe
 			one action at a time, pausing after each action until the user says they are ready to continue. Many
