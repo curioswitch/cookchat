@@ -1,11 +1,15 @@
+import { StartChatRequest_ModelProvider } from "@cookchat/frontend-api";
 import {
   GoogleGenAI,
   type LiveServerMessage,
   type Session,
 } from "@google/genai";
 import { Button } from "@heroui/button";
+import { Switch } from "@heroui/switch";
+import { RealtimeAgent, RealtimeSession } from "@openai/agents-realtime";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
+import { AiFillGoogleCircle, AiFillOpenAI } from "react-icons/ai";
 
 import { useFrontendQueries } from "../../../hooks/rpc";
 import MicWorkletURL from "../../../workers/MicWorklet?worker&url";
@@ -182,6 +186,18 @@ class ChatStream {
   }
 }
 
+interface ChatSession {
+  stop(): void;
+}
+
+class OpenAISession implements ChatSession {
+  constructor(private readonly session: RealtimeSession) {}
+
+  stop(): void {
+    this.session.close();
+  }
+}
+
 export default function ChatButton({
   recipeId,
   navigateToStep,
@@ -189,7 +205,8 @@ export default function ChatButton({
   recipeId: string;
   navigateToStep: (idx: number) => void;
 }) {
-  const [stream, setStream] = useState<ChatStream | undefined>(undefined);
+  const [stream, setStream] = useState<ChatSession | undefined>(undefined);
+  const [useOpenAI, setUseOpenAI] = useState(false);
 
   const frontendQueries = useFrontendQueries();
   const queryClient = useQueryClient();
@@ -200,24 +217,78 @@ export default function ChatButton({
       setStream(undefined);
       return false;
     }
+
+    const modelProvider = useOpenAI
+      ? StartChatRequest_ModelProvider.OPENAI
+      : StartChatRequest_ModelProvider.GOOGLE_GENAI;
+
     const res = await queryClient.fetchQuery({
       ...frontendQueries.startChat({
         recipe: {
           case: "recipeId",
           value: recipeId,
         },
+        modelProvider,
       }),
       staleTime: 0,
     });
-    const genai = new GoogleGenAI({
-      apiKey: res.chatApiKey,
-      apiVersion: "v1alpha",
-    });
-    const s = new ChatStream(genai, res.chatModel, navigateToStep);
-    await s.start();
-    setStream(s);
+
+    if (modelProvider === StartChatRequest_ModelProvider.OPENAI) {
+      const agent = new RealtimeAgent({
+        name: "CookChat",
+        instructions: res.chatInstructions,
+        voice: "sage",
+        tools: [
+          {
+            name: "navigate_to_step",
+            description: "Navigate the UI to a specific step in the recipe.",
+            type: "function",
+            parameters: {
+              type: "object",
+              properties: {
+                step: {
+                  type: "integer",
+                  description:
+                    "The index of the step to navigate to, starting from 0.",
+                },
+              },
+              additionalProperties: false,
+              required: ["step"],
+            },
+            strict: false,
+            needsApproval: async () => false,
+            invoke: async (_, input) => {
+              const req = JSON.parse(input);
+              navigateToStep(req.step);
+              return "Done";
+            },
+          },
+        ],
+      });
+      const session = new RealtimeSession(agent, {
+        model: res.chatModel,
+      });
+      await session.connect({ apiKey: res.chatApiKey });
+      session.sendMessage("こんにちは！");
+      setStream(new OpenAISession(session));
+    } else {
+      const genai = new GoogleGenAI({
+        apiKey: res.chatApiKey,
+        apiVersion: "v1alpha",
+      });
+      const s = new ChatStream(genai, res.chatModel, navigateToStep);
+      await s.start();
+      setStream(s);
+    }
     return false;
-  }, [queryClient, frontendQueries, stream, recipeId, navigateToStep]);
+  }, [
+    queryClient,
+    frontendQueries,
+    stream,
+    recipeId,
+    navigateToStep,
+    useOpenAI,
+  ]);
 
   useEffect(() => {
     return () => {
@@ -228,8 +299,22 @@ export default function ChatButton({
   }, [stream]);
 
   return (
-    <Button fullWidth onPress={onClick}>
-      お喋り{stream ? "終了" : "スタート"}
-    </Button>
+    <div className="flex items-center gap-4">
+      <Button fullWidth onPress={onClick}>
+        お喋り{stream ? "終了" : "スタート"}
+      </Button>
+      <Switch
+        isSelected={useOpenAI}
+        onValueChange={setUseOpenAI}
+        color="default"
+        thumbIcon={({ isSelected, className }) =>
+          isSelected ? (
+            <AiFillOpenAI className={className} />
+          ) : (
+            <AiFillGoogleCircle className={className} />
+          )
+        }
+      />
+    </div>
   );
 }

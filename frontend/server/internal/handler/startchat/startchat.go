@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 
 	"cloud.google.com/go/firestore"
 	"connectrpc.com/connect"
@@ -55,12 +56,17 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 			people they are preparing for. When they answer, list out the required ingredients for the specified number
 			of people. Divide or multiply the numbers in the recipe if the number of people doesn't match the recipe.
 			If the recipe does not specify a number of people, assume it matches. After listing out the ingredients,
-			ask the user to tell you when they are ready to begin. When they are ready, walk them through the recipe
+			ask the user to tell you when they are ready to begin. Do not proceed if they only acknowledge you with
+			something like "はい" or "わかりました". Wait for them to say more clearly they are ready, for example.
+			
+			When they are ready, walk them through the recipe
 			one action at a time, pausing after each action until the user says they are ready to continue. Many
 			recipes have multiple actions in a single formatted step - proceed through each action individually to
 			avoid overwhelming the user. For any numeric quantities, divide or multiple so it matches the number of
 			people being cooked for, for example if the recipe is for 4 people and the user is cooking for 2, divide
-			by 2. Ingredient names may be prefaced by a symbol such as a star. When a recipe step uses the symbol,
+			by 2.
+			
+			Ingredient names may be prefaced by a symbol such as a star. When a recipe step uses the symbol,
 			speak the ingredient names instead of the symbol. When proceeding to the next step of the recipe, use the
 			"navigate_to_step" tool to navigate the UI to the step index, starting from 0 for the first step. You will
 			call the tool before reading the first step after reading the ingredients.
@@ -80,6 +86,17 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 			%s\n\n
 			`, recipePrompt)
 
+	switch req.GetModelProvider() {
+	case frontendapi.StartChatRequest_MODEL_PROVIDER_UNSPECIFIED, frontendapi.StartChatRequest_MODEL_PROVIDER_GOOGLE_GENAI:
+		return h.startChatGemini(ctx, prompt)
+	case frontendapi.StartChatRequest_MODEL_PROVIDER_OPENAI:
+		return h.startChatOpenAI(ctx, prompt)
+	}
+
+	return h.startChatOpenAI(ctx, prompt)
+}
+
+func (h *Handler) startChatGemini(ctx context.Context, prompt string) (*frontendapi.StartChatResponse, error) {
 	// Until genai Go SDK supports token creation, issue request manually.
 	model := "gemini-live-2.5-flash-preview"
 	cfg := tokenConfig{
@@ -177,4 +194,86 @@ type tokenConfig struct {
 
 type tokenResponse struct {
 	Name string `json:"name"`
+}
+
+type openaiTool struct {
+	Name        string       `json:"name"`
+	Description string       `json:"description"`
+	Type        string       `json:"type"`
+	Parameters  genai.Schema `json:"parameters"`
+}
+
+type realtimeSessionsRequest struct {
+	Model        string       `json:"model"`
+	Instructions string       `json:"instructions"`
+	Tools        []openaiTool `json:"tools"`
+	Voice        string       `json:"voice"`
+}
+
+type clientSecret struct {
+	Value string `json:"value"`
+}
+
+type realtimeSessionsResponse struct {
+	ClientSecret clientSecret `json:"client_secret"`
+}
+
+func (h *Handler) startChatOpenAI(ctx context.Context, prompt string) (*frontendapi.StartChatResponse, error) {
+	apiKey := os.Getenv("OPENAI_API_KEY")
+	model := "gpt-4o-realtime-preview"
+	req := realtimeSessionsRequest{
+		Model:        model,
+		Instructions: prompt,
+		Voice:        "echo",
+		Tools: []openaiTool{
+			{
+				Name:        "navigate_to_step",
+				Description: "Navigate the UI to a specific step in the recipe.",
+				Type:        "function",
+				Parameters: genai.Schema{
+					Type: "object",
+					Properties: map[string]*genai.Schema{
+						"step": {
+							Type:        "integer",
+							Description: "The index of the step to navigate to, starting from 0.",
+						},
+					},
+					Required: []string{"step"},
+				},
+			},
+		},
+	}
+
+	reqJSON, err := json.Marshal(req)
+	if err != nil {
+		return nil, fmt.Errorf("chat: marshalling realtime request: %w", err)
+	}
+
+	httpReq, _ := http.NewRequestWithContext(ctx, http.MethodPost, "https://api.openai.com/v1/realtime/sessions", bytes.NewReader(reqJSON))
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Authorization", "Bearer "+apiKey)
+	httpRes, err := http.DefaultClient.Do(httpReq)
+	if err != nil {
+		return nil, fmt.Errorf("startchat: sending realtime request: %w", err)
+	}
+	defer func() {
+		_ = httpRes.Body.Close()
+	}()
+	if httpRes.StatusCode != http.StatusOK {
+		body, err := io.ReadAll(httpRes.Body)
+		if err != nil {
+			return nil, fmt.Errorf("startchat: reading realtime error body: %w", err)
+		}
+		return nil, fmt.Errorf("startchat: realtime request failed with status %d: %s", httpRes.StatusCode, body) //nolint:err113
+	}
+
+	var res realtimeSessionsResponse
+	if err := json.NewDecoder(httpRes.Body).Decode(&res); err != nil {
+		return nil, fmt.Errorf("startchat: decoding realtime response: %w", err)
+	}
+	return &frontendapi.StartChatResponse{
+		ChatApiKey:       res.ClientSecret.Value,
+		ChatModel:        model,
+		ChatInstructions: prompt,
+	}, nil
 }

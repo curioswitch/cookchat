@@ -180,6 +180,19 @@ message StartChatRequest {
     // The ID of a cookchat recipe.
     string recipe_id = 3;
   }
+
+  enum ModelProvider {
+    // The default model.
+    MODEL_PROVIDER_UNSPECIFIED = 0;
+
+    // Google GenAI model.
+    MODEL_PROVIDER_GOOGLE_GENAI = 1;
+
+    // OpenAI model.
+    MODEL_PROVIDER_OPENAI = 2;
+  }
+  // The model provider to use for the chat.
+  ModelProvider model_provider = 4;
 }
 
 // A response to start a chat session.
@@ -189,6 +202,9 @@ message StartChatResponse {
 
   // The chat model to use for the session.
   string chat_model = 2;
+
+  // Instructions for the chat session.
+  string chat_instructions = 3;
 }
 
 service FrontendService {
