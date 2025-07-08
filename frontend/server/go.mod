@@ -12,8 +12,8 @@ require (
 	github.com/curioswitch/go-curiostack v0.0.0-20250625084549-3bfa7a6375a4
 	github.com/curioswitch/go-usegcp v0.0.0-20250604073322-8fa0305d8da6
 	github.com/go-chi/chi/v5 v5.2.2
-	google.golang.org/api v0.239.0
-	google.golang.org/genai v1.13.0
+	google.golang.org/api v0.240.0
+	google.golang.org/genai v1.14.0
 )
 
 require (
