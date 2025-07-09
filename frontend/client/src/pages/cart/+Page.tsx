@@ -1,11 +1,15 @@
+import { Button } from "@heroui/button";
 import { Checkbox } from "@heroui/checkbox";
+import { Input } from "@heroui/input";
 import { Link } from "@heroui/link";
-import { useCallback } from "react";
-import { HiShare } from "react-icons/hi";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { HiCheck, HiShare, HiTrash } from "react-icons/hi";
 
 import { BackButton } from "../../components/BackButton";
 import {
+  addExtraItemToCart,
   type CartIngredient,
+  removeExtraItemFromCart,
   toggleCartIngredientSelection,
   useCartStore,
 } from "../../stores";
@@ -45,8 +49,48 @@ function IngredientSelect({
   );
 }
 
+function ExtraItem({ item, idx }: { item: string; idx: number }) {
+  const onRemoveClick = useCallback(() => {
+    removeExtraItemFromCart(idx);
+  }, [idx]);
+
+  return (
+    <div className="flex items-center gap-2">
+      <HiTrash className="h-6 w-6" onClick={onRemoveClick} />
+      {item}
+    </div>
+  );
+}
+
 export default function Page() {
   const cart = useCartStore();
+
+  const [addingItem, setAddingItem] = useState(false);
+  const [extraItem, setExtraItem] = useState("");
+  const itemInput = useRef<HTMLInputElement | null>(null);
+
+  const onAddItemClick = useCallback(() => {
+    setAddingItem(true);
+  }, []);
+
+  const onAddItemSubmit = useCallback(() => {
+    setAddingItem(false);
+    const item = extraItem.trim();
+    if (item) {
+      addExtraItemToCart(item);
+    }
+    setExtraItem("");
+  }, [extraItem]);
+
+  useEffect(() => {
+    if (itemInput.current) {
+      if (addingItem) {
+        itemInput.current.focus();
+      } else {
+        itemInput.current.blur();
+      }
+    }
+  }, [addingItem]);
 
   const onShareClick = useCallback(() => {
     const texts = [];
@@ -61,6 +105,15 @@ ${recipe.ingredients
   .map((ingredient) => `${ingredient.name} (${ingredient.quantity})`)
   .join("\n")}
 `.trim(),
+      );
+    }
+    if (cart.extraItems) {
+      texts.push(
+        `
+追加の買い物:
+
+${cart.extraItems.join("\n")}
+      `.trim(),
       );
     }
     navigator.share({ text: texts.join("\n\n") });
@@ -101,6 +154,40 @@ ${recipe.ingredients
           </div>
         );
       })}
+      {cart.extraItems && (
+        <div className="mt-4">
+          <h4 className="text-gray-600">追加の買い物</h4>
+          {cart.extraItems.map((ingredient, i) => (
+            <ExtraItem
+              // biome-ignore lint/suspicious/noArrayIndexKey: free form array so index is the key
+              key={i}
+              item={ingredient}
+              idx={i}
+            />
+          ))}
+        </div>
+      )}
+      {addingItem ? (
+        <div className="flex items-center justify-center gap-2">
+          <Input
+            ref={itemInput}
+            placeholder="アイテム名"
+            className="mt-2"
+            value={extraItem}
+            onValueChange={setExtraItem}
+          />
+          <HiCheck onClick={onAddItemSubmit} className="h-8 w-8" />
+        </div>
+      ) : (
+        <Button
+          onPress={onAddItemClick}
+          fullWidth
+          className="text-white mt-2"
+          color="primary"
+        >
+          アイテムを追加
+        </Button>
+      )}
     </div>
   );
 }
