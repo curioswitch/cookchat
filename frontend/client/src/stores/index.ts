@@ -17,6 +17,7 @@ export type CartRecipe = {
 
 export type CartStore = {
   recipes: CartRecipe[];
+  extraItems?: string[];
 };
 
 export const useCartStore = create<CartStore>()(
@@ -59,6 +60,30 @@ export const removeRecipeFromCart = (recipeId: string) =>
   useCartStore.setState((state) => ({
     recipes: state.recipes.filter((recipe) => recipe.id !== recipeId),
   }));
+
+export const addExtraItemToCart = (item: string) =>
+  useCartStore.setState((state) => {
+    const extraItems = state.extraItems ?? [];
+    return {
+      ...state,
+      extraItems: [...extraItems, item],
+    };
+  });
+
+export const removeExtraItemFromCart = (idx: number) =>
+  useCartStore.setState((state) => {
+    const extraItems = (state.extraItems ?? []).filter((_, i) => i !== idx);
+    if (extraItems.length === 0) {
+      return {
+        ...state,
+        extraItems: undefined,
+      };
+    }
+    return {
+      ...state,
+      extraItems: extraItems,
+    };
+  });
 
 export const toggleCartIngredientSelection = (
   recipeId: string,
