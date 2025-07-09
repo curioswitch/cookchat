@@ -6,6 +6,7 @@ import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useRef, useState } from "react";
 
+import logoSVG from "../../assets/logo.svg";
 import { useFrontendQueries } from "../../hooks/rpc";
 
 export default function Page() {
@@ -45,7 +46,12 @@ export default function Page() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-semibold">COOKCHAT</h1>
+      <Image
+        radius="none"
+        src={logoSVG}
+        alt="CookChat Logo"
+        className="mt-2 mb-4"
+      />
       <Divider className="mt-0 mb-4 -ml-4 w-screen bg-gray-100" />
       <Input
         fullWidth
