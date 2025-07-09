@@ -1,5 +1,7 @@
 /// <reference types="./AudioWorklet.d.ts" />
 
+import type { create } from "@alexanderolsen/libsamplerate-js";
+
 class MicWorklet
   extends AudioWorkletProcessor
   implements AudioWorkletProcessorImpl
@@ -7,6 +9,20 @@ class MicWorklet
   private readonly buffer = new Int16Array(1024);
 
   private bufferWriteIndex = 0;
+  resampler: Awaited<ReturnType<typeof create>> | undefined;
+
+  constructor() {
+    super();
+    this.init();
+  }
+
+  async init() {
+    const { create, ConverterType } = globalThis.LibSampleRate;
+    const resampler = await create(1, sampleRate, 16_000, {
+      converterType: ConverterType.SRC_SINC_BEST_QUALITY,
+    });
+    this.resampler = resampler;
+  }
 
   process(inputs: Float32Array[][]): boolean {
     if (inputs[0].length > 0) {
@@ -17,10 +33,14 @@ class MicWorklet
   }
 
   private processChunk(chunk: Float32Array) {
-    const length = chunk.length;
+    if (!this.resampler) {
+      return;
+    }
+    const resampled = this.resampler.full(chunk);
+    const length = resampled.length;
     for (let i = 0; i < length; i++) {
       // convert float32 -1 to 1 to int16 -32768 to 32767
-      const int16Value = chunk[i] * 32768;
+      const int16Value = resampled[i] * 32768;
       this.buffer[this.bufferWriteIndex++] = int16Value;
       this.maybeSendBuffer();
     }

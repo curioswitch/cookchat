@@ -12,6 +12,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AiFillGoogleCircle, AiFillOpenAI } from "react-icons/ai";
 
 import { useFrontendQueries } from "../../../hooks/rpc";
+import LibSampleRateURL from "../../../workers/libsamplerate.worklet?worker&url";
 import MicWorkletURL from "../../../workers/MicWorklet?worker&url";
 
 function convertPCM16ToFloat32(pcm: Uint8Array): Float32Array {
@@ -70,7 +71,7 @@ class AudioPlayer {
         continue;
       }
       // Create an AudioBuffer (Assuming 1 channel and 24k sample rate)
-      const audioBuffer = this.audioCtx.createBuffer(1, chunk.length, 24000);
+      const audioBuffer = this.audioCtx.createBuffer(1, chunk.length, 24_000);
       audioBuffer.copyToChannel(chunk, 0);
       const source = this.audioCtx.createBufferSource();
       source.buffer = audioBuffer;
@@ -105,16 +106,17 @@ class ChatStream {
     private readonly navigateToStep: (idx: number) => void,
   ) {
     this.audioPlayer = new AudioPlayer();
-    this.audioContext = new AudioContext({ sampleRate: 16_000 });
+    this.audioContext = new AudioContext();
   }
 
   async start() {
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: true,
     });
-    const audioContext = new AudioContext({ sampleRate: 16000 });
+    const audioContext = this.audioContext;
     this.audioSource = audioContext.createMediaStreamSource(stream);
     await audioContext.audioWorklet.addModule(MicWorkletURL);
+    await audioContext.audioWorklet.addModule(LibSampleRateURL);
     this.micWorklet = new AudioWorkletNode(audioContext, "mic-worklet");
     this.audioSource.connect(this.micWorklet);
     this.micWorklet.connect(audioContext.destination);
