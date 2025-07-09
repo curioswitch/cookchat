@@ -64,7 +64,7 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 			"次のステップに進んでください" or "次のステップ". If they ask to go back a step, for example "前に戻って", go back.
 			Do not change step if the user didn't ask to change step. If they ask any questions, answer them in a
 			friendly and helpful manner.
-			For any numeric quantities, divide or multiple so it matches the number of
+			For any numeric quantities, divide or multiply so it matches the number of
 			people being cooked for, for example if the recipe is for 4 people and the user is cooking for 2, divide
 			by 2. Ingredient names may be prefaced by a symbol such as a star. When a recipe step uses the symbol,
 			speak the ingredient names instead of the symbol. When proceeding to a step of the recipe, use the
