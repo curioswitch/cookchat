@@ -2,6 +2,7 @@ package recipe
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -12,6 +13,7 @@ import (
 	"cloud.google.com/go/storage"
 	"github.com/gocolly/colly/v2"
 	"github.com/wandb/parallel"
+	"google.golang.org/genai"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -21,11 +23,12 @@ import (
 
 var errMalformedID = errors.New("cookpad:recipe: malformed ID in existing recipe")
 
-func NewHandler(baseCollector *colly.Collector, store *firestore.Client, storage *storage.Client, publicBucket string) *Handler {
+func NewHandler(baseCollector *colly.Collector, store *firestore.Client, storage *storage.Client, genAI *genai.Client, publicBucket string) *Handler {
 	return &Handler{
 		baseCollector: baseCollector,
 		store:         store,
 		storage:       storage,
+		genAI:         genAI,
 		publicBucket:  publicBucket,
 	}
 }
@@ -34,6 +37,7 @@ type Handler struct {
 	baseCollector *colly.Collector
 	store         *firestore.Client
 	storage       *storage.Client
+	genAI         *genai.Client // Not used in this handler, but included for consistency.
 	publicBucket  string
 }
 
@@ -47,6 +51,26 @@ func (h *Handler) CrawlCookpadRecipe(ctx context.Context, req *crawlerapi.CrawlC
 	var recipe *cookchatdb.Recipe
 
 	recipes := h.store.Collection("recipes")
+	doc := recipes.Doc("cookpad-" + req.GetRecipeId())
+	existing, err := doc.Get(ctx)
+	if err != nil && status.Code(err) != codes.NotFound {
+		return nil, fmt.Errorf("cookpad:recipe: failed to get existing recipe: %w", err)
+	}
+	if existing.Exists() {
+		var recipe *cookchatdb.Recipe
+		if err := existing.DataTo(&recipe); err != nil {
+			return nil, fmt.Errorf("cookpad:recipe: failed to unmarshal existing recipe: %w", err)
+		}
+		if err := h.postProcessRecipe(ctx, recipe); err != nil {
+			return nil, err
+		}
+		if _, err := doc.Set(ctx, recipe); err != nil {
+			return nil, fmt.Errorf("cookpad:recipe: failed to update existing recipe: %w", err)
+		}
+		return &crawlerapi.CrawlCookpadRecipeResponse{}, nil
+	}
+
+	// Follow firestore conventions for IDs, though we don't use it in the actual document ID.
 	recipeID := recipes.NewDoc().ID
 
 	c.OnHTML("div[id=recipe]", func(e *colly.HTMLElement) {
@@ -133,6 +157,7 @@ func (h *Handler) CrawlCookpadRecipe(ctx context.Context, req *crawlerapi.CrawlC
 		}
 
 		recipe = &cookchatdb.Recipe{
+			ID:                    recipeID,
 			Source:                cookchatdb.RecipeSourceCookpad,
 			SourceID:              req.GetRecipeId(),
 			UserID:                userID,
@@ -151,9 +176,10 @@ func (h *Handler) CrawlCookpadRecipe(ctx context.Context, req *crawlerapi.CrawlC
 		return nil, fmt.Errorf("cookpad:recipe: failed to scrape page: %w", err)
 	}
 
-	// Follow firestore conventions for IDs, though we don't use it in the actual document ID.
-	recipe.ID = recipes.NewDoc().ID
-	doc := recipes.Doc("cookpad-" + recipe.SourceID)
+	if err := h.postProcessRecipe(ctx, recipe); err != nil {
+		return nil, err
+	}
+
 	if _, err := doc.Create(ctx, recipe); err != nil {
 		if status.Code(err) != codes.AlreadyExists {
 			return nil, fmt.Errorf("cookpad:recipe: failed to create recipe: %w", err)
@@ -187,6 +213,145 @@ func (h *Handler) saveFile(ctx context.Context, path string, contents []byte) er
 	if _, err := w.Write(contents); err != nil {
 		return fmt.Errorf("cookpad:recipe: save image: %w", err)
 	}
+	return nil
+}
+
+func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Recipe) error {
+	if recipe.Content.Title == "" {
+		recipe.Content = cookchatdb.RecipeContent{
+			Title:                 recipe.Title,
+			Description:           recipe.Description,
+			Ingredients:           recipe.Ingredients,
+			AdditionalIngredients: recipe.AdditionalIngredients,
+			Steps:                 recipe.Steps,
+			Notes:                 recipe.Notes,
+			ServingSize:           recipe.ServingSize,
+		}
+	}
+	if len(recipe.StepImageURLs) == 0 {
+		recipe.StepImageURLs = make([]string, len(recipe.Steps))
+		for i, step := range recipe.Steps {
+			recipe.StepImageURLs[i] = step.ImageURL
+		}
+	}
+	if len(recipe.LocalizedContent) != 1 {
+		sourceJSON, err := json.Marshal(recipe.Content)
+		if err != nil {
+			return fmt.Errorf("cookpad:recipe: failed to marshal recipe content: %w", err)
+		}
+
+		ingredientsSchema := &genai.Schema{
+			Type:        "array",
+			Description: "The ingredients in English.",
+			Items: &genai.Schema{
+				Type:        "object",
+				Description: "An ingredient in the recipe.",
+				Properties: map[string]*genai.Schema{
+					"name": {
+						Type:        "string",
+						Description: "The name of the ingredient in English.",
+					},
+					"quantity": {
+						Type:        "string",
+						Description: "The quantity of the ingredient in English.",
+					},
+				},
+				Required: []string{"name", "quantity"},
+			},
+		}
+
+		res, err := h.genAI.Models.GenerateContent(ctx, "gemini-2.5-flash", []*genai.Content{
+			{
+				Role: "user",
+				Parts: []*genai.Part{
+					{
+						Text: string(sourceJSON),
+					},
+				},
+			},
+		}, &genai.GenerateContentConfig{
+			SystemInstruction: &genai.Content{
+				Role: "model",
+				Parts: []*genai.Part{
+					{
+						Text: "Translate the provided recipe from Japanese to English.",
+					},
+				},
+			},
+			ResponseMIMEType: "application/json",
+			ResponseSchema: &genai.Schema{
+				Type: "object",
+				Properties: map[string]*genai.Schema{
+					"en": {
+						Type:        "object",
+						Description: "The English translation of the recipe.",
+						Required:    []string{"title", "description", "ingredients", "additionalIngredients", "steps", "notes", "servingSize"},
+						Properties: map[string]*genai.Schema{
+							"title": {
+								Type:        "string",
+								Description: "The English translation of the recipe title.",
+							},
+							"description": {
+								Type:        "string",
+								Description: "The English translation of the recipe description.",
+							},
+							"ingredients": ingredientsSchema,
+							"additionalIngredients": {
+								Type:        "array",
+								Description: "The additional ingredients of the recipe in English, grouped into sections.",
+								Items: &genai.Schema{
+									Type:        "object",
+									Description: "An additional ingredient section in the recipe.",
+									Properties: map[string]*genai.Schema{
+										"title": {
+											Type:        "string",
+											Description: "The title of the additional ingredient section in English.",
+										},
+										"ingredients": ingredientsSchema,
+									},
+								},
+								Required: []string{"title", "ingredients"},
+							},
+							"steps": {
+								Type:        "array",
+								Description: "The steps of the recipe in English.",
+								Items: &genai.Schema{
+									Type:        "object",
+									Description: "A step in the recipe.",
+									Properties: map[string]*genai.Schema{
+										"description": {
+											Type:        "string",
+											Description: "The description of the step in English.",
+										},
+									},
+									Required: []string{"description"},
+								},
+							},
+							"notes": {
+								Type:        "string",
+								Description: "Additional notes or comments about the recipe in English.",
+							},
+							"servingSize": {
+								Type:        "string",
+								Description: "The serving size of the recipe in English.",
+							},
+						},
+					},
+				},
+			},
+		})
+		if err != nil {
+			return fmt.Errorf("cookpad:recipe: generate ai translation: %w", err)
+		}
+		if len(res.Candidates) != 1 || len(res.Candidates[0].Content.Parts) != 1 || res.Candidates[0].Content.Parts[0].Text == "" {
+			return fmt.Errorf("cookpad:recipe: unexpected response from generate ai: %v", res)
+		}
+		text := res.Candidates[0].Content.Parts[0].Text
+		if err := json.Unmarshal([]byte(text), &recipe.LocalizedContent); err != nil {
+			return fmt.Errorf("cookpad:recipe: failed to unmarshal localized content: %w", err)
+		}
+	}
+
 	return nil
 }
 
