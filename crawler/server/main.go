@@ -15,6 +15,7 @@ import (
 	"github.com/curioswitch/go-curiostack/otel"
 	"github.com/curioswitch/go-curiostack/server"
 	"github.com/gocolly/colly/v2"
+	"google.golang.org/genai"
 
 	crawlerapi "github.com/curioswitch/cookchat/crawler/api/go"
 	"github.com/curioswitch/cookchat/crawler/api/go/crawlerapiconnect"
@@ -68,9 +69,18 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		colly.UserAgent("CurioBot/0.1"),
 	)
 
+	genAI, err := genai.NewClient(ctx, &genai.ClientConfig{
+		Backend:  genai.BackendVertexAI,
+		Project:  conf.Google.Project,
+		Location: "global",
+	})
+	if err != nil {
+		return fmt.Errorf("creating genai client: %w", err)
+	}
+
 	server.HandleConnectUnary(s,
 		crawlerapiconnect.CrawlerServiceCrawlCookpadRecipeProcedure,
-		recipe.NewHandler(baseCollector, firestore, storage, publicBucket).CrawlCookpadRecipe,
+		recipe.NewHandler(baseCollector, firestore, storage, genAI, publicBucket).CrawlCookpadRecipe,
 		[]*crawlerapi.CrawlCookpadRecipeRequest{
 			{
 				RecipeId: "24664122",

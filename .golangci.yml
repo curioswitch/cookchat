@@ -16,7 +16,7 @@ linters:
     # - dupl - duplicate code can be useful many times
     - dupword
     - durationcheck
-    - err113
+    # - err113 - can't use Errorf
     - errchkjson
     - errname
     - errorlint

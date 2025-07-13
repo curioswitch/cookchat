@@ -7,6 +7,13 @@ const (
 	RecipeSourceCookpad RecipeSource = "cookpad"
 )
 
+type LanguageCode string
+
+const (
+	LanguageCodeEn LanguageCode = "en"
+	LanguageCodeJa LanguageCode = "ja"
+)
+
 // RecipeIngredient represents an ingredient in a recipe.
 type RecipeIngredient struct {
 	// Name is the name of the ingredient.
@@ -32,6 +39,30 @@ type IngredientSection struct {
 
 	// Ingredients are the ingredients in the section.
 	Ingredients []RecipeIngredient `firestore:"ingredients"`
+}
+
+// RecipeContent is the text content of a recipe.
+type RecipeContent struct {
+	// Title is the title of the recipe.
+	Title string `firestore:"title" json:"title"`
+
+	// Description is the description of the recipe.
+	Description string `firestore:"description" json:"description"`
+
+	// Ingredients are the main ingredients of the recipe.
+	Ingredients []RecipeIngredient `firestore:"ingredients" json:"ingredients"`
+
+	// AdditionalIngredients are additional ingredients grouped into sections.
+	AdditionalIngredients []IngredientSection `firestore:"additionalIngredients" json:"additionalIngredients"`
+
+	// Steps are the steps to prepare the recipe.
+	Steps []RecipeStep `firestore:"steps" json:"steps"`
+
+	// Notes are additional notes or comments about the recipe.
+	Notes string `firestore:"notes" json:"notes"`
+
+	// ServingSize is the serving size of the recipe as free-form text.
+	ServingSize string `firestore:"servingSize" json:"servingSize"`
 }
 
 // Recipe represents a recipe stored in Firestore.
@@ -66,13 +97,22 @@ type Recipe struct {
 	// Steps are the steps to prepare the recipe.
 	Steps []RecipeStep `firestore:"steps"`
 
+	// StepImageURLs are URLs for images of the steps in the recipe.
+	StepImageURLs []string `firestore:"stepImageUrls"`
+
 	// Notes are additional notes or comments about the recipe.
 	Notes string `firestore:"notes"`
 
-	// ServiceSize is the serving size of the recipe as free-form text.
+	// ServingSize is the serving size of the recipe as free-form text.
 	ServingSize string `firestore:"servingSize"`
 
-	// LanuageCode is the language code of the recipe.
+	// LanguageCode is the source language code of the recipe.
 	// For example, "en" for English, "ja" for Japanese.
 	LanguageCode string `firestore:"languageCode"`
+
+	// Content contains the content of the recipe in its source language.
+	Content RecipeContent `firestore:"content"`
+
+	// LocalizedContent contains localized content for the recipe.
+	LocalizedContent map[string]RecipeContent `firestore:"localizedContent,omitempty"`
 }
