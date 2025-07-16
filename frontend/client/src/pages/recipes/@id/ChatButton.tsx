@@ -213,7 +213,7 @@ export default function ChatButton({
   editPrompt: boolean;
 }) {
   const [stream, setStream] = useState<ChatSession | undefined>(undefined);
-  const [useOpenAI, setUseOpenAI] = useState(false);
+  const [useOpenAI, _setUseOpenAI] = useState(false);
   const [userPrompt, setUserPrompt] = useState(prompt || "");
   const [playing, setPlaying] = useState(false);
 
