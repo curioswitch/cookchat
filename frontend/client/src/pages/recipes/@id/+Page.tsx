@@ -1,11 +1,10 @@
 import type { RecipeIngredient } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
-import { Divider } from "@heroui/divider";
 import { Image } from "@heroui/image";
 import { useQuery } from "@tanstack/react-query";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { HiShoppingCart } from "react-icons/hi";
+import { HiAdjustments, HiShoppingCart, HiUsers } from "react-icons/hi";
 import { usePageContext } from "vike-react/usePageContext";
 
 import { BackButton } from "../../../components/BackButton";
@@ -48,6 +47,12 @@ export default function Page() {
   const cart = useCartStore();
   const inCart = cart.recipes.some((recipe) => recipe.id === recipeId);
 
+  const [editPrompt, setEditPrompt] = useState(false);
+
+  const onEditPromptClick = useCallback(() => {
+    setEditPrompt((prev) => !prev);
+  }, []);
+
   const onCartToggle = useCallback(() => {
     if (!recipeRes) {
       return;
@@ -87,56 +92,80 @@ export default function Page() {
   }
 
   return (
-    <div className="p-4">
-      <div className="flex items-center gap-2">
+    <div>
+      <div className="flex items-center justify-between gap-2 pb-2 p-2">
         <BackButton className="size-6" />
-        <h1 className="text-2xl font-semibold">{recipe.title}</h1>
+        <h1 className="text-2xl font-semibold mb-0">献立</h1>
+        <div className="size-6" />
       </div>
-      <Divider className="mt-0 mb-4 -ml-4 w-screen bg-gray-100" />
-      <Image src={recipe.imageUrl} />
-      <ChatButton
-        recipeId={recipe.id}
-        prompt={recipeRes.llmPrompt}
-        navigateToStep={navigateToStep}
-      />
-      <h3 className="flex items-center justify-between">
-        {t("Ingredients")}
-        <Button color="primary" className="text-white" onPress={onCartToggle}>
-          <HiShoppingCart className="size-5" />
-          買い物リスト{inCart ? "から削除" : "に追加"}
-        </Button>
-      </h3>
-      <p className="not-prose">{recipe.servingSize}</p>
-      <Ingredients ingredients={recipe.ingredients} />
-      {recipe.additionalIngredients.map((section) => (
-        <div key={section.title}>
-          <h3>{section.title}</h3>
-          <Ingredients ingredients={section.ingredients} />
+      <Image className="not-prose" radius="none" src={recipe.imageUrl} />
+      <div className="p-4">
+        <h3 className="font-semibold mt-0">{recipe.title}</h3>
+        <div className="flex items-center gap-2 mt-2">
+          <HiUsers className="size-6 text-gray-400" />
+          <span className="text-gray-500">{recipe.servingSize}</span>
         </div>
-      ))}
-      <h3>作り方</h3>
-      <ol className="marker:font-bold list-none px-0">
-        {recipe.steps.map((step, i) => (
-          <li
-            // biome-ignore lint/suspicious/noArrayIndexKey: steps are unique
-            key={i}
-            ref={(node) => {
-              stepRefs.current[i] = node;
-            }}
-            className="flex items-baseline gap-3 px-0"
-          >
-            <div className="flex-1/10 bg-orange-400 text-white w-8 h-8 rounded-full flex justify-center items-center">
-              {i + 1}
-            </div>
-            <div className="flex-9/10">
-              <p className="text-xl font-light">{step.description}</p>
-              {step.imageUrl && (
-                <Image className="mt-0 mb-0" width="100%" src={step.imageUrl} />
-              )}
-            </div>
-          </li>
+        <ChatButton
+          recipeId={recipe.id}
+          prompt={recipeRes.llmPrompt}
+          editPrompt={editPrompt}
+          navigateToStep={navigateToStep}
+        />
+      </div>
+      <div className="bg-gray-50 px-4 py-8">
+        <h3 className="flex items-center justify-between mt-0">
+          {t("Ingredients")}
+          <HiAdjustments className="size-8" onClick={onEditPromptClick} />
+        </h3>
+        <p className="not-prose">{recipe.servingSize}</p>
+        <Ingredients ingredients={recipe.ingredients} />
+        {recipe.additionalIngredients.map((section) => (
+          <div key={section.title}>
+            <h3>{section.title}</h3>
+            <Ingredients ingredients={section.ingredients} />
+          </div>
         ))}
-      </ol>
+        <div className="flex items-center justify-center mt-8">
+          <Button
+            color="primary"
+            className="text-white py-4 px-6"
+            onPress={onCartToggle}
+          >
+            <HiShoppingCart className="size-5" />
+            買い物リスト{inCart ? "から削除" : "に追加"}
+          </Button>
+        </div>
+      </div>
+      <div className="p-4">
+        <h3 className="mt-0">作り方</h3>
+        <ol className="marker:font-bold list-none px-0">
+          {recipe.steps.map((step, i) => (
+            <li
+              // biome-ignore lint/suspicious/noArrayIndexKey: steps are unique
+              key={i}
+              ref={(node) => {
+                stepRefs.current[i] = node;
+              }}
+              className="flex gap-3 px-0"
+            >
+              <div className="flex-1/12 bg-gray-400 text-white w-8 h-8 rounded-full flex justify-center items-center">
+                {i + 1}
+              </div>
+              <div className="flex-11/12">
+                {step.imageUrl && (
+                  <Image
+                    radius="sm"
+                    className="mt-0 mb-0"
+                    width="100%"
+                    src={step.imageUrl}
+                  />
+                )}
+                <p className="text-lg font-light">{step.description}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
     </div>
   );
 }
