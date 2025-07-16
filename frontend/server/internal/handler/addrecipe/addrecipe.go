@@ -50,6 +50,8 @@ func (h *Handler) AddRecipe(ctx context.Context, req *frontendapi.AddRecipeReque
 		recipe.LanguageCode = string(cookchatdb.LanguageCodeEn)
 	case frontendapi.Language_LANGUAGE_JAPANESE:
 		recipe.LanguageCode = string(cookchatdb.LanguageCodeJa)
+	case frontendapi.Language_LANGUAGE_UNSPECIFIED:
+		// Leave unset
 	}
 	for _, ingredient := range req.GetIngredients() {
 		recipe.Ingredients = append(recipe.Ingredients, cookchatdb.RecipeIngredient{
@@ -70,11 +72,11 @@ func (h *Handler) AddRecipe(ctx context.Context, req *frontendapi.AddRecipeReque
 		recipe.AdditionalIngredients = append(recipe.AdditionalIngredients, section)
 	}
 	if req.GetMainImageDataUrl() != "" {
-		if url, err := h.saveImage(ctx, fmt.Sprintf("recipes/%s/main-image", rID), req.GetMainImageDataUrl()); err != nil {
+		url, err := h.saveImage(ctx, fmt.Sprintf("recipes/%s/main-image", rID), req.GetMainImageDataUrl())
+		if err != nil {
 			return nil, fmt.Errorf("addrecipe: saving main image: %w", err)
-		} else {
-			recipe.ImageURL = url
 		}
+		recipe.ImageURL = url
 	}
 	for i, step := range req.GetSteps() {
 		imageURL := ""
