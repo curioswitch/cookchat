@@ -455,3 +455,5 @@ require (
 
 // TODO: Remove after golangci-lint release
 exclude github.com/nunnatsa/ginkgolinter v0.20.0
+
+replace github.com/dprotaso/go-yit => github.com/dprotaso/go-yit v0.0.0-20240618133044-5a0af90af097
