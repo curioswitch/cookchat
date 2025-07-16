@@ -5,6 +5,7 @@ go 1.24.5
 require (
 	cloud.google.com/go/discoveryengine v1.18.0
 	cloud.google.com/go/firestore v1.18.0
+	cloud.google.com/go/storage v1.55.0
 	connectrpc.com/connect v1.18.1
 	firebase.google.com/go/v4 v4.16.1
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
@@ -25,7 +26,6 @@ require (
 	cloud.google.com/go/iam v1.5.2 // indirect
 	cloud.google.com/go/longrunning v0.6.7 // indirect
 	cloud.google.com/go/monitoring v1.24.2 // indirect
-	cloud.google.com/go/storage v1.55.0 // indirect
 	connectrpc.com/otelconnect v0.7.2 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.29.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.53.0 // indirect
