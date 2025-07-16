@@ -41,7 +41,7 @@ func (h *Handler) GetRecipe(ctx context.Context, req *frontendapi.GetRecipeReque
 		return nil, fmt.Errorf("getrecipe: unmarshalling recipe: %w", err)
 	}
 	prompt := ""
-	if auth.IsCurioswitchUser(ctx) {
+	if auth.IsCurioSwitchUser(ctx) {
 		prompt = llm.Prompt
 	}
 	return &frontendapi.GetRecipeResponse{

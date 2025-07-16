@@ -5,6 +5,8 @@ type RecipeSource string
 const (
 	// RecipeSourceCookpad is the source for recipes from cookpad.
 	RecipeSourceCookpad RecipeSource = "cookpad"
+	// RecipeSourceUser is the source for user-submitted recipes.
+	RecipeSourceUser RecipeSource = "user"
 )
 
 type LanguageCode string

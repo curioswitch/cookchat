@@ -7,9 +7,9 @@ import (
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
 )
 
-// IsCurioswitchUser checks if the user is a Curioswitch user based on their email.
+// IsCurioSwitchUser checks if the user is a Curioswitch user based on their email.
 // Additional debug functions will be enabled.
-func IsCurioswitchUser(ctx context.Context) bool {
+func IsCurioSwitchUser(ctx context.Context) bool {
 	tok := firebaseauth.TokenFromContext(ctx)
 	if id, ok := tok.Firebase.Identities["email"]; ok {
 		if idAny, ok := id.([]any); ok && len(idAny) > 0 {

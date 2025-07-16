@@ -15,6 +15,7 @@ import (
 	"strings"
 
 	discoveryengine "cloud.google.com/go/discoveryengine/apiv1"
+	"cloud.google.com/go/storage"
 	firebase "firebase.google.com/go/v4"
 	"github.com/curioswitch/go-curiostack/server"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
@@ -24,6 +25,7 @@ import (
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
 	"github.com/curioswitch/cookchat/frontend/api/go/frontendapiconnect"
 	"github.com/curioswitch/cookchat/frontend/server/internal/config"
+	"github.com/curioswitch/cookchat/frontend/server/internal/handler/addrecipe"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getrecipe"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/listrecipes"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/startchat"
@@ -59,6 +61,17 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 			slog.ErrorContext(ctx, "main: close firestore client", "error", err)
 		}
 	}()
+
+	storage, err := storage.NewGRPCClient(ctx)
+	if err != nil {
+		return fmt.Errorf("main: create storage client: %w", err)
+	}
+	defer func() {
+		if err := storage.Close(); err != nil {
+			slog.ErrorContext(ctx, "main: close storage client", "error", err)
+		}
+	}()
+	publicBucket := conf.Google.Project + "-public"
 
 	search, err := discoveryengine.NewSearchClient(ctx)
 	if err != nil {
@@ -137,6 +150,76 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 			{
 				Recipe: &frontendapi.StartChatRequest_RecipeId{
 					RecipeId: "02JNMi0W1605TLxzQt6v",
+				},
+			},
+		})
+
+	server.HandleConnectUnary(s,
+		frontendapiconnect.FrontendServiceAddRecipeProcedure,
+		addrecipe.NewHandler(firestore, storage, publicBucket).AddRecipe,
+		[]*frontendapi.AddRecipeRequest{
+			{
+				Title:            "Test: 簡単・美味！トマトすき焼きパスタ",
+				ServingSize:      "2人分",
+				MainImageDataUrl: addRecipeStepImageURL,
+				Ingredients: []*frontendapi.RecipeIngredient{
+					{
+						Name:     "パスタ",
+						Quantity: "160~200g",
+					},
+					{
+						Name:     "牛肉",
+						Quantity: "150~200g",
+					},
+					{
+						Name:     "ミニトマト",
+						Quantity: "8~10個",
+					},
+					{
+						Name:     "玉ねぎ",
+						Quantity: "1/2個",
+					},
+					{
+						Name:     "油（炒め用）",
+						Quantity: "適量",
+					},
+				},
+				AdditionalIngredients: []*frontendapi.IngredientSection{
+					{
+						Title: "割り下",
+						Ingredients: []*frontendapi.RecipeIngredient{
+							{
+								Name:     "しょう油",
+								Quantity: "大2~3",
+							},
+							{
+								Name:     "みりん",
+								Quantity: "大1.5~2",
+							},
+							{
+								Name:     "砂糖",
+								Quantity: "大1~1.5",
+							},
+							{
+								Name:     "酒か水",
+								Quantity: "大1~1.5",
+							},
+						},
+					},
+				},
+				Steps: []*frontendapi.AddRecipeRequest_AddRecipeStep{
+					{
+						Description:  "材料を揃える。玉ねぎはくし切り、ミニトマトは半分に切っておく。割り下は混ぜておく。",
+						ImageDataUrl: addRecipeStepImageURL,
+					},
+					{
+						Description:  "材料を揃える。玉ねぎはくし切り、ミニトマトは半分に切っておく。割り下は混ぜておく。",
+						ImageDataUrl: addRecipeStepImageURL,
+					},
+					{
+						Description:  "材料を揃える。玉ねぎはくし切り、ミニトマトは半分に切っておく。割り下は混ぜておく。",
+						ImageDataUrl: addRecipeStepImageURL,
+					},
 				},
 			},
 		})
