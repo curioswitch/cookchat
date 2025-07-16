@@ -4,15 +4,14 @@ import {
   type LiveServerMessage,
   type Session,
 } from "@google/genai";
-import { Button } from "@heroui/button";
+import { Image } from "@heroui/image";
 import { Textarea } from "@heroui/input";
-import { Switch } from "@heroui/switch";
 import { RealtimeAgent, RealtimeSession } from "@openai/agents-realtime";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
-import { AiFillGoogleCircle, AiFillOpenAI } from "react-icons/ai";
-import { HiAdjustments } from "react-icons/hi";
+import { HiMicrophone, HiStop } from "react-icons/hi2";
 
+import speechSVG from "../../../assets/speech.svg";
 import { useFrontendQueries } from "../../../hooks/rpc";
 import LibSampleRateURL from "../../../workers/libsamplerate.worklet?worker&url";
 import MicWorkletURL from "../../../workers/MicWorklet?worker&url";
@@ -206,15 +205,17 @@ export default function ChatButton({
   recipeId,
   navigateToStep,
   prompt,
+  editPrompt,
 }: {
   recipeId: string;
   navigateToStep: (idx: number) => void;
   prompt?: string;
+  editPrompt: boolean;
 }) {
   const [stream, setStream] = useState<ChatSession | undefined>(undefined);
   const [useOpenAI, setUseOpenAI] = useState(false);
   const [userPrompt, setUserPrompt] = useState(prompt || "");
-  const [editPrompt, setEditPrompt] = useState(false);
+  const [playing, setPlaying] = useState(false);
 
   const frontendQueries = useFrontendQueries();
   const queryClient = useQueryClient();
@@ -223,8 +224,11 @@ export default function ChatButton({
     if (stream) {
       stream.stop();
       setStream(undefined);
+      setPlaying(false);
       return false;
     }
+
+    setPlaying(true);
 
     const modelProvider = useOpenAI
       ? StartChatRequest_ModelProvider.OPENAI
@@ -297,13 +301,9 @@ export default function ChatButton({
     recipeId,
     navigateToStep,
     useOpenAI,
-    editPrompt,
     userPrompt,
+    editPrompt,
   ]);
-
-  const onEditPromptClick = useCallback(() => {
-    setEditPrompt((prev) => !prev);
-  }, []);
 
   useEffect(() => {
     return () => {
@@ -315,25 +315,25 @@ export default function ChatButton({
 
   return (
     <>
-      <div className="flex items-center gap-4">
-        <Button fullWidth onPress={onClick}>
-          お喋り{stream ? "終了" : "スタート"}
-        </Button>
-        <Switch
-          isSelected={useOpenAI}
-          onValueChange={setUseOpenAI}
-          color="default"
-          thumbIcon={({ isSelected, className }) =>
-            isSelected ? (
-              <AiFillOpenAI className={className} />
-            ) : (
-              <AiFillGoogleCircle className={className} />
-            )
+      <div className="flex items-center gap-2 text-primary font-semibold">
+        <div className="flex-1/3 text-right">Coopiiと</div>
+        <button
+          type="button"
+          onClick={onClick}
+          className={
+            "flex-1/3 size-30 mic-bubble flex items-center justify-center cursor-pointer"
           }
-        />
-        {prompt && (
-          <HiAdjustments className="h-8 w-8" onClick={onEditPromptClick} />
-        )}
+        >
+          {!playing ? (
+            <HiMicrophone className="text-white size-6" />
+          ) : (
+            <HiStop className="text-white size-6" />
+          )}
+        </button>
+        <div className="flex-1/3 flex items-center">
+          話す
+          <Image src={speechSVG} alt="Speech" className="size-8" />
+        </div>
       </div>
       {editPrompt && (
         <Textarea

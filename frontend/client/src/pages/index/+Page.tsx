@@ -52,13 +52,13 @@ export default function Page() {
         alt="CookChat Logo"
         className="mt-2 mb-4"
       />
-      <Divider className="mt-0 mb-4 -ml-4 w-screen bg-gray-100" />
       <Input
         fullWidth
-        placeholder="作りたい料理は？"
+        placeholder="つくりたい料理は？"
         value={rawQuery}
         onValueChange={setRawQuery}
       />
+      <Divider className="mt-4 mb-4 -ml-4 w-screen bg-gray-100" />
       {(isPending && <div>Loading...</div>) || (
         <div className="flex flex-col">
           {recipes?.map((recipe, i) => (
@@ -66,12 +66,12 @@ export default function Page() {
               href={`/recipes/${recipe.id}`}
               color="foreground"
               key={recipe.id}
-              className="flex p-4 border-b-1 border-gray-100 items-center gap-4"
+              className="flex border-b-1 border-gray-100 items-center gap-4"
               ref={i === recipes.length - 1 ? handleLastItem : null}
             >
               <div className="flex-3/4">
-                <h3 className="font-semibold">{recipe.title}</h3>
-                <p className="text-small font-thin line-clamp-1">
+                <h3 className="mt-0 font-semibold">{recipe.title}</h3>
+                <p className="mb-2 text-small font-thin text-gray-400 line-clamp-1">
                   {recipe.summary}
                 </p>
               </div>
