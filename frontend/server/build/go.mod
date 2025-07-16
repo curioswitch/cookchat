@@ -1,6 +1,6 @@
 module github.com/curioswitch/cookchat/frontend/server/build
 
-go 1.24.4
+go 1.24.5
 
 require (
 	github.com/curioswitch/go-build v0.3.0
@@ -10,7 +10,7 @@ require (
 
 require (
 	github.com/fatih/color v1.18.0 // indirect
-	github.com/go-viper/mapstructure/v2 v2.3.0 // indirect
+	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/goyek/goyek/v2 v2.3.0 // indirect
 	github.com/knadh/koanf/maps v0.1.2 // indirect
 	github.com/knadh/koanf/parsers/yaml v1.1.0 // indirect

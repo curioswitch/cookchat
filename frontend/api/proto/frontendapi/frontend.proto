@@ -129,6 +129,10 @@ message GetRecipeRequest {
 message GetRecipeResponse {
   // The requested recipe.
   Recipe recipe = 1;
+
+  // The LLM prompt used to interact with the recipe.
+  // Only returned for users with debugging access.
+  string llm_prompt = 2;
 }
 
 // A token returned to retrieve a subsequent page of items.
@@ -193,6 +197,10 @@ message StartChatRequest {
   }
   // The model provider to use for the chat.
   ModelProvider model_provider = 4;
+
+  // The prompt to use with the chat.
+  // Only recognized for users with debugging access.
+  string llm_prompt = 5;
 }
 
 // A response to start a chat session.

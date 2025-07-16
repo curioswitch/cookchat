@@ -94,7 +94,11 @@ export default function Page() {
       </div>
       <Divider className="mt-0 mb-4 -ml-4 w-screen bg-gray-100" />
       <Image src={recipe.imageUrl} />
-      <ChatButton recipeId={recipe.id} navigateToStep={navigateToStep} />
+      <ChatButton
+        recipeId={recipe.id}
+        prompt={recipeRes.llmPrompt}
+        navigateToStep={navigateToStep}
+      />
       <h3 className="flex items-center justify-between">
         {t("Ingredients")}
         <Button color="primary" className="text-white" onPress={onCartToggle}>

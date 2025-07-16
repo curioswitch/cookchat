@@ -5,11 +5,13 @@ import {
   type Session,
 } from "@google/genai";
 import { Button } from "@heroui/button";
+import { Textarea } from "@heroui/input";
 import { Switch } from "@heroui/switch";
 import { RealtimeAgent, RealtimeSession } from "@openai/agents-realtime";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { AiFillGoogleCircle, AiFillOpenAI } from "react-icons/ai";
+import { HiAdjustments } from "react-icons/hi";
 
 import { useFrontendQueries } from "../../../hooks/rpc";
 import LibSampleRateURL from "../../../workers/libsamplerate.worklet?worker&url";
@@ -203,12 +205,16 @@ class OpenAISession implements ChatSession {
 export default function ChatButton({
   recipeId,
   navigateToStep,
+  prompt,
 }: {
   recipeId: string;
   navigateToStep: (idx: number) => void;
+  prompt?: string;
 }) {
   const [stream, setStream] = useState<ChatSession | undefined>(undefined);
   const [useOpenAI, setUseOpenAI] = useState(false);
+  const [userPrompt, setUserPrompt] = useState(prompt || "");
+  const [editPrompt, setEditPrompt] = useState(false);
 
   const frontendQueries = useFrontendQueries();
   const queryClient = useQueryClient();
@@ -231,6 +237,7 @@ export default function ChatButton({
           value: recipeId,
         },
         modelProvider,
+        llmPrompt: editPrompt ? userPrompt : undefined,
       }),
       staleTime: 0,
     });
@@ -290,7 +297,13 @@ export default function ChatButton({
     recipeId,
     navigateToStep,
     useOpenAI,
+    editPrompt,
+    userPrompt,
   ]);
+
+  const onEditPromptClick = useCallback(() => {
+    setEditPrompt((prev) => !prev);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -301,22 +314,34 @@ export default function ChatButton({
   }, [stream]);
 
   return (
-    <div className="flex items-center gap-4">
-      <Button fullWidth onPress={onClick}>
-        お喋り{stream ? "終了" : "スタート"}
-      </Button>
-      <Switch
-        isSelected={useOpenAI}
-        onValueChange={setUseOpenAI}
-        color="default"
-        thumbIcon={({ isSelected, className }) =>
-          isSelected ? (
-            <AiFillOpenAI className={className} />
-          ) : (
-            <AiFillGoogleCircle className={className} />
-          )
-        }
-      />
-    </div>
+    <>
+      <div className="flex items-center gap-4">
+        <Button fullWidth onPress={onClick}>
+          お喋り{stream ? "終了" : "スタート"}
+        </Button>
+        <Switch
+          isSelected={useOpenAI}
+          onValueChange={setUseOpenAI}
+          color="default"
+          thumbIcon={({ isSelected, className }) =>
+            isSelected ? (
+              <AiFillOpenAI className={className} />
+            ) : (
+              <AiFillGoogleCircle className={className} />
+            )
+          }
+        />
+        {prompt && (
+          <HiAdjustments className="h-8 w-8" onClick={onEditPromptClick} />
+        )}
+      </div>
+      {editPrompt && (
+        <Textarea
+          className="mt-2"
+          value={userPrompt}
+          onValueChange={setUserPrompt}
+        />
+      )}
+    </>
   );
 }
