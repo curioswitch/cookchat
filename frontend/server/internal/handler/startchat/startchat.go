@@ -54,8 +54,8 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 	}
 
 	prompt := llm.Prompt
-	if req.LlmPrompt != "" && auth.IsCurioswitchUser(ctx) {
-		prompt = req.LlmPrompt + "\n\n"
+	if req.GetLlmPrompt() != "" && auth.IsCurioswitchUser(ctx) {
+		prompt = req.GetLlmPrompt() + "\n\n"
 	}
 	prompt += recipePrompt + "\n\n"
 
