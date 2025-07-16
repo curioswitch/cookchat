@@ -215,6 +215,44 @@ message StartChatResponse {
   string chat_instructions = 3;
 }
 
+message AddRecipeRequest {
+  // The title of the recipe.
+  string title = 1;
+
+  // The main image of the recipe, as a data URL.
+  string main_image_data_url = 2;
+
+  // The description of the recipe.
+  string description = 3;
+
+  // The main ingredients of the recipe.
+  repeated RecipeIngredient ingredients = 4;
+
+  // Additional ingredients grouped into sections.
+  repeated IngredientSection additional_ingredients = 5;
+
+  message AddRecipeStep {
+    // The description of the step.
+    string description = 1;
+
+    // An image for the step, as a data URL.
+    string image_data_url = 2;
+  }
+  // The steps to prepare the recipe.
+  repeated AddRecipeStep steps = 6;
+
+  // The serving size of the recipe as free-form text.
+  string serving_size = 7;
+
+  // The language of the recipe.
+  Language language = 8;
+}
+
+message AddRecipeResponse {
+  // The ID of the newly added recipe.
+  string recipe_id = 1;
+}
+
 service FrontendService {
   // Get the recipe for a given recipe ID.
   rpc GetRecipe(GetRecipeRequest) returns (GetRecipeResponse);
@@ -224,4 +262,7 @@ service FrontendService {
 
   // Start a chat session.
   rpc StartChat(StartChatRequest) returns (StartChatResponse);
+
+  // Add a new recipe.
+  rpc AddRecipe(AddRecipeRequest) returns (AddRecipeResponse);
 }

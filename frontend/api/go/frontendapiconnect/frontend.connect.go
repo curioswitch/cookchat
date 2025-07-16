@@ -46,6 +46,9 @@ const (
 	// FrontendServiceStartChatProcedure is the fully-qualified name of the FrontendService's StartChat
 	// RPC.
 	FrontendServiceStartChatProcedure = "/frontendapi.FrontendService/StartChat"
+	// FrontendServiceAddRecipeProcedure is the fully-qualified name of the FrontendService's AddRecipe
+	// RPC.
+	FrontendServiceAddRecipeProcedure = "/frontendapi.FrontendService/AddRecipe"
 )
 
 // ChatServiceClient is a client for the frontendapi.ChatService service.
@@ -128,6 +131,8 @@ type FrontendServiceClient interface {
 	ListRecipes(context.Context, *connect.Request[_go.ListRecipesRequest]) (*connect.Response[_go.ListRecipesResponse], error)
 	// Start a chat session.
 	StartChat(context.Context, *connect.Request[_go.StartChatRequest]) (*connect.Response[_go.StartChatResponse], error)
+	// Add a new recipe.
+	AddRecipe(context.Context, *connect.Request[_go.AddRecipeRequest]) (*connect.Response[_go.AddRecipeResponse], error)
 }
 
 // NewFrontendServiceClient constructs a client for the frontendapi.FrontendService service. By
@@ -159,6 +164,12 @@ func NewFrontendServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(frontendServiceMethods.ByName("StartChat")),
 			connect.WithClientOptions(opts...),
 		),
+		addRecipe: connect.NewClient[_go.AddRecipeRequest, _go.AddRecipeResponse](
+			httpClient,
+			baseURL+FrontendServiceAddRecipeProcedure,
+			connect.WithSchema(frontendServiceMethods.ByName("AddRecipe")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -167,6 +178,7 @@ type frontendServiceClient struct {
 	getRecipe   *connect.Client[_go.GetRecipeRequest, _go.GetRecipeResponse]
 	listRecipes *connect.Client[_go.ListRecipesRequest, _go.ListRecipesResponse]
 	startChat   *connect.Client[_go.StartChatRequest, _go.StartChatResponse]
+	addRecipe   *connect.Client[_go.AddRecipeRequest, _go.AddRecipeResponse]
 }
 
 // GetRecipe calls frontendapi.FrontendService.GetRecipe.
@@ -184,6 +196,11 @@ func (c *frontendServiceClient) StartChat(ctx context.Context, req *connect.Requ
 	return c.startChat.CallUnary(ctx, req)
 }
 
+// AddRecipe calls frontendapi.FrontendService.AddRecipe.
+func (c *frontendServiceClient) AddRecipe(ctx context.Context, req *connect.Request[_go.AddRecipeRequest]) (*connect.Response[_go.AddRecipeResponse], error) {
+	return c.addRecipe.CallUnary(ctx, req)
+}
+
 // FrontendServiceHandler is an implementation of the frontendapi.FrontendService service.
 type FrontendServiceHandler interface {
 	// Get the recipe for a given recipe ID.
@@ -192,6 +209,8 @@ type FrontendServiceHandler interface {
 	ListRecipes(context.Context, *connect.Request[_go.ListRecipesRequest]) (*connect.Response[_go.ListRecipesResponse], error)
 	// Start a chat session.
 	StartChat(context.Context, *connect.Request[_go.StartChatRequest]) (*connect.Response[_go.StartChatResponse], error)
+	// Add a new recipe.
+	AddRecipe(context.Context, *connect.Request[_go.AddRecipeRequest]) (*connect.Response[_go.AddRecipeResponse], error)
 }
 
 // NewFrontendServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -219,6 +238,12 @@ func NewFrontendServiceHandler(svc FrontendServiceHandler, opts ...connect.Handl
 		connect.WithSchema(frontendServiceMethods.ByName("StartChat")),
 		connect.WithHandlerOptions(opts...),
 	)
+	frontendServiceAddRecipeHandler := connect.NewUnaryHandler(
+		FrontendServiceAddRecipeProcedure,
+		svc.AddRecipe,
+		connect.WithSchema(frontendServiceMethods.ByName("AddRecipe")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/frontendapi.FrontendService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case FrontendServiceGetRecipeProcedure:
@@ -227,6 +252,8 @@ func NewFrontendServiceHandler(svc FrontendServiceHandler, opts ...connect.Handl
 			frontendServiceListRecipesHandler.ServeHTTP(w, r)
 		case FrontendServiceStartChatProcedure:
 			frontendServiceStartChatHandler.ServeHTTP(w, r)
+		case FrontendServiceAddRecipeProcedure:
+			frontendServiceAddRecipeHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -246,4 +273,8 @@ func (UnimplementedFrontendServiceHandler) ListRecipes(context.Context, *connect
 
 func (UnimplementedFrontendServiceHandler) StartChat(context.Context, *connect.Request[_go.StartChatRequest]) (*connect.Response[_go.StartChatResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.StartChat is not implemented"))
+}
+
+func (UnimplementedFrontendServiceHandler) AddRecipe(context.Context, *connect.Request[_go.AddRecipeRequest]) (*connect.Response[_go.AddRecipeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.AddRecipe is not implemented"))
 }

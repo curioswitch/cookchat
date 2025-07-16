@@ -41,7 +41,7 @@ func (h *Handler) GetRecipe(ctx context.Context, req *frontendapi.GetRecipeReque
 		return nil, fmt.Errorf("getrecipe: unmarshalling recipe: %w", err)
 	}
 	prompt := ""
-	if auth.IsCurioswitchUser(ctx) {
+	if auth.IsCurioSwitchUser(ctx) {
 		prompt = llm.Prompt
 	}
 	return &frontendapi.GetRecipeResponse{
@@ -70,6 +70,8 @@ func recipeSourceToProto(src cookchatdb.RecipeSource) frontendapi.RecipeSource {
 	switch src {
 	case cookchatdb.RecipeSourceCookpad:
 		return frontendapi.RecipeSource_RECIPE_SOURCE_COOKPAD
+	case cookchatdb.RecipeSourceUser:
+		fallthrough
 	default:
 		return frontendapi.RecipeSource_RECIPE_SOURCE_UNSPECIFIED
 	}

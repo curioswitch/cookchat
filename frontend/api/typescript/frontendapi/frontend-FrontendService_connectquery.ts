@@ -24,3 +24,10 @@ export const listRecipes = FrontendService.method.listRecipes;
  * @generated from rpc frontendapi.FrontendService.StartChat
  */
 export const startChat = FrontendService.method.startChat;
+
+/**
+ * Add a new recipe.
+ *
+ * @generated from rpc frontendapi.FrontendService.AddRecipe
+ */
+export const addRecipe = FrontendService.method.addRecipe;
