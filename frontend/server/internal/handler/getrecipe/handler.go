@@ -11,6 +11,8 @@ import (
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
+	"github.com/curioswitch/cookchat/frontend/server/internal/auth"
+	"github.com/curioswitch/cookchat/frontend/server/internal/llm"
 )
 
 var errRecipeNotFound = errors.New("recipe not found")
@@ -38,8 +40,13 @@ func (h *Handler) GetRecipe(ctx context.Context, req *frontendapi.GetRecipeReque
 	if err := doc.DataTo(&recipe); err != nil {
 		return nil, fmt.Errorf("getrecipe: unmarshalling recipe: %w", err)
 	}
+	prompt := ""
+	if auth.IsCurioswitchUser(ctx) {
+		prompt = llm.Prompt
+	}
 	return &frontendapi.GetRecipeResponse{
-		Recipe: recipeToProto(&recipe),
+		Recipe:    recipeToProto(&recipe),
+		LlmPrompt: prompt,
 	}, nil
 }
 
