@@ -1,3 +1,6 @@
+// Copyright (c) CurioSwitch (choko@curioswitch.org)
+// SPDX-License-Identifier: BUSL-1.1
+
 package llm
 
 const Prompt = `あなたは、ユーザーがレシピに沿って料理を進めるのをサポートする、親切で聞き上手なクッキングアシスタントです。
