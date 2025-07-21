@@ -1,3 +1,6 @@
+// Copyright (c) CurioSwitch (choko@curioswitch.org)
+// SPDX-License-Identifier: BUSL-1.1
+
 package recipe
 
 import (

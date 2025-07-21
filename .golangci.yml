@@ -39,7 +39,7 @@ linters:
     # - gocyclo - too opinionated on code structure
     - godot
     # - godox - sometimes we leave TODOs
-    # - goheader - must be explicitly configured
+    - goheader
     # - gomoddirectives - must be explicitly configured
     # - gomodguard - must be explicitly configured
     - goprintffuncname
@@ -101,6 +101,10 @@ linters:
       const-require-grouping: true
       import-require-grouping: true
       var-require-grouping: true
+    goheader:
+      template: |-
+        Copyright (c) CurioSwitch (choko@curioswitch.org)
+        SPDX-License-Identifier: BUSL-1.1
   exclusions:
     presets:
       - comments
