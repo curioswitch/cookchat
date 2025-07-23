@@ -1,16 +1,48 @@
 import { Select, SelectItem } from "@heroui/select";
 import type { SharedSelection } from "@heroui/system";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { BackButton } from "../../components/BackButton";
 import i18n from "../../layouts/i18n";
+import {
+  setMicrophoneDeviceId,
+  setSpeakerDeviceId,
+  useSettingsStore,
+} from "../../stores";
 
 export default function Page() {
   const { t } = useTranslation();
 
+  const [speakers, setSpeakers] = useState<MediaDeviceInfo[]>([]);
+  const [microphones, setMicrophones] = useState<MediaDeviceInfo[]>([]);
+
+  const settings = useSettingsStore();
+
   const onLanguageChange = useCallback(async (e: SharedSelection) => {
     await i18n.changeLanguage(e.currentKey);
+  }, []);
+
+  const onSpeakerChange = useCallback(async (e: SharedSelection) => {
+    if (e.currentKey) {
+      setSpeakerDeviceId(e.currentKey);
+    }
+  }, []);
+
+  const onMicrophoneChange = useCallback(async (e: SharedSelection) => {
+    if (e.currentKey) {
+      setMicrophoneDeviceId(e.currentKey);
+    }
+  }, []);
+
+  useEffect(() => {
+    async function getDevices() {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      setSpeakers(devices.filter((device) => device.kind === "audiooutput"));
+      setMicrophones(devices.filter((device) => device.kind === "audioinput"));
+    }
+
+    getDevices();
   }, []);
 
   return (
@@ -25,11 +57,36 @@ export default function Page() {
           label={t("Language")}
           labelPlacement="outside-left"
           selectedKeys={[i18n.language]}
-          multiple={false}
           onSelectionChange={onLanguageChange}
         >
           <SelectItem key="ja">{t("Japanese")}</SelectItem>
           <SelectItem key="en">{t("English")}</SelectItem>
+        </Select>
+        <Select
+          label={t("Speaker")}
+          labelPlacement="outside-left"
+          selectedKeys={[settings.speakerDeviceId]}
+          onSelectionChange={onSpeakerChange}
+          className="mt-4"
+        >
+          {speakers.map((speaker) => (
+            <SelectItem key={speaker.deviceId}>
+              {speaker.label || t("Unknown Speaker")}
+            </SelectItem>
+          ))}
+        </Select>
+        <Select
+          label={t("Microphone")}
+          labelPlacement="outside-left"
+          selectedKeys={[settings.microphoneDeviceId]}
+          onSelectionChange={onMicrophoneChange}
+          className="mt-4"
+        >
+          {microphones.map((mic) => (
+            <SelectItem key={mic.deviceId}>
+              {mic.label || t("Unknown Microphone")}
+            </SelectItem>
+          ))}
         </Select>
       </div>
     </div>

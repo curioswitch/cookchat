@@ -13,6 +13,7 @@ import { HiMicrophone, HiStop } from "react-icons/hi2";
 
 import speechSVG from "../../../assets/speech.svg";
 import { useFrontendQueries } from "../../../hooks/rpc";
+import { useSettingsStore } from "../../../stores";
 import LibSampleRateURL from "../../../workers/libsamplerate.worklet?worker&url";
 import MicWorkletURL from "../../../workers/MicWorklet?worker&url";
 
@@ -42,12 +43,15 @@ function base64Decode(base64: string): Uint8Array {
 
 class AudioPlayer {
   private readonly audioCtx = new AudioContext();
-  private readonly audio = new Audio();
 
   private nextStartTime = this.audioCtx.currentTime;
 
   private playing = false;
   private queue: Float32Array[] = [];
+
+  async setSpeaker(speakerDeviceId: string) {
+    await this.audioCtx.setSinkId?.(speakerDeviceId);
+  }
 
   add(chunk: Uint8Array) {
     if (this.audioCtx.state === "closed") {
@@ -92,7 +96,6 @@ class AudioPlayer {
 }
 
 class ChatStream {
-  private readonly audioPlayer: AudioPlayer;
   private readonly audioContext: AudioContext;
 
   private audioSource!: MediaStreamAudioSourceNode;
@@ -102,17 +105,22 @@ class ChatStream {
   private stopped?: boolean;
 
   constructor(
+    private readonly audioPlayer: AudioPlayer,
     private readonly genAI: GoogleGenAI,
     private readonly model: string,
     private readonly navigateToStep: (idx: number) => void,
+    private readonly microphoneDeviceId?: string,
   ) {
-    this.audioPlayer = new AudioPlayer();
     this.audioContext = new AudioContext();
   }
 
   async start() {
     const stream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
+      audio: {
+        deviceId: this.microphoneDeviceId
+          ? { exact: this.microphoneDeviceId }
+          : undefined,
+      },
     });
     const audioContext = this.audioContext;
     this.audioSource = audioContext.createMediaStreamSource(stream);
@@ -219,6 +227,7 @@ export default function ChatButton({
 
   const frontendQueries = useFrontendQueries();
   const queryClient = useQueryClient();
+  const settings = useSettingsStore();
 
   const onClick = useCallback(async () => {
     if (stream) {
@@ -289,7 +298,19 @@ export default function ChatButton({
         apiKey: res.chatApiKey,
         apiVersion: "v1alpha",
       });
-      const s = new ChatStream(genai, res.chatModel, navigateToStep);
+      const audioPlayer = new AudioPlayer();
+      if (settings.speakerDeviceId !== "") {
+        await audioPlayer.setSpeaker(settings.speakerDeviceId);
+      }
+      const s = new ChatStream(
+        audioPlayer,
+        genai,
+        res.chatModel,
+        navigateToStep,
+        settings.microphoneDeviceId !== ""
+          ? settings.microphoneDeviceId
+          : undefined,
+      );
       await s.start();
       setStream(s);
     }
@@ -303,6 +324,7 @@ export default function ChatButton({
     useOpenAI,
     userPrompt,
     editPrompt,
+    settings,
   ]);
 
   useEffect(() => {

@@ -106,3 +106,57 @@ export const toggleCartIngredientSelection = (
       ),
     };
   });
+
+export type SettingsStore = {
+  speakerDeviceId: string;
+  microphoneDeviceId: string;
+};
+
+export const setSpeakerDeviceId = (deviceId: string) =>
+  useSettingsStore.setState({ speakerDeviceId: deviceId });
+
+export const setMicrophoneDeviceId = (deviceId: string) =>
+  useSettingsStore.setState({ microphoneDeviceId: deviceId });
+
+export const useSettingsStore = create<SettingsStore>()(
+  persist(
+    () => ({
+      speakerDeviceId: "",
+      microphoneDeviceId: "",
+    }),
+    {
+      name: "settings-storage",
+      onRehydrateStorage() {
+        return (state) => {
+          async function validateDevices(state: SettingsStore) {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const audioOutputDevices = devices.filter(
+              (device) => device.kind === "audiooutput",
+            );
+            const audioInputDevices = devices.filter(
+              (device) => device.kind === "audioinput",
+            );
+
+            if (
+              !audioOutputDevices.some(
+                (device) => device.deviceId === state.speakerDeviceId,
+              )
+            ) {
+              setSpeakerDeviceId("");
+            }
+            if (
+              !audioInputDevices.some(
+                (device) => device.deviceId === state.microphoneDeviceId,
+              )
+            ) {
+              setMicrophoneDeviceId("");
+            }
+          }
+          if (state?.speakerDeviceId || state?.microphoneDeviceId) {
+            validateDevices(state);
+          }
+        };
+      },
+    },
+  ),
+);
