@@ -41,7 +41,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               />
             </Badge>
           </Link>
-          <HiUser className="size-8 text-gray-400" />
+          <Link href="/settings">
+            <HiUser className="size-8 text-gray-400" />
+          </Link>
         </div>
       </div>
     </div>

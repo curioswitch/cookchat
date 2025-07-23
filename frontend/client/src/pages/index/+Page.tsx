@@ -5,11 +5,14 @@ import { Link } from "@heroui/link";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import logoSVG from "../../assets/logo.svg";
 import { useFrontendQueries } from "../../hooks/rpc";
 
 export default function Page() {
+  const { t } = useTranslation();
+
   const [rawQuery, setRawQuery] = useState("");
   const [query] = useDebouncedValue(rawQuery, {
     wait: 500,
@@ -54,7 +57,7 @@ export default function Page() {
       />
       <Input
         fullWidth
-        placeholder="つくりたい料理は？"
+        placeholder={t("What do you want to cook?")}
         value={rawQuery}
         onValueChange={setRawQuery}
       />
