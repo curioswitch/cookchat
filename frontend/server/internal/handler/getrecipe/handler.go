@@ -68,7 +68,7 @@ func recipeToProto(recipe *cookchatdb.Recipe, lng string) *frontendapi.Recipe {
 		res.Ingredients = ingredientsToProto(rlc.Ingredients)
 		res.AdditionalIngredients = ingredientSectionsToProto(rlc.AdditionalIngredients)
 		res.Steps = stepsToProto(rlc.Steps)
-		for i, step := range res.Steps {
+		for i, step := range res.GetSteps() {
 			step.ImageUrl = recipe.Steps[i].ImageURL
 		}
 		res.Notes = rlc.Notes
