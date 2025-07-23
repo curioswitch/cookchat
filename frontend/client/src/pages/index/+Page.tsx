@@ -52,7 +52,7 @@ export default function Page() {
       <Image
         radius="none"
         src={logoSVG}
-        alt="CookChat Logo"
+        alt={t("CookChat Logo")}
         className="mt-2 mb-4"
       />
       <Input
@@ -62,7 +62,7 @@ export default function Page() {
         onValueChange={setRawQuery}
       />
       <Divider className="mt-4 mb-4 -ml-4 w-screen bg-gray-100" />
-      {(isPending && <div>Loading...</div>) || (
+      {(isPending && <div>{t("Loading...")}</div>) || (
         <div className="flex flex-col">
           {recipes?.map((recipe, i) => (
             <Link

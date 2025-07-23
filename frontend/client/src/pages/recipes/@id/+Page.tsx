@@ -79,23 +79,23 @@ export default function Page() {
   }, []);
 
   if (isPending) {
-    return <div>Loading...</div>;
+    return <div>{t("Loading...")}</div>;
   }
 
   if (!recipeRes) {
-    throw new Error("Failed to load recipe");
+    throw new Error(t("Failed to load recipe"));
   }
 
   const recipe = recipeRes.recipe;
   if (!recipe) {
-    throw new Error("Recipe not received");
+    throw new Error(t("Recipe not received"));
   }
 
   return (
     <div>
       <div className="flex items-center justify-between gap-2 pb-2 p-2">
         <BackButton className="size-6" />
-        <h1 className="text-2xl font-semibold mb-0">献立</h1>
+        <h1 className="text-2xl font-semibold mb-0">{t("Menu")}</h1>
         <div className="size-6" />
       </div>
       <Image className="not-prose" radius="none" src={recipe.imageUrl} />
@@ -117,7 +117,6 @@ export default function Page() {
           {t("Ingredients")}
           <HiAdjustments className="size-8" onClick={onEditPromptClick} />
         </h3>
-        <p className="not-prose">{recipe.servingSize}</p>
         <Ingredients ingredients={recipe.ingredients} />
         {recipe.additionalIngredients.map((section) => (
           <div key={section.title}>
@@ -132,12 +131,14 @@ export default function Page() {
             onPress={onCartToggle}
           >
             <HiShoppingCart className="size-5" />
-            買い物リスト{inCart ? "から削除" : "に追加"}
+            {inCart
+              ? t("Add to shopping list")
+              : t("Remove from shopping list")}
           </Button>
         </div>
       </div>
       <div className="p-4">
-        <h3 className="mt-0">作り方</h3>
+        <h3 className="mt-0">{t("Recipe Steps")}</h3>
         <ol className="marker:font-bold list-none px-0">
           {recipe.steps.map((step, i) => (
             <li

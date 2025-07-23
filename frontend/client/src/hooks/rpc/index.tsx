@@ -29,12 +29,20 @@ import {
 import type { User as FirebaseUser } from "firebase/auth";
 import { useMemo } from "react";
 
+import i18n from "../../layouts/i18n";
 import { useFirebase } from "../firebase";
 
 function createFirebaseAuthInterceptor(user: FirebaseUser): Interceptor {
   return (next) => async (request) => {
     const idToken = await user.getIdToken();
     request.header.set("authorization", `Bearer ${idToken}`);
+    return next(request);
+  };
+}
+
+function createLanguageInterceptor(): Interceptor {
+  return (next) => async (request) => {
+    request.header.set("accept-language", i18n.language);
     return next(request);
   };
 }
@@ -99,7 +107,10 @@ export function FrontendServiceProvider({
   const fbUser = useFirebase()?.user;
 
   const transport = useMemo(() => {
-    const interceptors = fbUser ? [createFirebaseAuthInterceptor(fbUser)] : [];
+    const interceptors = [createLanguageInterceptor()];
+    if (fbUser) {
+      interceptors.push(createFirebaseAuthInterceptor(fbUser));
+    }
     return createConnectTransport({
       baseUrl: "/",
       interceptors,
