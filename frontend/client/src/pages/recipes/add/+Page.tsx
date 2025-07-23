@@ -11,10 +11,12 @@ import { Button } from "@heroui/button";
 import { Form } from "@heroui/form";
 import { Input, Textarea } from "@heroui/input";
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { navigate } from "vike/client/router";
 
 function IngredientInput() {
-  const { t } = require("react-i18next").useTranslation();
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center gap-2">
       <Input
@@ -28,7 +30,7 @@ function IngredientInput() {
 }
 
 function IngredientSectionInput({ idx }: { idx: number }) {
-  const { t } = require("react-i18next").useTranslation();
+  const { t } = useTranslation();
   const [numIngredients, setNumIngredients] = useState(1);
   const onAddIngredient = () => {
     setNumIngredients((prev) => prev + 1);
@@ -56,7 +58,8 @@ function IngredientSectionInput({ idx }: { idx: number }) {
 }
 
 function Step() {
-  const { t } = require("react-i18next").useTranslation();
+  const { t } = useTranslation();
+
   return (
     <div>
       <Textarea
