@@ -24,6 +24,7 @@ function IngredientSelect({
   recipeId: string;
   ingredientIndex: number;
 }) {
+  const { t } = useTranslation();
   const onValueChange = useCallback(() => {
     toggleCartIngredientSelection(recipeId, ingredientIndex);
   }, [recipeId, ingredientIndex]);
@@ -44,7 +45,7 @@ function IngredientSelect({
         <div>
           {ingredient.name} ({ingredient.quantity})
         </div>
-        <div>{ingredient.selected ? "購入済み" : "必要"}</div>
+        <div>{ingredient.selected ? t("Purchased") : t("Needed")}</div>
       </div>
     </Checkbox>
   );
@@ -129,7 +130,9 @@ ${cart.extraItems.join("\n")}
         <h3 className="mt-0 mb-0">{t("Shopping List")}</h3>
         <HiShare onClick={onShareClick} className="size-6 text-orange-400" />
       </div>
-      {cart.recipes.length === 0 && <div className="p-4">カートは空です</div>}
+      {cart.recipes.length === 0 && (
+        <div className="p-4">{t("Cart is empty")}</div>
+      )}
       {cart.recipes.map((recipe) => {
         return (
           <div key={recipe.id} className="mt-4">
@@ -174,7 +177,7 @@ ${cart.extraItems.join("\n")}
         <div className="flex items-center justify-center gap-2">
           <Input
             ref={itemInput}
-            placeholder="アイテム名"
+            placeholder={t("Item name")}
             className="mt-2"
             value={extraItem}
             onValueChange={setExtraItem}
@@ -188,7 +191,7 @@ ${cart.extraItems.join("\n")}
           className="text-white mt-2"
           color="primary"
         >
-          アイテムを追加
+          {t("Add item")}
         </Button>
       )}
     </div>
