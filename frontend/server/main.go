@@ -29,6 +29,7 @@ import (
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getrecipe"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/listrecipes"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/startchat"
+	"github.com/curioswitch/cookchat/frontend/server/internal/i18n"
 )
 
 //go:embed conf/*.yaml
@@ -121,6 +122,8 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 			return true
 		}
 	}))
+
+	mux.Use(i18n.Middleware())
 
 	server.HandleConnectUnary(s,
 		frontendapiconnect.FrontendServiceGetRecipeProcedure,

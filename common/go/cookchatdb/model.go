@@ -116,5 +116,5 @@ type Recipe struct {
 	Content RecipeContent `firestore:"content"`
 
 	// LocalizedContent contains localized content for the recipe.
-	LocalizedContent map[string]RecipeContent `firestore:"localizedContent,omitempty"`
+	LocalizedContent map[string]*RecipeContent `firestore:"localizedContent,omitempty"`
 }

@@ -15,6 +15,7 @@ import (
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
+	"github.com/curioswitch/cookchat/frontend/server/internal/i18n"
 )
 
 func NewHandler(store *firestore.Client, search *discoveryengine.SearchClient, searchEngine string) *Handler {
@@ -50,6 +51,8 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 		return &frontendapi.ListRecipesResponse{}, nil
 	}
 
+	lng := i18n.UserLanguage(ctx)
+
 	snippets := make([]*frontendapi.RecipeSnippet, len(recipeDocs))
 	for i, doc := range recipeDocs {
 		var recipe cookchatdb.Recipe
@@ -57,8 +60,15 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 			return nil, fmt.Errorf("listrecipes: unmarshalling recipe: %w", err)
 		}
 
+		title := recipe.Title
+		ingredients := recipe.Ingredients
+		if rlng, rlc := recipe.LanguageCode, recipe.LocalizedContent[lng]; rlng != lng && rlc != nil {
+			title = rlc.Title
+			ingredients = rlc.Ingredients
+		}
+
 		summary := ""
-		for _, ingredient := range recipe.Ingredients {
+		for _, ingredient := range ingredients {
 			summary += ingredient.Name + "・"
 		}
 		if len(summary) > 0 {
@@ -67,7 +77,7 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 
 		snippets[i] = &frontendapi.RecipeSnippet{
 			Id:       recipe.ID,
-			Title:    recipe.Title,
+			Title:    title,
 			Summary:  summary,
 			ImageUrl: recipe.ImageURL,
 		}
