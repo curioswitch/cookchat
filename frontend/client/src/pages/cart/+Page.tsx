@@ -3,6 +3,7 @@ import { Checkbox } from "@heroui/checkbox";
 import { Input } from "@heroui/input";
 import { Link } from "@heroui/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { HiCheck, HiShare, HiTrash } from "react-icons/hi";
 
 import { BackButton } from "../../components/BackButton";
@@ -63,6 +64,8 @@ function ExtraItem({ item, idx }: { item: string; idx: number }) {
 }
 
 export default function Page() {
+  const { t } = useTranslation();
+
   const cart = useCartStore();
 
   const [addingItem, setAddingItem] = useState(false);
@@ -123,7 +126,7 @@ ${cart.extraItems.join("\n")}
     <div className="p-4">
       <div className="flex justify-between items-center">
         <BackButton className="size-6" />
-        <h3 className="mt-0 mb-0">買い物リスト</h3>
+        <h3 className="mt-0 mb-0">{t("Shopping List")}</h3>
         <HiShare onClick={onShareClick} className="size-6 text-orange-400" />
       </div>
       {cart.recipes.length === 0 && <div className="p-4">カートは空です</div>}
@@ -156,7 +159,7 @@ ${cart.extraItems.join("\n")}
       })}
       {cart.extraItems && (
         <div className="mt-4">
-          <h4 className="text-gray-600">追加の買い物</h4>
+          <h4 className="text-gray-600">{t("Extra Items")}</h4>
           {cart.extraItems.map((ingredient, i) => (
             <ExtraItem
               // biome-ignore lint/suspicious/noArrayIndexKey: free form array so index is the key

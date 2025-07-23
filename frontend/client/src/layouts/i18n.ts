@@ -10,7 +10,6 @@ i18n
     }),
   )
   .init({
-    lng: "ja",
     fallbackLng: "en",
     debug: import.meta.env.DEV,
     interpolation: {

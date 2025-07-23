@@ -6,6 +6,7 @@ package user
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"connectrpc.com/connect"
@@ -36,11 +37,11 @@ func (h *Handler) CrawlCookpadUser(ctx context.Context, req *crawlerapi.CrawlCoo
 	)
 
 	c.OnHTML(`a[href^="/jp/recipes/"]`, func(e *colly.HTMLElement) {
-		href := strings.TrimPrefix(e.Attr("href"), "/jp/recipes/")
-		id, _, ok := strings.Cut(href, "-")
-		if !ok {
+		id := strings.TrimPrefix(e.Attr("href"), "/jp/recipes/")
+		if _, err := strconv.Atoi(id); err != nil {
 			return
 		}
+
 		if _, err := h.crawlerClient.CrawlCookpadRecipe(ctx, connect.NewRequest(&crawlerapi.CrawlCookpadRecipeRequest{
 			RecipeId: id,
 		})); err != nil {

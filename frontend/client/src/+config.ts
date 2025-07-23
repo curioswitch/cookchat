@@ -8,6 +8,7 @@ export default {
   Layout,
   Wrapper,
   title: "Let's Cook!",
+  ssr: false,
   prerender: {
     partial: true,
   },

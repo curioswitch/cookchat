@@ -1,3 +1,10 @@
 {
-  "Ingredients": "材料"
+  "Ingredients": "材料",
+  "Language": "言語",
+  "Japanese": "日本語",
+  "English": "英語",
+  "Settings": "設定",
+  "What do you want to cook?": "つくりたい料理は？",
+  "Shopping List": "買い物リスト",
+  "Extra Items": "追加の買い物"
 }
