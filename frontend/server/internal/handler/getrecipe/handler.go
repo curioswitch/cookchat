@@ -15,6 +15,7 @@ import (
 	"github.com/curioswitch/cookchat/common/cookchatdb"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
 	"github.com/curioswitch/cookchat/frontend/server/internal/auth"
+	"github.com/curioswitch/cookchat/frontend/server/internal/i18n"
 	"github.com/curioswitch/cookchat/frontend/server/internal/llm"
 )
 
@@ -48,25 +49,41 @@ func (h *Handler) GetRecipe(ctx context.Context, req *frontendapi.GetRecipeReque
 		prompt = llm.Prompt
 	}
 	return &frontendapi.GetRecipeResponse{
-		Recipe:    recipeToProto(&recipe),
+		Recipe:    recipeToProto(&recipe, i18n.UserLanguage(ctx)),
 		LlmPrompt: prompt,
 	}, nil
 }
 
-func recipeToProto(recipe *cookchatdb.Recipe) *frontendapi.Recipe {
-	return &frontendapi.Recipe{
-		Id:                    recipe.ID,
-		Source:                recipeSourceToProto(recipe.Source),
-		Title:                 recipe.Title,
-		ImageUrl:              recipe.ImageURL,
-		Description:           recipe.Description,
-		Ingredients:           ingredientsToProto(recipe.Ingredients),
-		AdditionalIngredients: ingredientSectionsToProto(recipe.AdditionalIngredients),
-		Steps:                 stepsToProto(recipe.Steps),
-		Notes:                 recipe.Notes,
-		ServingSize:           recipe.ServingSize,
-		Language:              languageCodeToProto(recipe.LanguageCode),
+func recipeToProto(recipe *cookchatdb.Recipe, lng string) *frontendapi.Recipe {
+	res := &frontendapi.Recipe{
+		Id:       recipe.ID,
+		Source:   recipeSourceToProto(recipe.Source),
+		ImageUrl: recipe.ImageURL,
+		Language: languageCodeToProto(recipe.LanguageCode),
 	}
+
+	if rlng, rlc := recipe.LanguageCode, recipe.LocalizedContent[lng]; rlng != lng && rlc != nil {
+		res.Title = rlc.Title
+		res.Description = rlc.Description
+		res.Ingredients = ingredientsToProto(rlc.Ingredients)
+		res.AdditionalIngredients = ingredientSectionsToProto(rlc.AdditionalIngredients)
+		res.Steps = stepsToProto(rlc.Steps)
+		for i, step := range res.Steps {
+			step.ImageUrl = recipe.Steps[i].ImageURL
+		}
+		res.Notes = rlc.Notes
+		res.ServingSize = rlc.ServingSize
+	} else {
+		res.Title = recipe.Title
+		res.Description = recipe.Description
+		res.Ingredients = ingredientsToProto(recipe.Ingredients)
+		res.AdditionalIngredients = ingredientSectionsToProto(recipe.AdditionalIngredients)
+		res.Steps = stepsToProto(recipe.Steps)
+		res.Notes = recipe.Notes
+		res.ServingSize = recipe.ServingSize
+	}
+
+	return res
 }
 
 func recipeSourceToProto(src cookchatdb.RecipeSource) frontendapi.RecipeSource {
