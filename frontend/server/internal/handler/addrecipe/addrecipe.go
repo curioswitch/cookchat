@@ -139,5 +139,8 @@ func (h *Handler) saveImage(ctx context.Context, pathNoExt string, dataURL strin
 	if _, err := w.Write(bytes); err != nil {
 		return "", fmt.Errorf("addrecipe: save image: %w", err)
 	}
+	if err := w.Close(); err != nil {
+		return "", fmt.Errorf("addrecipe: closing writer: %w", err)
+	}
 	return fmt.Sprintf("https://storage.googleapis.com/%s/%s", h.publicBucket, path), nil
 }
