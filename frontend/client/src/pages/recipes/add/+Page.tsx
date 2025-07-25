@@ -256,7 +256,7 @@ export default function Page() {
         <Button className="mt-4" onPress={onAddStep}>
           Add Step
         </Button>
-        <Button type="submit" className="mt-4">
+        <Button type="submit" className="mt-4" disabled={doAddRecipe.isPending}>
           Submit Recipe
         </Button>
       </Form>
