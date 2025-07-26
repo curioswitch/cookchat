@@ -11,6 +11,7 @@ import { Button } from "@heroui/button";
 import { Form } from "@heroui/form";
 import { Input, Textarea } from "@heroui/input";
 import { useCallback, useState } from "react";
+import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { navigate } from "vike/client/router";
 
@@ -60,21 +61,49 @@ function IngredientSectionInput({ idx }: { idx: number }) {
 function Step() {
   const { t } = useTranslation();
 
+  const [previewURL, setPreviewURL] = useState<string | undefined>(undefined);
+
+  const { getRootProps, getInputProps } = useDropzone({
+    maxFiles: 1,
+    accept: {
+      "image/*": [],
+    },
+    onDrop: async (acceptedFiles) => {
+      if (acceptedFiles.length > 0) {
+        const file = acceptedFiles[0];
+        const url = URL.createObjectURL(file);
+        setPreviewURL(url);
+      }
+    },
+  });
+
+  const onImgLoad = useCallback(() => {
+    if (previewURL) {
+      URL.revokeObjectURL(previewURL);
+    }
+  }, [previewURL]);
+
   return (
-    <div>
+    <>
       <Textarea
         name="step-description"
         label={t("Step Description")}
         labelPlacement="outside"
       />
-      <Input
-        type="file"
-        accept="image/*"
-        name="step-image"
-        label={t("Step Image")}
-        labelPlacement="outside"
-      />
-    </div>
+      <label htmlFor="step-image">{t("Step Image")}</label>
+      <div className="flex gap-4 items-center">
+        <div className="mt-2 p-4 rounded-xl bg-gray-100" {...getRootProps()}>
+          <input name="step-image" {...getInputProps()} />
+          <p>Drag 'n' drop or click to select image</p>
+        </div>
+        <img
+          className="h-100"
+          alt="Step preview"
+          src={previewURL}
+          onLoad={onImgLoad}
+        />
+      </div>
+    </>
   );
 }
 
