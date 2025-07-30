@@ -38,15 +38,27 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 		return h.searchRecipes(ctx, req)
 	}
 
+	var recipeDocs []*firestore.DocumentSnapshot
+
+	if req.GetPagination().GetLastId() == "" {
+		userDocs, err := h.store.Collection("recipes").Query.Where("source", "==", cookchatdb.RecipeSourceUser).Documents(ctx).GetAll()
+		if err != nil {
+			return nil, fmt.Errorf("listrecipes: getting user recipes from firestore: %w", err)
+		}
+		recipeDocs = userDocs
+	}
+
 	q := h.store.Collection("recipes").Query
-	if p := req.GetPagination(); p != nil {
-		q = q.Where("id", ">", p.GetLastId())
+	q = q.Where("source", "!=", cookchatdb.RecipeSourceUser)
+	if lid := req.GetPagination().GetLastId(); lid != "" {
+		q = q.Where("id", ">", lid)
 	}
 	q = q.OrderBy("id", firestore.Asc).Limit(5)
-	recipeDocs, err := q.Documents(ctx).GetAll()
+	nonUserDocs, err := q.Documents(ctx).GetAll()
 	if err != nil {
 		return nil, fmt.Errorf("listrecipes: getting recipes from firestore: %w", err)
 	}
+	recipeDocs = append(recipeDocs, nonUserDocs...)
 	if len(recipeDocs) == 0 {
 		return &frontendapi.ListRecipesResponse{}, nil
 	}
