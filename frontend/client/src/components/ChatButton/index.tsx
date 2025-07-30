@@ -1,9 +1,5 @@
 import { StartChatRequest_ModelProvider } from "@cookchat/frontend-api";
-import {
-  GoogleGenAI,
-  type LiveServerMessage,
-  type Session,
-} from "@google/genai";
+import type { GoogleGenAI, LiveServerMessage, Session } from "@google/genai";
 import { RealtimeAgent, RealtimeSession } from "@openai/agents-realtime";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -12,6 +8,7 @@ import { twMerge } from "tailwind-merge";
 
 import { useFrontendQueries } from "../../hooks/rpc";
 import { useSettingsStore } from "../../stores";
+import ChatWorker from "../../workers/ChatWorker?worker";
 import LibSampleRateURL from "../../workers/libsamplerate.worklet?worker&url";
 import MicWorkletURL from "../../workers/MicWorklet?worker&url";
 
@@ -316,6 +313,16 @@ export function ChatButton({
       session.sendMessage(res.startMessage);
       setStream(new OpenAISession(session));
     } else {
+      const chatWorker = new ChatWorker();
+      chatWorker.postMessage({
+        type: "init",
+        apiKey: res.chatApiKey,
+        model: res.chatModel,
+        startMessage: res.startMessage,
+      });
+
+      /*
+
       const genai = new GoogleGenAI({
         apiKey: res.chatApiKey,
         apiVersion: "v1alpha",
@@ -339,6 +346,7 @@ export function ChatButton({
       );
       await s.start();
       setStream(s);
+      */
     }
     return false;
   }, [
