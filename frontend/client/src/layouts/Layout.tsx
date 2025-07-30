@@ -20,18 +20,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="container mx-auto min-h-screen max-w-full md:w-4xl prose md:prose-lg pb-16 bg-white">
         {children}
       </div>
-      <div className="fixed bottom-0 w-full h-16 bg-white z-50">
+      <div className="fixed bottom-0 w-full h-16 md:h-24 bg-white z-50">
         <Divider />
         <div className="px-4 flex items-center justify-between h-full w-full">
           <Link href="/">
             <HiViewList
               className={twMerge(
-                "size-8",
+                "size-8 md:size-12",
                 path === "/" ? "text-orange-400" : "text-gray-400",
               )}
             />
           </Link>
-          <HiHeart className="size-8 text-gray-400" />
+          <HiHeart className="size-8 md:size-12 text-gray-400" />
           <ChatButton
             className={
               chatStore.currentRecipeId ? "mb-20 md:mb-40" : "invisible"
@@ -47,14 +47,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             >
               <HiShoppingCart
                 className={twMerge(
-                  "size-8",
+                  "size-8 md:size-12",
                   path === "/cart" ? "text-orange-400" : "text-gray-400",
                 )}
               />
             </Badge>
           </Link>
           <Link href="/settings">
-            <HiUser className="size-8 text-gray-400" />
+            <HiUser className="size-8 md:size-12 text-gray-400" />
           </Link>
         </div>
       </div>
