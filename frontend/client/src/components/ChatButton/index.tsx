@@ -6,7 +6,7 @@ import {
 } from "@google/genai";
 import { RealtimeAgent, RealtimeSession } from "@openai/agents-realtime";
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { HiMicrophone, HiStop } from "react-icons/hi2";
 import { twMerge } from "tailwind-merge";
 
@@ -107,6 +107,8 @@ class ChatStream {
     private readonly genAI: GoogleGenAI,
     private readonly model: string,
     private readonly navigateToStep: (idx: number) => void,
+    private readonly speakingRef: React.RefObject<boolean>,
+    private readonly setSpeaking: (speaking: boolean) => void,
     private readonly microphoneDeviceId?: string,
   ) {
     this.audioContext = new AudioContext();
@@ -147,6 +149,9 @@ class ChatStream {
               turnComplete: true,
             });
             this.micWorklet.port.onmessage = (e) => {
+              if (this.speakingRef.current) {
+                return;
+              }
               if (e.data.event === "chunk") {
                 this.session.sendRealtimeInput({
                   audio: {
@@ -167,7 +172,11 @@ class ChatStream {
           const inlineData = e.serverContent?.modelTurn?.parts?.[0]?.inlineData;
           const mimeType = inlineData?.mimeType;
           if (inlineData?.data && mimeType?.startsWith("audio/pcm")) {
+            this.setSpeaking(true);
             this.audioPlayer.add(base64Decode(inlineData.data));
+          }
+          if (e.serverContent?.turnComplete) {
+            this.setSpeaking(false);
           }
         },
 
@@ -220,6 +229,12 @@ export function ChatButton({
 }) {
   const [stream, setStream] = useState<ChatSession | undefined>(undefined);
   const [playing, setPlaying] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
+  const speakingRef = useRef(false);
+
+  useEffect(() => {
+    speakingRef.current = speaking;
+  }, [speaking]);
 
   const frontendQueries = useFrontendQueries();
   const queryClient = useQueryClient();
@@ -307,6 +322,8 @@ export function ChatButton({
         genai,
         res.chatModel,
         navigateToStep,
+        speakingRef,
+        setSpeaking,
         settings.microphoneDeviceId !== ""
           ? settings.microphoneDeviceId
           : undefined,
@@ -343,9 +360,10 @@ export function ChatButton({
       <button
         type="button"
         onClick={onClick}
-        className={
-          "flex-1/3 size-30 mic-bubble flex items-center justify-center cursor-pointer"
-        }
+        className={twMerge(
+          speaking ? "mic-bubble-deselected" : "mic-bubble",
+          "flex-1/3 size-30 flex items-center justify-center cursor-pointer",
+        )}
       >
         {!playing ? (
           <HiMicrophone className="text-white size-6" />
