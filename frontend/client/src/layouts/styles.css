@@ -6,3 +6,7 @@
 .mic-bubble {
   @apply bg-contain bg-no-repeat bg-center bg-[url('../assets/mic-bubble.svg')];
 }
+
+.mic-bubble-deselected {
+  @apply bg-contain bg-no-repeat bg-center bg-[url('../assets/mic-bubble-deselected.svg')];
+}
