@@ -371,12 +371,13 @@ export function ChatButton({
         onClick={onClick}
         className={twMerge(
           playing && speaking ? "mic-bubble-deselected" : "mic-bubble",
-          playing && waiting && "blinking",
           "flex-1/3 size-30 flex items-center justify-center cursor-pointer",
         )}
       >
         {!playing ? (
           <HiMicrophone className="text-white size-6" />
+        ) : waiting ? (
+          <div className="text-white">話して</div>
         ) : (
           <HiStop className="text-white size-6" />
         )}
