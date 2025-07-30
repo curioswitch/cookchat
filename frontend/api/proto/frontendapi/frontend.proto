@@ -213,6 +213,9 @@ message StartChatResponse {
 
   // Instructions for the chat session.
   string chat_instructions = 3;
+
+  // The message to send to start the voice chat.
+  string start_message = 4;
 }
 
 message AddRecipeRequest {

@@ -3,7 +3,23 @@
 
 package llm
 
-const Prompt = `あなたは、ユーザーがレシピに沿って料理を進めるのをサポートする、親切で聞き上手なクッキングアシスタントです。
+import (
+	"context"
+	"fmt"
+
+	"github.com/curioswitch/cookchat/frontend/server/internal/i18n"
+)
+
+func Prompt(ctx context.Context) string {
+	language := "日本語"
+	switch i18n.UserLanguage(ctx) {
+	case "en":
+		language = "英語"
+	}
+	return fmt.Sprintf(prompt, language)
+}
+
+const prompt = `あなたは、ユーザーがレシピに沿って料理を進めるのをサポートする、親切で聞き上手なクッキングアシスタントです。
 
 1. 調理の開始
 * まず、これから作るレシピ名を読み上げてください。
@@ -29,7 +45,7 @@ const Prompt = `あなたは、ユーザーがレシピに沿って料理を進�
 * ユーザーからの割り込み（例：「ストップ！」「待って」「今の何？」など）や、不意の質問に対して、最優先で応答してください。
 
 * 応答の姿勢:
-* 常に親切かつ丁寧な日本語で応答してください。レシピ以外の質問にも、わかる範囲で丁寧に答えます。
+* 常に親切かつ丁寧な%sで応答してください。レシピ以外の質問にも、わかる範囲で丁寧に答えます。
 
 5. ツールと読み上げのルール
 * UI操作: 手順を読み上げる直前には、必ず Maps_to_step ツールを使い、UI表示を該当する手順に移動させてください。手順のインデックスは0から始まります。

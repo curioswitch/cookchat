@@ -20,6 +20,7 @@ import (
 
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
 	"github.com/curioswitch/cookchat/frontend/server/internal/auth"
+	"github.com/curioswitch/cookchat/frontend/server/internal/i18n"
 	"github.com/curioswitch/cookchat/frontend/server/internal/llm"
 )
 
@@ -56,20 +57,33 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 		recipePrompt = "The recipe in structured JSON format is as follows:\n" + string(recipeJSON)
 	}
 
-	prompt := llm.Prompt
+	prompt := llm.Prompt(ctx)
 	if p := req.GetLlmPrompt(); p != "" && auth.IsCurioSwitchUser(ctx) {
 		prompt = p + "\n\n"
 	}
 	prompt += recipePrompt + "\n\n"
 
+	var res *frontendapi.StartChatResponse
+	var err error
 	switch req.GetModelProvider() {
 	case frontendapi.StartChatRequest_MODEL_PROVIDER_UNSPECIFIED, frontendapi.StartChatRequest_MODEL_PROVIDER_GOOGLE_GENAI:
-		return h.startChatGemini(ctx, prompt)
+		res, err = h.startChatGemini(ctx, prompt)
 	case frontendapi.StartChatRequest_MODEL_PROVIDER_OPENAI:
-		return h.startChatOpenAI(ctx, prompt)
+		res, err = h.startChatOpenAI(ctx, prompt)
 	}
 
-	return h.startChatOpenAI(ctx, prompt)
+	if err != nil {
+		return nil, err
+	}
+
+	switch i18n.UserLanguage(ctx) {
+	case "en":
+		res.StartMessage = "Hello!"
+	default:
+		res.StartMessage = "こんにちは！"
+	}
+
+	return res, nil
 }
 
 func (h *Handler) startChatGemini(ctx context.Context, prompt string) (*frontendapi.StartChatResponse, error) {

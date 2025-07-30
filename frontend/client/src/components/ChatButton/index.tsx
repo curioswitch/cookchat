@@ -291,7 +291,7 @@ export function ChatButton({
         model: res.chatModel,
       });
       await session.connect({ apiKey: res.chatApiKey });
-      session.sendMessage("こんにちは！");
+      session.sendMessage(res.startMessage);
       setStream(new OpenAISession(session));
     } else {
       const genai = new GoogleGenAI({
