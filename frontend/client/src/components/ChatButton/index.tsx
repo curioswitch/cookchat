@@ -378,7 +378,7 @@ export function ChatButton({
         {!playing ? (
           <HiMicrophone className="text-white size-6 md:size-16" />
         ) : waiting ? (
-          <div className="text-white">話して</div>
+          <div className="text-white text-4xl">話して</div>
         ) : (
           <HiStop className="text-white size-6 md:size-16" />
         )}
