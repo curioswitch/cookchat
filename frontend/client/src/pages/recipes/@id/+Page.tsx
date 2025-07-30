@@ -25,7 +25,7 @@ function Ingredients({ ingredients }: { ingredients: RecipeIngredient[] }) {
     <>
       {ingredients.map((ingredient) => (
         <div
-          className="flex justify-between py-2 border-b-1 border-gray-100"
+          className="flex justify-between py-2 md:py-3 border-b-1 border-gray-100 text-2xl"
           key={ingredient.name}
         >
           <div>{ingredient.name}</div>
@@ -123,12 +123,14 @@ export default function Page() {
     <div>
       <div className="flex items-center justify-between gap-2 pb-2 p-2">
         <BackButton className="size-6" />
-        <h1 className="text-2xl font-semibold mb-0 md:mb-0">{t("Menu")}</h1>
+        <h1 className="text-2xl md:text-2xl font-semibold mb-0 md:mb-0">
+          {t("Recipe")}
+        </h1>
         <div className="size-6" />
       </div>
       <Image className="not-prose" radius="none" src={recipe.imageUrl} />
-      <div className="p-4">
-        <h3 className="font-semibold mt-0">{recipe.title}</h3>
+      <div className="p-4 md:p-8">
+        <h3 className="font-semibold md:text-4xl mt-0">{recipe.title}</h3>
         <div className="flex items-center gap-2 mt-2">
           <HiUsers className="size-6 text-gray-400" />
           <span className="text-gray-500">{recipe.servingSize}</span>
@@ -156,17 +158,17 @@ export default function Page() {
         <div className="flex items-center justify-center mt-8">
           <Button
             color="primary"
-            className="text-white py-4 px-6"
+            className="text-white py-4 px-6 md:py-8 md:text-large"
             onPress={onCartToggle}
           >
-            <HiShoppingCart className="size-5" />
+            <HiShoppingCart className="size-5 md:size-8" />
             {inCart
               ? t("Remove from shopping list")
               : t("Add to shopping list")}
           </Button>
         </div>
       </div>
-      <div className="p-4">
+      <div className="p-4 md:p-8">
         <h3 className="mt-0">{t("Recipe Steps")}</h3>
         <ol className="marker:font-bold list-none px-0">
           {recipe.steps.map((step, i) => (
@@ -178,7 +180,7 @@ export default function Page() {
               }}
               className="flex gap-3 px-0"
             >
-              <div className="flex-1/12 bg-gray-400 text-white w-8 h-8 rounded-full flex justify-center items-center">
+              <div className="flex-1/12 bg-gray-400 text-white size-8 md:size-16 md:text-2xl rounded-full flex justify-center items-center">
                 {i + 1}
               </div>
               <div className="flex-11/12">
@@ -190,7 +192,9 @@ export default function Page() {
                     src={step.imageUrl}
                   />
                 )}
-                <p className="text-lg font-light">{step.description}</p>
+                <p className="text-lg md:text-2xl font-light">
+                  {step.description}
+                </p>
               </div>
             </li>
           ))}
