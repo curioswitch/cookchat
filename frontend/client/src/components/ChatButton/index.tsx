@@ -106,6 +106,7 @@ class ChatStream {
     private readonly audioPlayer: AudioPlayer,
     private readonly genAI: GoogleGenAI,
     private readonly model: string,
+    private readonly startMessage: string,
     private readonly navigateToStep: (idx: number) => void,
     private readonly speakingRef: React.RefObject<boolean>,
     private readonly setSpeaking: (speaking: boolean) => void,
@@ -141,7 +142,7 @@ class ChatStream {
                   role: "user",
                   parts: [
                     {
-                      text: "こんにちは！",
+                      text: this.startMessage,
                     },
                   ],
                 },
@@ -306,7 +307,7 @@ export function ChatButton({
         model: res.chatModel,
       });
       await session.connect({ apiKey: res.chatApiKey });
-      session.sendMessage("こんにちは！");
+      session.sendMessage(res.startMessage);
       setStream(new OpenAISession(session));
     } else {
       const genai = new GoogleGenAI({
@@ -321,6 +322,7 @@ export function ChatButton({
         audioPlayer,
         genai,
         res.chatModel,
+        res.startMessage,
         navigateToStep,
         speakingRef,
         setSpeaking,

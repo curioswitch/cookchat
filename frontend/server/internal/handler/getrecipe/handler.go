@@ -46,7 +46,7 @@ func (h *Handler) GetRecipe(ctx context.Context, req *frontendapi.GetRecipeReque
 	}
 	prompt := ""
 	if auth.IsCurioSwitchUser(ctx) {
-		prompt = llm.Prompt
+		prompt = llm.Prompt(ctx)
 	}
 	return &frontendapi.GetRecipeResponse{
 		Recipe:    recipeToProto(&recipe, i18n.UserLanguage(ctx)),
