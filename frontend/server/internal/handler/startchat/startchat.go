@@ -18,6 +18,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/genai"
 
+	"github.com/curioswitch/cookchat/common/cookchatdb"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
 	"github.com/curioswitch/cookchat/frontend/server/internal/auth"
 	"github.com/curioswitch/cookchat/frontend/server/internal/i18n"
@@ -39,6 +40,8 @@ type Handler struct {
 }
 
 func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatRequest) (*frontendapi.StartChatResponse, error) {
+	language := i18n.UserLanguage(ctx)
+
 	recipePrompt := ""
 	if r := req.GetRecipeText(); r != "" {
 		recipePrompt = "The recipe is as follows:\n" + r
@@ -50,7 +53,16 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 			}
 			return nil, fmt.Errorf("chat: getting recipe from firestore: %w", err)
 		}
-		recipeJSON, err := json.Marshal(recipeDoc.Data())
+		var recipe cookchatdb.Recipe
+		if err := recipeDoc.DataTo(&recipe); err != nil {
+			return nil, fmt.Errorf("chat: unmarshalling recipe: %w", err)
+		}
+		var recipeJSON []byte
+		if rlc := recipe.LocalizedContent[language]; rlc != nil {
+			recipeJSON, err = json.Marshal(rlc)
+		} else {
+			recipeJSON, err = json.Marshal(recipe)
+		}
 		if err != nil {
 			return nil, fmt.Errorf("chat: marshalling recipe to JSON: %w", err)
 		}
@@ -76,7 +88,7 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 		return nil, err
 	}
 
-	switch i18n.UserLanguage(ctx) {
+	switch language {
 	case "en":
 		res.StartMessage = "Hello!"
 	default:
@@ -87,6 +99,11 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 }
 
 func (h *Handler) startChatGemini(ctx context.Context, prompt string) (*frontendapi.StartChatResponse, error) {
+	languageCode := "ja-JP"
+	if i18n.UserLanguage(ctx) == "en" {
+		languageCode = "en-US"
+	}
+
 	// Until genai Go SDK supports token creation, issue request manually.
 	model := "gemini-live-2.5-flash-preview"
 	cfg := tokenConfig{
@@ -125,7 +142,7 @@ func (h *Handler) startChatGemini(ctx context.Context, prompt string) (*frontend
 			GenerationConfig: genai.LiveConnectConfig{
 				ResponseModalities: []genai.Modality{genai.ModalityAudio},
 				SpeechConfig: &genai.SpeechConfig{
-					LanguageCode: "ja-JP",
+					LanguageCode: languageCode,
 					VoiceConfig: &genai.VoiceConfig{
 						PrebuiltVoiceConfig: &genai.PrebuiltVoiceConfig{
 							VoiceName: "Leda",

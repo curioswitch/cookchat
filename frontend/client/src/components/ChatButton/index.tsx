@@ -106,6 +106,7 @@ class ChatStream {
     private readonly audioPlayer: AudioPlayer,
     private readonly genAI: GoogleGenAI,
     private readonly model: string,
+    private readonly startMessage: string,
     private readonly navigateToStep: (idx: number) => void,
     private readonly speakingRef: React.RefObject<boolean>,
     private readonly setSpeaking: (speaking: boolean) => void,
@@ -141,7 +142,7 @@ class ChatStream {
                   role: "user",
                   parts: [
                     {
-                      text: "こんにちは！",
+                      text: this.startMessage,
                     },
                   ],
                 },
@@ -321,6 +322,7 @@ export function ChatButton({
         audioPlayer,
         genai,
         res.chatModel,
+        res.startMessage,
         navigateToStep,
         speakingRef,
         setSpeaking,

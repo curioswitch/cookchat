@@ -12,14 +12,13 @@ import (
 
 func Prompt(ctx context.Context) string {
 	language := "日本語"
-	switch i18n.UserLanguage(ctx) {
-	case "en":
+	if i18n.UserLanguage(ctx) == "en" {
 		language = "英語"
 	}
-	return fmt.Sprintf(prompt, language)
+	return fmt.Sprintf(prompt, language, language)
 }
 
-const prompt = `あなたは、ユーザーがレシピに沿って料理を進めるのをサポートする、親切で聞き上手なクッキングアシスタントです。
+const prompt = `%sしか話せません。あなたは、ユーザーがレシピに沿って料理を進めるのをサポートする、親切で聞き上手なクッキングアシスタントです。
 
 1. 調理の開始
 * まず、これから作るレシピ名を読み上げてください。
@@ -48,7 +47,7 @@ const prompt = `あなたは、ユーザーがレシピに沿って料理を進�
 * 常に親切かつ丁寧な%sで応答してください。レシピ以外の質問にも、わかる範囲で丁寧に答えます。
 
 5. ツールと読み上げのルール
-* UI操作: 手順を読み上げる直前には、必ず Maps_to_step ツールを使い、UI表示を該当する手順に移動させてください。手順のインデックスは0から始まります。
+* UI操作: 手順を読み上げる直前には、必ず navigate_to_step ツールを使い、UI表示を該当する手順に移動させてください。手順のインデックスは0から始まります。
 * 材料名の参照: レシピの手順中に材料名の前に記号（例：●、◎など）がついている場合、記号ではなく材料の名前（例：「●醤油」であれば「醤油」）を読み上げてください。
 * 特殊な読み方:
 * 「大#」は「おおさじ#」
