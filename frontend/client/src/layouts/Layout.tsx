@@ -17,7 +17,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#ffe799]">
-      <div className="container mx-auto min-h-screen max-w-full md:w-6xl prose pb-16 bg-white">
+      <div className="container mx-auto min-h-screen max-w-full md:w-4xl prose md:prose-lg pb-16 bg-white">
         {children}
       </div>
       <div className="fixed bottom-0 w-full h-16 bg-white z-50">
@@ -33,7 +33,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </Link>
           <HiHeart className="size-8 text-gray-400" />
           <ChatButton
-            className={chatStore.currentRecipeId ? "mb-20" : "invisible"}
+            className={
+              chatStore.currentRecipeId ? "mb-20 md:mb-40" : "invisible"
+            }
             recipeId={chatStore.currentRecipeId}
             navigateToStep={chatStore.navigateToStep}
             prompt={chatStore.prompt}

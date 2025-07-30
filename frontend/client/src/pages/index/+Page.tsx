@@ -61,7 +61,7 @@ export default function Page() {
         value={rawQuery}
         onValueChange={setRawQuery}
       />
-      <Divider className="mt-4 mb-4 -ml-4 w-screen bg-gray-100" />
+      <Divider className="mt-4 mb-4 md:mt-4 md:mb-4  bg-gray-100" />
       {(isPending && <div>{t("Loading...")}</div>) || (
         <div className="flex flex-col">
           {recipes?.map((recipe, i) => (

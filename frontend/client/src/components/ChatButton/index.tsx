@@ -371,7 +371,8 @@ export function ChatButton({
         onClick={onClick}
         className={twMerge(
           playing && speaking ? "mic-bubble-deselected" : "mic-bubble",
-          "flex-1/3 size-30 flex items-center justify-center cursor-pointer",
+          playing && waiting && "blinking",
+          "flex-1/3 size-30 md:size-50 flex items-center justify-center cursor-pointer",
         )}
       >
         {!playing ? (

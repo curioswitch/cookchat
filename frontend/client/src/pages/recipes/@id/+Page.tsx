@@ -123,7 +123,7 @@ export default function Page() {
     <div>
       <div className="flex items-center justify-between gap-2 pb-2 p-2">
         <BackButton className="size-6" />
-        <h1 className="text-2xl font-semibold mb-0">{t("Menu")}</h1>
+        <h1 className="text-2xl font-semibold mb-0 md:mb-0">{t("Menu")}</h1>
         <div className="size-6" />
       </div>
       <Image className="not-prose" radius="none" src={recipe.imageUrl} />
