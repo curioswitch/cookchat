@@ -5,17 +5,21 @@ import { HiHeart, HiShoppingCart, HiUser, HiViewList } from "react-icons/hi";
 import { twMerge } from "tailwind-merge";
 import { usePageContext } from "vike-react/usePageContext";
 
-import { useCartStore } from "../stores";
+import { ChatButton } from "../components/ChatButton";
+import { useCartStore, useChatStore } from "../stores";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pageContext = usePageContext();
   const path = pageContext.urlPathname;
 
   const cart = useCartStore();
+  const chatStore = useChatStore();
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="container mx-auto max-w-full prose pb-16">{children}</div>
+    <div className="flex flex-col min-h-screen bg-[#ffe799]">
+      <div className="container mx-auto min-h-screen max-w-full md:w-md prose pb-16 bg-white">
+        {children}
+      </div>
       <div className="fixed bottom-0 w-full h-16 bg-white z-50">
         <Divider />
         <div className="px-4 flex items-center justify-between h-full w-full">
@@ -28,6 +32,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             />
           </Link>
           <HiHeart className="size-8 text-gray-400" />
+          <ChatButton
+            className={chatStore.currentRecipeId ? "mb-20" : "invisible"}
+            recipeId={chatStore.currentRecipeId}
+            navigateToStep={chatStore.navigateToStep}
+            prompt={chatStore.prompt}
+          />
           <Link href="/cart">
             <Badge
               content={cart.recipes.length}

@@ -1,8 +1,9 @@
 import type { RecipeIngredient } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
 import { Image } from "@heroui/image";
+import { Textarea } from "@heroui/input";
 import { useQuery } from "@tanstack/react-query";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { HiAdjustments, HiShoppingCart, HiUsers } from "react-icons/hi";
 import { usePageContext } from "vike-react/usePageContext";
@@ -11,11 +12,13 @@ import { BackButton } from "../../../components/BackButton";
 import { useFrontendQueries } from "../../../hooks/rpc";
 import {
   addRecipeToCart,
+  clearCurrentRecipe,
   removeRecipeFromCart,
+  setCurrentRecipe,
+  setPrompt,
   useCartStore,
+  useChatStore,
 } from "../../../stores";
-
-import ChatButton from "./ChatButton";
 
 function Ingredients({ ingredients }: { ingredients: RecipeIngredient[] }) {
   return (
@@ -47,11 +50,45 @@ export default function Page() {
   const cart = useCartStore();
   const inCart = cart.recipes.some((recipe) => recipe.id === recipeId);
 
+  const stepRefs = useRef<Array<HTMLElement | null>>([]);
+
+  const navigateToStep = useCallback((idx: number) => {
+    stepRefs.current[idx]?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, []);
+
+  const chatStore = useChatStore();
+
+  useEffect(() => {
+    if (recipeRes?.recipe) {
+      setCurrentRecipe(recipeRes.recipe.id, (idx: number) =>
+        navigateToStep(idx),
+      );
+      return () => {
+        clearCurrentRecipe();
+      };
+    }
+  }, [recipeRes, navigateToStep]);
+
   const [editPrompt, setEditPrompt] = useState(false);
 
   const onEditPromptClick = useCallback(() => {
     setEditPrompt((prev) => !prev);
   }, []);
+
+  const onPromptChange = useCallback((prompt: string) => {
+    setPrompt(prompt);
+  }, []);
+
+  useEffect(() => {
+    if (!editPrompt) {
+      setPrompt("");
+    } else {
+      setPrompt(recipeRes?.llmPrompt ?? "");
+    }
+  }, [editPrompt, recipeRes]);
 
   const onCartToggle = useCallback(() => {
     if (!recipeRes) {
@@ -68,15 +105,6 @@ export default function Page() {
       addRecipeToCart(recipe);
     }
   }, [recipeRes, inCart]);
-
-  const stepRefs = useRef<Array<HTMLElement | null>>([]);
-
-  const navigateToStep = useCallback((idx: number) => {
-    stepRefs.current[idx]?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }, []);
 
   if (isPending) {
     return <div>{t("Loading...")}</div>;
@@ -105,12 +133,13 @@ export default function Page() {
           <HiUsers className="size-6 text-gray-400" />
           <span className="text-gray-500">{recipe.servingSize}</span>
         </div>
-        <ChatButton
-          recipeId={recipe.id}
-          prompt={recipeRes.llmPrompt}
-          editPrompt={editPrompt}
-          navigateToStep={navigateToStep}
-        />
+        {editPrompt && (
+          <Textarea
+            className="mt-2"
+            value={chatStore.prompt}
+            onValueChange={onPromptChange}
+          />
+        )}
       </div>
       <div className="bg-gray-50 px-4 py-8">
         <h3 className="flex items-center justify-between mt-0">
@@ -132,8 +161,8 @@ export default function Page() {
           >
             <HiShoppingCart className="size-5" />
             {inCart
-              ? t("Add to shopping list")
-              : t("Remove from shopping list")}
+              ? t("Remove from shopping list")
+              : t("Add to shopping list")}
           </Button>
         </div>
       </div>
