@@ -4,18 +4,16 @@ import {
   type LiveServerMessage,
   type Session,
 } from "@google/genai";
-import { Image } from "@heroui/image";
-import { Textarea } from "@heroui/input";
 import { RealtimeAgent, RealtimeSession } from "@openai/agents-realtime";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { HiMicrophone, HiStop } from "react-icons/hi2";
+import { twMerge } from "tailwind-merge";
 
-import speechSVG from "../../../assets/speech.svg";
-import { useFrontendQueries } from "../../../hooks/rpc";
-import { useSettingsStore } from "../../../stores";
-import LibSampleRateURL from "../../../workers/libsamplerate.worklet?worker&url";
-import MicWorkletURL from "../../../workers/MicWorklet?worker&url";
+import { useFrontendQueries } from "../../hooks/rpc";
+import { useSettingsStore } from "../../stores";
+import LibSampleRateURL from "../../workers/libsamplerate.worklet?worker&url";
+import MicWorkletURL from "../../workers/MicWorklet?worker&url";
 
 function convertPCM16ToFloat32(pcm: Uint8Array): Float32Array {
   const length = pcm.length / 2; // 16-bit audio, so 2 bytes per sample
@@ -209,20 +207,18 @@ class OpenAISession implements ChatSession {
   }
 }
 
-export default function ChatButton({
+export function ChatButton({
+  className,
   recipeId,
   navigateToStep,
   prompt,
-  editPrompt,
 }: {
+  className?: string;
   recipeId: string;
-  navigateToStep: (idx: number) => void;
+  navigateToStep?: (idx: number) => void;
   prompt?: string;
-  editPrompt: boolean;
 }) {
   const [stream, setStream] = useState<ChatSession | undefined>(undefined);
-  const [useOpenAI, _setUseOpenAI] = useState(false);
-  const [userPrompt, setUserPrompt] = useState(prompt || "");
   const [playing, setPlaying] = useState(false);
 
   const frontendQueries = useFrontendQueries();
@@ -230,6 +226,10 @@ export default function ChatButton({
   const settings = useSettingsStore();
 
   const onClick = useCallback(async () => {
+    if (!navigateToStep) {
+      return;
+    }
+
     if (stream) {
       stream.stop();
       setStream(undefined);
@@ -239,7 +239,7 @@ export default function ChatButton({
 
     setPlaying(true);
 
-    const modelProvider = useOpenAI
+    const modelProvider = settings.useOpenAI
       ? StartChatRequest_ModelProvider.OPENAI
       : StartChatRequest_ModelProvider.GOOGLE_GENAI;
 
@@ -250,7 +250,7 @@ export default function ChatButton({
           value: recipeId,
         },
         modelProvider,
-        llmPrompt: editPrompt ? userPrompt : undefined,
+        llmPrompt: prompt,
       }),
       staleTime: 0,
     });
@@ -321,9 +321,7 @@ export default function ChatButton({
     stream,
     recipeId,
     navigateToStep,
-    useOpenAI,
-    userPrompt,
-    editPrompt,
+    prompt,
     settings,
   ]);
 
@@ -336,34 +334,25 @@ export default function ChatButton({
   }, [stream]);
 
   return (
-    <>
-      <div className="flex items-center gap-2 text-primary font-semibold">
-        <div className="flex-1/3 text-right">Coopiiと</div>
-        <button
-          type="button"
-          onClick={onClick}
-          className={
-            "flex-1/3 size-30 mic-bubble flex items-center justify-center cursor-pointer"
-          }
-        >
-          {!playing ? (
-            <HiMicrophone className="text-white size-6" />
-          ) : (
-            <HiStop className="text-white size-6" />
-          )}
-        </button>
-        <div className="flex-1/3 flex items-center">
-          話す
-          <Image src={speechSVG} alt="Speech" className="size-8" />
-        </div>
-      </div>
-      {editPrompt && (
-        <Textarea
-          className="mt-2"
-          value={userPrompt}
-          onValueChange={setUserPrompt}
-        />
+    <div
+      className={twMerge(
+        "flex items-center gap-2 text-primary font-semibold",
+        className,
       )}
-    </>
+    >
+      <button
+        type="button"
+        onClick={onClick}
+        className={
+          "flex-1/3 size-30 mic-bubble flex items-center justify-center cursor-pointer"
+        }
+      >
+        {!playing ? (
+          <HiMicrophone className="text-white size-6" />
+        ) : (
+          <HiStop className="text-white size-6" />
+        )}
+      </button>
+    </div>
   );
 }

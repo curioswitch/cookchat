@@ -1,3 +1,4 @@
+import { Checkbox } from "@heroui/checkbox";
 import { Select, SelectItem } from "@heroui/select";
 import type { SharedSelection } from "@heroui/system";
 import { useCallback, useEffect, useState } from "react";
@@ -8,6 +9,7 @@ import i18n from "../../layouts/i18n";
 import {
   setMicrophoneDeviceId,
   setSpeakerDeviceId,
+  setUseOpenAI,
   useSettingsStore,
 } from "../../stores";
 
@@ -88,6 +90,13 @@ export default function Page() {
             </SelectItem>
           ))}
         </Select>
+        <Checkbox
+          className="mt-4"
+          isSelected={settings.useOpenAI}
+          onValueChange={setUseOpenAI}
+        >
+          Use OpenAI
+        </Checkbox>
       </div>
     </div>
   );

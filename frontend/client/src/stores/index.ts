@@ -110,6 +110,7 @@ export const toggleCartIngredientSelection = (
 export type SettingsStore = {
   speakerDeviceId: string;
   microphoneDeviceId: string;
+  useOpenAI: boolean;
 };
 
 export const setSpeakerDeviceId = (deviceId: string) =>
@@ -118,11 +119,15 @@ export const setSpeakerDeviceId = (deviceId: string) =>
 export const setMicrophoneDeviceId = (deviceId: string) =>
   useSettingsStore.setState({ microphoneDeviceId: deviceId });
 
+export const setUseOpenAI = (useOpenAI: boolean) =>
+  useSettingsStore.setState({ useOpenAI });
+
 export const useSettingsStore = create<SettingsStore>()(
   persist(
     () => ({
       speakerDeviceId: "",
       microphoneDeviceId: "",
+      useOpenAI: false as boolean,
     }),
     {
       name: "settings-storage",
@@ -160,3 +165,34 @@ export const useSettingsStore = create<SettingsStore>()(
     },
   ),
 );
+
+export type Chat = {
+  currentRecipeId: string;
+  prompt: string;
+  navigateToStep: ((idx: number) => void) | undefined;
+};
+
+export const useChatStore = create<Chat>()(() => ({
+  currentRecipeId: "",
+  prompt: "",
+  navigateToStep: undefined,
+}));
+
+export const setCurrentRecipe = (
+  recipeId: string,
+  navigateToStep: (idx: number) => void,
+) => {
+  useChatStore.setState({ currentRecipeId: recipeId, navigateToStep });
+};
+
+export const setPrompt = (prompt: string) => {
+  useChatStore.setState({ prompt });
+};
+
+export const clearCurrentRecipe = () => {
+  useChatStore.setState({
+    currentRecipeId: "",
+    prompt: "",
+    navigateToStep: undefined,
+  });
+};
