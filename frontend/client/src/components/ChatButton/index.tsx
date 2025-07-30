@@ -110,6 +110,7 @@ class ChatStream {
     private readonly navigateToStep: (idx: number) => void,
     private readonly speakingRef: React.RefObject<boolean>,
     private readonly setSpeaking: (speaking: boolean) => void,
+    private readonly setWaiting: (waiting: boolean) => void,
     private readonly microphoneDeviceId?: string,
   ) {
     this.audioContext = new AudioContext();
@@ -174,10 +175,12 @@ class ChatStream {
           const mimeType = inlineData?.mimeType;
           if (inlineData?.data && mimeType?.startsWith("audio/pcm")) {
             this.setSpeaking(true);
+            this.setWaiting(false);
             this.audioPlayer.add(base64Decode(inlineData.data));
           }
           if (e.serverContent?.turnComplete) {
             this.setSpeaking(false);
+            this.setWaiting(true);
           }
         },
 
@@ -231,6 +234,7 @@ export function ChatButton({
   const [stream, setStream] = useState<ChatSession | undefined>(undefined);
   const [playing, setPlaying] = useState(false);
   const [speaking, setSpeaking] = useState(false);
+  const [waiting, setWaiting] = useState(false);
   const speakingRef = useRef(false);
 
   useEffect(() => {
@@ -250,6 +254,8 @@ export function ChatButton({
       stream.stop();
       setStream(undefined);
       setPlaying(false);
+      setSpeaking(false);
+      setWaiting(false);
       return false;
     }
 
@@ -326,6 +332,7 @@ export function ChatButton({
         navigateToStep,
         speakingRef,
         setSpeaking,
+        setWaiting,
         settings.microphoneDeviceId !== ""
           ? settings.microphoneDeviceId
           : undefined,
@@ -363,7 +370,8 @@ export function ChatButton({
         type="button"
         onClick={onClick}
         className={twMerge(
-          speaking ? "mic-bubble-deselected" : "mic-bubble",
+          playing && speaking ? "mic-bubble-deselected" : "mic-bubble",
+          playing && waiting && "blinking",
           "flex-1/3 size-30 flex items-center justify-center cursor-pointer",
         )}
       >
