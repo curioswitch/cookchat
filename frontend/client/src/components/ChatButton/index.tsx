@@ -11,6 +11,7 @@ import { useSettingsStore } from "../../stores";
 import ChatWorker from "../../workers/ChatWorker?worker";
 import LibSampleRateURL from "../../workers/libsamplerate.worklet?worker&url";
 import MicWorkletURL from "../../workers/MicWorklet?worker&url";
+import SpeakerWorkletURL from "../../workers/SpeakerWorklet?worker&url";
 
 function convertPCM16ToFloat32(pcm: Uint8Array): Float32Array {
   const length = pcm.length / 2; // 16-bit audio, so 2 bytes per sample
@@ -313,13 +314,33 @@ export function ChatButton({
       session.sendMessage(res.startMessage);
       setStream(new OpenAISession(session));
     } else {
+      console.log("foo");
+      const audioContext = new AudioContext();
+      await audioContext.audioWorklet.addModule(SpeakerWorkletURL);
+
+      const speakerChannel = new MessageChannel();
+      const speakerNode = new AudioWorkletNode(
+        audioContext,
+        "speaker-worklet",
+        {
+          processorOptions: {
+            //port: speakerChannel.port1,
+          },
+        },
+      );
+      speakerNode.connect(audioContext.destination);
+
       const chatWorker = new ChatWorker();
-      chatWorker.postMessage({
-        type: "init",
-        apiKey: res.chatApiKey,
-        model: res.chatModel,
-        startMessage: res.startMessage,
-      });
+      chatWorker.postMessage(
+        {
+          type: "init",
+          apiKey: res.chatApiKey,
+          model: res.chatModel,
+          startMessage: res.startMessage,
+          speakerPort: speakerNode.port,
+        },
+        [speakerNode.port],
+      );
 
       /*
 
