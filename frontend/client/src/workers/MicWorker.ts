@@ -13,6 +13,9 @@ function b64Encode(data: Int16Array): string {
     data.byteOffset,
     data.byteLength,
   );
+  if (byteArray.toBase64) {
+    return byteArray.toBase64();
+  }
   return btoa(String.fromCharCode(...byteArray));
 }
 
