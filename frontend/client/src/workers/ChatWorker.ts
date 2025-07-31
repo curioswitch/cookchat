@@ -134,7 +134,6 @@ async function processMessage(
   event: MessageEvent<InitEvent | CloseWorkerEvent>,
 ) {
   const data = event.data;
-  console.log(data);
   switch (data.type) {
     case "init": {
       return await init(data);
