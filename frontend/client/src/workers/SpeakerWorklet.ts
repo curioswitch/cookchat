@@ -1,7 +1,3 @@
-type AudioEvent = {
-  data: Float32Array;
-};
-
 class SpeakerWorklet
   extends AudioWorkletProcessor
   implements AudioWorkletProcessorImpl
@@ -18,7 +14,7 @@ class SpeakerWorklet
     };
   }
 
-  process(inputs: Float32Array[][], outputs: Float32Array[][]) {
+  process(_inputs: Float32Array[][], outputs: Float32Array[][]) {
     const outputChannel = outputs[0][0];
     const bufferSize = outputChannel.length;
 

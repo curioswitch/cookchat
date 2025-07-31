@@ -4,6 +4,12 @@ import {
   type Session,
 } from "@google/genai";
 
+import type {
+  AudioStartEvent,
+  ToolCallEvent,
+  TurnCompleteEvent,
+} from "../events";
+
 type MicEvent = {
   data: string;
 };
@@ -20,7 +26,7 @@ class ChatStream {
   ) {}
 
   async start() {
-    console.log("Starting chat stream with model:", this.model);
+    let receivingAudio = false;
     this.session = await this.genAI.live.connect({
       model: this.model,
       callbacks: {
@@ -40,6 +46,9 @@ class ChatStream {
               turnComplete: true,
             });
             this.micPort.onmessage = (e: MessageEvent<MicEvent>) => {
+              if (receivingAudio) {
+                return;
+              }
               this.session.sendRealtimeInput({
                 audio: {
                   mimeType: "audio/pcm",
@@ -49,10 +58,31 @@ class ChatStream {
             };
           }
 
+          const toolCall = e.toolCall?.functionCalls?.[0];
+          if (toolCall) {
+            self.postMessage({
+              type: "toolCall",
+              call: toolCall,
+            } satisfies ToolCallEvent);
+          }
+
           const inlineData = e.serverContent?.modelTurn?.parts?.[0]?.inlineData;
           const mimeType = inlineData?.mimeType;
           if (inlineData?.data && mimeType?.startsWith("audio/pcm")) {
+            if (!receivingAudio) {
+              self.postMessage({
+                type: "audioStart",
+              } satisfies AudioStartEvent);
+              receivingAudio = true;
+            }
             this.speakerPort.postMessage(inlineData.data);
+          }
+
+          if (e.serverContent?.turnComplete) {
+            self.postMessage({
+              type: "turnComplete",
+            } satisfies TurnCompleteEvent);
+            receivingAudio = false;
           }
         },
 
@@ -86,7 +116,6 @@ type CloseWorkerEvent = {
 let stream: ChatStream;
 
 async function init(request: InitEvent) {
-  console.log("init");
   const genAI = new GoogleGenAI({
     apiKey: request.apiKey,
     apiVersion: "v1alpha",
