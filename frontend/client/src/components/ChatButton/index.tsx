@@ -1,19 +1,18 @@
 import { StartChatRequest_ModelProvider } from "@cookchat/frontend-api";
-import {
-  GoogleGenAI,
-  type LiveServerMessage,
-  type Session,
-} from "@google/genai";
 import { RealtimeAgent, RealtimeSession } from "@openai/agents-realtime";
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { HiMicrophone, HiStop } from "react-icons/hi2";
 import { twMerge } from "tailwind-merge";
 
+import type { ChatEvent } from "../../events";
 import { useFrontendQueries } from "../../hooks/rpc";
 import { useSettingsStore } from "../../stores";
-import LibSampleRateURL from "../../workers/libsamplerate.worklet?worker&url";
+import ChatWorker from "../../workers/ChatWorker?worker";
+import MicWorker from "../../workers/MicWorker?worker";
 import MicWorkletURL from "../../workers/MicWorklet?worker&url";
+import SpeakerWorker from "../../workers/SpeakerWorker?worker";
+import SpeakerWorkletURL from "../../workers/SpeakerWorklet?worker&url";
 
 function convertPCM16ToFloat32(pcm: Uint8Array): Float32Array {
   const length = pcm.length / 2; // 16-bit audio, so 2 bytes per sample
@@ -96,19 +95,21 @@ class AudioPlayer {
 class ChatStream {
   private readonly audioContext: AudioContext;
 
-  private audioSource!: MediaStreamAudioSourceNode;
-  private micWorklet!: AudioWorkletNode;
-  private session!: Session;
+  private micSource: MediaStreamAudioSourceNode | undefined;
+  private micWorklet: AudioWorkletNode | undefined;
+  private micWorker: Worker | undefined;
+  private chatWorker: Worker | undefined;
+  private speakerWorker: Worker | undefined;
+  private speakerWorklet: AudioWorkletNode | undefined;
 
   private stopped?: boolean;
 
   constructor(
-    private readonly audioPlayer: AudioPlayer,
-    private readonly genAI: GoogleGenAI,
+    private readonly apiKey: string,
     private readonly model: string,
     private readonly startMessage: string,
+
     private readonly navigateToStep: (idx: number) => void,
-    private readonly speakingRef: React.RefObject<boolean>,
     private readonly setSpeaking: (speaking: boolean) => void,
     private readonly setWaiting: (waiting: boolean) => void,
     private readonly microphoneDeviceId?: string,
@@ -117,7 +118,13 @@ class ChatStream {
   }
 
   async start() {
-    const stream = await navigator.mediaDevices.getUserMedia({
+    // We start 5 threads to process audio, two realtime threads for mic input and speaker output,
+    // two workers for processing mic audio and speaker audio, and one worker for I/O with the
+    // websocket. The two workers are notably separated to ensure realtime threads don't get busy
+    // and mic and speaker processing have as little effect on each other as possible. Ideally,
+    // the I/O itself could be separated, but not since it's a single websocket.
+
+    const micStream = await navigator.mediaDevices.getUserMedia({
       audio: {
         deviceId: this.microphoneDeviceId
           ? { exact: this.microphoneDeviceId }
@@ -125,72 +132,71 @@ class ChatStream {
       },
     });
     const audioContext = this.audioContext;
-    this.audioSource = audioContext.createMediaStreamSource(stream);
+    this.micSource = audioContext.createMediaStreamSource(micStream);
     await audioContext.audioWorklet.addModule(MicWorkletURL);
-    await audioContext.audioWorklet.addModule(LibSampleRateURL);
+    await audioContext.audioWorklet.addModule(SpeakerWorkletURL);
     this.micWorklet = new AudioWorkletNode(audioContext, "mic-worklet");
-    this.audioSource.connect(this.micWorklet);
-    this.micWorklet.connect(audioContext.destination);
+    this.micSource.connect(this.micWorklet);
 
-    this.session = await this.genAI.live.connect({
-      model: this.model,
-      callbacks: {
-        onmessage: (e: LiveServerMessage) => {
-          if (e.setupComplete) {
-            this.session.sendClientContent({
-              turns: [
-                {
-                  role: "user",
-                  parts: [
-                    {
-                      text: this.startMessage,
-                    },
-                  ],
-                },
-              ],
-              turnComplete: true,
-            });
-            this.micWorklet.port.onmessage = (e) => {
-              if (this.speakingRef.current) {
-                return;
-              }
-              if (e.data.event === "chunk") {
-                this.session.sendRealtimeInput({
-                  audio: {
-                    mimeType: "audio/pcm",
-                    data: btoa(e.data.data.str),
-                  },
-                });
-              }
-            };
-            return;
-          }
-          const toolCall = e.toolCall?.functionCalls?.[0];
-          if (toolCall?.name === "navigate_to_step" && toolCall.args) {
-            const idx = toolCall.args.step as number;
+    const micWorkerChannel = new MessageChannel();
+    this.micWorker = new MicWorker();
+    this.micWorker.postMessage(
+      {
+        type: "init",
+        sampleRate: audioContext.sampleRate,
+        micPort: this.micWorklet.port,
+        chatPort: micWorkerChannel.port1,
+      },
+      [micWorkerChannel.port1, this.micWorklet.port],
+    );
+
+    const speakerWorkerChannel = new MessageChannel();
+    this.speakerWorklet = new AudioWorkletNode(audioContext, "speaker-worklet");
+    this.speakerWorklet.connect(audioContext.destination);
+
+    this.chatWorker = new ChatWorker();
+    this.chatWorker.postMessage(
+      {
+        type: "init",
+        apiKey: this.apiKey,
+        model: this.model,
+        startMessage: this.startMessage,
+        micPort: micWorkerChannel.port2,
+        speakerPort: speakerWorkerChannel.port1,
+      },
+      [micWorkerChannel.port2, speakerWorkerChannel.port1],
+    );
+    this.chatWorker.onmessage = (event: MessageEvent<ChatEvent>) => {
+      switch (event.data.type) {
+        case "audioStart":
+          this.setSpeaking(true);
+          this.setWaiting(false);
+          break;
+        case "toolCall": {
+          const call = event.data.call;
+          if (call.name === "navigate_to_step" && call.args) {
+            const idx = call.args.step as number;
             this.navigateToStep(idx);
           }
+          break;
+        }
+        case "turnComplete":
+          this.setSpeaking(false);
+          this.setWaiting(true);
+          break;
+      }
+    };
 
-          const inlineData = e.serverContent?.modelTurn?.parts?.[0]?.inlineData;
-          const mimeType = inlineData?.mimeType;
-          if (inlineData?.data && mimeType?.startsWith("audio/pcm")) {
-            this.setSpeaking(true);
-            this.setWaiting(false);
-            this.audioPlayer.add(base64Decode(inlineData.data));
-          }
-          if (e.serverContent?.turnComplete) {
-            this.setSpeaking(false);
-            this.setWaiting(true);
-          }
-        },
-
-        onclose: (_e: CloseEvent) => {},
-
-        onerror: (e: ErrorEvent) => {
-          console.error("Error in live connection:", e);
-        },
+    this.speakerWorker = new SpeakerWorker();
+    this.speakerWorker.postMessage(
+      {
+        type: "init",
+        sampleRate: audioContext.sampleRate,
+        chatPort: speakerWorkerChannel.port2,
+        speakerPort: this.speakerWorklet.port,
       },
-    });
+      [this.speakerWorklet.port, speakerWorkerChannel.port2],
+    );
   }
 
   async stop() {
@@ -198,13 +204,22 @@ class ChatStream {
       return;
     }
     this.stopped = true;
-    await this.audioPlayer.stop();
-    this.audioSource.disconnect();
-    this.micWorklet.disconnect();
-    await this.audioContext.close();
-    if (this.session) {
-      this.session.close();
+    if (this.micWorklet) {
+      this.micWorklet.disconnect();
     }
+    if (this.micWorker) {
+      this.micWorker.terminate();
+    }
+    if (this.chatWorker) {
+      this.chatWorker.terminate();
+    }
+    if (this.speakerWorker) {
+      this.speakerWorker.terminate();
+    }
+    if (this.speakerWorklet) {
+      this.speakerWorklet.disconnect();
+    }
+    await this.audioContext.close();
   }
 }
 
@@ -235,11 +250,6 @@ export function ChatButton({
   const [playing, setPlaying] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [waiting, setWaiting] = useState(false);
-  const speakingRef = useRef(false);
-
-  useEffect(() => {
-    speakingRef.current = speaking;
-  }, [speaking]);
 
   const frontendQueries = useFrontendQueries();
   const queryClient = useQueryClient();
@@ -316,21 +326,11 @@ export function ChatButton({
       session.sendMessage(res.startMessage);
       setStream(new OpenAISession(session));
     } else {
-      const genai = new GoogleGenAI({
-        apiKey: res.chatApiKey,
-        apiVersion: "v1alpha",
-      });
-      const audioPlayer = new AudioPlayer();
-      if (settings.speakerDeviceId !== "") {
-        await audioPlayer.setSpeaker(settings.speakerDeviceId);
-      }
       const s = new ChatStream(
-        audioPlayer,
-        genai,
+        res.chatApiKey,
         res.chatModel,
         res.startMessage,
         navigateToStep,
-        speakingRef,
         setSpeaking,
         setWaiting,
         settings.microphoneDeviceId !== ""
