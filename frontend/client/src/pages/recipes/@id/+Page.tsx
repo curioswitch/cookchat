@@ -184,7 +184,7 @@ export default function Page() {
               }}
               className="flex gap-3 px-0"
             >
-              <div className="flex-none w-8 h-8 bg-gray-400 text-white w-8 h-8 md:w-10 md:h-10 text-base md:text-lg rounded-full flex justify-center items-center">
+              <div className="flex-none bg-gray-400 text-white size-8 md:size-10 text-base md:text-lg rounded-full flex justify-center items-center">
                 {i + 1}
               </div>
               <div className="flex-11/12">
