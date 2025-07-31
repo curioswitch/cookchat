@@ -366,7 +366,7 @@ export function ChatButton({
         className,
       )}
     >
-      {/* 波紋アニメーションを条件付きで表示 */}
+      {/* Play animation after assistant finishes speaking. */}
       {playing && waiting && <span className="mic-ping" />}
       <button
         type="button"
