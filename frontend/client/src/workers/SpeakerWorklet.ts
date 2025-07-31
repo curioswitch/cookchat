@@ -13,8 +13,8 @@ class SpeakerWorklet
 
     this.buffer = [];
 
-    this.port.onmessage = (event: AudioEvent) => {
-      this.buffer.push(event.data);
+    this.port.onmessage = (event: MessageEvent<ArrayBuffer>) => {
+      this.buffer.push(new Float32Array(event.data));
     };
   }
 

@@ -4,29 +4,9 @@ import {
   type Session,
 } from "@google/genai";
 
-function base64Decode(base64: string): Uint8Array {
-  const binaryString = atob(base64);
-  const len = binaryString.length;
-  const bytes = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return bytes;
-}
-
-function convertPCM16ToFloat32(pcm: Uint8Array): Float32Array {
-  const length = pcm.length / 2; // 16-bit audio, so 2 bytes per sample
-  const float32AudioData = new Float32Array(length);
-
-  for (let i = 0; i < length; i++) {
-    // Combine two bytes into one 16-bit signed integer (little-endian)
-    let sample = pcm[i * 2] | (pcm[i * 2 + 1] << 8);
-    // Convert from 16-bit PCM to Float32 (range -1 to 1)
-    if (sample >= 32768) sample -= 65536;
-    float32AudioData[i] = sample / 32768;
-  }
-  return float32AudioData;
-}
+type MicEvent = {
+  data: string;
+};
 
 class ChatStream {
   private session!: Session;
@@ -35,6 +15,7 @@ class ChatStream {
     private genAI: GoogleGenAI,
     private model: string,
     private startMessage: string,
+    private micPort: MessagePort,
     private speakerPort: MessagePort,
   ) {}
 
@@ -58,15 +39,20 @@ class ChatStream {
               ],
               turnComplete: true,
             });
+            this.micPort.onmessage = (e: MessageEvent<MicEvent>) => {
+              this.session.sendRealtimeInput({
+                audio: {
+                  mimeType: "audio/pcm",
+                  data: e.data.data,
+                },
+              });
+            };
           }
 
           const inlineData = e.serverContent?.modelTurn?.parts?.[0]?.inlineData;
           const mimeType = inlineData?.mimeType;
           if (inlineData?.data && mimeType?.startsWith("audio/pcm")) {
-            const decoded = convertPCM16ToFloat32(
-              base64Decode(inlineData.data),
-            );
-            this.speakerPort.postMessage(decoded);
+            this.speakerPort.postMessage(inlineData.data);
           }
         },
 
@@ -89,6 +75,7 @@ type InitEvent = {
   apiKey: string;
   model: string;
   startMessage: string;
+  micPort: MessagePort;
   speakerPort: MessagePort;
 };
 
@@ -108,6 +95,7 @@ async function init(request: InitEvent) {
     genAI,
     request.model,
     request.startMessage,
+    request.micPort,
     request.speakerPort,
   );
   await stream.start();

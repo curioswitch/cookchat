@@ -9,8 +9,9 @@ import { twMerge } from "tailwind-merge";
 import { useFrontendQueries } from "../../hooks/rpc";
 import { useSettingsStore } from "../../stores";
 import ChatWorker from "../../workers/ChatWorker?worker";
-import LibSampleRateURL from "../../workers/libsamplerate.worklet?worker&url";
+import MicWorker from "../../workers/MicWorker?worker";
 import MicWorkletURL from "../../workers/MicWorklet?worker&url";
+import SpeakerWorker from "../../workers/SpeakerWorker?worker";
 import SpeakerWorkletURL from "../../workers/SpeakerWorklet?worker&url";
 
 function convertPCM16ToFloat32(pcm: Uint8Array): Float32Array {
@@ -125,7 +126,6 @@ class ChatStream {
     const audioContext = this.audioContext;
     this.audioSource = audioContext.createMediaStreamSource(stream);
     await audioContext.audioWorklet.addModule(MicWorkletURL);
-    await audioContext.audioWorklet.addModule(LibSampleRateURL);
     this.micWorklet = new AudioWorkletNode(audioContext, "mic-worklet");
     this.audioSource.connect(this.micWorklet);
     this.micWorklet.connect(audioContext.destination);
@@ -314,20 +314,33 @@ export function ChatButton({
       session.sendMessage(res.startMessage);
       setStream(new OpenAISession(session));
     } else {
-      console.log("foo");
+      const micStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
       const audioContext = new AudioContext();
+      const micSource = audioContext.createMediaStreamSource(micStream);
+      await audioContext.audioWorklet.addModule(MicWorkletURL);
+      const micWorklet = new AudioWorkletNode(audioContext, "mic-worklet");
+      micSource.connect(micWorklet);
+
+      const micWorkerChannel = new MessageChannel();
+      const micWorker = new MicWorker();
+      console.log(micStream.getAudioTracks()[0].getSettings());
+      micWorker.postMessage(
+        {
+          type: "init",
+          sampleRate: audioContext.sampleRate,
+          micPort: micWorklet.port,
+          chatPort: micWorkerChannel.port1,
+        },
+        [micWorkerChannel.port1, micWorklet.port],
+      );
+
       await audioContext.audioWorklet.addModule(SpeakerWorkletURL);
 
-      const speakerChannel = new MessageChannel();
-      const speakerNode = new AudioWorkletNode(
-        audioContext,
-        "speaker-worklet",
-        {
-          processorOptions: {
-            //port: speakerChannel.port1,
-          },
-        },
-      );
+      const speakerWorkerChannel = new MessageChannel();
+
+      const speakerNode = new AudioWorkletNode(audioContext, "speaker-worklet");
       speakerNode.connect(audioContext.destination);
 
       const chatWorker = new ChatWorker();
@@ -337,9 +350,21 @@ export function ChatButton({
           apiKey: res.chatApiKey,
           model: res.chatModel,
           startMessage: res.startMessage,
+          micPort: micWorkerChannel.port2,
+          speakerPort: speakerWorkerChannel.port1,
+        },
+        [micWorkerChannel.port2, speakerWorkerChannel.port1],
+      );
+
+      const speakerWorker = new SpeakerWorker();
+      speakerWorker.postMessage(
+        {
+          type: "init",
+          sampleRate: audioContext.sampleRate,
+          chatPort: speakerWorkerChannel.port2,
           speakerPort: speakerNode.port,
         },
-        [speakerNode.port],
+        [speakerNode.port, speakerWorkerChannel.port2],
       );
 
       /*
