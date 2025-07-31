@@ -362,17 +362,18 @@ export function ChatButton({
   return (
     <div
       className={twMerge(
-        "flex items-center gap-2 text-primary font-semibold",
+        "relative flex items-center gap-2 text-primary font-semibold",
         className,
       )}
     >
+      {/* 波紋アニメーションを条件付きで表示 */}
+      {playing && waiting && <span className="mic-ping" />}
       <button
         type="button"
         onClick={onClick}
         className={twMerge(
           playing && speaking ? "mic-bubble-deselected" : "mic-bubble",
-          playing && waiting && "blinking",
-          "flex-1/3 size-30 md:size-50 flex items-center justify-center cursor-pointer",
+          "relative z-10 flex-1/3 size-30 md:size-50 flex items-center justify-center cursor-pointer",
         )}
       >
         {!playing ? (
