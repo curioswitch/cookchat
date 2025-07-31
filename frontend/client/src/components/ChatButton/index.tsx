@@ -1,5 +1,5 @@
 import { StartChatRequest_ModelProvider } from "@cookchat/frontend-api";
-import type { GoogleGenAI, LiveServerMessage, Session } from "@google/genai";
+import type { LiveServerMessage, Session } from "@google/genai";
 import { RealtimeAgent, RealtimeSession } from "@openai/agents-realtime";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -102,10 +102,10 @@ class ChatStream {
   private stopped?: boolean;
 
   constructor(
-    private readonly audioPlayer: AudioPlayer,
-    private readonly genAI: GoogleGenAI,
+    private readonly apiKey: string,
     private readonly model: string,
     private readonly startMessage: string,
+
     private readonly navigateToStep: (idx: number) => void,
     private readonly speakingRef: React.RefObject<boolean>,
     private readonly setSpeaking: (speaking: boolean) => void,
