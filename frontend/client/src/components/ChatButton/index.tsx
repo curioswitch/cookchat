@@ -14,84 +14,6 @@ import MicWorkletURL from "../../workers/MicWorklet?worker&url";
 import SpeakerWorker from "../../workers/SpeakerWorker?worker";
 import SpeakerWorkletURL from "../../workers/SpeakerWorklet?worker&url";
 
-function convertPCM16ToFloat32(pcm: Uint8Array): Float32Array {
-  const length = pcm.length / 2; // 16-bit audio, so 2 bytes per sample
-  const float32AudioData = new Float32Array(length);
-
-  for (let i = 0; i < length; i++) {
-    // Combine two bytes into one 16-bit signed integer (little-endian)
-    let sample = pcm[i * 2] | (pcm[i * 2 + 1] << 8);
-    // Convert from 16-bit PCM to Float32 (range -1 to 1)
-    if (sample >= 32768) sample -= 65536;
-    float32AudioData[i] = sample / 32768;
-  }
-  return float32AudioData;
-}
-
-function base64Decode(base64: string): Uint8Array {
-  const binaryString = atob(base64);
-  const len = binaryString.length;
-  const bytes = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return bytes;
-}
-
-class AudioPlayer {
-  private readonly audioCtx = new AudioContext();
-
-  private nextStartTime = this.audioCtx.currentTime;
-
-  private playing = false;
-  private queue: Float32Array[] = [];
-
-  async setSpeaker(speakerDeviceId: string) {
-    await this.audioCtx.setSinkId?.(speakerDeviceId);
-  }
-
-  add(chunk: Uint8Array) {
-    if (this.audioCtx.state === "closed") {
-      return;
-    }
-    this.queue.push(convertPCM16ToFloat32(chunk));
-    if (!this.playing) {
-      this.play();
-    }
-  }
-
-  play() {
-    this.playing = true;
-    while (this.queue.length > 0) {
-      if (this.audioCtx.state === "closed") {
-        this.queue = [];
-        break;
-      }
-
-      const chunk = this.queue.shift();
-      if (!chunk) {
-        continue;
-      }
-      // Create an AudioBuffer (Assuming 1 channel and 24k sample rate)
-      const audioBuffer = this.audioCtx.createBuffer(1, chunk.length, 24_000);
-      audioBuffer.copyToChannel(chunk, 0);
-      const source = this.audioCtx.createBufferSource();
-      source.buffer = audioBuffer;
-      source.connect(this.audioCtx.destination);
-      if (this.nextStartTime < this.audioCtx.currentTime) {
-        this.nextStartTime = this.audioCtx.currentTime;
-      }
-      source.start(this.nextStartTime);
-      this.nextStartTime += audioBuffer.duration;
-    }
-    this.playing = false;
-  }
-
-  async stop() {
-    await this.audioCtx.close();
-  }
-}
-
 class ChatStream {
   private readonly audioContext: AudioContext;
 
@@ -122,7 +44,8 @@ class ChatStream {
     // two workers for processing mic audio and speaker audio, and one worker for I/O with the
     // websocket. The two workers are notably separated to ensure realtime threads don't get busy
     // and mic and speaker processing have as little effect on each other as possible. Ideally,
-    // the I/O itself could be separated, but not since it's a single websocket.
+    // the I/O itself could be separated, but not since it's a single websocket, so we try to
+    // simulate that by leaving out as much processing as we can.
 
     const micStream = await navigator.mediaDevices.getUserMedia({
       audio: {
