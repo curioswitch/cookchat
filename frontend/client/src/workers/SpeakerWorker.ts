@@ -1,6 +1,10 @@
 import { ConverterType, create } from "@alexanderolsen/libsamplerate-js";
 
 function base64Decode(base64: string): Uint8Array {
+  if (Uint8Array.fromBase64) {
+    return Uint8Array.fromBase64(base64);
+  }
+
   const binaryString = atob(base64);
   const len = binaryString.length;
   const bytes = new Uint8Array(len);

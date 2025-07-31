@@ -14,7 +14,7 @@ import MicWorkletURL from "../../workers/MicWorklet?worker&url";
 import SpeakerWorker from "../../workers/SpeakerWorker?worker";
 import SpeakerWorkletURL from "../../workers/SpeakerWorklet?worker&url";
 
-class ChatStream {
+class ChatStream implements ChatSession {
   private readonly audioContext: AudioContext;
 
   private micSource: MediaStreamAudioSourceNode | undefined;
