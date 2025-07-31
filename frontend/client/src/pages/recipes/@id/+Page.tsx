@@ -25,7 +25,7 @@ function Ingredients({ ingredients }: { ingredients: RecipeIngredient[] }) {
     <>
       {ingredients.map((ingredient) => (
         <div
-          className="flex justify-between py-2 md:py-3 border-b-1 border-gray-100 text-2xl"
+          className="flex justify-between py-2 md:py-4 px-4 border-b-1 border-gray-100 text-2xl"
           key={ingredient.name}
         >
           <div>{ingredient.name}</div>
@@ -129,21 +129,25 @@ export default function Page() {
         <div className="size-6" />
       </div>
       <Image className="not-prose" radius="none" src={recipe.imageUrl} />
-      <div className="p-4 md:p-8">
-        <h3 className="font-semibold md:text-4xl mt-0">{recipe.title}</h3>
-        <div className="flex items-center gap-2 mt-2">
-          <HiUsers className="size-6 text-gray-400" />
-          <span className="text-gray-500">{recipe.servingSize}</span>
+      <div className="md:px-8">
+        <h3 className="font-semibold md:text-4xl leading-normal">
+          {recipe.title}
+        </h3>
+        <div className="flex items-center gap-2 mb-4 pt-2">
+          <HiUsers className="size-10 text-gray-400" />
+          <span className="text-gray-500 md:text-2xl mt-0.5">
+            {recipe.servingSize}
+          </span>
         </div>
         {editPrompt && (
           <Textarea
-            className="mt-2"
+            className="mt-0"
             value={chatStore.prompt}
             onValueChange={onPromptChange}
           />
         )}
       </div>
-      <div className="bg-gray-50 px-4 py-8">
+      <div className="bg-gray-50 px-8 py-1">
         <h3 className="flex items-center justify-between mt-0">
           {t("Ingredients")}
           <HiAdjustments className="size-8" onClick={onEditPromptClick} />
@@ -155,7 +159,7 @@ export default function Page() {
             <Ingredients ingredients={section.ingredients} />
           </div>
         ))}
-        <div className="flex items-center justify-center mt-8">
+        <div className="flex items-center justify-center mt-8 mb-8">
           <Button
             color="primary"
             className="text-white py-4 px-6 md:py-8 md:text-large"
@@ -168,9 +172,9 @@ export default function Page() {
           </Button>
         </div>
       </div>
-      <div className="p-4 md:p-8">
-        <h3 className="mt-0">{t("Recipe Steps")}</h3>
-        <ol className="marker:font-bold list-none px-0">
+      <div className="md:pb-60 p-4">
+        <h3 className="mt-0 md:pl-4 pb-2">{t("Recipe Steps")}</h3>
+        <ol className="marker:font-bold list-none px-10">
           {recipe.steps.map((step, i) => (
             <li
               // biome-ignore lint/suspicious/noArrayIndexKey: steps are unique
@@ -180,7 +184,7 @@ export default function Page() {
               }}
               className="flex gap-3 px-0"
             >
-              <div className="flex-1/12 bg-gray-400 text-white size-8 md:size-16 md:text-2xl rounded-full flex justify-center items-center">
+              <div className="flex-none bg-gray-400 text-white size-8 md:size-10 text-base md:text-lg rounded-full flex justify-center items-center">
                 {i + 1}
               </div>
               <div className="flex-11/12">
