@@ -1,4 +1,9 @@
+// Copyright (c) CurioSwitch (choko@curioswitch.org)
+// SPDX-License-Identifier: BUSL-1.1
+
 package cookchatdb
+
+import "google.golang.org/genai"
 
 type RecipeSource string
 
@@ -117,4 +122,89 @@ type Recipe struct {
 
 	// LocalizedContent contains localized content for the recipe.
 	LocalizedContent map[string]*RecipeContent `firestore:"localizedContent,omitempty"`
+}
+
+var ingredientsSchema = &genai.Schema{
+	Type:        "array",
+	Description: "A list of ingredients",
+	Items: &genai.Schema{
+		Type:        "object",
+		Description: "An ingredient in the recipe.",
+		Properties: map[string]*genai.Schema{
+			"name": {
+				Type:        "string",
+				Description: "The name of the ingredient.",
+			},
+			"quantity": {
+				Type:        "string",
+				Description: "The quantity of the ingredient.",
+			},
+		},
+		Required: []string{"name", "quantity"},
+	},
+}
+
+var RecipeContentSchema = &genai.Schema{
+	Type:        "object",
+	Description: "The text content of a recipe.",
+	Required:    []string{"title", "description", "ingredients", "additionalIngredients", "steps", "notes", "servingSize"},
+	Properties: map[string]*genai.Schema{
+		"title": {
+			Type:        "string",
+			Description: "The title of the recipe.",
+		},
+		"description": {
+			Type:        "string",
+			Description: "The description of the recipe.",
+		},
+		"ingredients": ingredientsSchema,
+		"additionalIngredients": {
+			Type:        "array",
+			Description: "The additional ingredients of the recipe, grouped into sections.",
+			Items: &genai.Schema{
+				Type:        "object",
+				Description: "An additional ingredient section in the recipe.",
+				Properties: map[string]*genai.Schema{
+					"title": {
+						Type:        "string",
+						Description: "The title of the additional ingredient section.",
+					},
+					"ingredients": ingredientsSchema,
+				},
+				Required: []string{"title", "ingredients"},
+			},
+		},
+		"steps": {
+			Type:        "array",
+			Description: "The steps of the recipe.",
+			Items: &genai.Schema{
+				Type:        "object",
+				Description: "A step in the recipe.",
+				Properties: map[string]*genai.Schema{
+					"description": {
+						Type:        "string",
+						Description: "The description of the step.",
+					},
+				},
+				Required: []string{"description"},
+			},
+		},
+		"notes": {
+			Type:        "string",
+			Description: "Additional notes or comments about the recipe.",
+		},
+		"servingSize": {
+			Type:        "string",
+			Description: "The serving size of the recipe.",
+		},
+	},
+}
+
+var LocalizedRecipeContentSchema = &genai.Schema{
+	Type:        "object",
+	Description: "Localized content for a recipe.",
+	Properties: map[string]*genai.Schema{
+		"en": RecipeContentSchema,
+		"ja": RecipeContentSchema,
+	},
 }

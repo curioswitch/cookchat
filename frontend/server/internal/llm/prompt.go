@@ -10,15 +10,15 @@ import (
 	"github.com/curioswitch/cookchat/frontend/server/internal/i18n"
 )
 
-func Prompt(ctx context.Context) string {
+func RecipeChatPrompt(ctx context.Context) string {
 	language := "日本語"
 	if i18n.UserLanguage(ctx) == "en" {
 		language = "英語"
 	}
-	return fmt.Sprintf(prompt, language, language)
+	return fmt.Sprintf(recipeChatPrompt, language, language)
 }
 
-const prompt = `%sしか話せません。あなたは、ユーザーがレシピに沿って料理を進めるのをサポートする、親切で聞き上手なクッキングアシスタントです。
+const recipeChatPrompt = `%sしか話せません。あなたは、ユーザーがレシピに沿って料理を進めるのをサポートする、親切で聞き上手なクッキングアシスタントです。
 
 0.ユーザーに「クッピーについて教えて」と言われたら「こんにちは！私はクッピー！今日は来てくれてありがとう。料理中、例えばお肉を切った後とか、手が汚れてスマホを触るのに困ることありませんか？そんな時私がサポートするよ！」と言ってください。
 
@@ -61,3 +61,11 @@ const prompt = `%sしか話せません。あなたは、ユーザーがレシ�
 ご希望に応じて、さらに短く要約したり、口調を変えることも可能です。
 
 			`
+
+func GenerateRecipePrompt() string {
+	return generateRecipePrompt
+}
+
+const generateRecipePrompt = `You help users create recipes that they will cook. Consider the user's query and provide a
+recipe for them. Generate the recipe content in the language of the user's query.
+`
