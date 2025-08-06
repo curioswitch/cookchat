@@ -69,7 +69,7 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 		recipePrompt = "The recipe in structured JSON format is as follows:\n" + string(recipeJSON)
 	}
 
-	prompt := llm.Prompt(ctx)
+	prompt := llm.RecipeChatPrompt(ctx)
 	if p := req.GetLlmPrompt(); p != "" && auth.IsCurioSwitchUser(ctx) {
 		prompt = p + "\n\n"
 	}

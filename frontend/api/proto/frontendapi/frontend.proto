@@ -256,6 +256,18 @@ message AddRecipeResponse {
   string recipe_id = 1;
 }
 
+// A request for FrontendService.GenerateRecipe.
+message GenerateRecipeRequest {
+  // The prompt to generate a recipe for.
+  string prompt = 1;
+}
+
+// A response for FrontendService.GenerateRecipe.
+message GenerateRecipeResponse {
+  // A request to add a recipe, prepopulated with generated content.
+  AddRecipeRequest add_recipe_request = 1;
+}
+
 service FrontendService {
   // Get the recipe for a given recipe ID.
   rpc GetRecipe(GetRecipeRequest) returns (GetRecipeResponse);
@@ -268,4 +280,7 @@ service FrontendService {
 
   // Add a new recipe.
   rpc AddRecipe(AddRecipeRequest) returns (AddRecipeResponse);
+
+  // Generate a recipe based on a prompt.
+  rpc GenerateRecipe(GenerateRecipeRequest) returns (GenerateRecipeResponse);
 }

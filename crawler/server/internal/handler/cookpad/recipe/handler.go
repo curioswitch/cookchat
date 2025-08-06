@@ -312,8 +312,8 @@ func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Reci
 										},
 										"ingredients": ingredientsSchema,
 									},
+									Required: []string{"title", "ingredients"},
 								},
-								Required: []string{"title", "ingredients"},
 							},
 							"steps": {
 								Type:        "array",

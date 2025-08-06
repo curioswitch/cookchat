@@ -31,3 +31,10 @@ export const startChat = FrontendService.method.startChat;
  * @generated from rpc frontendapi.FrontendService.AddRecipe
  */
 export const addRecipe = FrontendService.method.addRecipe;
+
+/**
+ * Generate a recipe based on a prompt.
+ *
+ * @generated from rpc frontendapi.FrontendService.GenerateRecipe
+ */
+export const generateRecipe = FrontendService.method.generateRecipe;
