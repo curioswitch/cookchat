@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package frontendapi;
 
+import "google/protobuf/timestamp.proto";
+
 option go_package = "github.com/curioswitch/cookchat/frontend/api/go;frontendapi";
 
 // The content of a chat message.
@@ -290,6 +292,22 @@ message GeneratePlanRequest {
   repeated RecipeGenre genres = 3;
 }
 
+// A cooking plan.
+message Plan {
+  // The date of the plan. The timestamp will begin on the date in UTC.
+  google.protobuf.Timestamp date = 1;
+
+  // The recipes for the plan.
+  repeated RecipeSnippet recipes = 2;
+}
+
+message GetPlansRequest {}
+
+message GetPlansResponse {
+  // The users current plans.
+  repeated Plan plans = 1;
+}
+
 // A response for FrontendService.GeneratePlan.
 message GeneratePlanResponse {}
 
@@ -311,4 +329,7 @@ service FrontendService {
 
   // Generate a scheduled recipe plan.
   rpc GeneratePlan(GeneratePlanRequest) returns (GeneratePlanResponse);
+
+  // Get the plans for the user.
+  rpc GetPlans(GetPlansRequest) returns (GetPlansResponse);
 }

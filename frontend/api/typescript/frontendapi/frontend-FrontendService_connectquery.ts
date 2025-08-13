@@ -45,3 +45,10 @@ export const generateRecipe = FrontendService.method.generateRecipe;
  * @generated from rpc frontendapi.FrontendService.GeneratePlan
  */
 export const generatePlan = FrontendService.method.generatePlan;
+
+/**
+ * Get the plans for the user.
+ *
+ * @generated from rpc frontendapi.FrontendService.GetPlans
+ */
+export const getPlans = FrontendService.method.getPlans;

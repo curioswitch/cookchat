@@ -29,5 +29,7 @@
   "Remove from shopping list": "Remove from shopping list",
   "Speaker": "Speaker",
   "Microphone": "Microphone",
-  "Recipe": "Recipe"
+  "Recipe": "Recipe",
+
+  "global.dateOnly": "{{val, datetime(weekday: 'short'; month: 'short'; day: 'numeric')}}"
 }
