@@ -4,7 +4,7 @@ go 1.24.5
 
 require (
 	github.com/curioswitch/go-build v0.4.0
-	github.com/curioswitch/go-curiostack v0.0.0-20250813030913-cd1308a1bc8a
+	github.com/curioswitch/go-curiostack v0.0.0-20250813032240-eeafa44ce364
 	github.com/goyek/x v0.3.0
 )
 
@@ -25,6 +25,6 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/mod v0.26.0 // indirect
-	golang.org/x/sys v0.34.0 // indirect
+	golang.org/x/sys v0.35.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )
