@@ -60,30 +60,31 @@ func (h *Handler) GetPlans(ctx context.Context, _ *frontendapi.GetPlansRequest) 
 		dbPlans = append(dbPlans, plan)
 		recipeIDs = append(recipeIDs, plan.Recipes...)
 	}
-
-	recipesCol := h.store.Collection("recipes")
-	iter = recipesCol.Query.WhereEntity(firestore.PropertyFilter{
-		Path:     "id",
-		Operator: "in",
-		Value:    recipeIDs,
-	}).Documents(ctx)
-	defer iter.Stop()
-
 	recipes := map[string]cookchatdb.Recipe{}
 
-	for {
-		doc, err := iter.Next()
-		if errors.Is(err, iterator.Done) {
-			break
+	if len(recipeIDs) > 0 {
+		recipesCol := h.store.Collection("recipes")
+		iter = recipesCol.Query.WhereEntity(firestore.PropertyFilter{
+			Path:     "id",
+			Operator: "in",
+			Value:    recipeIDs,
+		}).Documents(ctx)
+		defer iter.Stop()
+
+		for {
+			doc, err := iter.Next()
+			if errors.Is(err, iterator.Done) {
+				break
+			}
+			if err != nil {
+				return nil, fmt.Errorf("getplans: fetching recipe: %w", err)
+			}
+			var recipe cookchatdb.Recipe
+			if err := doc.DataTo(&recipe); err != nil {
+				return nil, fmt.Errorf("getplans: decoding recipe: %w", err)
+			}
+			recipes[recipe.ID] = recipe
 		}
-		if err != nil {
-			return nil, fmt.Errorf("getplans: fetching recipe: %w", err)
-		}
-		var recipe cookchatdb.Recipe
-		if err := doc.DataTo(&recipe); err != nil {
-			return nil, fmt.Errorf("getplans: decoding recipe: %w", err)
-		}
-		recipes[recipe.ID] = recipe
 	}
 
 	plans := make([]*frontendapi.Plan, len(dbPlans))
