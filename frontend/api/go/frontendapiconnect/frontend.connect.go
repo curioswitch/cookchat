@@ -52,6 +52,9 @@ const (
 	// FrontendServiceGenerateRecipeProcedure is the fully-qualified name of the FrontendService's
 	// GenerateRecipe RPC.
 	FrontendServiceGenerateRecipeProcedure = "/frontendapi.FrontendService/GenerateRecipe"
+	// FrontendServiceGeneratePlanProcedure is the fully-qualified name of the FrontendService's
+	// GeneratePlan RPC.
+	FrontendServiceGeneratePlanProcedure = "/frontendapi.FrontendService/GeneratePlan"
 )
 
 // ChatServiceClient is a client for the frontendapi.ChatService service.
@@ -138,6 +141,8 @@ type FrontendServiceClient interface {
 	AddRecipe(context.Context, *connect.Request[_go.AddRecipeRequest]) (*connect.Response[_go.AddRecipeResponse], error)
 	// Generate a recipe based on a prompt.
 	GenerateRecipe(context.Context, *connect.Request[_go.GenerateRecipeRequest]) (*connect.Response[_go.GenerateRecipeResponse], error)
+	// Generate a scheduled recipe plan.
+	GeneratePlan(context.Context, *connect.Request[_go.GeneratePlanRequest]) (*connect.Response[_go.GeneratePlanResponse], error)
 }
 
 // NewFrontendServiceClient constructs a client for the frontendapi.FrontendService service. By
@@ -181,6 +186,12 @@ func NewFrontendServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(frontendServiceMethods.ByName("GenerateRecipe")),
 			connect.WithClientOptions(opts...),
 		),
+		generatePlan: connect.NewClient[_go.GeneratePlanRequest, _go.GeneratePlanResponse](
+			httpClient,
+			baseURL+FrontendServiceGeneratePlanProcedure,
+			connect.WithSchema(frontendServiceMethods.ByName("GeneratePlan")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -191,6 +202,7 @@ type frontendServiceClient struct {
 	startChat      *connect.Client[_go.StartChatRequest, _go.StartChatResponse]
 	addRecipe      *connect.Client[_go.AddRecipeRequest, _go.AddRecipeResponse]
 	generateRecipe *connect.Client[_go.GenerateRecipeRequest, _go.GenerateRecipeResponse]
+	generatePlan   *connect.Client[_go.GeneratePlanRequest, _go.GeneratePlanResponse]
 }
 
 // GetRecipe calls frontendapi.FrontendService.GetRecipe.
@@ -218,6 +230,11 @@ func (c *frontendServiceClient) GenerateRecipe(ctx context.Context, req *connect
 	return c.generateRecipe.CallUnary(ctx, req)
 }
 
+// GeneratePlan calls frontendapi.FrontendService.GeneratePlan.
+func (c *frontendServiceClient) GeneratePlan(ctx context.Context, req *connect.Request[_go.GeneratePlanRequest]) (*connect.Response[_go.GeneratePlanResponse], error) {
+	return c.generatePlan.CallUnary(ctx, req)
+}
+
 // FrontendServiceHandler is an implementation of the frontendapi.FrontendService service.
 type FrontendServiceHandler interface {
 	// Get the recipe for a given recipe ID.
@@ -230,6 +247,8 @@ type FrontendServiceHandler interface {
 	AddRecipe(context.Context, *connect.Request[_go.AddRecipeRequest]) (*connect.Response[_go.AddRecipeResponse], error)
 	// Generate a recipe based on a prompt.
 	GenerateRecipe(context.Context, *connect.Request[_go.GenerateRecipeRequest]) (*connect.Response[_go.GenerateRecipeResponse], error)
+	// Generate a scheduled recipe plan.
+	GeneratePlan(context.Context, *connect.Request[_go.GeneratePlanRequest]) (*connect.Response[_go.GeneratePlanResponse], error)
 }
 
 // NewFrontendServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -269,6 +288,12 @@ func NewFrontendServiceHandler(svc FrontendServiceHandler, opts ...connect.Handl
 		connect.WithSchema(frontendServiceMethods.ByName("GenerateRecipe")),
 		connect.WithHandlerOptions(opts...),
 	)
+	frontendServiceGeneratePlanHandler := connect.NewUnaryHandler(
+		FrontendServiceGeneratePlanProcedure,
+		svc.GeneratePlan,
+		connect.WithSchema(frontendServiceMethods.ByName("GeneratePlan")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/frontendapi.FrontendService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case FrontendServiceGetRecipeProcedure:
@@ -281,6 +306,8 @@ func NewFrontendServiceHandler(svc FrontendServiceHandler, opts ...connect.Handl
 			frontendServiceAddRecipeHandler.ServeHTTP(w, r)
 		case FrontendServiceGenerateRecipeProcedure:
 			frontendServiceGenerateRecipeHandler.ServeHTTP(w, r)
+		case FrontendServiceGeneratePlanProcedure:
+			frontendServiceGeneratePlanHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -308,4 +335,8 @@ func (UnimplementedFrontendServiceHandler) AddRecipe(context.Context, *connect.R
 
 func (UnimplementedFrontendServiceHandler) GenerateRecipe(context.Context, *connect.Request[_go.GenerateRecipeRequest]) (*connect.Response[_go.GenerateRecipeResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.GenerateRecipe is not implemented"))
+}
+
+func (UnimplementedFrontendServiceHandler) GeneratePlan(context.Context, *connect.Request[_go.GeneratePlanRequest]) (*connect.Response[_go.GeneratePlanResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.GeneratePlan is not implemented"))
 }

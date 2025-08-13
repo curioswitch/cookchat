@@ -51,6 +51,16 @@ enum Language {
   LANGUAGE_JAPANESE = 2;
 }
 
+enum RecipeGenre {
+  RECIPE_GENRE_UNSPECIFIED = 0;
+  RECIPE_GENRE_JAPANESE = 1;
+  RECIPE_GENRE_CHINESE = 2;
+  RECIPE_GENRE_WESTERN = 3;
+  RECIPE_GENRE_KOREAN = 4;
+  RECIPE_GENRE_ITALIAN = 5;
+  RECIPE_GENRE_ETHNIC = 6;
+}
+
 // The source of a recipe.
 enum RecipeSource {
   // Unknown source.
@@ -268,6 +278,21 @@ message GenerateRecipeResponse {
   AddRecipeRequest add_recipe_request = 1;
 }
 
+// A request for FrontendService.GeneratePlan.
+message GeneratePlanRequest {
+  // The number of days to plan for.
+  uint32 num_days = 1;
+
+  // Ingredients to include in the plan.
+  repeated string ingredients = 2;
+
+  // Genres to prioritize during planning.
+  repeated RecipeGenre genres = 3;
+}
+
+// A response for FrontendService.GeneratePlan.
+message GeneratePlanResponse {}
+
 service FrontendService {
   // Get the recipe for a given recipe ID.
   rpc GetRecipe(GetRecipeRequest) returns (GetRecipeResponse);
@@ -283,4 +308,7 @@ service FrontendService {
 
   // Generate a recipe based on a prompt.
   rpc GenerateRecipe(GenerateRecipeRequest) returns (GenerateRecipeResponse);
+
+  // Generate a scheduled recipe plan.
+  rpc GeneratePlan(GeneratePlanRequest) returns (GeneratePlanResponse);
 }

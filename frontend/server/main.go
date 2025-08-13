@@ -26,6 +26,7 @@ import (
 	"github.com/curioswitch/cookchat/frontend/api/go/frontendapiconnect"
 	"github.com/curioswitch/cookchat/frontend/server/internal/config"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/addrecipe"
+	"github.com/curioswitch/cookchat/frontend/server/internal/handler/generateplan"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/generaterecipe"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getrecipe"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/listrecipes"
@@ -164,6 +165,20 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		[]*frontendapi.GenerateRecipeRequest{
 			{
 				Prompt: "I have potatoes and onions in my fridge. I want a nice Japanese dish to cook.",
+			},
+		})
+
+	server.HandleConnectUnary(s,
+		frontendapiconnect.FrontendServiceGeneratePlanProcedure,
+		generateplan.NewHandler(genAI, firestore).GeneratePlan,
+		[]*frontendapi.GeneratePlanRequest{
+			{
+				NumDays:     3,
+				Ingredients: []string{"onions", "potatoes"},
+				Genres: []frontendapi.RecipeGenre{
+					frontendapi.RecipeGenre_RECIPE_GENRE_JAPANESE,
+					frontendapi.RecipeGenre_RECIPE_GENRE_ITALIAN,
+				},
 			},
 		})
 

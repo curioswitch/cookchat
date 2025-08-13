@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file frontendapi/frontend.proto.
  */
 export const file_frontendapi_frontend: GenFile = /*@__PURE__*/
-  fileDesc("Chpmcm9udGVuZGFwaS9mcm9udGVuZC5wcm90bxILZnJvbnRlbmRhcGkiPAoLQ2hhdENvbnRlbnQSEQoHbWVzc2FnZRgBIAEoCUgAEg8KBWF1ZGlvGAIgASgMSABCCQoHcGF5bG9hZCJuCgtDaGF0UmVxdWVzdBIpCgdjb250ZW50GAEgASgLMhguZnJvbnRlbmRhcGkuQ2hhdENvbnRlbnQSFQoLcmVjaXBlX3RleHQYAiABKAlIABITCglyZWNpcGVfaWQYAyABKAlIAEIICgZyZWNpcGUiOQoMQ2hhdFJlc3BvbnNlEikKB2NvbnRlbnQYASABKAsyGC5mcm9udGVuZGFwaS5DaGF0Q29udGVudCIyChBSZWNpcGVJbmdyZWRpZW50EgwKBG5hbWUYASABKAkSEAoIcXVhbnRpdHkYAiABKAkiNAoKUmVjaXBlU3RlcBITCgtkZXNjcmlwdGlvbhgBIAEoCRIRCglpbWFnZV91cmwYAiABKAkiVgoRSW5ncmVkaWVudFNlY3Rpb24SDQoFdGl0bGUYASABKAkSMgoLaW5ncmVkaWVudHMYAiADKAsyHS5mcm9udGVuZGFwaS5SZWNpcGVJbmdyZWRpZW50IuACCgZSZWNpcGUSCgoCaWQYASABKAkSKQoGc291cmNlGAIgASgOMhkuZnJvbnRlbmRhcGkuUmVjaXBlU291cmNlEg0KBXRpdGxlGAMgASgJEhEKCWltYWdlX3VybBgEIAEoCRITCgtkZXNjcmlwdGlvbhgFIAEoCRIyCgtpbmdyZWRpZW50cxgGIAMoCzIdLmZyb250ZW5kYXBpLlJlY2lwZUluZ3JlZGllbnQSPgoWYWRkaXRpb25hbF9pbmdyZWRpZW50cxgHIAMoCzIeLmZyb250ZW5kYXBpLkluZ3JlZGllbnRTZWN0aW9uEiYKBXN0ZXBzGAggAygLMhcuZnJvbnRlbmRhcGkuUmVjaXBlU3RlcBINCgVub3RlcxgJIAEoCRIUCgxzZXJ2aW5nX3NpemUYCiABKAkSJwoIbGFuZ3VhZ2UYCyABKA4yFS5mcm9udGVuZGFwaS5MYW5ndWFnZSIlChBHZXRSZWNpcGVSZXF1ZXN0EhEKCXJlY2lwZV9pZBgBIAEoCSJMChFHZXRSZWNpcGVSZXNwb25zZRIjCgZyZWNpcGUYASABKAsyEy5mcm9udGVuZGFwaS5SZWNpcGUSEgoKbGxtX3Byb21wdBgCIAEoCSIdCgpQYWdpbmF0aW9uEg8KB2xhc3RfaWQYASABKAkiTgoNUmVjaXBlU25pcHBldBIKCgJpZBgBIAEoCRINCgV0aXRsZRgCIAEoCRIPCgdzdW1tYXJ5GAMgASgJEhEKCWltYWdlX3VybBgEIAEoCSJQChJMaXN0UmVjaXBlc1JlcXVlc3QSDQoFcXVlcnkYASABKAkSKwoKcGFnaW5hdGlvbhgCIAEoCzIXLmZyb250ZW5kYXBpLlBhZ2luYXRpb24ibwoTTGlzdFJlY2lwZXNSZXNwb25zZRIrCgdyZWNpcGVzGAEgAygLMhouZnJvbnRlbmRhcGkuUmVjaXBlU25pcHBldBIrCgpwYWdpbmF0aW9uGAIgASgLMhcuZnJvbnRlbmRhcGkuUGFnaW5hdGlvbiKOAgoQU3RhcnRDaGF0UmVxdWVzdBIVCgtyZWNpcGVfdGV4dBgCIAEoCUgAEhMKCXJlY2lwZV9pZBgDIAEoCUgAEkMKDm1vZGVsX3Byb3ZpZGVyGAQgASgOMisuZnJvbnRlbmRhcGkuU3RhcnRDaGF0UmVxdWVzdC5Nb2RlbFByb3ZpZGVyEhIKCmxsbV9wcm9tcHQYBSABKAkiawoNTW9kZWxQcm92aWRlchIeChpNT0RFTF9QUk9WSURFUl9VTlNQRUNJRklFRBAAEh8KG01PREVMX1BST1ZJREVSX0dPT0dMRV9HRU5BSRABEhkKFU1PREVMX1BST1ZJREVSX09QRU5BSRACQggKBnJlY2lwZSJvChFTdGFydENoYXRSZXNwb25zZRIUCgxjaGF0X2FwaV9rZXkYASABKAkSEgoKY2hhdF9tb2RlbBgCIAEoCRIZChFjaGF0X2luc3RydWN0aW9ucxgDIAEoCRIVCg1zdGFydF9tZXNzYWdlGAQgASgJIoADChBBZGRSZWNpcGVSZXF1ZXN0Eg0KBXRpdGxlGAEgASgJEhsKE21haW5faW1hZ2VfZGF0YV91cmwYAiABKAkSEwoLZGVzY3JpcHRpb24YAyABKAkSMgoLaW5ncmVkaWVudHMYBCADKAsyHS5mcm9udGVuZGFwaS5SZWNpcGVJbmdyZWRpZW50Ej4KFmFkZGl0aW9uYWxfaW5ncmVkaWVudHMYBSADKAsyHi5mcm9udGVuZGFwaS5JbmdyZWRpZW50U2VjdGlvbhI6CgVzdGVwcxgGIAMoCzIrLmZyb250ZW5kYXBpLkFkZFJlY2lwZVJlcXVlc3QuQWRkUmVjaXBlU3RlcBIUCgxzZXJ2aW5nX3NpemUYByABKAkSJwoIbGFuZ3VhZ2UYCCABKA4yFS5mcm9udGVuZGFwaS5MYW5ndWFnZRo8Cg1BZGRSZWNpcGVTdGVwEhMKC2Rlc2NyaXB0aW9uGAEgASgJEhYKDmltYWdlX2RhdGFfdXJsGAIgASgJIiYKEUFkZFJlY2lwZVJlc3BvbnNlEhEKCXJlY2lwZV9pZBgBIAEoCSInChVHZW5lcmF0ZVJlY2lwZVJlcXVlc3QSDgoGcHJvbXB0GAEgASgJIlMKFkdlbmVyYXRlUmVjaXBlUmVzcG9uc2USOQoSYWRkX3JlY2lwZV9yZXF1ZXN0GAEgASgLMh0uZnJvbnRlbmRhcGkuQWRkUmVjaXBlUmVxdWVzdCpRCghMYW5ndWFnZRIYChRMQU5HVUFHRV9VTlNQRUNJRklFRBAAEhQKEExBTkdVQUdFX0VOR0xJU0gQARIVChFMQU5HVUFHRV9KQVBBTkVTRRACKkgKDFJlY2lwZVNvdXJjZRIdChlSRUNJUEVfU09VUkNFX1VOU1BFQ0lGSUVEEAASGQoVUkVDSVBFX1NPVVJDRV9DT09LUEFEEAEyTgoLQ2hhdFNlcnZpY2USPwoEQ2hhdBIYLmZyb250ZW5kYXBpLkNoYXRSZXF1ZXN0GhkuZnJvbnRlbmRhcGkuQ2hhdFJlc3BvbnNlKAEwATKiAwoPRnJvbnRlbmRTZXJ2aWNlEkoKCUdldFJlY2lwZRIdLmZyb250ZW5kYXBpLkdldFJlY2lwZVJlcXVlc3QaHi5mcm9udGVuZGFwaS5HZXRSZWNpcGVSZXNwb25zZRJQCgtMaXN0UmVjaXBlcxIfLmZyb250ZW5kYXBpLkxpc3RSZWNpcGVzUmVxdWVzdBogLmZyb250ZW5kYXBpLkxpc3RSZWNpcGVzUmVzcG9uc2USSgoJU3RhcnRDaGF0Eh0uZnJvbnRlbmRhcGkuU3RhcnRDaGF0UmVxdWVzdBoeLmZyb250ZW5kYXBpLlN0YXJ0Q2hhdFJlc3BvbnNlEkoKCUFkZFJlY2lwZRIdLmZyb250ZW5kYXBpLkFkZFJlY2lwZVJlcXVlc3QaHi5mcm9udGVuZGFwaS5BZGRSZWNpcGVSZXNwb25zZRJZCg5HZW5lcmF0ZVJlY2lwZRIiLmZyb250ZW5kYXBpLkdlbmVyYXRlUmVjaXBlUmVxdWVzdBojLmZyb250ZW5kYXBpLkdlbmVyYXRlUmVjaXBlUmVzcG9uc2VCPVo7Z2l0aHViLmNvbS9jdXJpb3N3aXRjaC9jb29rY2hhdC9mcm9udGVuZC9hcGkvZ287ZnJvbnRlbmRhcGliBnByb3RvMw");
+  fileDesc("Chpmcm9udGVuZGFwaS9mcm9udGVuZC5wcm90bxILZnJvbnRlbmRhcGkiPAoLQ2hhdENvbnRlbnQSEQoHbWVzc2FnZRgBIAEoCUgAEg8KBWF1ZGlvGAIgASgMSABCCQoHcGF5bG9hZCJuCgtDaGF0UmVxdWVzdBIpCgdjb250ZW50GAEgASgLMhguZnJvbnRlbmRhcGkuQ2hhdENvbnRlbnQSFQoLcmVjaXBlX3RleHQYAiABKAlIABITCglyZWNpcGVfaWQYAyABKAlIAEIICgZyZWNpcGUiOQoMQ2hhdFJlc3BvbnNlEikKB2NvbnRlbnQYASABKAsyGC5mcm9udGVuZGFwaS5DaGF0Q29udGVudCIyChBSZWNpcGVJbmdyZWRpZW50EgwKBG5hbWUYASABKAkSEAoIcXVhbnRpdHkYAiABKAkiNAoKUmVjaXBlU3RlcBITCgtkZXNjcmlwdGlvbhgBIAEoCRIRCglpbWFnZV91cmwYAiABKAkiVgoRSW5ncmVkaWVudFNlY3Rpb24SDQoFdGl0bGUYASABKAkSMgoLaW5ncmVkaWVudHMYAiADKAsyHS5mcm9udGVuZGFwaS5SZWNpcGVJbmdyZWRpZW50IuACCgZSZWNpcGUSCgoCaWQYASABKAkSKQoGc291cmNlGAIgASgOMhkuZnJvbnRlbmRhcGkuUmVjaXBlU291cmNlEg0KBXRpdGxlGAMgASgJEhEKCWltYWdlX3VybBgEIAEoCRITCgtkZXNjcmlwdGlvbhgFIAEoCRIyCgtpbmdyZWRpZW50cxgGIAMoCzIdLmZyb250ZW5kYXBpLlJlY2lwZUluZ3JlZGllbnQSPgoWYWRkaXRpb25hbF9pbmdyZWRpZW50cxgHIAMoCzIeLmZyb250ZW5kYXBpLkluZ3JlZGllbnRTZWN0aW9uEiYKBXN0ZXBzGAggAygLMhcuZnJvbnRlbmRhcGkuUmVjaXBlU3RlcBINCgVub3RlcxgJIAEoCRIUCgxzZXJ2aW5nX3NpemUYCiABKAkSJwoIbGFuZ3VhZ2UYCyABKA4yFS5mcm9udGVuZGFwaS5MYW5ndWFnZSIlChBHZXRSZWNpcGVSZXF1ZXN0EhEKCXJlY2lwZV9pZBgBIAEoCSJMChFHZXRSZWNpcGVSZXNwb25zZRIjCgZyZWNpcGUYASABKAsyEy5mcm9udGVuZGFwaS5SZWNpcGUSEgoKbGxtX3Byb21wdBgCIAEoCSIdCgpQYWdpbmF0aW9uEg8KB2xhc3RfaWQYASABKAkiTgoNUmVjaXBlU25pcHBldBIKCgJpZBgBIAEoCRINCgV0aXRsZRgCIAEoCRIPCgdzdW1tYXJ5GAMgASgJEhEKCWltYWdlX3VybBgEIAEoCSJQChJMaXN0UmVjaXBlc1JlcXVlc3QSDQoFcXVlcnkYASABKAkSKwoKcGFnaW5hdGlvbhgCIAEoCzIXLmZyb250ZW5kYXBpLlBhZ2luYXRpb24ibwoTTGlzdFJlY2lwZXNSZXNwb25zZRIrCgdyZWNpcGVzGAEgAygLMhouZnJvbnRlbmRhcGkuUmVjaXBlU25pcHBldBIrCgpwYWdpbmF0aW9uGAIgASgLMhcuZnJvbnRlbmRhcGkuUGFnaW5hdGlvbiKOAgoQU3RhcnRDaGF0UmVxdWVzdBIVCgtyZWNpcGVfdGV4dBgCIAEoCUgAEhMKCXJlY2lwZV9pZBgDIAEoCUgAEkMKDm1vZGVsX3Byb3ZpZGVyGAQgASgOMisuZnJvbnRlbmRhcGkuU3RhcnRDaGF0UmVxdWVzdC5Nb2RlbFByb3ZpZGVyEhIKCmxsbV9wcm9tcHQYBSABKAkiawoNTW9kZWxQcm92aWRlchIeChpNT0RFTF9QUk9WSURFUl9VTlNQRUNJRklFRBAAEh8KG01PREVMX1BST1ZJREVSX0dPT0dMRV9HRU5BSRABEhkKFU1PREVMX1BST1ZJREVSX09QRU5BSRACQggKBnJlY2lwZSJvChFTdGFydENoYXRSZXNwb25zZRIUCgxjaGF0X2FwaV9rZXkYASABKAkSEgoKY2hhdF9tb2RlbBgCIAEoCRIZChFjaGF0X2luc3RydWN0aW9ucxgDIAEoCRIVCg1zdGFydF9tZXNzYWdlGAQgASgJIoADChBBZGRSZWNpcGVSZXF1ZXN0Eg0KBXRpdGxlGAEgASgJEhsKE21haW5faW1hZ2VfZGF0YV91cmwYAiABKAkSEwoLZGVzY3JpcHRpb24YAyABKAkSMgoLaW5ncmVkaWVudHMYBCADKAsyHS5mcm9udGVuZGFwaS5SZWNpcGVJbmdyZWRpZW50Ej4KFmFkZGl0aW9uYWxfaW5ncmVkaWVudHMYBSADKAsyHi5mcm9udGVuZGFwaS5JbmdyZWRpZW50U2VjdGlvbhI6CgVzdGVwcxgGIAMoCzIrLmZyb250ZW5kYXBpLkFkZFJlY2lwZVJlcXVlc3QuQWRkUmVjaXBlU3RlcBIUCgxzZXJ2aW5nX3NpemUYByABKAkSJwoIbGFuZ3VhZ2UYCCABKA4yFS5mcm9udGVuZGFwaS5MYW5ndWFnZRo8Cg1BZGRSZWNpcGVTdGVwEhMKC2Rlc2NyaXB0aW9uGAEgASgJEhYKDmltYWdlX2RhdGFfdXJsGAIgASgJIiYKEUFkZFJlY2lwZVJlc3BvbnNlEhEKCXJlY2lwZV9pZBgBIAEoCSInChVHZW5lcmF0ZVJlY2lwZVJlcXVlc3QSDgoGcHJvbXB0GAEgASgJIlMKFkdlbmVyYXRlUmVjaXBlUmVzcG9uc2USOQoSYWRkX3JlY2lwZV9yZXF1ZXN0GAEgASgLMh0uZnJvbnRlbmRhcGkuQWRkUmVjaXBlUmVxdWVzdCJmChNHZW5lcmF0ZVBsYW5SZXF1ZXN0EhAKCG51bV9kYXlzGAEgASgNEhMKC2luZ3JlZGllbnRzGAIgAygJEigKBmdlbnJlcxgDIAMoDjIYLmZyb250ZW5kYXBpLlJlY2lwZUdlbnJlIhYKFEdlbmVyYXRlUGxhblJlc3BvbnNlKlEKCExhbmd1YWdlEhgKFExBTkdVQUdFX1VOU1BFQ0lGSUVEEAASFAoQTEFOR1VBR0VfRU5HTElTSBABEhUKEUxBTkdVQUdFX0pBUEFORVNFEAIqxgEKC1JlY2lwZUdlbnJlEhwKGFJFQ0lQRV9HRU5SRV9VTlNQRUNJRklFRBAAEhkKFVJFQ0lQRV9HRU5SRV9KQVBBTkVTRRABEhgKFFJFQ0lQRV9HRU5SRV9DSElORVNFEAISGAoUUkVDSVBFX0dFTlJFX1dFU1RFUk4QAxIXChNSRUNJUEVfR0VOUkVfS09SRUFOEAQSGAoUUkVDSVBFX0dFTlJFX0lUQUxJQU4QBRIXChNSRUNJUEVfR0VOUkVfRVRITklDEAYqSAoMUmVjaXBlU291cmNlEh0KGVJFQ0lQRV9TT1VSQ0VfVU5TUEVDSUZJRUQQABIZChVSRUNJUEVfU09VUkNFX0NPT0tQQUQQATJOCgtDaGF0U2VydmljZRI/CgRDaGF0EhguZnJvbnRlbmRhcGkuQ2hhdFJlcXVlc3QaGS5mcm9udGVuZGFwaS5DaGF0UmVzcG9uc2UoATABMvcDCg9Gcm9udGVuZFNlcnZpY2USSgoJR2V0UmVjaXBlEh0uZnJvbnRlbmRhcGkuR2V0UmVjaXBlUmVxdWVzdBoeLmZyb250ZW5kYXBpLkdldFJlY2lwZVJlc3BvbnNlElAKC0xpc3RSZWNpcGVzEh8uZnJvbnRlbmRhcGkuTGlzdFJlY2lwZXNSZXF1ZXN0GiAuZnJvbnRlbmRhcGkuTGlzdFJlY2lwZXNSZXNwb25zZRJKCglTdGFydENoYXQSHS5mcm9udGVuZGFwaS5TdGFydENoYXRSZXF1ZXN0Gh4uZnJvbnRlbmRhcGkuU3RhcnRDaGF0UmVzcG9uc2USSgoJQWRkUmVjaXBlEh0uZnJvbnRlbmRhcGkuQWRkUmVjaXBlUmVxdWVzdBoeLmZyb250ZW5kYXBpLkFkZFJlY2lwZVJlc3BvbnNlElkKDkdlbmVyYXRlUmVjaXBlEiIuZnJvbnRlbmRhcGkuR2VuZXJhdGVSZWNpcGVSZXF1ZXN0GiMuZnJvbnRlbmRhcGkuR2VuZXJhdGVSZWNpcGVSZXNwb25zZRJTCgxHZW5lcmF0ZVBsYW4SIC5mcm9udGVuZGFwaS5HZW5lcmF0ZVBsYW5SZXF1ZXN0GiEuZnJvbnRlbmRhcGkuR2VuZXJhdGVQbGFuUmVzcG9uc2VCPVo7Z2l0aHViLmNvbS9jdXJpb3N3aXRjaC9jb29rY2hhdC9mcm9udGVuZC9hcGkvZ287ZnJvbnRlbmRhcGliBnByb3RvMw");
 
 /**
  * The content of a chat message.
@@ -737,6 +737,56 @@ export const GenerateRecipeResponseSchema: GenMessage<GenerateRecipeResponse> = 
   messageDesc(file_frontendapi_frontend, 18);
 
 /**
+ * A request for FrontendService.GeneratePlan.
+ *
+ * @generated from message frontendapi.GeneratePlanRequest
+ */
+export type GeneratePlanRequest = Message<"frontendapi.GeneratePlanRequest"> & {
+  /**
+   * The number of days to plan for.
+   *
+   * @generated from field: uint32 num_days = 1;
+   */
+  numDays: number;
+
+  /**
+   * Ingredients to include in the plan.
+   *
+   * @generated from field: repeated string ingredients = 2;
+   */
+  ingredients: string[];
+
+  /**
+   * Genres to prioritize during planning.
+   *
+   * @generated from field: repeated frontendapi.RecipeGenre genres = 3;
+   */
+  genres: RecipeGenre[];
+};
+
+/**
+ * Describes the message frontendapi.GeneratePlanRequest.
+ * Use `create(GeneratePlanRequestSchema)` to create a new message.
+ */
+export const GeneratePlanRequestSchema: GenMessage<GeneratePlanRequest> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 19);
+
+/**
+ * A response for FrontendService.GeneratePlan.
+ *
+ * @generated from message frontendapi.GeneratePlanResponse
+ */
+export type GeneratePlanResponse = Message<"frontendapi.GeneratePlanResponse"> & {
+};
+
+/**
+ * Describes the message frontendapi.GeneratePlanResponse.
+ * Use `create(GeneratePlanResponseSchema)` to create a new message.
+ */
+export const GeneratePlanResponseSchema: GenMessage<GeneratePlanResponse> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 20);
+
+/**
  * @generated from enum frontendapi.Language
  */
 export enum Language {
@@ -769,6 +819,52 @@ export const LanguageSchema: GenEnum<Language> = /*@__PURE__*/
   enumDesc(file_frontendapi_frontend, 0);
 
 /**
+ * @generated from enum frontendapi.RecipeGenre
+ */
+export enum RecipeGenre {
+  /**
+   * @generated from enum value: RECIPE_GENRE_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: RECIPE_GENRE_JAPANESE = 1;
+   */
+  JAPANESE = 1,
+
+  /**
+   * @generated from enum value: RECIPE_GENRE_CHINESE = 2;
+   */
+  CHINESE = 2,
+
+  /**
+   * @generated from enum value: RECIPE_GENRE_WESTERN = 3;
+   */
+  WESTERN = 3,
+
+  /**
+   * @generated from enum value: RECIPE_GENRE_KOREAN = 4;
+   */
+  KOREAN = 4,
+
+  /**
+   * @generated from enum value: RECIPE_GENRE_ITALIAN = 5;
+   */
+  ITALIAN = 5,
+
+  /**
+   * @generated from enum value: RECIPE_GENRE_ETHNIC = 6;
+   */
+  ETHNIC = 6,
+}
+
+/**
+ * Describes the enum frontendapi.RecipeGenre.
+ */
+export const RecipeGenreSchema: GenEnum<RecipeGenre> = /*@__PURE__*/
+  enumDesc(file_frontendapi_frontend, 1);
+
+/**
  * The source of a recipe.
  *
  * @generated from enum frontendapi.RecipeSource
@@ -793,7 +889,7 @@ export enum RecipeSource {
  * Describes the enum frontendapi.RecipeSource.
  */
 export const RecipeSourceSchema: GenEnum<RecipeSource> = /*@__PURE__*/
-  enumDesc(file_frontendapi_frontend, 1);
+  enumDesc(file_frontendapi_frontend, 2);
 
 /**
  * A chat service.
@@ -867,6 +963,16 @@ export const FrontendService: GenService<{
     methodKind: "unary";
     input: typeof GenerateRecipeRequestSchema;
     output: typeof GenerateRecipeResponseSchema;
+  },
+  /**
+   * Generate a scheduled recipe plan.
+   *
+   * @generated from rpc frontendapi.FrontendService.GeneratePlan
+   */
+  generatePlan: {
+    methodKind: "unary";
+    input: typeof GeneratePlanRequestSchema;
+    output: typeof GeneratePlanResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_frontendapi_frontend, 1);
