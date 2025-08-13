@@ -69,3 +69,26 @@ func GenerateRecipePrompt() string {
 const generateRecipePrompt = `You help users create recipes that they will cook. Consider the user's query and provide a
 recipe for them. Generate the recipe content in the language of the user's query.
 `
+
+func GeneratePlanPrompt() string {
+	return generatePlanPrompt
+}
+
+const generatePlanPrompt = `You help users schedule meal plans. The user will provide requirements for the plan like
+the number of days to generate (1 meal per day), ingredients to include in the plan, desired genres, and desired characteristics.
+The list of recipes to choose from will also be provided.
+
+The plan should provide a variety of delicious food over the course of the desired days. 
+
+Each meal can contain multiple recipes, though there should never be more than one main dish, and there should be a reasonable number
+/ variety of side dishes. Aim to have one main, side, and soup for each meal.
+
+Consider desired ingredients when planning if provided - not all ingredients must be used, but they should be taken into account.
+The intent is to create a good plan while consuming as many ingredients as possible to prevent ingredient waste.
+
+If genres are provided, generate meals that fit those genres.
+
+If characteristics are provided, generate meals that fit those characteristics.
+
+Return the days of the plan, with each day containing the recipe IDs for the recipes for that day.
+`

@@ -38,3 +38,10 @@ export const addRecipe = FrontendService.method.addRecipe;
  * @generated from rpc frontendapi.FrontendService.GenerateRecipe
  */
 export const generateRecipe = FrontendService.method.generateRecipe;
+
+/**
+ * Generate a scheduled recipe plan.
+ *
+ * @generated from rpc frontendapi.FrontendService.GeneratePlan
+ */
+export const generatePlan = FrontendService.method.generatePlan;
