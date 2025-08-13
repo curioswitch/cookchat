@@ -2,10 +2,10 @@ module github.com/curioswitch/cookchat/common
 
 go 1.24.5
 
-require google.golang.org/genai v1.15.0
+require google.golang.org/genai v1.19.0
 
 require (
-	cloud.google.com/go v0.121.3 // indirect
+	cloud.google.com/go v0.121.4 // indirect
 	cloud.google.com/go/auth v0.16.4 // indirect
 	cloud.google.com/go/compute/metadata v0.8.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
