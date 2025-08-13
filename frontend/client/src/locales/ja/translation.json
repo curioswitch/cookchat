@@ -29,5 +29,8 @@
   "Remove from shopping list": "買い物リストから削除",
   "Speaker": "スピーカー",
   "Microphone": "マイク",
-  "Recipe": "レシピ"
+  "Recipe": "レシピ",
+  "Add Plan": "献立を生成",
+
+  "global.dateOnly": "{{val, datetime(weekday: 'short'; month: 'short'; day: 'numeric')}}"
 }

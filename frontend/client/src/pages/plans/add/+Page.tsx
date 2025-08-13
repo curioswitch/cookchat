@@ -1,10 +1,17 @@
+import { useMutation } from "@connectrpc/connect-query";
+import { generatePlan, RecipeGenre } from "@cookchat/frontend-api";
+import { Button } from "@heroui/button";
 import { CheckboxGroup, useCheckbox } from "@heroui/checkbox";
 import { Chip } from "@heroui/chip";
 import { Input } from "@heroui/input";
+import { NumberInput } from "@heroui/number-input";
+import { Spinner } from "@heroui/spinner";
 import { Switch } from "@heroui/switch";
 import { cn, tv } from "@heroui/theme";
 import { VisuallyHidden } from "@react-aria/visually-hidden";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { navigate } from "vike/client/router";
 
 function Option(props: { value: string; children: React.ReactNode }) {
   const checkbox = tv({
@@ -63,14 +70,41 @@ function Option(props: { value: string; children: React.ReactNode }) {
 export default function Page() {
   const { t } = useTranslation();
 
+  const [numDays, setNumDays] = useState(1);
+  const [ingredients, setIngredients] = useState<string>("");
+  const [genres, setGenres] = useState<string[]>([]);
+
+  console.log(genres);
+  const doGeneratePlan = useMutation(generatePlan, {
+    onSuccess: () => {
+      navigate("/plans");
+    },
+  });
+
+  const onGenerateClick = useCallback(() => {
+    doGeneratePlan.mutate({
+      numDays,
+      ingredients: ingredients.split(",").map((s) => s.trim()),
+      genres: genres.map((g) => Number(g)),
+    });
+  }, [doGeneratePlan, ingredients, genres, numDays]);
+
   return (
     <div>
       <h3>{t("Conditions")}</h3>
       <div>
-        <Input label={t("Number of days")} />
+        <NumberInput
+          label={t("Number of days")}
+          value={numDays}
+          onValueChange={setNumDays}
+        />
       </div>
       <div>
-        <Input label={t("Ingredients to include")} />
+        <Input
+          label={t("Ingredients to include")}
+          value={ingredients}
+          onValueChange={setIngredients}
+        />
       </div>
       <div>
         <Switch
@@ -96,15 +130,28 @@ export default function Page() {
           className="gap-1"
           label={t("Genre")}
           orientation="horizontal"
+          value={genres}
+          onValueChange={setGenres}
         >
-          <Option value="japanese">{t("Japanese Food")}</Option>
-          <Option value="chinese">{t("Chinese")}</Option>
-          <Option value="western">{t("Western")}</Option>
-          <Option value="korean">{t("Korean")}</Option>
-          <Option value="italian">{t("Italian")}</Option>
-          <Option value="ethnic">{t("Ethnic")}</Option>
+          <Option value={RecipeGenre.JAPANESE.toString()}>
+            {t("Japanese Food")}
+          </Option>
+          <Option value={RecipeGenre.CHINESE.toString()}>{t("Chinese")}</Option>
+          <Option value={RecipeGenre.WESTERN.toString()}>{t("Western")}</Option>
+          <Option value={RecipeGenre.KOREAN.toString()}>{t("Korean")}</Option>
+          <Option value={RecipeGenre.ITALIAN.toString()}>{t("Italian")}</Option>
+          <Option value={RecipeGenre.ETHNIC.toString()}>{t("Ethnic")}</Option>
         </CheckboxGroup>
       </div>
+      <Button
+        className="mt-4"
+        fullWidth
+        onPress={onGenerateClick}
+        disabled={doGeneratePlan.isPending}
+      >
+        Generate
+      </Button>
+      {doGeneratePlan.isPending && <Spinner />}
     </div>
   );
 }
