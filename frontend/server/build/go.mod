@@ -3,8 +3,8 @@ module github.com/curioswitch/cookchat/frontend/server/build
 go 1.24.5
 
 require (
-	github.com/curioswitch/go-build v0.3.0
-	github.com/curioswitch/go-curiostack v0.0.0-20250625084549-3bfa7a6375a4
+	github.com/curioswitch/go-build v0.4.0
+	github.com/curioswitch/go-curiostack v0.0.0-20250813030913-cd1308a1bc8a
 	github.com/goyek/x v0.3.0
 )
 
