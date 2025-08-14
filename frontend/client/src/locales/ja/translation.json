@@ -9,6 +9,7 @@
   "Extra Items": "追加の買い物",
   "Purchased": "購入済み",
   "Needed": "必要",
+  "Cart": "カート",
   "Cart is empty": "カートは空です",
   "Item name": "アイテム名",
   "Add item": "アイテムを追加",
@@ -31,6 +32,11 @@
   "Microphone": "マイク",
   "Recipe": "レシピ",
   "Add Plan": "献立を生成",
+  "Plan": "献立",
+  "Bookmarks": "ブックマーク",
+  "Conditions": "条件",
+  "Number of days": "何日分",
+  "Ingredients to include": "含めたい材料",
 
   "global.dateOnly": "{{val, datetime(weekday: 'short'; month: 'short'; day: 'numeric')}}"
 }
