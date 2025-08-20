@@ -1,4 +1,3 @@
-import { Divider } from "@heroui/divider";
 import { Image } from "@heroui/image";
 import { Input } from "@heroui/input";
 import { Link } from "@heroui/link";
@@ -58,28 +57,38 @@ export default function Page() {
       <Input
         fullWidth
         placeholder={t("What do you want to cook?")}
+        size="lg"
+        className="border-1 rounded-xl border-primary-400"
+        classNames={{
+          innerWrapper: "bg-white",
+          inputWrapper: "bg-white",
+        }}
         value={rawQuery}
         onValueChange={setRawQuery}
       />
-      <Divider className="mt-4 mb-4 md:mt-4 md:mb-4  bg-gray-100" />
       {(isPending && <div>{t("Loading...")}</div>) || (
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-2 mt-4">
           {recipes?.map((recipe, i) => (
             <Link
               href={`/recipes/${recipe.id}`}
               color="foreground"
               key={recipe.id}
-              className="flex border-b-1 border-gray-100 items-center gap-4"
+              className="flex border-1 rounded-2xl border-primary-100 items-center gap-4 not-prose h-32"
               ref={i === recipes.length - 1 ? handleLastItem : null}
             >
+              <Image
+                className="flex-1/4 rounded-none rounded-l-large object-cover h-32 w-full"
+                classNames={{
+                  wrapper: "flex-1/4",
+                }}
+                src={recipe.imageUrl}
+                alt={recipe.title}
+              />
               <div className="flex-3/4">
-                <h3 className="mt-0 font-semibold">{recipe.title}</h3>
+                <h3 className="mt-0">{recipe.title}</h3>
                 <p className="mb-2 text-small font-thin text-gray-400 line-clamp-1">
                   {recipe.summary}
                 </p>
-              </div>
-              <div className="flex-1/4">
-                <Image src={recipe.imageUrl} alt={recipe.title} />
               </div>
             </Link>
           ))}
