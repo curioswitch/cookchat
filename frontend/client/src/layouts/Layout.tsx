@@ -27,7 +27,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
       <div className="fixed bottom-0 w-full h-24 md:h-24 bg-white z-50">
         <Divider />
-        <div className="px-12 flex items-center justify-between h-full w-full">
+        <div className="px-4 flex items-center justify-between h-full w-full">
           <Link
             href="/"
             className={twMerge(

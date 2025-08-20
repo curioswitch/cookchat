@@ -40,14 +40,6 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 
 	var recipeDocs []*firestore.DocumentSnapshot
 
-	if req.GetPagination().GetLastId() == "" {
-		userDocs, err := h.store.Collection("recipes").Query.Where("source", "==", cookchatdb.RecipeSourceUser).Documents(ctx).GetAll()
-		if err != nil {
-			return nil, fmt.Errorf("listrecipes: getting user recipes from firestore: %w", err)
-		}
-		recipeDocs = userDocs
-	}
-
 	q := h.store.Collection("recipes").Query
 	q = q.Where("source", "!=", cookchatdb.RecipeSourceUser)
 	if lid := req.GetPagination().GetLastId(); lid != "" {

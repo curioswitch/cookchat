@@ -30,6 +30,7 @@
   "Speaker": "Speaker",
   "Microphone": "Microphone",
   "Recipe": "Recipe",
+  "Plan": "Plan",
 
   "global.dateOnly": "{{val, datetime(weekday: 'short'; month: 'short'; day: 'numeric')}}"
 }
