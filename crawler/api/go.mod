@@ -4,7 +4,7 @@ go 1.24.5
 
 require (
 	connectrpc.com/connect v1.18.1
-	google.golang.org/protobuf v1.36.7
+	google.golang.org/protobuf v1.36.8
 )
 
 require (
