@@ -32,5 +32,12 @@
   "Recipe": "Recipe",
   "Plan": "Plan",
 
+  "pages.cart.title": "Shopping Cart",
+  "pages.plans.title": "Meal Plan",
+  "pages.plans.add.title": "Create Meal Plan",
+  "pages.recipes.@id.title": "Recipe",
+  "pages.recipes.add.title": "Add Recipe",
+  "pages.settings.title": "Settings",
+
   "global.dateOnly": "{{val, datetime(weekday: 'short'; month: 'short'; day: 'numeric')}}"
 }
