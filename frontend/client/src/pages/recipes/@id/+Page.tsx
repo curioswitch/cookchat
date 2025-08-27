@@ -138,7 +138,7 @@ export default function Page() {
             onValueChange={onPromptChange}
           />
         )}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 mt-2">
           <div className="p-4 bg-white rounded-xl border-1 border-primary-200">
             <h3 className="flex items-center justify-between mt-0 prose">
               {t("Ingredients")}
