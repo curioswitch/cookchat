@@ -8,6 +8,7 @@ import { PiForkKnifeFill } from "react-icons/pi";
 import { twMerge } from "tailwind-merge";
 import { usePageContext } from "vike-react/usePageContext";
 
+import { BackButton } from "../components/BackButton";
 import { ChatButton } from "../components/ChatButton";
 import { useCartStore, useChatStore } from "../stores";
 
@@ -16,14 +17,36 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const pageContext = usePageContext();
   const path = pageContext.urlPathname;
+  const isHome = path === "/";
 
   const cart = useCartStore();
   const chatStore = useChatStore();
 
+  console.log(pageContext.pageId);
+  const pageI18nKey = (pageContext.pageId || "/src/index")
+    .slice("/src/".length)
+    .replaceAll("/", ".");
+  const title = t(`${pageI18nKey}.title`);
+
   return (
-    <div className="flex flex-col min-h-screen bg-[#ffe799]">
-      <div className="container mx-auto min-h-screen max-w-full md:w-4xl prose md:prose-lg pb-16 bg-white">
-        {children}
+    <div className="flex flex-col min-h-screen">
+      <div className="container mx-auto min-h-screen max-w-full md:w-4xl pt-2 pb-24 bg-white">
+        <div className="p-2">
+          {!isHome && (
+            <div className="flex justify-between items-center pb-4">
+              <BackButton className="flex-1/10 text-primary" />
+              <h1 className="mt-0 mb-0 flex-8/10 text-center">{title}</h1>
+              <div className="flex-1/10 w-full" />
+            </div>
+          )}
+          <div
+            className={twMerge(
+              !isHome && "bg-linear-to-r from-[#fff7ed] to-[#ffedd5]",
+            )}
+          >
+            {children}
+          </div>
+        </div>
       </div>
       <div className="fixed bottom-0 w-full h-24 md:h-24 bg-white z-50">
         <Divider />

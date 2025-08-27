@@ -38,5 +38,12 @@
   "Number of days": "何日分",
   "Ingredients to include": "含めたい材料",
 
+  "pages.cart.title": "買い物リスト",
+  "pages.plans.title": "献立",
+  "pages.plans.add.title": "献立プラン作成",
+  "pages.recipes.@id.title": "レシピ",
+  "pages.recipes.add.title": "レシピを追加",
+  "pages.settings.title": "設定",
+
   "global.dateOnly": "{{val, datetime(weekday: 'short'; month: 'short'; day: 'numeric')}}"
 }

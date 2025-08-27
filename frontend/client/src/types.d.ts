@@ -9,3 +9,13 @@ declare interface Uint8ArrayConstructor {
 declare interface Uint8Array {
   toBase64?: () => string;
 }
+
+declare global {
+  namespace Vike {
+    interface PageContext {
+      titleKey: string;
+    }
+  }
+}
+
+export {};

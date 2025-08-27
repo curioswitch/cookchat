@@ -283,30 +283,44 @@ export function ChatButton({
   }, [stream]);
 
   return (
-    <div
-      className={twMerge(
-        "relative flex items-center gap-2 text-primary font-semibold",
-        className,
-      )}
-    >
-      {/* Play animation after assistant finishes speaking. */}
-      {playing && waiting && <span className="mic-ping" />}
-      <button
-        type="button"
-        onClick={onClick}
+    <div>
+      <div
         className={twMerge(
-          playing && speaking ? "mic-bubble-deselected" : "mic-bubble",
-          "z-10 flex-1/3 size-30 md:size-50 flex items-center justify-center cursor-pointer",
+          "relative flex flex-col items-center gap-2 text-primary font-semibold",
+          className,
         )}
       >
-        {!playing ? (
-          <HiMicrophone className="text-white size-6 md:size-16" />
-        ) : waiting ? (
-          <div className="text-white text-4xl">話して</div>
-        ) : (
-          <HiStop className="text-white size-6 md:size-16" />
-        )}
-      </button>
+        {/* Play animation after assistant finishes speaking. */}
+        {playing && waiting && <span className="mic-ping" />}
+        <button
+          type="button"
+          onClick={onClick}
+          className={twMerge(
+            playing && speaking
+              ? "bg-gray-400"
+              : "bg-linear-to-r from-[#f97316] to-[#fb923c]",
+            "z-10 rounded-full size-18 md:size-50 flex items-center justify-center cursor-pointer",
+          )}
+        >
+          {!playing ? (
+            <HiMicrophone className="text-white size-6 md:size-16" />
+          ) : waiting ? (
+            <div className="text-white text-lg">話して</div>
+          ) : (
+            <HiStop className="text-white size-6 md:size-16" />
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={onClick}
+          className={twMerge(
+            "bg-[#ea580c] rounded-2xl py-1 px-2 text-white",
+            playing && "invisible",
+          )}
+        >
+          <div className="text-tiny font-light">COOPiiと話す</div>
+        </button>
+      </div>
     </div>
   );
 }

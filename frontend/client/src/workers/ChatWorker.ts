@@ -142,6 +142,5 @@ async function processMessage(
 }
 
 self.onmessage = (event: MessageEvent<InitEvent | CloseWorkerEvent>) => {
-  console.log("onmessage");
   processMessage(event);
 };
