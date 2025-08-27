@@ -285,7 +285,7 @@ export function ChatButton({
   return (
     <div
       className={twMerge(
-        "relative flex items-center gap-2 text-primary font-semibold",
+        "relative flex flex-col items-center gap-2 text-primary font-semibold",
         className,
       )}
     >
@@ -295,17 +295,29 @@ export function ChatButton({
         type="button"
         onClick={onClick}
         className={twMerge(
-          playing && speaking ? "mic-bubble-deselected" : "mic-bubble",
-          "z-10 flex-1/3 size-30 md:size-50 flex items-center justify-center cursor-pointer",
+          playing && speaking
+            ? "bg-gray-400"
+            : "bg-linear-to-r from-[#f97316] to-[#fb923c]",
+          "z-10 rounded-full size-18 md:size-50 flex items-center justify-center cursor-pointer",
         )}
       >
         {!playing ? (
           <HiMicrophone className="text-white size-6 md:size-16" />
         ) : waiting ? (
-          <div className="text-white text-4xl">話して</div>
+          <div className="text-white text-lg">話して</div>
         ) : (
           <HiStop className="text-white size-6 md:size-16" />
         )}
+      </button>
+      <button
+        type="button"
+        onClick={onClick}
+        className={twMerge(
+          "rounded-2xl py-1 px-2 bg-[#ea580c] font-light text-white !text-tiny",
+          playing && "invisible",
+        )}
+      >
+        COOPiiと話す
       </button>
     </div>
   );
