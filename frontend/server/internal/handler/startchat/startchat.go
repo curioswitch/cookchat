@@ -99,7 +99,7 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 	return res, nil
 }
 
-func (h *Handler) startChatGemini(ctx context.Context, prompt string, recipePrompt string) (*frontendapi.StartChatResponse, error) {
+func (h *Handler) startChatGemini(ctx context.Context, prompt string, _ string) (*frontendapi.StartChatResponse, error) {
 	languageCode := "ja-JP"
 	if i18n.UserLanguage(ctx) == "en" {
 		languageCode = "en-US"
