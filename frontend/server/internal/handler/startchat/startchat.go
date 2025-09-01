@@ -12,6 +12,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 
 	"cloud.google.com/go/firestore"
 	"connectrpc.com/connect"
@@ -66,22 +67,22 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 		if err != nil {
 			return nil, fmt.Errorf("chat: marshalling recipe to JSON: %w", err)
 		}
-		recipePrompt = "The recipe in structured JSON format is as follows:\n" + string(recipeJSON)
+		recipePrompt = "レシピのJSONは以降の通り:\n" + string(recipeJSON)
 	}
 
 	prompt := llm.RecipeChatPrompt(ctx)
 	if p := req.GetLlmPrompt(); p != "" && auth.IsCurioSwitchUser(ctx) {
-		prompt = p + "\n\n"
+		prompt = p
 	}
-	prompt += recipePrompt + "\n\n"
+	prompt = strings.TrimSpace(prompt)
 
 	var res *frontendapi.StartChatResponse
 	var err error
 	switch req.GetModelProvider() {
 	case frontendapi.StartChatRequest_MODEL_PROVIDER_UNSPECIFIED, frontendapi.StartChatRequest_MODEL_PROVIDER_GOOGLE_GENAI:
-		res, err = h.startChatGemini(ctx, prompt)
+		res, err = h.startChatGemini(ctx, prompt, recipePrompt)
 	case frontendapi.StartChatRequest_MODEL_PROVIDER_OPENAI:
-		res, err = h.startChatOpenAI(ctx, prompt)
+		res, err = h.startChatOpenAI(ctx, prompt, recipePrompt)
 	}
 
 	if err != nil {
@@ -90,22 +91,22 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 
 	switch language {
 	case "en":
-		res.StartMessage = "Hello!"
+		res.StartMessage = recipePrompt
 	default:
-		res.StartMessage = "こんにちは！"
+		res.StartMessage = recipePrompt
 	}
 
 	return res, nil
 }
 
-func (h *Handler) startChatGemini(ctx context.Context, prompt string) (*frontendapi.StartChatResponse, error) {
+func (h *Handler) startChatGemini(ctx context.Context, prompt string, _ string) (*frontendapi.StartChatResponse, error) {
 	languageCode := "ja-JP"
 	if i18n.UserLanguage(ctx) == "en" {
 		languageCode = "en-US"
 	}
 
 	// Until genai Go SDK supports token creation, issue request manually.
-	model := "gemini-live-2.5-flash-preview"
+	model := "gemini-2.5-flash-preview-native-audio-dialog"
 	cfg := tokenConfig{
 		Uses: 1,
 		BidiGenerateContentSetup: &bidiGenerateContentSetup{
@@ -225,7 +226,8 @@ type realtimeSessionsResponse struct {
 	ClientSecret clientSecret `json:"client_secret"`
 }
 
-func (h *Handler) startChatOpenAI(ctx context.Context, prompt string) (*frontendapi.StartChatResponse, error) {
+func (h *Handler) startChatOpenAI(ctx context.Context, prompt string, recipePrompt string) (*frontendapi.StartChatResponse, error) {
+	prompt += "\n\n" + recipePrompt
 	apiKey := os.Getenv("OPENAI_API_KEY")
 	model := "gpt-4o-realtime-preview"
 	req := realtimeSessionsRequest{
