@@ -4,7 +4,7 @@ class SpeakerWorklet
 {
   buffer: Float32Array[];
 
-  constructor(options: any) {
+  constructor() {
     super();
 
     this.buffer = [];

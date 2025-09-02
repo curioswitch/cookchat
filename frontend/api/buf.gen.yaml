@@ -3,7 +3,7 @@ plugins:
   - local:
       - go
       - run
-      - google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.4
+      - google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.8
     out: .
     opt: module=github.com/curioswitch/cookchat/frontend/api
   - local:
@@ -15,9 +15,11 @@ plugins:
   - local:
       - go
       - run
-      - github.com/wasilibs/go-protoc-gen-es/v2/cmd/protoc-gen-es@v2.2.3
+      - github.com/wasilibs/go-protoc-gen-es/v2/cmd/protoc-gen-es@v2.7.0
     out: typescript
-    opt: target=ts
+    opt: 
+      - target=ts
+      - valid_types=protovalidate_required
   - local:
       - go
       - run

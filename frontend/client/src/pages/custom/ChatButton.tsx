@@ -36,7 +36,6 @@ function base64Decode(base64: string): Uint8Array {
 
 class AudioPlayer {
   private readonly audioCtx = new AudioContext();
-  private readonly audio = new Audio();
 
   private nextStartTime = this.audioCtx.currentTime;
 

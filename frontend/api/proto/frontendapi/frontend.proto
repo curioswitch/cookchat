@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package frontendapi;
 
+import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/curioswitch/cookchat/frontend/api/go;frontendapi";
@@ -295,7 +296,7 @@ message GeneratePlanRequest {
 // A cooking plan.
 message Plan {
   // The date of the plan. The timestamp will begin on the date in UTC.
-  google.protobuf.Timestamp date = 1;
+  google.protobuf.Timestamp date = 1 [(buf.validate.field).required = true];
 
   // The recipes for the plan.
   repeated RecipeSnippet recipes = 2;
