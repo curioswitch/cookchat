@@ -18,7 +18,7 @@ plugins:
       - github.com/wasilibs/go-protoc-gen-es/v2/cmd/protoc-gen-es@v2.7.0
     out: typescript
     include_imports: true
-    opt: 
+    opt:
       - target=ts
       - valid_types=protovalidate_required
   - local:
