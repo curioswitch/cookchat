@@ -13,6 +13,10 @@
           "fix": "safe"
         }
       },
+      "suspicious": {
+        // Tailwind has custom at rules.
+        "noUnknownAtRules": "off"
+      },
       "style": {
         "noInferrableTypes": "error",
         "noParameterAssign": "error",

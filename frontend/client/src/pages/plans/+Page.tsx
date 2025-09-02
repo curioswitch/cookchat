@@ -1,13 +1,16 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
+import { createValidator } from "@bufbuild/protovalidate";
 import { useQuery } from "@connectrpc/connect-query";
-import { getPlans, type Plan } from "@cookchat/frontend-api";
+import { getPlans, PlanSchema, type PlanValid } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { useTranslation } from "react-i18next";
 
-function PlanSnippet({ plan }: { plan: Plan }) {
+const validator = createValidator();
+
+function PlanSnippet({ plan }: { plan: PlanValid }) {
   const { t } = useTranslation();
-  const date = timestampDate(plan.date!);
+  const date = timestampDate(plan.date);
 
   return (
     <div className="p-4 border-1 border-primary-400 rounded-2xl">
@@ -50,15 +53,20 @@ export default function Page() {
     return <div>{t("No plans found")}</div>;
   }
 
+  const plans = plansRes.plans
+    .map((p) => validator.validate(PlanSchema, p))
+    .filter((r) => r.kind === "valid")
+    .map((r) => r.message);
+
   return (
     <div>
       <div className="p-8 flex flex-col gap-4">
         <Button as={Link} href="/plans/add" color="primary">
           {t("Add Plan")}
         </Button>
-        {plansRes.plans.map((plan) => (
+        {plans.map((plan) => (
           <PlanSnippet
-            key={timestampDate(plan.date!).toISOString()}
+            key={timestampDate(plan.date).toISOString()}
             plan={plan}
           />
         ))}
