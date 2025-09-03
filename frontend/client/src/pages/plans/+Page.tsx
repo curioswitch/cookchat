@@ -17,30 +17,30 @@ function PlanSnippet({ plan }: { plan: PlanSnippetValid }) {
   const date = timestampDate(plan.date);
 
   return (
-    <div className="p-4 border-1 border-primary-400 rounded-2xl">
-      <h3 className="mt-0 font-light">
-        {t("global.dateOnly", {
-          val: date,
-        })}
-      </h3>
-      <div className="flex gap-2">
-        {plan.recipes.map((recipe) => (
-          <Link
-            key={recipe.id}
-            href={`/recipes/${recipe.id}`}
-            color="foreground"
-            className="block text-center p-4 border-1 border-gray-200 bg-gray-100 rounded-xl w-1/3"
-          >
-            <img
-              className="mt-0 mb-2 rounded-sm"
-              src={recipe.imageUrl}
-              alt={recipe.title}
-            />
-            <h5 className="text-tiny">{recipe.title}</h5>
-          </Link>
-        ))}
+    <Link href={`/plans/${timestampDate(plan.date).toUTCString()}`}>
+      <div className="p-4 border-1 bg-white border-primary-400 text-black rounded-2xl">
+        <h3 className="mt-0 font-light mb-2">
+          {t("global.dateOnly", {
+            val: date,
+          })}
+        </h3>
+        <div className="flex gap-2">
+          {plan.recipes.map((recipe) => (
+            <div
+              key={recipe.id}
+              className="block text-center p-4 border-1 border-gray-200 bg-gray-100 rounded-xl w-1/3"
+            >
+              <img
+                className="mt-0 mb-2 rounded-sm"
+                src={recipe.imageUrl}
+                alt={recipe.title}
+              />
+              <h5 className="text-tiny text-gray-600">{recipe.title}</h5>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }
 

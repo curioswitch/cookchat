@@ -37,9 +37,12 @@
   "Conditions": "条件",
   "Number of days": "何日分",
   "Ingredients to include": "含めたい材料",
+  "Today's Plan": "今日の献立",
+  "Plan Notes": "完成のコツ",
 
   "pages.cart.title": "買い物リスト",
   "pages.plans.title": "献立",
+  "pages.plans.@id.title": "献立調理",
   "pages.plans.add.title": "献立プラン作成",
   "pages.recipes.@id.title": "レシピ",
   "pages.recipes.add.title": "レシピを追加",
