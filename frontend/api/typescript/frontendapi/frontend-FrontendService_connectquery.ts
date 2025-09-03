@@ -52,3 +52,10 @@ export const generatePlan = FrontendService.method.generatePlan;
  * @generated from rpc frontendapi.FrontendService.GetPlans
  */
 export const getPlans = FrontendService.method.getPlans;
+
+/**
+ * Get the details of a plan.
+ *
+ * @generated from rpc frontendapi.FrontendService.GetPlan
+ */
+export const getPlan = FrontendService.method.getPlan;

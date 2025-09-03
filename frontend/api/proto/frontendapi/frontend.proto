@@ -293,8 +293,23 @@ message GeneratePlanRequest {
   repeated RecipeGenre genres = 3;
 }
 
-// A cooking plan.
-message Plan {
+// A response for FrontendService.GeneratePlan.
+message GeneratePlanResponse {}
+
+// A group of steps within a plan that can be executed together.
+message StepGroup {
+  // The label of the group.
+  string label = 1;
+
+  // The actual steps.
+  repeated RecipeStep steps = 2;
+
+  // Useful note for the group.
+  string note = 3;
+}
+
+// A snippet of a plan, without executiond details.
+message PlanSnippet {
   // The date of the plan. The timestamp will begin on the date in UTC.
   google.protobuf.Timestamp date = 1 [(buf.validate.field).required = true];
 
@@ -306,11 +321,34 @@ message GetPlansRequest {}
 
 message GetPlansResponse {
   // The users current plans.
-  repeated Plan plans = 1;
+  repeated PlanSnippet plans = 1;
 }
 
-// A response for FrontendService.GeneratePlan.
-message GeneratePlanResponse {}
+// A cooking plan.
+message Plan {
+  // The date of the plan. The timestamp will begin on the date in UTC.
+  google.protobuf.Timestamp date = 1 [(buf.validate.field).required = true];
+
+  // The recipes for the plan.
+  repeated RecipeSnippet recipes = 2;
+
+  // The step groups for the plan.
+  repeated StepGroup step_groups = 3;
+
+  // A list of notes to help cook the plan.
+  repeated string notes = 4;
+}
+
+// A request for FrontendService.GetPlan.
+message GetPlanRequest {
+  // The date of the plan. The timestamp will begin on the date in UTC.
+  google.protobuf.Timestamp date = 1;
+}
+
+// A response for FrontendService.GetPlan.
+message GetPlanResponse {
+  Plan plan = 1 [(buf.validate.field).required = true];
+}
 
 service FrontendService {
   // Get the recipe for a given recipe ID.
@@ -333,4 +371,7 @@ service FrontendService {
 
   // Get the plans for the user.
   rpc GetPlans(GetPlansRequest) returns (GetPlansResponse);
+
+  // Get the details of a plan.
+  rpc GetPlan(GetPlanRequest) returns (GetPlanResponse);
 }

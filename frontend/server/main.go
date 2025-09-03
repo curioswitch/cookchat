@@ -28,6 +28,7 @@ import (
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/addrecipe"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/generateplan"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/generaterecipe"
+	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getplan"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getplans"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getrecipe"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/listrecipes"
@@ -187,6 +188,13 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		frontendapiconnect.FrontendServiceGetPlansProcedure,
 		getplans.NewHandler(firestore).GetPlans,
 		[]*frontendapi.GetPlansRequest{
+			{},
+		})
+
+	server.HandleConnectUnary(s,
+		frontendapiconnect.FrontendServiceGetPlanProcedure,
+		getplan.NewHandler(firestore).GetPlan,
+		[]*frontendapi.GetPlanRequest{
 			{},
 		})
 

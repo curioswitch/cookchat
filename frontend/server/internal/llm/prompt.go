@@ -90,5 +90,21 @@ If genres are provided, generate meals that fit those genres.
 
 If characteristics are provided, generate meals that fit those characteristics.
 
-Return the days of the plan, with each day containing the recipe IDs for the recipes for that day.
+Return the days of the plan, with each day containing the recipe IDs for the recipes for that day. Also, provide an execution plan
+for the recipes. Group steps from different recipes together into step groups, trying to allow for parallel execution of steps within
+a group where possible. It is fine for a group to contain only a single step. Copy the description and image URL as is into the step
+within a group. If there is any note for execution within a step group, such as which step to execute while waiting on another, provide it.
+If there are any notes to consider when preparing the entire plan, return them.
+`
+
+func GenerateExecutionPlanPrompt() string {
+	return generateExecutionPlanPrompt
+}
+
+const generateExecutionPlanPrompt = `You help users schedule meal plans. The user has selected recipes to cook together as
+a meal. Provide an execution plan for the recipes. Group steps from different recipes together into step groups, trying to allow for
+parallel execution of steps within a group where possible. It is fine for a group to contain only a single step. Copy the description
+and image URL as is into the step within a group - do not add any prefix to the description. If there is any note for execution within
+a step group, such as which step to execute while waiting on another, provide it. If there are any notes to consider when preparing the
+entire plan, return them. Only return text in Japanese.
 `

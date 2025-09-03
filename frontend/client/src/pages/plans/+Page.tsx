@@ -1,14 +1,18 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { createValidator } from "@bufbuild/protovalidate";
 import { useQuery } from "@connectrpc/connect-query";
-import { getPlans, PlanSchema, type PlanValid } from "@cookchat/frontend-api";
+import {
+  getPlans,
+  PlanSnippetSchema,
+  type PlanSnippetValid,
+} from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { useTranslation } from "react-i18next";
 
 const validator = createValidator();
 
-function PlanSnippet({ plan }: { plan: PlanValid }) {
+function PlanSnippet({ plan }: { plan: PlanSnippetValid }) {
   const { t } = useTranslation();
   const date = timestampDate(plan.date);
 
@@ -54,7 +58,7 @@ export default function Page() {
   }
 
   const plans = plansRes.plans
-    .map((p) => validator.validate(PlanSchema, p))
+    .map((p) => validator.validate(PlanSnippetSchema, p))
     .filter((r) => r.kind === "valid")
     .map((r) => r.message);
 
