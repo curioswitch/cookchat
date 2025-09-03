@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>curioswitch/go-build:renovate"],
+  "extends": ["github>curioswitch/go-curiostack:renovate"],
   "packageRules": [
     {
       "matchCategories": ["golang"],

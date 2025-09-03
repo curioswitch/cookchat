@@ -3,12 +3,14 @@ plugins:
   - local:
       - go
       - run
+      # renovate: google.golang.org/protobuf
       - google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.6
     out: .
     opt: module=github.com/curioswitch/cookchat/crawler/api
   - local:
       - go
       - run
+      # renovate: connectrpc.com/connect
       - connectrpc.com/connect/cmd/protoc-gen-connect-go@v1.18.1
     out: .
     opt: module=github.com/curioswitch/cookchat/crawler/api
