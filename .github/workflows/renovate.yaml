@@ -11,6 +11,5 @@ jobs:
     uses: curioswitch/go-build/.github/workflows/export-renovate.yaml@ba1191e3a7018f35fcb5e99757ba149fb734bc96
     with:
       github_app_id: "1047503"
-      debug: true
     secrets:
       github_app_key: ${{ secrets.CURIOSWITCH_APP_KEY }}
