@@ -87,9 +87,9 @@ func (h *Handler) GetPlans(ctx context.Context, _ *frontendapi.GetPlansRequest) 
 		}
 	}
 
-	plans := make([]*frontendapi.Plan, len(dbPlans))
+	plans := make([]*frontendapi.PlanSnippet, len(dbPlans))
 	for i, dbPlan := range dbPlans {
-		plan := &frontendapi.Plan{
+		plan := &frontendapi.PlanSnippet{
 			Date: timestamppb.New(dbPlan.Date),
 		}
 		for _, recipeID := range dbPlan.Recipes {
