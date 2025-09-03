@@ -4,7 +4,7 @@ plugins:
       - go
       - run
       # renovate: google.golang.org/protobuf
-      - google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.6
+      - google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.8
     out: .
     opt: module=github.com/curioswitch/cookchat/crawler/api
   - local:
