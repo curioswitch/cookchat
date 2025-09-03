@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  sync:
+  renovate:
     uses: curioswitch/go-build/.github/workflows/export-renovate.yaml@7955febbef1c73dffea0d67d0251d8cbea4113e2
     with:
       github_app_id: "1047503"
