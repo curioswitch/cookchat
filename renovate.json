@@ -1,4 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>curioswitch/go-build:renovate"]
+  "extends": ["github>curioswitch/go-build:renovate"],
+  "packageRules": [
+    {
+      "matchCategories": ["golang"],
+      "matchPackageNames": ["github.com/curioswitch/cookchat/**"],
+      "enabled": false
+    }
+  ]
 }
