@@ -1,7 +1,20 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["github>curioswitch/go-curiostack:renovate"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^go.work$/"],
+      "datasourceTemplate": "golang-version",
+      "depNameTemplate": "go",
+      "matchStrings": ["go (?<currentValue>[^\\s]+)"]
+    }
+  ],
   "packageRules": [
+    {
+      "matchDatasources": ["golang-version"],
+      "groupName": "Go"
+    },
     {
       "matchCategories": ["golang"],
       "matchPackageNames": ["github.com/curioswitch/cookchat/**"],
