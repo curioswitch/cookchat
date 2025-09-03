@@ -126,7 +126,7 @@ func (h *Handler) GeneratePlan(ctx context.Context, req *frontendapi.GeneratePla
 	}
 
 	now := time.Now()
-	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 
 	userID := firebaseauth.TokenFromContext(ctx).UID
 

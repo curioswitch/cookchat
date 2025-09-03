@@ -33,7 +33,8 @@
   "Plan": "Plan",
 
   "pages.cart.title": "Shopping Cart",
-  "pages.plans.title": "Meal Plan",
+  "pages.plans.title": "Meal Plans",
+  "pages.plans.@id.title": "Cook Plan",
   "pages.plans.add.title": "Create Meal Plan",
   "pages.recipes.@id.title": "Recipe",
   "pages.recipes.add.title": "Add Recipe",
