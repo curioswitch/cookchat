@@ -32,7 +32,7 @@
         "@heroui/select": "^2.4.26",
         "@heroui/switch": "^2.2.23",
         "@heroui/table": "^2.2.25",
-        "@heroui/theme": "2.4.21",
+        "@heroui/theme": "^2.4.21",
         "@openai/agents-realtime": "^0.1.0",
         "@react-aria/visually-hidden": "^3.8.27",
         "@tanstack/react-pacer": "^0.16.1",
