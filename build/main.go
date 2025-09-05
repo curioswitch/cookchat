@@ -1,3 +1,6 @@
+// Copyright (c) CurioSwitch (choko@curioswitch.org)
+// SPDX-License-Identifier: BUSL-1.1
+
 package main
 
 import (
@@ -6,6 +9,6 @@ import (
 )
 
 func main() {
-	build.DefineTasks(build.ExcludeTasks("lint-go", "format-go"))
+	build.DefineTasks()
 	boot.Main()
 }

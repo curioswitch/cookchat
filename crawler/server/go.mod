@@ -9,7 +9,7 @@ require (
 	firebase.google.com/go/v4 v4.18.0
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/crawler/api v0.0.0-00010101000000-000000000000
-	github.com/curioswitch/go-curiostack v0.0.0-20250903014117-902fb47c8a5a
+	github.com/curioswitch/go-curiostack v0.0.0-20250905025059-894f37c7646d
 	github.com/gocolly/colly/v2 v2.2.0
 	github.com/wandb/parallel v0.2.2
 	google.golang.org/genai v1.22.0
@@ -65,7 +65,7 @@ require (
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/knadh/koanf/maps v0.1.2 // indirect
 	github.com/knadh/koanf/parsers/yaml v1.1.0 // indirect
-	github.com/knadh/koanf/providers/env v1.1.0 // indirect
+	github.com/knadh/koanf/providers/env/v2 v2.0.0 // indirect
 	github.com/knadh/koanf/providers/rawbytes v1.0.0 // indirect
 	github.com/knadh/koanf/v2 v2.2.2 // indirect
 	github.com/magefile/mage v1.15.0 // indirect
