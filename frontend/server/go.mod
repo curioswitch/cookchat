@@ -10,7 +10,7 @@ require (
 	firebase.google.com/go/v4 v4.18.0
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/frontend/api v0.0.0-00010101000000-000000000000
-	github.com/curioswitch/go-curiostack v0.0.0-20250903014117-902fb47c8a5a
+	github.com/curioswitch/go-curiostack v0.0.0-20250905025059-894f37c7646d
 	github.com/curioswitch/go-usegcp v0.0.0-20250819041733-d03508a83964
 	github.com/go-chi/chi/v5 v5.2.3
 	golang.org/x/sync v0.16.0
@@ -58,7 +58,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2 // indirect
 	github.com/knadh/koanf/maps v0.1.2 // indirect
 	github.com/knadh/koanf/parsers/yaml v1.1.0 // indirect
-	github.com/knadh/koanf/providers/env v1.1.0 // indirect
+	github.com/knadh/koanf/providers/env/v2 v2.0.0 // indirect
 	github.com/knadh/koanf/providers/rawbytes v1.0.0 // indirect
 	github.com/knadh/koanf/v2 v2.2.2 // indirect
 	github.com/magefile/mage v1.15.0 // indirect
