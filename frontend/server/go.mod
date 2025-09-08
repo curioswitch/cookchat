@@ -10,10 +10,10 @@ require (
 	firebase.google.com/go/v4 v4.18.0
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/frontend/api v0.0.0-00010101000000-000000000000
-	github.com/curioswitch/go-curiostack v0.0.0-20250905025059-894f37c7646d
-	github.com/curioswitch/go-usegcp v0.0.0-20250819041733-d03508a83964
+	github.com/curioswitch/go-curiostack v0.0.0-20250905031326-553e3857d54f
+	github.com/curioswitch/go-usegcp v0.0.0-20250904050252-6a19688dc7d6
 	github.com/go-chi/chi/v5 v5.2.3
-	golang.org/x/sync v0.16.0
+	golang.org/x/sync v0.17.0
 	google.golang.org/api v0.248.0
 	google.golang.org/genai v1.23.0
 	google.golang.org/protobuf v1.36.8
