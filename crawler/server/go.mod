@@ -9,7 +9,7 @@ require (
 	firebase.google.com/go/v4 v4.18.0
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/crawler/api v0.0.0-00010101000000-000000000000
-	github.com/curioswitch/go-curiostack v0.0.0-20250905025059-894f37c7646d
+	github.com/curioswitch/go-curiostack v0.0.0-20250905031326-553e3857d54f
 	github.com/gocolly/colly/v2 v2.2.0
 	github.com/wandb/parallel v0.2.2
 	google.golang.org/genai v1.23.0
@@ -42,7 +42,7 @@ require (
 	github.com/cncf/xds/go v0.0.0-20250501225837-2ac532fd4443 // indirect
 	github.com/curioswitch/go-docs-handler v0.1.5 // indirect
 	github.com/curioswitch/go-docs-handler/plugins/proto v0.1.5 // indirect
-	github.com/curioswitch/go-usegcp v0.0.0-20250819041733-d03508a83964 // indirect
+	github.com/curioswitch/go-usegcp v0.0.0-20250904050252-6a19688dc7d6 // indirect
 	github.com/envoyproxy/go-control-plane/envoy v1.32.4 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.2.1 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -95,7 +95,7 @@ require (
 	golang.org/x/crypto v0.41.0 // indirect
 	golang.org/x/net v0.43.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
-	golang.org/x/sync v0.16.0 // indirect
+	golang.org/x/sync v0.17.0 // indirect
 	golang.org/x/sys v0.35.0 // indirect
 	golang.org/x/text v0.28.0 // indirect
 	golang.org/x/time v0.12.0 // indirect
