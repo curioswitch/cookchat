@@ -59,3 +59,17 @@ export const getPlans = FrontendService.method.getPlans;
  * @generated from rpc frontendapi.FrontendService.GetPlan
  */
 export const getPlan = FrontendService.method.getPlan;
+
+/**
+ * Add a bookmark for a recipe.
+ *
+ * @generated from rpc frontendapi.FrontendService.AddBookmark
+ */
+export const addBookmark = FrontendService.method.addBookmark;
+
+/**
+ * Remove a bookmark for a recipe.
+ *
+ * @generated from rpc frontendapi.FrontendService.RemoveBookmark
+ */
+export const removeBookmark = FrontendService.method.removeBookmark;

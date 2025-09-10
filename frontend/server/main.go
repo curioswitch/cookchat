@@ -25,6 +25,7 @@ import (
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
 	"github.com/curioswitch/cookchat/frontend/api/go/frontendapiconnect"
 	"github.com/curioswitch/cookchat/frontend/server/internal/config"
+	"github.com/curioswitch/cookchat/frontend/server/internal/handler/addbookmark"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/addrecipe"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/generateplan"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/generaterecipe"
@@ -32,6 +33,7 @@ import (
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getplans"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getrecipe"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/listrecipes"
+	"github.com/curioswitch/cookchat/frontend/server/internal/handler/removebookmark"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/startchat"
 	"github.com/curioswitch/cookchat/frontend/server/internal/i18n"
 )
@@ -265,6 +267,24 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 						ImageDataUrl: addRecipeStepImageURL,
 					},
 				},
+			},
+		})
+
+	server.HandleConnectUnary(s,
+		frontendapiconnect.FrontendServiceAddBookmarkProcedure,
+		addbookmark.NewHandler(firestore).AddBookmark,
+		[]*frontendapi.AddBookmarkRequest{
+			{
+				RecipeId: "02JNMi0W1605TLxzQt6v",
+			},
+		})
+
+	server.HandleConnectUnary(s,
+		frontendapiconnect.FrontendServiceRemoveBookmarkProcedure,
+		removebookmark.NewHandler(firestore).RemoveBookmark,
+		[]*frontendapi.RemoveBookmarkRequest{
+			{
+				RecipeId: "02JNMi0W1605TLxzQt6v",
 			},
 		})
 

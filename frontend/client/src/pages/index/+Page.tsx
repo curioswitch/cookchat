@@ -5,6 +5,7 @@ import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { FaRegUserCircle } from "react-icons/fa";
 
 import logoSVG from "../../assets/logo.svg";
 import { useFrontendQueries } from "../../hooks/rpc";
@@ -48,12 +49,12 @@ export default function Page() {
 
   return (
     <div className="p-4">
-      <Image
-        radius="none"
-        src={logoSVG}
-        alt={t("CookChat Logo")}
-        className="mt-2 mb-4"
-      />
+      <div className="flex items-center justify-between mt-2 mb-4">
+        <Image radius="none" src={logoSVG} alt={t("CookChat Logo")} />
+        <Link href="/settings">
+          <FaRegUserCircle className="size-6 text-primary-400" />
+        </Link>
+      </div>
       <Input
         fullWidth
         placeholder={t("What do you want to cook?")}
