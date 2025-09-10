@@ -4,7 +4,6 @@ import type { SharedSelection } from "@heroui/system";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { BackButton } from "../../components/BackButton";
 import i18n from "../../layouts/i18n";
 import {
   setMicrophoneDeviceId,
@@ -48,58 +47,49 @@ export default function Page() {
   }, []);
 
   return (
-    <div>
-      <div className="flex items-center justify-between gap-2 pb-2 p-2">
-        <BackButton className="size-6" />
-        <h1 className="text-2xl md:text-2xl font-semibold mb-0">
-          {t("Settings")}
-        </h1>
-        <div className="size-6" />
-      </div>
-      <div className="p-4">
-        <Select
-          label={t("Language")}
-          labelPlacement="outside-left"
-          selectedKeys={[i18n.language]}
-          onSelectionChange={onLanguageChange}
-        >
-          <SelectItem key="ja">{t("Japanese")}</SelectItem>
-          <SelectItem key="en">{t("English")}</SelectItem>
-        </Select>
-        <Select
-          label={t("Speaker")}
-          labelPlacement="outside-left"
-          selectedKeys={[settings.speakerDeviceId]}
-          onSelectionChange={onSpeakerChange}
-          className="mt-4"
-        >
-          {speakers.map((speaker) => (
-            <SelectItem key={speaker.deviceId}>
-              {speaker.label || t("Unknown Speaker")}
-            </SelectItem>
-          ))}
-        </Select>
-        <Select
-          label={t("Microphone")}
-          labelPlacement="outside-left"
-          selectedKeys={[settings.microphoneDeviceId]}
-          onSelectionChange={onMicrophoneChange}
-          className="mt-4"
-        >
-          {microphones.map((mic) => (
-            <SelectItem key={mic.deviceId}>
-              {mic.label || t("Unknown Microphone")}
-            </SelectItem>
-          ))}
-        </Select>
-        <Checkbox
-          className="mt-4"
-          isSelected={settings.useOpenAI}
-          onValueChange={setUseOpenAI}
-        >
-          Use OpenAI
-        </Checkbox>
-      </div>
+    <div className="p-4">
+      <Select
+        label={t("Language")}
+        labelPlacement="outside-left"
+        selectedKeys={[i18n.language]}
+        onSelectionChange={onLanguageChange}
+      >
+        <SelectItem key="ja">{t("Japanese")}</SelectItem>
+        <SelectItem key="en">{t("English")}</SelectItem>
+      </Select>
+      <Select
+        label={t("Speaker")}
+        labelPlacement="outside-left"
+        selectedKeys={[settings.speakerDeviceId]}
+        onSelectionChange={onSpeakerChange}
+        className="mt-4"
+      >
+        {speakers.map((speaker) => (
+          <SelectItem key={speaker.deviceId}>
+            {speaker.label || t("Unknown Speaker")}
+          </SelectItem>
+        ))}
+      </Select>
+      <Select
+        label={t("Microphone")}
+        labelPlacement="outside-left"
+        selectedKeys={[settings.microphoneDeviceId]}
+        onSelectionChange={onMicrophoneChange}
+        className="mt-4"
+      >
+        {microphones.map((mic) => (
+          <SelectItem key={mic.deviceId}>
+            {mic.label || t("Unknown Microphone")}
+          </SelectItem>
+        ))}
+      </Select>
+      <Checkbox
+        className="mt-4"
+        isSelected={settings.useOpenAI}
+        onValueChange={setUseOpenAI}
+      >
+        Use OpenAI
+      </Checkbox>
     </div>
   );
 }

@@ -1,10 +1,16 @@
-import type { RecipeIngredient } from "@cookchat/frontend-api";
+import { useMutation } from "@connectrpc/connect-query";
+import {
+  addBookmark,
+  type RecipeIngredient,
+  removeBookmark,
+} from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
 import { Image } from "@heroui/image";
 import { Textarea } from "@heroui/input";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import { HiAdjustments, HiShoppingCart, HiUsers } from "react-icons/hi";
 import { navigate } from "vike/client/router";
 import { usePageContext } from "vike-react/usePageContext";
@@ -47,6 +53,40 @@ export default function Page() {
   const getRecipeQuery = queries.getRecipe({ recipeId });
 
   const { data: recipeRes, isPending } = useQuery(getRecipeQuery);
+
+  const queryClient = useQueryClient();
+
+  const doAddBookmark = useMutation(addBookmark, {
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getRecipeQuery.queryKey,
+      });
+    },
+  });
+  const doRemoveBookmark = useMutation(removeBookmark, {
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getRecipeQuery.queryKey,
+      });
+    },
+  });
+
+  const onBookmarkClick = useCallback(() => {
+    if (
+      !recipeRes ||
+      !recipeRes.recipe ||
+      doAddBookmark.isPending ||
+      doRemoveBookmark.isPending
+    ) {
+      return;
+    }
+
+    if (recipeRes.isBookmarked) {
+      doRemoveBookmark.mutate({ recipeId: recipeRes.recipe.id });
+    } else {
+      doAddBookmark.mutate({ recipeId: recipeRes.recipe.id });
+    }
+  }, [recipeRes, doRemoveBookmark, doAddBookmark]);
 
   const cart = useCartStore();
   const inCart = cart.recipes.some((recipe) => recipe.id === recipeId);
@@ -144,7 +184,20 @@ export default function Page() {
       <Image radius="none" src={recipe.imageUrl} />
       <div className="px-4 py-2">
         <div className="px-2">
-          <h2 className="">{recipe.title}</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="">{recipe.title}</h2>
+            {recipeRes.isBookmarked ? (
+              <FaBookmark
+                onClick={onBookmarkClick}
+                className="fill-primary-400 cursor-pointer"
+              />
+            ) : (
+              <FaRegBookmark
+                onClick={onBookmarkClick}
+                className="fill-primary-400 cursor-pointer"
+              />
+            )}
+          </div>
           <div className="flex items-center gap-2 pt-2">
             <HiUsers className="size-4 text-primary" />
             <span className="text-gray-500 md:text-2xl mt-0.5">

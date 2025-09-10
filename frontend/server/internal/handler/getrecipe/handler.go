@@ -10,6 +10,7 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"connectrpc.com/connect"
+	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
 	"google.golang.org/api/iterator"
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
@@ -44,13 +45,22 @@ func (h *Handler) GetRecipe(ctx context.Context, req *frontendapi.GetRecipeReque
 	if err := doc.DataTo(&recipe); err != nil {
 		return nil, fmt.Errorf("getrecipe: unmarshalling recipe: %w", err)
 	}
+
+	bookmarked := false
+	if doc, _ := h.store.Collection("users").
+		Doc(firebaseauth.TokenFromContext(ctx).UID).
+		Collection("bookmarks").Doc("recipe-" + req.GetRecipeId()).Get(ctx); doc != nil && doc.Exists() {
+		bookmarked = true
+	}
+
 	prompt := ""
 	if auth.IsCurioSwitchUser(ctx) {
 		prompt = llm.RecipeChatPrompt(ctx)
 	}
 	return &frontendapi.GetRecipeResponse{
-		Recipe:    recipeToProto(&recipe, i18n.UserLanguage(ctx)),
-		LlmPrompt: prompt,
+		Recipe:       recipeToProto(&recipe, i18n.UserLanguage(ctx)),
+		LlmPrompt:    prompt,
+		IsBookmarked: bookmarked,
 	}, nil
 }
 

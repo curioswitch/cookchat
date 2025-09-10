@@ -3,7 +3,11 @@
 
 package cookchatdb
 
-import "google.golang.org/genai"
+import (
+	"time"
+
+	"google.golang.org/genai"
+)
 
 type RecipeSource string
 
@@ -122,6 +126,15 @@ type Recipe struct {
 
 	// LocalizedContent contains localized content for the recipe.
 	LocalizedContent map[string]*RecipeContent `firestore:"localizedContent,omitempty"`
+}
+
+// RecipeBookmark is a bookmarked recipe.
+type RecipeBookmark struct {
+	// The ID of the recipe being bookmarked.
+	RecipeID string `firestore:"recipe_id"`
+
+	// The time the bookmark was created.
+	CreatedAt time.Time `firestore:"created_at"`
 }
 
 var ingredientsSchema = &genai.Schema{

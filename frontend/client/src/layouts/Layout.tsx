@@ -82,10 +82,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             prompt={chatStore.prompt}
           />
           <Link
-            href="/settings"
+            href="/bookmarks"
             className={twMerge(
               "flex flex-col gap-1",
-              path === "/settings" ? "text-orange-400" : "text-gray-400",
+              path === "/bookmarks" ? "text-orange-400" : "text-gray-400",
             )}
           >
             <FaBookmark className="size-8 md:size-12" />

@@ -146,6 +146,9 @@ message GetRecipeResponse {
   // The LLM prompt used to interact with the recipe.
   // Only returned for users with debugging access.
   string llm_prompt = 2;
+
+  // Whether the recipe is bookmarked by the user.
+  bool is_bookmarked = 3;
 }
 
 // A token returned to retrieve a subsequent page of items.
@@ -353,6 +356,24 @@ message GetPlanResponse {
   Plan plan = 1 [(buf.validate.field).required = true];
 }
 
+// A request for FrontendService.AddBookmark.
+message AddBookmarkRequest {
+  // The ID of the recipe to add a bookmark for.
+  string recipe_id = 1;
+}
+
+// A response for FrontendService.AddBookmark.
+message AddBookmarkResponse {}
+
+// A request for FrontendService.RemoveBookmark.
+message RemoveBookmarkRequest {
+  // The ID of the recipe to remove a bookmark for.
+  string recipe_id = 1;
+}
+
+// A response for FrontendService.RemoveBookmark.
+message RemoveBookmarkResponse {}
+
 service FrontendService {
   // Get the recipe for a given recipe ID.
   rpc GetRecipe(GetRecipeRequest) returns (GetRecipeResponse);
@@ -377,4 +398,10 @@ service FrontendService {
 
   // Get the details of a plan.
   rpc GetPlan(GetPlanRequest) returns (GetPlanResponse);
+
+  // Add a bookmark for a recipe.
+  rpc AddBookmark(AddBookmarkRequest) returns (AddBookmarkResponse);
+
+  // Remove a bookmark for a recipe.
+  rpc RemoveBookmark(RemoveBookmarkRequest) returns (RemoveBookmarkResponse);
 }
