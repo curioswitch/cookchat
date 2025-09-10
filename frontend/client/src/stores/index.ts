@@ -196,3 +196,25 @@ export const clearCurrentRecipe = () => {
     navigateToStep: undefined,
   });
 };
+
+export type PlanRecipe = {
+  id: string;
+  title: string;
+  imageUrl: string;
+};
+
+export type PlanStore = {
+  recipe?: PlanRecipe;
+};
+
+export const usePlanStore = create<PlanStore>()(() => ({
+  recipe: undefined,
+}));
+
+export const setPlanRecipe = (recipe: PlanRecipe) => {
+  usePlanStore.setState({ recipe });
+};
+
+export const clearPlanRecipe = () => {
+  usePlanStore.setState({ recipe: undefined });
+};

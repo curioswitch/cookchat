@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { HiAdjustments, HiShoppingCart, HiUsers } from "react-icons/hi";
+import { navigate } from "vike/client/router";
 import { usePageContext } from "vike-react/usePageContext";
 
 import { useFrontendQueries } from "../../../hooks/rpc";
@@ -14,6 +15,7 @@ import {
   clearCurrentRecipe,
   removeRecipeFromCart,
   setCurrentRecipe,
+  setPlanRecipe,
   setPrompt,
   useCartStore,
   useChatStore,
@@ -81,6 +83,16 @@ export default function Page() {
     setPrompt(prompt);
   }, []);
 
+  const onCreatePlan = useCallback(() => {
+    const recipe = recipeRes?.recipe;
+    if (!recipe) {
+      return;
+    }
+
+    setPlanRecipe(recipe);
+    navigate("/plans/add");
+  }, [recipeRes]);
+
   useEffect(() => {
     if (!editPrompt) {
       setPrompt("");
@@ -120,6 +132,15 @@ export default function Page() {
 
   return (
     <>
+      <div className="bg-white p-4">
+        <Button
+          onPress={onCreatePlan}
+          color="primary"
+          className="w-48 text-white"
+        >
+          {t("Create Plan")}
+        </Button>
+      </div>
       <Image radius="none" src={recipe.imageUrl} />
       <div className="px-4 py-2">
         <div className="px-2">

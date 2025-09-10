@@ -47,6 +47,7 @@
   "AI will generate an appropriate plan": "AIが最適な献立を提案します",
   "Meal Preferences": "食事の好み",
   "Genre": "料理ジャンル",
+  "Create Plan": "献立作成",
 
   "genre.japanese": "和食",
   "genre.chinese": "中華料理",

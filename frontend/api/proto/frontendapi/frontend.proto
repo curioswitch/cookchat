@@ -291,6 +291,9 @@ message GeneratePlanRequest {
 
   // Genres to prioritize during planning.
   repeated RecipeGenre genres = 3;
+
+  // Recipe IDs to use as main dishes.
+  repeated string recipe_ids = 4;
 }
 
 // A response for FrontendService.GeneratePlan.

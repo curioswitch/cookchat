@@ -83,6 +83,10 @@ The plan should provide a variety of delicious food over the course of the desir
 Each meal can contain multiple recipes, though there should never be more than one main dish, and there should be a reasonable number
 / variety of side dishes. Aim to have one main, side, and soup for each meal.
 
+If recipe IDs are provided in the request, they must be used as main dishes in the plan. For example, if one recipe ID is provided
+and 3 days are requested, one of the days must use that ID as the main, and the remaining days should be generated. If two are provided,
+two days must each use one of the provided IDs as the main. If more IDs are provided than days, ignore the extra IDs.
+
 Consider desired ingredients when planning if provided - not all ingredients must be used, but they should be taken into account.
 The intent is to create a good plan while consuming as many ingredients as possible to prevent ingredient waste.
 
