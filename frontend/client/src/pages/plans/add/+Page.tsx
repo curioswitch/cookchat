@@ -3,6 +3,7 @@ import { generatePlan, RecipeGenre } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
 import { CheckboxGroup, useCheckbox } from "@heroui/checkbox";
 import { Chip } from "@heroui/chip";
+import { Image } from "@heroui/image";
 import { Input } from "@heroui/input";
 import { NumberInput } from "@heroui/number-input";
 import { Spinner } from "@heroui/spinner";
@@ -13,6 +14,8 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaMagic } from "react-icons/fa";
 import { navigate } from "vike/client/router";
+
+import { usePlanStore } from "../../../stores";
 
 function Option(props: { value: string; children: React.ReactNode }) {
   const checkbox = tv({
@@ -75,6 +78,8 @@ export default function Page() {
   const [ingredients, setIngredients] = useState<string>("");
   const [genres, setGenres] = useState<string[]>([]);
 
+  const planStore = usePlanStore();
+
   const doGeneratePlan = useMutation(generatePlan, {
     onSuccess: () => {
       navigate("/plans");
@@ -86,11 +91,30 @@ export default function Page() {
       numDays,
       ingredients: ingredients.split(",").map((s) => s.trim()),
       genres: genres.map((g) => Number(g)),
+      recipeIds: planStore.recipe ? [planStore.recipe.id] : [],
     });
-  }, [doGeneratePlan, ingredients, genres, numDays]);
+  }, [doGeneratePlan, ingredients, genres, numDays, planStore]);
 
   return (
-    <div className="p-4 min-h-screen">
+    <div className="p-4 h-[100%]">
+      {planStore.recipe && (
+        <div className="mb-4">
+          <h3 className="mb-2">メイン</h3>
+          <div className="flex gap-4 bg-white p-4 items-center rounded-2xl border-1 border-primary-400">
+            <Image
+              classNames={{
+                wrapper: "flex-1/5",
+              }}
+              src={planStore.recipe.imageUrl}
+            />
+            <div className="flex-4/5">
+              <div>{planStore.recipe.title}</div>
+              <div className="text-gray-600">{t("Main Dish")}</div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <h3 className="text-lg mb-2">{t("Conditions")}</h3>
       <div className="flex flex-col gap-3">
         <div>

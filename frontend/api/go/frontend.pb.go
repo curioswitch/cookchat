@@ -1528,7 +1528,9 @@ type GeneratePlanRequest struct {
 	// Ingredients to include in the plan.
 	Ingredients []string `protobuf:"bytes,2,rep,name=ingredients,proto3" json:"ingredients,omitempty"`
 	// Genres to prioritize during planning.
-	Genres        []RecipeGenre `protobuf:"varint,3,rep,packed,name=genres,proto3,enum=frontendapi.RecipeGenre" json:"genres,omitempty"`
+	Genres []RecipeGenre `protobuf:"varint,3,rep,packed,name=genres,proto3,enum=frontendapi.RecipeGenre" json:"genres,omitempty"`
+	// Recipe IDs to use as main dishes.
+	RecipeIds     []string `protobuf:"bytes,4,rep,name=recipe_ids,json=recipeIds,proto3" json:"recipe_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1580,6 +1582,13 @@ func (x *GeneratePlanRequest) GetIngredients() []string {
 func (x *GeneratePlanRequest) GetGenres() []RecipeGenre {
 	if x != nil {
 		return x.Genres
+	}
+	return nil
+}
+
+func (x *GeneratePlanRequest) GetRecipeIds() []string {
+	if x != nil {
+		return x.RecipeIds
 	}
 	return nil
 }
@@ -2139,11 +2148,13 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\x15GenerateRecipeRequest\x12\x16\n" +
 	"\x06prompt\x18\x01 \x01(\tR\x06prompt\"e\n" +
 	"\x16GenerateRecipeResponse\x12K\n" +
-	"\x12add_recipe_request\x18\x01 \x01(\v2\x1d.frontendapi.AddRecipeRequestR\x10addRecipeRequest\"\x84\x01\n" +
+	"\x12add_recipe_request\x18\x01 \x01(\v2\x1d.frontendapi.AddRecipeRequestR\x10addRecipeRequest\"\xa3\x01\n" +
 	"\x13GeneratePlanRequest\x12\x19\n" +
 	"\bnum_days\x18\x01 \x01(\rR\anumDays\x12 \n" +
 	"\vingredients\x18\x02 \x03(\tR\vingredients\x120\n" +
-	"\x06genres\x18\x03 \x03(\x0e2\x18.frontendapi.RecipeGenreR\x06genres\"\x16\n" +
+	"\x06genres\x18\x03 \x03(\x0e2\x18.frontendapi.RecipeGenreR\x06genres\x12\x1d\n" +
+	"\n" +
+	"recipe_ids\x18\x04 \x03(\tR\trecipeIds\"\x16\n" +
 	"\x14GeneratePlanResponse\"d\n" +
 	"\tStepGroup\x12\x14\n" +
 	"\x05label\x18\x01 \x01(\tR\x05label\x12-\n" +

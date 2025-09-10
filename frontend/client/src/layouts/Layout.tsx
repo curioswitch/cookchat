@@ -30,8 +30,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="container mx-auto min-h-screen max-w-full md:w-4xl pt-2 pb-24 bg-white">
-        <div className="p-2">
+      <div className="flex flex-1 container mx-auto min-h-screen max-w-full md:w-4xl pt-2 pb-24 bg-white">
+        <div className="p-2 flex flex-col flex-1">
           {!isHome && (
             <div className="flex justify-between items-center pb-4">
               <BackButton className="flex-1/10 text-primary" />
@@ -41,7 +41,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           )}
           <div
             className={twMerge(
-              !isHome && "bg-linear-to-r from-[#fff7ed] to-[#ffedd5]",
+              !isHome && "flex-1 bg-linear-to-r from-[#fff7ed] to-[#ffedd5]",
             )}
           >
             {children}
