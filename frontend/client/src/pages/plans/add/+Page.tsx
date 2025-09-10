@@ -11,19 +11,20 @@ import { cn, tv } from "@heroui/theme";
 import { VisuallyHidden } from "@react-aria/visually-hidden";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { FaMagic } from "react-icons/fa";
 import { navigate } from "vike/client/router";
 
 function Option(props: { value: string; children: React.ReactNode }) {
   const checkbox = tv({
     slots: {
-      base: "border-default hover:bg-default-200",
-      content: "text-default-500",
+      base: "border-1 border-primary-400 bg-white p-4",
+      content: "text-black text-sm",
     },
     variants: {
       isSelected: {
         true: {
           base: "border-primary bg-primary hover:bg-primary-500 hover:border-primary-500",
-          content: "text-primary-foreground pl-1",
+          content: "text-white pl-1",
         },
       },
       isFocusVisible: {
@@ -74,7 +75,6 @@ export default function Page() {
   const [ingredients, setIngredients] = useState<string>("");
   const [genres, setGenres] = useState<string[]>([]);
 
-  console.log(genres);
   const doGeneratePlan = useMutation(generatePlan, {
     onSuccess: () => {
       navigate("/plans");
@@ -90,68 +90,102 @@ export default function Page() {
   }, [doGeneratePlan, ingredients, genres, numDays]);
 
   return (
-    <div>
-      <h3>{t("Conditions")}</h3>
-      <div>
-        <NumberInput
-          label={t("Number of days")}
-          value={numDays}
-          onValueChange={setNumDays}
-        />
+    <div className="p-4 min-h-screen">
+      <h3 className="text-lg mb-2">{t("Conditions")}</h3>
+      <div className="flex flex-col gap-3">
+        <div>
+          <NumberInput
+            label={t("Number of days")}
+            value={numDays}
+            onValueChange={setNumDays}
+            classNames={{
+              inputWrapper: "bg-white border-1 border-primary-400 h-16 pb-2",
+            }}
+          />
+        </div>
+        <div className="p-4 bg-white border-1 border-primary-400 rounded-xl">
+          <h4>{t("Ingredients to include")}</h4>
+          <Input
+            placeholder={t("Ingredients in your fridge...")}
+            description={t("Ingredients for sides")}
+            value={ingredients}
+            onValueChange={setIngredients}
+            classNames={{
+              mainWrapper: "mt-2",
+              inputWrapper: "bg-white border-1 border-primary-400",
+              helperWrapper: "mt-2 text-gray-600",
+            }}
+          />
+        </div>
+        <div>
+          <Switch
+            classNames={{
+              base: cn(
+                "inline-flex flex-row-reverse w-full max-w-md bg-content1 hover:bg-content2 items-center",
+                "justify-between cursor-pointer rounded-lg gap-2 px-2 py-4 border-1",
+                "border-primary-400",
+              ),
+            }}
+          >
+            <div className="flex flex-col not-prose">
+              <p className="text-medium">{t("Add dessert")}</p>
+              <p className="text-tiny text-default-400 mt-2">
+                {t("Seasonal fruit or yogurt")}
+              </p>
+            </div>
+          </Switch>
+        </div>
       </div>
-      <div>
-        <Input
-          label={t("Ingredients to include")}
-          value={ingredients}
-          onValueChange={setIngredients}
-        />
-      </div>
-      <div>
-        <Switch
-          classNames={{
-            base: cn(
-              "inline-flex flex-row-reverse w-full max-w-md bg-content1 hover:bg-content2 items-center",
-              "justify-between cursor-pointer rounded-lg gap-2 p-4 border-2 border-transparent",
-              "data-[selected=true]:border-primary",
-            ),
-          }}
-        >
-          <div className="flex flex-col not-prose">
-            <p className="text-medium">{t("Add dessert")}</p>
-            <p className="text-tiny text-default-400">
-              {t("Seasonal fruit or yogurt")}
-            </p>
+      <div className="flex flex-col gap-4">
+        <h3 className="mt-6 text-lg">{t("Meal Preferences")}</h3>
+        <div className="flex flex-col gap-1 w-full">
+          <CheckboxGroup
+            className="gap-1"
+            classNames={{
+              label: "text-gray-600",
+            }}
+            label={t("Genre")}
+            orientation="horizontal"
+            value={genres}
+            onValueChange={setGenres}
+          >
+            <Option value={RecipeGenre.JAPANESE.toString()}>
+              {t("genre.japanese")}
+            </Option>
+            <Option value={RecipeGenre.CHINESE.toString()}>
+              {t("genre.chinese")}
+            </Option>
+            <Option value={RecipeGenre.WESTERN.toString()}>
+              {t("genre.western")}
+            </Option>
+            <Option value={RecipeGenre.KOREAN.toString()}>
+              {t("genre.korean")}
+            </Option>
+            <Option value={RecipeGenre.ITALIAN.toString()}>
+              {t("genre.italian")}
+            </Option>
+            <Option value={RecipeGenre.ETHNIC.toString()}>
+              {t("genre.ethnic")}
+            </Option>
+          </CheckboxGroup>
+        </div>
+        <div>
+          <Button
+            className="mt-4 text-white h-16"
+            color="primary"
+            fullWidth
+            onPress={onGenerateClick}
+            disabled={doGeneratePlan.isPending}
+            startContent={<FaMagic />}
+          >
+            {t("Generate Plan")}
+          </Button>
+          <div className="text-center text-gray-600 text-sm mt-2">
+            {t("AI will generate an appropriate plan")}
           </div>
-        </Switch>
+        </div>
+        {doGeneratePlan.isPending && <Spinner />}
       </div>
-      <h3>{t("Preferences")}</h3>
-      <div className="flex flex-col gap-1 w-full">
-        <CheckboxGroup
-          className="gap-1"
-          label={t("Genre")}
-          orientation="horizontal"
-          value={genres}
-          onValueChange={setGenres}
-        >
-          <Option value={RecipeGenre.JAPANESE.toString()}>
-            {t("Japanese Food")}
-          </Option>
-          <Option value={RecipeGenre.CHINESE.toString()}>{t("Chinese")}</Option>
-          <Option value={RecipeGenre.WESTERN.toString()}>{t("Western")}</Option>
-          <Option value={RecipeGenre.KOREAN.toString()}>{t("Korean")}</Option>
-          <Option value={RecipeGenre.ITALIAN.toString()}>{t("Italian")}</Option>
-          <Option value={RecipeGenre.ETHNIC.toString()}>{t("Ethnic")}</Option>
-        </CheckboxGroup>
-      </div>
-      <Button
-        className="mt-4"
-        fullWidth
-        onPress={onGenerateClick}
-        disabled={doGeneratePlan.isPending}
-      >
-        Generate
-      </Button>
-      {doGeneratePlan.isPending && <Spinner />}
     </div>
   );
 }
