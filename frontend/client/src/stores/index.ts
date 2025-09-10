@@ -204,17 +204,38 @@ export type PlanRecipe = {
 };
 
 export type PlanStore = {
-  recipe?: PlanRecipe;
+  recipes: PlanRecipe[];
+  numDays: number;
+  ingredients: string;
+  genres: string[];
 };
 
 export const usePlanStore = create<PlanStore>()(() => ({
-  recipe: undefined,
+  recipes: [],
+  numDays: 1,
+  ingredients: "",
+  genres: [],
 }));
 
-export const setPlanRecipe = (recipe: PlanRecipe) => {
-  usePlanStore.setState({ recipe });
+export const addPlanRecipe = (recipe: PlanRecipe) => {
+  if (usePlanStore.getState().recipes.find((r) => r.id === recipe.id)) {
+    return;
+  }
+  usePlanStore.setState((state) => ({
+    recipes: [...state.recipes, recipe],
+  }));
 };
 
-export const clearPlanRecipe = () => {
-  usePlanStore.setState({ recipe: undefined });
+export const setPlanDays = (days: number) => {
+  usePlanStore.setState({ numDays: days });
+};
+
+export const setPlanIngredients = (ingredients: string) =>
+  usePlanStore.setState({ ingredients });
+
+export const setPlanGenres = (genres: string[]) =>
+  usePlanStore.setState({ genres });
+
+export const clearPlanRecipes = () => {
+  usePlanStore.setState({ recipes: [] });
 };

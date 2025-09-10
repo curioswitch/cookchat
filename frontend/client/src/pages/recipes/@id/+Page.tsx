@@ -11,11 +11,11 @@ import { usePageContext } from "vike-react/usePageContext";
 
 import { useFrontendQueries } from "../../../hooks/rpc";
 import {
+  addPlanRecipe,
   addRecipeToCart,
   clearCurrentRecipe,
   removeRecipeFromCart,
   setCurrentRecipe,
-  setPlanRecipe,
   setPrompt,
   useCartStore,
   useChatStore,
@@ -89,7 +89,7 @@ export default function Page() {
       return;
     }
 
-    setPlanRecipe(recipe);
+    addPlanRecipe(recipe);
     navigate("/plans/add");
   }, [recipeRes]);
 
