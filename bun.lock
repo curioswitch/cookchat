@@ -13,7 +13,7 @@
       "dependencies": {
         "@alexanderolsen/libsamplerate-js": "^2.1.2",
         "@bufbuild/protobuf": "^2.7.0",
-        "@bufbuild/protovalidate": "^0.8.0",
+        "@bufbuild/protovalidate": "^1.0.0",
         "@connectrpc/connect": "^2.1.0",
         "@connectrpc/connect-query": "^2.1.1",
         "@connectrpc/connect-web": "^2.1.0",
@@ -155,7 +155,7 @@
 
     "@bufbuild/protobuf": ["@bufbuild/protobuf@2.7.0", "", {}, "sha512-qn6tAIZEw5i/wiESBF4nQxZkl86aY4KoO0IkUa2Lh+rya64oTOdJQFlZuMwI1Qz9VBJQrQC4QlSA2DNek5gCOA=="],
 
-    "@bufbuild/protovalidate": ["@bufbuild/protovalidate@0.8.0", "", { "dependencies": { "@bufbuild/cel": "0.3.0" }, "peerDependencies": { "@bufbuild/protobuf": "^2.6.2" } }, "sha512-8NLEdRjxZSgyRdtwOY3c2s4uo08mxOGGK4k6z9JAF8MuoTWhC6xuspDkKbt+M2WcBB4QyFiYQ2OF4V1j9zunzA=="],
+    "@bufbuild/protovalidate": ["@bufbuild/protovalidate@1.0.0", "", { "dependencies": { "@bufbuild/cel": "0.3.0" }, "peerDependencies": { "@bufbuild/protobuf": "^2.8.0" } }, "sha512-ICGANMQXaPKdR5BJ+6/L3nySHOZQQEZQvvivSZCFb799138obPLjNk32rSIKOMrA/YHc4Y2W738e+SL3CbZXSg=="],
 
     "@colors/colors": ["@colors/colors@1.5.0", "", {}, "sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ=="],
 
