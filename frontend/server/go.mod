@@ -3,24 +3,24 @@ module github.com/curioswitch/cookchat/frontend/server
 go 1.25.0
 
 require (
-	cloud.google.com/go/discoveryengine v1.20.0
+	cloud.google.com/go/discoveryengine v1.21.0
 	cloud.google.com/go/firestore v1.18.0
 	cloud.google.com/go/storage v1.56.1
 	connectrpc.com/connect v1.18.1
 	firebase.google.com/go/v4 v4.18.0
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/frontend/api v0.0.0-00010101000000-000000000000
-	github.com/curioswitch/go-curiostack v0.0.0-20250905031326-553e3857d54f
-	github.com/curioswitch/go-usegcp v0.0.0-20250904050252-6a19688dc7d6
+	github.com/curioswitch/go-curiostack v0.0.0-20250909080149-d127817587e7
+	github.com/curioswitch/go-usegcp v0.0.0-20250910080212-109fedfc0ab8
 	github.com/go-chi/chi/v5 v5.2.3
 	golang.org/x/sync v0.17.0
-	google.golang.org/api v0.248.0
-	google.golang.org/genai v1.23.0
-	google.golang.org/protobuf v1.36.8
+	google.golang.org/api v0.249.0
+	google.golang.org/genai v1.24.0
+	google.golang.org/protobuf v1.36.9
 )
 
 require (
-	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.8-20250717185734-6c6e0d3c608e.1 // indirect
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.9-20250912141014-52f32327d4b0.1 // indirect
 	cel.dev/expr v0.24.0 // indirect
 	cloud.google.com/go v0.122.0 // indirect
 	cloud.google.com/go/auth v0.16.5 // indirect
@@ -92,7 +92,7 @@ require (
 	google.golang.org/genproto v0.0.0-20250715232539-7130f93afb79 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250825161204-c5933d9347a5 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250826171959-ef028d996bc1 // indirect
-	google.golang.org/grpc v1.75.0 // indirect
+	google.golang.org/grpc v1.75.1 // indirect
 )
 
 replace (
