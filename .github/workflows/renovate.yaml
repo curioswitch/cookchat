@@ -8,7 +8,7 @@ on:
 
 jobs:
   renovate:
-    uses: curioswitch/go-build/.github/workflows/export-renovate.yaml@18ade42645b410fdc9d2ac9d21076fc35f40424f
+    uses: curioswitch/go-build/.github/workflows/export-renovate.yaml@f026526b75da688f3a214cb5d5582150ec80dd23
     with:
       github_app_id: "1047503"
     secrets:
