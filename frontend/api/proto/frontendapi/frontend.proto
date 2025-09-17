@@ -154,6 +154,8 @@ message GetRecipeResponse {
 // A token returned to retrieve a subsequent page of items.
 message Pagination {
   string last_id = 1;
+
+  int64 last_timestamp_nanos = 2;
 }
 
 // A snippet of a recipe for list views.
@@ -175,6 +177,9 @@ message RecipeSnippet {
 message ListRecipesRequest {
   // A text query to filter by.
   string query = 1;
+
+  // Whether to only return bookmarked recipes.
+  bool bookmarks = 3;
 
   // The pagination token for the next page of recipes.
   // If unset, the first page is returned.

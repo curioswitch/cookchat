@@ -149,6 +149,9 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 			{
 				Query: "玉ねぎ",
 			},
+			{
+				Bookmarks: true,
+			},
 		},
 	)
 

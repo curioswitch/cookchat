@@ -131,10 +131,10 @@ type Recipe struct {
 // RecipeBookmark is a bookmarked recipe.
 type RecipeBookmark struct {
 	// The ID of the recipe being bookmarked.
-	RecipeID string `firestore:"recipe_id"`
+	RecipeID string `firestore:"recipeId"`
 
 	// The time the bookmark was created.
-	CreatedAt time.Time `firestore:"created_at"`
+	CreatedAt time.Time `firestore:"createdAt"`
 }
 
 var ingredientsSchema = &genai.Schema{
