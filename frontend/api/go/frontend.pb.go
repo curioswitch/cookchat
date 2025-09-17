@@ -878,10 +878,11 @@ func (x *GetRecipeResponse) GetIsBookmarked() bool {
 
 // A token returned to retrieve a subsequent page of items.
 type Pagination struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	LastId        string                 `protobuf:"bytes,1,opt,name=last_id,json=lastId,proto3" json:"last_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	LastId             string                 `protobuf:"bytes,1,opt,name=last_id,json=lastId,proto3" json:"last_id,omitempty"`
+	LastTimestampNanos int64                  `protobuf:"varint,2,opt,name=last_timestamp_nanos,json=lastTimestampNanos,proto3" json:"last_timestamp_nanos,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *Pagination) Reset() {
@@ -919,6 +920,13 @@ func (x *Pagination) GetLastId() string {
 		return x.LastId
 	}
 	return ""
+}
+
+func (x *Pagination) GetLastTimestampNanos() int64 {
+	if x != nil {
+		return x.LastTimestampNanos
+	}
+	return 0
 }
 
 // A snippet of a recipe for list views.
@@ -999,6 +1007,8 @@ type ListRecipesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// A text query to filter by.
 	Query string `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+	// Whether to only return bookmarked recipes.
+	Bookmarks bool `protobuf:"varint,3,opt,name=bookmarks,proto3" json:"bookmarks,omitempty"`
 	// The pagination token for the next page of recipes.
 	// If unset, the first page is returned.
 	Pagination    *Pagination `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -1041,6 +1051,13 @@ func (x *ListRecipesRequest) GetQuery() string {
 		return x.Query
 	}
 	return ""
+}
+
+func (x *ListRecipesRequest) GetBookmarks() bool {
+	if x != nil {
+		return x.Bookmarks
+	}
+	return false
 }
 
 func (x *ListRecipesRequest) GetPagination() *Pagination {
@@ -2269,17 +2286,19 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\x06recipe\x18\x01 \x01(\v2\x13.frontendapi.RecipeR\x06recipe\x12\x1d\n" +
 	"\n" +
 	"llm_prompt\x18\x02 \x01(\tR\tllmPrompt\x12#\n" +
-	"\ris_bookmarked\x18\x03 \x01(\bR\fisBookmarked\"%\n" +
+	"\ris_bookmarked\x18\x03 \x01(\bR\fisBookmarked\"W\n" +
 	"\n" +
 	"Pagination\x12\x17\n" +
-	"\alast_id\x18\x01 \x01(\tR\x06lastId\"l\n" +
+	"\alast_id\x18\x01 \x01(\tR\x06lastId\x120\n" +
+	"\x14last_timestamp_nanos\x18\x02 \x01(\x03R\x12lastTimestampNanos\"l\n" +
 	"\rRecipeSnippet\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x18\n" +
 	"\asummary\x18\x03 \x01(\tR\asummary\x12\x1b\n" +
-	"\timage_url\x18\x04 \x01(\tR\bimageUrl\"c\n" +
+	"\timage_url\x18\x04 \x01(\tR\bimageUrl\"\x81\x01\n" +
 	"\x12ListRecipesRequest\x12\x14\n" +
-	"\x05query\x18\x01 \x01(\tR\x05query\x127\n" +
+	"\x05query\x18\x01 \x01(\tR\x05query\x12\x1c\n" +
+	"\tbookmarks\x18\x03 \x01(\bR\tbookmarks\x127\n" +
 	"\n" +
 	"pagination\x18\x02 \x01(\v2\x17.frontendapi.PaginationR\n" +
 	"pagination\"\x84\x01\n" +

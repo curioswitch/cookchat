@@ -89,6 +89,23 @@ class FrontendQueries {
     );
   }
 
+  listBookmarks() {
+    return infiniteQueryOptions(
+      createInfiniteQueryOptions(
+        listRecipes,
+        {
+          bookmarks: true,
+          pagination: create(PaginationSchema),
+        },
+        {
+          transport: this.transport,
+          pageParamKey: "pagination",
+          getNextPageParam: (lastPage) => lastPage.pagination,
+        },
+      ),
+    );
+  }
+
   startChat(req: MessageInitShape<typeof StartChatRequestSchema>) {
     return createQueryOptions(startChat, req, { transport: this.transport });
   }
