@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"time"
 
+	discoveryengine "cloud.google.com/go/discoveryengine/apiv1"
 	"cloud.google.com/go/firestore"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
 	"golang.org/x/sync/errgroup"
@@ -22,16 +23,18 @@ import (
 	"github.com/curioswitch/cookchat/frontend/server/internal/llm"
 )
 
-func NewHandler(genAI *genai.Client, store *firestore.Client) *Handler {
+func NewHandler(genAI *genai.Client, store *firestore.Client, search *discoveryengine.SearchClient) *Handler {
 	return &Handler{
-		genAI: genAI,
-		store: store,
+		genAI:  genAI,
+		store:  store,
+		search: search,
 	}
 }
 
 type Handler struct {
-	genAI *genai.Client
-	store *firestore.Client
+	genAI  *genai.Client
+	store  *firestore.Client
+	search *discoveryengine.SearchClient
 }
 
 func (h *Handler) GeneratePlan(ctx context.Context, req *frontendapi.GeneratePlanRequest) (*frontendapi.GeneratePlanResponse, error) {

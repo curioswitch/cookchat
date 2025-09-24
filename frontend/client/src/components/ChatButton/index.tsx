@@ -214,7 +214,6 @@ export function ChatButton({
       const agent = new RealtimeAgent({
         name: "CookChat",
         instructions: res.chatInstructions,
-        voice: "sage",
         tools: [
           {
             name: "navigate_to_step",
