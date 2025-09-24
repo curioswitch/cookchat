@@ -1,0 +1,1246 @@
+{
+  "frontendapi.AddBookmarkRequest": {
+    "title": "",
+    "description": "A request for FrontendService.AddBookmark.",
+    "properties": {
+      "recipe_id": {
+        "description": "The ID of the recipe to add a bookmark for.",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.AddBookmarkResponse": {
+    "title": "",
+    "description": "A response for FrontendService.AddBookmark.",
+    "properties": {},
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.AddRecipeRequest": {
+    "title": "",
+    "description": "",
+    "properties": {
+      "additional_ingredients": {
+        "description": "Additional ingredients grouped into sections.",
+        "type": "array",
+        "items": {
+          "description": "",
+          "type": "object",
+          "properties": {
+            "ingredients": {
+              "description": "The ingredients in the section.",
+              "type": "array",
+              "items": {
+                "description": "",
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "description": "The name of the ingredient.",
+                    "type": "string"
+                  },
+                  "quantity": {
+                    "description": "The quantity of the ingredient as free-form text.",
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "title": {
+              "description": "The title of the ingredient section.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "description": {
+        "description": "The description of the recipe.",
+        "type": "string"
+      },
+      "ingredients": {
+        "description": "The main ingredients of the recipe.",
+        "type": "array",
+        "items": {
+          "description": "",
+          "type": "object",
+          "properties": {
+            "name": {
+              "description": "The name of the ingredient.",
+              "type": "string"
+            },
+            "quantity": {
+              "description": "The quantity of the ingredient as free-form text.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "language": {
+        "description": "The language of the recipe.",
+        "type": "string",
+        "enum": [
+          "LANGUAGE_UNSPECIFIED",
+          "LANGUAGE_ENGLISH",
+          "LANGUAGE_JAPANESE"
+        ]
+      },
+      "main_image_data_url": {
+        "description": "The main image of the recipe, as a data URL.",
+        "type": "string"
+      },
+      "serving_size": {
+        "description": "The serving size of the recipe as free-form text.",
+        "type": "string"
+      },
+      "steps": {
+        "description": "The steps to prepare the recipe.",
+        "type": "array",
+        "items": {
+          "description": "",
+          "type": "object",
+          "properties": {
+            "description": {
+              "description": "The description of the step.",
+              "type": "string"
+            },
+            "image_data_url": {
+              "description": "An image for the step, as a data URL.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "title": {
+        "description": "The title of the recipe.",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.AddRecipeRequest.AddRecipeStep": {
+    "title": "",
+    "description": "",
+    "properties": {
+      "description": {
+        "description": "The description of the step.",
+        "type": "string"
+      },
+      "image_data_url": {
+        "description": "An image for the step, as a data URL.",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.AddRecipeResponse": {
+    "title": "",
+    "description": "",
+    "properties": {
+      "recipe_id": {
+        "description": "The ID of the newly added recipe.",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.GeneratePlanRequest": {
+    "title": "",
+    "description": "A request for FrontendService.GeneratePlan.",
+    "properties": {
+      "genres": {
+        "description": "Genres to prioritize during planning.",
+        "type": "array",
+        "items": {
+          "description": "",
+          "type": "string",
+          "enum": [
+            "RECIPE_GENRE_UNSPECIFIED",
+            "RECIPE_GENRE_JAPANESE",
+            "RECIPE_GENRE_CHINESE",
+            "RECIPE_GENRE_WESTERN",
+            "RECIPE_GENRE_KOREAN",
+            "RECIPE_GENRE_ITALIAN",
+            "RECIPE_GENRE_ETHNIC"
+          ]
+        }
+      },
+      "ingredients": {
+        "description": "Ingredients to include in the plan.",
+        "type": "array",
+        "items": {
+          "description": "",
+          "type": "string"
+        }
+      },
+      "num_days": {
+        "description": "The number of days to plan for.",
+        "type": "integer"
+      },
+      "recipe_ids": {
+        "description": "Recipe IDs to use as main dishes.",
+        "type": "array",
+        "items": {
+          "description": "",
+          "type": "string"
+        }
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.GeneratePlanResponse": {
+    "title": "",
+    "description": "A response for FrontendService.GeneratePlan.",
+    "properties": {},
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.GenerateRecipeRequest": {
+    "title": "",
+    "description": "A request for FrontendService.GenerateRecipe.",
+    "properties": {
+      "prompt": {
+        "description": "The prompt to generate a recipe for.",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.GenerateRecipeResponse": {
+    "title": "",
+    "description": "A response for FrontendService.GenerateRecipe.",
+    "properties": {
+      "add_recipe_request": {
+        "description": "A request to add a recipe, prepopulated with generated content.",
+        "type": "object",
+        "properties": {
+          "additional_ingredients": {
+            "description": "Additional ingredients grouped into sections.",
+            "type": "array",
+            "items": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "ingredients": {
+                  "description": "The ingredients in the section.",
+                  "type": "array",
+                  "items": {
+                    "description": "",
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "description": "The name of the ingredient.",
+                        "type": "string"
+                      },
+                      "quantity": {
+                        "description": "The quantity of the ingredient as free-form text.",
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "title": {
+                  "description": "The title of the ingredient section.",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "description": {
+            "description": "The description of the recipe.",
+            "type": "string"
+          },
+          "ingredients": {
+            "description": "The main ingredients of the recipe.",
+            "type": "array",
+            "items": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "description": "The name of the ingredient.",
+                  "type": "string"
+                },
+                "quantity": {
+                  "description": "The quantity of the ingredient as free-form text.",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "language": {
+            "description": "The language of the recipe.",
+            "type": "string",
+            "enum": [
+              "LANGUAGE_UNSPECIFIED",
+              "LANGUAGE_ENGLISH",
+              "LANGUAGE_JAPANESE"
+            ]
+          },
+          "main_image_data_url": {
+            "description": "The main image of the recipe, as a data URL.",
+            "type": "string"
+          },
+          "serving_size": {
+            "description": "The serving size of the recipe as free-form text.",
+            "type": "string"
+          },
+          "steps": {
+            "description": "The steps to prepare the recipe.",
+            "type": "array",
+            "items": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "description": {
+                  "description": "The description of the step.",
+                  "type": "string"
+                },
+                "image_data_url": {
+                  "description": "An image for the step, as a data URL.",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "title": {
+            "description": "The title of the recipe.",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.GetPlanRequest": {
+    "title": "",
+    "description": "A request for FrontendService.GetPlan.",
+    "properties": {
+      "date": {
+        "description": "The date of the plan. The timestamp will begin on the date in UTC.",
+        "type": "object",
+        "properties": {
+          "nanos": {
+            "description": "Non-negative fractions of a second at nanosecond resolution. Negative\n second values with fractions must still have non-negative nanos values\n that count forward in time. Must be from 0 to 999,999,999\n inclusive.",
+            "type": "integer"
+          },
+          "seconds": {
+            "description": "Represents seconds of UTC time since Unix epoch\n 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to\n 9999-12-31T23:59:59Z inclusive.",
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.GetPlanResponse": {
+    "title": "",
+    "description": "A response for FrontendService.GetPlan.",
+    "properties": {
+      "plan": {
+        "description": "",
+        "type": "object",
+        "properties": {
+          "date": {
+            "description": "The date of the plan. The timestamp will begin on the date in UTC.",
+            "type": "object",
+            "properties": {
+              "nanos": {
+                "description": "Non-negative fractions of a second at nanosecond resolution. Negative\n second values with fractions must still have non-negative nanos values\n that count forward in time. Must be from 0 to 999,999,999\n inclusive.",
+                "type": "integer"
+              },
+              "seconds": {
+                "description": "Represents seconds of UTC time since Unix epoch\n 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to\n 9999-12-31T23:59:59Z inclusive.",
+                "type": "integer"
+              }
+            },
+            "additionalProperties": false
+          },
+          "notes": {
+            "description": "A list of notes to help cook the plan.",
+            "type": "array",
+            "items": {
+              "description": "",
+              "type": "string"
+            }
+          },
+          "recipes": {
+            "description": "The recipes for the plan.",
+            "type": "array",
+            "items": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "id": {
+                  "description": "The ID of the recipe.",
+                  "type": "string"
+                },
+                "image_url": {
+                  "description": "The image URL of the recipe.",
+                  "type": "string"
+                },
+                "summary": {
+                  "description": "The summary of the recipe.",
+                  "type": "string"
+                },
+                "title": {
+                  "description": "The title of the recipe.",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "step_groups": {
+            "description": "The step groups for the plan.",
+            "type": "array",
+            "items": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "label": {
+                  "description": "The label of the group.",
+                  "type": "string"
+                },
+                "note": {
+                  "description": "Useful note for the group.",
+                  "type": "string"
+                },
+                "steps": {
+                  "description": "The actual steps.",
+                  "type": "array",
+                  "items": {
+                    "description": "",
+                    "type": "object",
+                    "properties": {
+                      "description": {
+                        "description": "The description of the step.",
+                        "type": "string"
+                      },
+                      "image_url": {
+                        "description": "An image for the step.",
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.GetPlansRequest": {
+    "title": "",
+    "description": "",
+    "properties": {},
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.GetPlansResponse": {
+    "title": "",
+    "description": "",
+    "properties": {
+      "plans": {
+        "description": "The users current plans.",
+        "type": "array",
+        "items": {
+          "description": "",
+          "type": "object",
+          "properties": {
+            "date": {
+              "description": "The date of the plan. The timestamp will begin on the date in UTC.",
+              "type": "object",
+              "properties": {
+                "nanos": {
+                  "description": "Non-negative fractions of a second at nanosecond resolution. Negative\n second values with fractions must still have non-negative nanos values\n that count forward in time. Must be from 0 to 999,999,999\n inclusive.",
+                  "type": "integer"
+                },
+                "seconds": {
+                  "description": "Represents seconds of UTC time since Unix epoch\n 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to\n 9999-12-31T23:59:59Z inclusive.",
+                  "type": "integer"
+                }
+              },
+              "additionalProperties": false
+            },
+            "recipes": {
+              "description": "The recipes for the plan.",
+              "type": "array",
+              "items": {
+                "description": "",
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "description": "The ID of the recipe.",
+                    "type": "string"
+                  },
+                  "image_url": {
+                    "description": "The image URL of the recipe.",
+                    "type": "string"
+                  },
+                  "summary": {
+                    "description": "The summary of the recipe.",
+                    "type": "string"
+                  },
+                  "title": {
+                    "description": "The title of the recipe.",
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.GetRecipeRequest": {
+    "title": "",
+    "description": "A request for FrontendService.GetRecipe.",
+    "properties": {
+      "recipe_id": {
+        "description": "The ID of the recipe to get.",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.GetRecipeResponse": {
+    "title": "",
+    "description": "A response for FrontendService.GetRecipe.",
+    "properties": {
+      "is_bookmarked": {
+        "description": "Whether the recipe is bookmarked by the user.",
+        "type": "boolean"
+      },
+      "llm_prompt": {
+        "description": "The LLM prompt used to interact with the recipe.\n Only returned for users with debugging access.",
+        "type": "string"
+      },
+      "recipe": {
+        "description": "The requested recipe.",
+        "type": "object",
+        "properties": {
+          "additional_ingredients": {
+            "description": "Additional ingredients grouped into sections.",
+            "type": "array",
+            "items": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "ingredients": {
+                  "description": "The ingredients in the section.",
+                  "type": "array",
+                  "items": {
+                    "description": "",
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "description": "The name of the ingredient.",
+                        "type": "string"
+                      },
+                      "quantity": {
+                        "description": "The quantity of the ingredient as free-form text.",
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "title": {
+                  "description": "The title of the ingredient section.",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "description": {
+            "description": "The description of the recipe.",
+            "type": "string"
+          },
+          "id": {
+            "description": "The unique identifier of the recipe within cookchat.",
+            "type": "string"
+          },
+          "image_url": {
+            "description": "The URL for the main image of the recipe.",
+            "type": "string"
+          },
+          "ingredients": {
+            "description": "The main ingredients of the recipe.",
+            "type": "array",
+            "items": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "description": "The name of the ingredient.",
+                  "type": "string"
+                },
+                "quantity": {
+                  "description": "The quantity of the ingredient as free-form text.",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "language": {
+            "description": "The language of the recipe.",
+            "type": "string",
+            "enum": [
+              "LANGUAGE_UNSPECIFIED",
+              "LANGUAGE_ENGLISH",
+              "LANGUAGE_JAPANESE"
+            ]
+          },
+          "notes": {
+            "description": "Additional notes or comments about the recipe.",
+            "type": "string"
+          },
+          "serving_size": {
+            "description": "The serving size of the recipe as free-form text.",
+            "type": "string"
+          },
+          "source": {
+            "description": "The source of the recipe.",
+            "type": "string",
+            "enum": [
+              "RECIPE_SOURCE_UNSPECIFIED",
+              "RECIPE_SOURCE_COOKPAD"
+            ]
+          },
+          "steps": {
+            "description": "The steps to prepare the recipe.",
+            "type": "array",
+            "items": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "description": {
+                  "description": "The description of the step.",
+                  "type": "string"
+                },
+                "image_url": {
+                  "description": "An image for the step.",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "title": {
+            "description": "The title of the recipe.",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.IngredientSection": {
+    "title": "",
+    "description": "A section of ingredients in a recipe.",
+    "properties": {
+      "ingredients": {
+        "description": "The ingredients in the section.",
+        "type": "array",
+        "items": {
+          "description": "",
+          "type": "object",
+          "properties": {
+            "name": {
+              "description": "The name of the ingredient.",
+              "type": "string"
+            },
+            "quantity": {
+              "description": "The quantity of the ingredient as free-form text.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "title": {
+        "description": "The title of the ingredient section.",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.ListRecipesRequest": {
+    "title": "",
+    "description": "A request for FrontendService.ListRecipes.",
+    "properties": {
+      "bookmarks": {
+        "description": "Whether to only return bookmarked recipes.",
+        "type": "boolean"
+      },
+      "pagination": {
+        "description": "The pagination token for the next page of recipes.\n If unset, the first page is returned.",
+        "type": "object",
+        "properties": {
+          "last_id": {
+            "description": "",
+            "type": "string"
+          },
+          "last_timestamp_nanos": {
+            "description": "",
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "query": {
+        "description": "A text query to filter by.",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.ListRecipesResponse": {
+    "title": "",
+    "description": "A response for FrontendService.ListRecipes.",
+    "properties": {
+      "pagination": {
+        "description": "The pagination token for the next page of recipes.",
+        "type": "object",
+        "properties": {
+          "last_id": {
+            "description": "",
+            "type": "string"
+          },
+          "last_timestamp_nanos": {
+            "description": "",
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "recipes": {
+        "description": "The recipes.",
+        "type": "array",
+        "items": {
+          "description": "",
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "The ID of the recipe.",
+              "type": "string"
+            },
+            "image_url": {
+              "description": "The image URL of the recipe.",
+              "type": "string"
+            },
+            "summary": {
+              "description": "The summary of the recipe.",
+              "type": "string"
+            },
+            "title": {
+              "description": "The title of the recipe.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.Pagination": {
+    "title": "",
+    "description": "A token returned to retrieve a subsequent page of items.",
+    "properties": {
+      "last_id": {
+        "description": "",
+        "type": "string"
+      },
+      "last_timestamp_nanos": {
+        "description": "",
+        "type": "integer"
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.Plan": {
+    "title": "",
+    "description": "A cooking plan.",
+    "properties": {
+      "date": {
+        "description": "The date of the plan. The timestamp will begin on the date in UTC.",
+        "type": "object",
+        "properties": {
+          "nanos": {
+            "description": "Non-negative fractions of a second at nanosecond resolution. Negative\n second values with fractions must still have non-negative nanos values\n that count forward in time. Must be from 0 to 999,999,999\n inclusive.",
+            "type": "integer"
+          },
+          "seconds": {
+            "description": "Represents seconds of UTC time since Unix epoch\n 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to\n 9999-12-31T23:59:59Z inclusive.",
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "notes": {
+        "description": "A list of notes to help cook the plan.",
+        "type": "array",
+        "items": {
+          "description": "",
+          "type": "string"
+        }
+      },
+      "recipes": {
+        "description": "The recipes for the plan.",
+        "type": "array",
+        "items": {
+          "description": "",
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "The ID of the recipe.",
+              "type": "string"
+            },
+            "image_url": {
+              "description": "The image URL of the recipe.",
+              "type": "string"
+            },
+            "summary": {
+              "description": "The summary of the recipe.",
+              "type": "string"
+            },
+            "title": {
+              "description": "The title of the recipe.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "step_groups": {
+        "description": "The step groups for the plan.",
+        "type": "array",
+        "items": {
+          "description": "",
+          "type": "object",
+          "properties": {
+            "label": {
+              "description": "The label of the group.",
+              "type": "string"
+            },
+            "note": {
+              "description": "Useful note for the group.",
+              "type": "string"
+            },
+            "steps": {
+              "description": "The actual steps.",
+              "type": "array",
+              "items": {
+                "description": "",
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "description": "The description of the step.",
+                    "type": "string"
+                  },
+                  "image_url": {
+                    "description": "An image for the step.",
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.PlanSnippet": {
+    "title": "",
+    "description": "A snippet of a plan, without executiond details.",
+    "properties": {
+      "date": {
+        "description": "The date of the plan. The timestamp will begin on the date in UTC.",
+        "type": "object",
+        "properties": {
+          "nanos": {
+            "description": "Non-negative fractions of a second at nanosecond resolution. Negative\n second values with fractions must still have non-negative nanos values\n that count forward in time. Must be from 0 to 999,999,999\n inclusive.",
+            "type": "integer"
+          },
+          "seconds": {
+            "description": "Represents seconds of UTC time since Unix epoch\n 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to\n 9999-12-31T23:59:59Z inclusive.",
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "recipes": {
+        "description": "The recipes for the plan.",
+        "type": "array",
+        "items": {
+          "description": "",
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "The ID of the recipe.",
+              "type": "string"
+            },
+            "image_url": {
+              "description": "The image URL of the recipe.",
+              "type": "string"
+            },
+            "summary": {
+              "description": "The summary of the recipe.",
+              "type": "string"
+            },
+            "title": {
+              "description": "The title of the recipe.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.Recipe": {
+    "title": "",
+    "description": "Full details of a recipe.",
+    "properties": {
+      "additional_ingredients": {
+        "description": "Additional ingredients grouped into sections.",
+        "type": "array",
+        "items": {
+          "description": "",
+          "type": "object",
+          "properties": {
+            "ingredients": {
+              "description": "The ingredients in the section.",
+              "type": "array",
+              "items": {
+                "description": "",
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "description": "The name of the ingredient.",
+                    "type": "string"
+                  },
+                  "quantity": {
+                    "description": "The quantity of the ingredient as free-form text.",
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "title": {
+              "description": "The title of the ingredient section.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "description": {
+        "description": "The description of the recipe.",
+        "type": "string"
+      },
+      "id": {
+        "description": "The unique identifier of the recipe within cookchat.",
+        "type": "string"
+      },
+      "image_url": {
+        "description": "The URL for the main image of the recipe.",
+        "type": "string"
+      },
+      "ingredients": {
+        "description": "The main ingredients of the recipe.",
+        "type": "array",
+        "items": {
+          "description": "",
+          "type": "object",
+          "properties": {
+            "name": {
+              "description": "The name of the ingredient.",
+              "type": "string"
+            },
+            "quantity": {
+              "description": "The quantity of the ingredient as free-form text.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "language": {
+        "description": "The language of the recipe.",
+        "type": "string",
+        "enum": [
+          "LANGUAGE_UNSPECIFIED",
+          "LANGUAGE_ENGLISH",
+          "LANGUAGE_JAPANESE"
+        ]
+      },
+      "notes": {
+        "description": "Additional notes or comments about the recipe.",
+        "type": "string"
+      },
+      "serving_size": {
+        "description": "The serving size of the recipe as free-form text.",
+        "type": "string"
+      },
+      "source": {
+        "description": "The source of the recipe.",
+        "type": "string",
+        "enum": [
+          "RECIPE_SOURCE_UNSPECIFIED",
+          "RECIPE_SOURCE_COOKPAD"
+        ]
+      },
+      "steps": {
+        "description": "The steps to prepare the recipe.",
+        "type": "array",
+        "items": {
+          "description": "",
+          "type": "object",
+          "properties": {
+            "description": {
+              "description": "The description of the step.",
+              "type": "string"
+            },
+            "image_url": {
+              "description": "An image for the step.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "title": {
+        "description": "The title of the recipe.",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.RecipeIngredient": {
+    "title": "",
+    "description": "An ingredient in a recipe.",
+    "properties": {
+      "name": {
+        "description": "The name of the ingredient.",
+        "type": "string"
+      },
+      "quantity": {
+        "description": "The quantity of the ingredient as free-form text.",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.RecipeSnippet": {
+    "title": "",
+    "description": "A snippet of a recipe for list views.",
+    "properties": {
+      "id": {
+        "description": "The ID of the recipe.",
+        "type": "string"
+      },
+      "image_url": {
+        "description": "The image URL of the recipe.",
+        "type": "string"
+      },
+      "summary": {
+        "description": "The summary of the recipe.",
+        "type": "string"
+      },
+      "title": {
+        "description": "The title of the recipe.",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.RecipeStep": {
+    "title": "",
+    "description": "A step in a recipe.",
+    "properties": {
+      "description": {
+        "description": "The description of the step.",
+        "type": "string"
+      },
+      "image_url": {
+        "description": "An image for the step.",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.RemoveBookmarkRequest": {
+    "title": "",
+    "description": "A request for FrontendService.RemoveBookmark.",
+    "properties": {
+      "recipe_id": {
+        "description": "The ID of the recipe to remove a bookmark for.",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.RemoveBookmarkResponse": {
+    "title": "",
+    "description": "A response for FrontendService.RemoveBookmark.",
+    "properties": {},
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.StartChatRequest": {
+    "title": "",
+    "description": "The recipe to chat about.",
+    "properties": {
+      "llm_prompt": {
+        "description": "The prompt to use with the chat.\n Only recognized for users with debugging access.",
+        "type": "string"
+      },
+      "model_provider": {
+        "description": "The model provider to use for the chat.",
+        "type": "string",
+        "enum": [
+          "MODEL_PROVIDER_UNSPECIFIED",
+          "MODEL_PROVIDER_GOOGLE_GENAI",
+          "MODEL_PROVIDER_OPENAI"
+        ]
+      },
+      "recipe_id": {
+        "description": "The ID of a cookchat recipe.",
+        "type": "string"
+      },
+      "recipe_text": {
+        "description": "Free-form text of the recipe.",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.StartChatResponse": {
+    "title": "",
+    "description": "A response to start a chat session.",
+    "properties": {
+      "chat_api_key": {
+        "description": "The ephemeral API key to use to start the chat.",
+        "type": "string"
+      },
+      "chat_instructions": {
+        "description": "Instructions for the chat session.",
+        "type": "string"
+      },
+      "chat_model": {
+        "description": "The chat model to use for the session.",
+        "type": "string"
+      },
+      "start_message": {
+        "description": "The message to send to start the voice chat.",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "frontendapi.StepGroup": {
+    "title": "",
+    "description": "A group of steps within a plan that can be executed together.",
+    "properties": {
+      "label": {
+        "description": "The label of the group.",
+        "type": "string"
+      },
+      "note": {
+        "description": "Useful note for the group.",
+        "type": "string"
+      },
+      "steps": {
+        "description": "The actual steps.",
+        "type": "array",
+        "items": {
+          "description": "",
+          "type": "object",
+          "properties": {
+            "description": {
+              "description": "The description of the step.",
+              "type": "string"
+            },
+            "image_url": {
+              "description": "An image for the step.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "google.protobuf.Timestamp": {
+    "title": "",
+    "description": "A Timestamp represents a point in time independent of any time zone or local\n calendar, encoded as a count of seconds and fractions of seconds at\n nanosecond resolution. The count is relative to an epoch at UTC midnight on\n January 1, 1970, in the proleptic Gregorian calendar which extends the\n Gregorian calendar backwards to year one.\n\n All minutes are 60 seconds long. Leap seconds are \"smeared\" so that no leap\n second table is needed for interpretation, using a [24-hour linear\n smear](https://developers.google.com/time/smear).\n\n The range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z. By\n restricting to that range, we ensure that we can convert to and from [RFC\n 3339](https://www.ietf.org/rfc/rfc3339.txt) date strings.\n\n # Examples\n\n Example 1: Compute Timestamp from POSIX `time()`.\n\n     Timestamp timestamp;\n     timestamp.set_seconds(time(NULL));\n     timestamp.set_nanos(0);\n\n Example 2: Compute Timestamp from POSIX `gettimeofday()`.\n\n     struct timeval tv;\n     gettimeofday(\u0026tv, NULL);\n\n     Timestamp timestamp;\n     timestamp.set_seconds(tv.tv_sec);\n     timestamp.set_nanos(tv.tv_usec * 1000);\n\n Example 3: Compute Timestamp from Win32 `GetSystemTimeAsFileTime()`.\n\n     FILETIME ft;\n     GetSystemTimeAsFileTime(\u0026ft);\n     UINT64 ticks = (((UINT64)ft.dwHighDateTime) \u003c\u003c 32) | ft.dwLowDateTime;\n\n     // A Windows tick is 100 nanoseconds. Windows epoch 1601-01-01T00:00:00Z\n     // is 11644473600 seconds before Unix epoch 1970-01-01T00:00:00Z.\n     Timestamp timestamp;\n     timestamp.set_seconds((INT64) ((ticks / 10000000) - 11644473600LL));\n     timestamp.set_nanos((INT32) ((ticks % 10000000) * 100));\n\n Example 4: Compute Timestamp from Java `System.currentTimeMillis()`.\n\n     long millis = System.currentTimeMillis();\n\n     Timestamp timestamp = Timestamp.newBuilder().setSeconds(millis / 1000)\n         .setNanos((int) ((millis % 1000) * 1000000)).build();\n\n Example 5: Compute Timestamp from Java `Instant.now()`.\n\n     Instant now = Instant.now();\n\n     Timestamp timestamp =\n         Timestamp.newBuilder().setSeconds(now.getEpochSecond())\n             .setNanos(now.getNano()).build();\n\n Example 6: Compute Timestamp from current time in Python.\n\n     timestamp = Timestamp()\n     timestamp.GetCurrentTime()\n\n # JSON Mapping\n\n In JSON format, the Timestamp type is encoded as a string in the\n [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format. That is, the\n format is \"{year}-{month}-{day}T{hour}:{min}:{sec}[.{frac_sec}]Z\"\n where {year} is always expressed using four digits while {month}, {day},\n {hour}, {min}, and {sec} are zero-padded to two digits each. The fractional\n seconds, which can go up to 9 digits (i.e. up to 1 nanosecond resolution),\n are optional. The \"Z\" suffix indicates the timezone (\"UTC\"); the timezone\n is required. A proto3 JSON serializer should always use UTC (as indicated by\n \"Z\") when printing the Timestamp type and a proto3 JSON parser should be\n able to accept both UTC and other timezones (as indicated by an offset).\n\n For example, \"2017-01-15T01:30:15.01Z\" encodes 15.01 seconds past\n 01:30 UTC on January 15, 2017.\n\n In JavaScript, one can convert a Date object to this format using the\n standard\n [toISOString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString)\n method. In Python, a standard `datetime.datetime` object can be converted\n to this format using\n [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with\n the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use\n the Joda Time's [`ISODateTimeFormat.dateTime()`](\n http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()\n ) to obtain a formatter capable of generating timestamps in this format.",
+    "properties": {
+      "nanos": {
+        "description": "Non-negative fractions of a second at nanosecond resolution. Negative\n second values with fractions must still have non-negative nanos values\n that count forward in time. Must be from 0 to 999,999,999\n inclusive.",
+        "type": "integer"
+      },
+      "seconds": {
+        "description": "Represents seconds of UTC time since Unix epoch\n 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to\n 9999-12-31T23:59:59Z inclusive.",
+        "type": "integer"
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  }
+}
