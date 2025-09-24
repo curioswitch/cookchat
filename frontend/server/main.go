@@ -20,6 +20,7 @@ import (
 	"github.com/curioswitch/go-curiostack/server"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/openai/openai-go/v2"
 	"google.golang.org/genai"
 
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
@@ -98,6 +99,8 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		return fmt.Errorf("creating genai client: %w", err)
 	}
 
+	oai := openai.NewClient()
+
 	authorizedEmails := strings.Split(conf.Authorization.EmailsCSV, ",")
 
 	fbMW := firebaseauth.NewMiddleware(fbAuth)
@@ -157,7 +160,7 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 
 	server.HandleConnectUnary(s,
 		frontendapiconnect.FrontendServiceStartChatProcedure,
-		startchat.NewHandler(genAI, firestore).StartChat,
+		startchat.NewHandler(genAI, &oai, firestore).StartChat,
 		[]*frontendapi.StartChatRequest{
 			{
 				Recipe: &frontendapi.StartChatRequest_RecipeId{
@@ -177,7 +180,7 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 
 	server.HandleConnectUnary(s,
 		frontendapiconnect.FrontendServiceGeneratePlanProcedure,
-		generateplan.NewHandler(genAI, firestore).GeneratePlan,
+		generateplan.NewHandler(genAI, firestore, search).GeneratePlan,
 		[]*frontendapi.GeneratePlanRequest{
 			{
 				NumDays:     3,
