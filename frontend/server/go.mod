@@ -13,6 +13,7 @@ require (
 	github.com/curioswitch/go-curiostack v0.0.0-20250909080149-d127817587e7
 	github.com/curioswitch/go-usegcp v0.0.0-20250910080212-109fedfc0ab8
 	github.com/go-chi/chi/v5 v5.2.3
+	github.com/openai/openai-go/v2 v2.7.0
 	golang.org/x/sync v0.17.0
 	google.golang.org/api v0.249.0
 	google.golang.org/genai v1.24.0
@@ -64,7 +65,6 @@ require (
 	github.com/magefile/mage v1.15.0 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
-	github.com/openai/openai-go/v2 v2.7.0 // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
 	github.com/spiffe/go-spiffe/v2 v2.6.0 // indirect
 	github.com/tidwall/gjson v1.18.0 // indirect
