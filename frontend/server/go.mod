@@ -3,20 +3,20 @@ module github.com/curioswitch/cookchat/frontend/server
 go 1.25.0
 
 require (
-	cloud.google.com/go/discoveryengine v1.21.0
+	cloud.google.com/go/discoveryengine v1.21.1
 	cloud.google.com/go/firestore v1.18.0
-	cloud.google.com/go/storage v1.56.1
-	connectrpc.com/connect v1.18.1
+	cloud.google.com/go/storage v1.57.0
+	connectrpc.com/connect v1.19.0
 	firebase.google.com/go/v4 v4.18.0
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/frontend/api v0.0.0-00010101000000-000000000000
-	github.com/curioswitch/go-curiostack v0.0.0-20250909080149-d127817587e7
-	github.com/curioswitch/go-usegcp v0.0.0-20250910080212-109fedfc0ab8
+	github.com/curioswitch/go-curiostack v0.0.0-20250924014941-fa563f76c6a5
+	github.com/curioswitch/go-usegcp v0.0.0-20250918012157-cdaf52dc3044
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/openai/openai-go/v2 v2.7.0
 	golang.org/x/sync v0.17.0
-	google.golang.org/api v0.249.0
-	google.golang.org/genai v1.24.0
+	google.golang.org/api v0.250.0
+	google.golang.org/genai v1.26.0
 	google.golang.org/protobuf v1.36.9
 )
 
@@ -26,11 +26,11 @@ require (
 	cloud.google.com/go v0.122.0 // indirect
 	cloud.google.com/go/auth v0.16.5 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
-	cloud.google.com/go/compute/metadata v0.8.0 // indirect
+	cloud.google.com/go/compute/metadata v0.8.4 // indirect
 	cloud.google.com/go/iam v1.5.2 // indirect
 	cloud.google.com/go/longrunning v0.6.7 // indirect
 	cloud.google.com/go/monitoring v1.24.2 // indirect
-	connectrpc.com/otelconnect v0.7.2 // indirect
+	connectrpc.com/otelconnect v0.8.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.29.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.53.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.53.0 // indirect
@@ -61,7 +61,7 @@ require (
 	github.com/knadh/koanf/parsers/yaml v1.1.0 // indirect
 	github.com/knadh/koanf/providers/env/v2 v2.0.0 // indirect
 	github.com/knadh/koanf/providers/rawbytes v1.0.0 // indirect
-	github.com/knadh/koanf/v2 v2.2.2 // indirect
+	github.com/knadh/koanf/v2 v2.3.0 // indirect
 	github.com/magefile/mage v1.15.0 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
@@ -87,16 +87,16 @@ require (
 	go.opentelemetry.io/otel/trace v1.38.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.7.1 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/crypto v0.41.0 // indirect
-	golang.org/x/net v0.43.0 // indirect
-	golang.org/x/oauth2 v0.30.0 // indirect
-	golang.org/x/sys v0.35.0 // indirect
-	golang.org/x/text v0.28.0 // indirect
-	golang.org/x/time v0.12.0 // indirect
+	golang.org/x/crypto v0.42.0 // indirect
+	golang.org/x/net v0.44.0 // indirect
+	golang.org/x/oauth2 v0.31.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
+	golang.org/x/text v0.29.0 // indirect
+	golang.org/x/time v0.13.0 // indirect
 	google.golang.org/appengine/v2 v2.0.6 // indirect
 	google.golang.org/genproto v0.0.0-20250715232539-7130f93afb79 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250825161204-c5933d9347a5 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250826171959-ef028d996bc1 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250908214217-97024824d090 // indirect
 	google.golang.org/grpc v1.75.1 // indirect
 )
 
