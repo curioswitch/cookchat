@@ -13,7 +13,7 @@ require (
 	github.com/curioswitch/go-curiostack v0.0.0-20250924014941-fa563f76c6a5
 	github.com/curioswitch/go-usegcp v0.0.0-20250918012157-cdaf52dc3044
 	github.com/go-chi/chi/v5 v5.2.3
-	github.com/openai/openai-go/v2 v2.7.0
+	github.com/openai/openai-go/v2 v2.7.1
 	golang.org/x/sync v0.17.0
 	google.golang.org/api v0.250.0
 	google.golang.org/genai v1.26.0
