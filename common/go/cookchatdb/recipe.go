@@ -25,6 +25,27 @@ const (
 	LanguageCodeJa LanguageCode = "ja"
 )
 
+type RecipeType string
+
+const (
+	RecipeTypeUnknown  RecipeType = "unknown"
+	RecipeTypeMainDish RecipeType = "main_dish"
+	RecipeTypeSideDish RecipeType = "side_dish"
+	RecipeTypeSoup     RecipeType = "soup"
+)
+
+type RecipeGenre string
+
+const (
+	RecipeGenreUnknown  RecipeGenre = "unknown"
+	RecipeGenreJapanese RecipeGenre = "japanese"
+	RecipeGenreChinese  RecipeGenre = "chinese"
+	RecipeGenreWestern  RecipeGenre = "western"
+	RecipeGenreKorean   RecipeGenre = "korean"
+	RecipeGenreItalian  RecipeGenre = "italian"
+	RecipeGenreEthnic   RecipeGenre = "ethnic"
+)
+
 // RecipeIngredient represents an ingredient in a recipe.
 type RecipeIngredient struct {
 	// Name is the name of the ingredient.
@@ -89,6 +110,12 @@ type Recipe struct {
 
 	// UserID is the ID of the user who created the recipe.
 	UserID string `firestore:"userId"`
+
+	// Type is the type of the recipe.
+	Type RecipeType `firestore:"type"`
+
+	// Genre is the genre of the recipe.
+	Genre RecipeGenre `firestore:"genre"`
 
 	// Title is the title of the recipe.
 	Title string `firestore:"title"`
