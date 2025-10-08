@@ -1,7 +1,9 @@
+import { create } from "@bufbuild/protobuf";
 import { useMutation } from "@connectrpc/connect-query";
 import {
   addBookmark,
   type RecipeIngredient,
+  RecipeSnippetSchema,
   removeBookmark,
 } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
@@ -19,12 +21,14 @@ import { useFrontendQueries } from "../../../hooks/rpc";
 import {
   addPlanRecipe,
   addRecipeToCart,
+  addRecipeToEditPlan,
   clearCurrentRecipe,
   removeRecipeFromCart,
   setCurrentRecipe,
   setPrompt,
   useCartStore,
   useChatStore,
+  useEditPlanStore,
 } from "../../../stores";
 
 function Ingredients({ ingredients }: { ingredients: RecipeIngredient[] }) {
@@ -88,6 +92,8 @@ export default function Page() {
     }
   }, [recipeRes, doRemoveBookmark, doAddBookmark]);
 
+  const { editing: editingPlan } = useEditPlanStore();
+
   const cart = useCartStore();
   const inCart = cart.recipes.some((recipe) => recipe.id === recipeId);
 
@@ -133,6 +139,22 @@ export default function Page() {
     navigate("/plans/add");
   }, [recipeRes]);
 
+  const onAddToPlan = useCallback(() => {
+    const recipe = recipeRes?.recipe;
+    if (!recipe) {
+      return;
+    }
+
+    addRecipeToEditPlan(
+      create(RecipeSnippetSchema, {
+        id: recipe.id,
+        title: recipe.title,
+        imageUrl: recipe.imageUrl,
+      }),
+    );
+    navigate("/plans/edit");
+  }, [recipeRes]);
+
   useEffect(() => {
     if (!editPrompt) {
       setPrompt("");
@@ -173,13 +195,23 @@ export default function Page() {
   return (
     <>
       <div className="bg-white p-4">
-        <Button
-          onPress={onCreatePlan}
-          color="primary"
-          className="w-48 text-white"
-        >
-          {t("Create Plan")}
-        </Button>
+        {editingPlan ? (
+          <Button
+            onPress={onAddToPlan}
+            color="primary"
+            className="w-48 text-white"
+          >
+            {t("Add to plan")}
+          </Button>
+        ) : (
+          <Button
+            onPress={onCreatePlan}
+            color="primary"
+            className="w-48 text-white"
+          >
+            {t("Create Plan")}
+          </Button>
+        )}
       </div>
       <Image radius="none" src={recipe.imageUrl} />
       <div className="px-4 py-2">

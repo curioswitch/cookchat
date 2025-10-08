@@ -41,6 +41,9 @@
   "Genre": "Genre",
   "Create Plan": "Create Plan",
   "Generating with AI. Click to select instead.": "Generating with AI. Click to select instead.",
+  "Click to select": "Click to select",
+  "Add to plan": "Add to plan",
+  "Save": "Save",
 
   "genre.japanese": "Japanese",
   "genre.chinese": "Chinese",
@@ -54,6 +57,7 @@
   "pages.plans.title": "Meal Plans",
   "pages.plans.@id.title": "Cook Plan",
   "pages.plans.add.title": "Create Meal Plan",
+  "pages.plans.edit.title": "Edit Plan",
   "pages.recipes.@id.title": "Recipe",
   "pages.recipes.add.title": "Add Recipe",
   "pages.settings.title": "Settings",

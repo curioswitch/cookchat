@@ -1,4 +1,4 @@
-import type { Recipe } from "@cookchat/frontend-api";
+import type { Recipe, RecipeSnippet } from "@cookchat/frontend-api";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -238,4 +238,39 @@ export const setPlanGenres = (genres: string[]) =>
 
 export const clearPlanRecipes = () => {
   usePlanStore.setState({ recipes: [] });
+};
+
+export type EditPlanStore = {
+  editing: boolean;
+  planId: string;
+  recipes: RecipeSnippet[];
+};
+
+export const useEditPlanStore = create<EditPlanStore>(() => ({
+  editing: false,
+  planId: "",
+  recipes: [],
+}));
+
+export const enableEditPlan = (planId: string, recipes: RecipeSnippet[]) => {
+  useEditPlanStore.setState({ editing: true, planId, recipes });
+};
+
+export const disableEditPlan = () => {
+  useEditPlanStore.setState({ editing: false, planId: "", recipes: [] });
+};
+
+export const addRecipeToEditPlan = (recipe: RecipeSnippet) => {
+  if (useEditPlanStore.getState().recipes.find((r) => r.id === recipe.id)) {
+    return;
+  }
+  useEditPlanStore.setState((state) => ({
+    recipes: [...state.recipes, recipe],
+  }));
+};
+
+export const removeRecipeFromEditPlan = (recipeId: string) => {
+  useEditPlanStore.setState((state) => ({
+    recipes: state.recipes.filter((r) => r.id !== recipeId),
+  }));
 };
