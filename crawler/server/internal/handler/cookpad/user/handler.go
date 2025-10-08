@@ -57,8 +57,11 @@ func (h *Handler) CrawlCookpadUser(ctx context.Context, req *crawlerapi.CrawlCoo
 		}
 	})
 
-	if err := c.Visit(fmt.Sprintf("https://cookpad.com/jp/users/%s/recipes", req.GetUserId())); err != nil {
-		return nil, fmt.Errorf("cookpad:user: crawl user page: %w", err)
+	// TODO: Figure out how to generalize this.
+	for i := 1; i <= 13; i++ {
+		if err := c.Visit(fmt.Sprintf("https://cookpad.com/jp/users/%s?page=%d", req.GetUserId(), i)); err != nil {
+			return nil, fmt.Errorf("cookpad:user: crawl user page: %w", err)
+		}
 	}
 
 	c.Wait()
