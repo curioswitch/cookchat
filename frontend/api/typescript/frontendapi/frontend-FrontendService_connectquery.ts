@@ -61,6 +61,13 @@ export const getPlans = FrontendService.method.getPlans;
 export const getPlan = FrontendService.method.getPlan;
 
 /**
+ * Update the recipes in a plan.
+ *
+ * @generated from rpc frontendapi.FrontendService.UpdatePlan
+ */
+export const updatePlan = FrontendService.method.updatePlan;
+
+/**
  * Add a bookmark for a recipe.
  *
  * @generated from rpc frontendapi.FrontendService.AddBookmark

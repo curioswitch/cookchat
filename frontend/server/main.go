@@ -36,6 +36,7 @@ import (
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/listrecipes"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/removebookmark"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/startchat"
+	"github.com/curioswitch/cookchat/frontend/server/internal/handler/updateplan"
 	"github.com/curioswitch/cookchat/frontend/server/internal/i18n"
 )
 
@@ -190,6 +191,13 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 					frontendapi.RecipeGenre_RECIPE_GENRE_ITALIAN,
 				},
 			},
+		})
+
+	server.HandleConnectUnary(s,
+		frontendapiconnect.FrontendServiceUpdatePlanProcedure,
+		updateplan.NewHandler(genAI, firestore).UpdatePlan,
+		[]*frontendapi.UpdatePlanRequest{
+			{},
 		})
 
 	server.HandleConnectUnary(s,

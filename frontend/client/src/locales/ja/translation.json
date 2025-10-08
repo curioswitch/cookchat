@@ -49,6 +49,9 @@
   "Genre": "料理ジャンル",
   "Create Plan": "献立作成",
   "Generating with AI. Click to select instead.": "AIが生成。クリックして選択もできます。",
+  "Click to select": "クリックして選択",
+  "Add to plan": "献立に追加",
+  "Save": "保存",
 
   "genre.japanese": "和食",
   "genre.chinese": "中華料理",
@@ -62,6 +65,7 @@
   "pages.plans.title": "献立",
   "pages.plans.@id.title": "献立調理",
   "pages.plans.add.title": "献立プラン作成",
+  "pages.plans.edit.title": "献立を変更",
   "pages.recipes.@id.title": "レシピ",
   "pages.recipes.add.title": "レシピを追加",
   "pages.settings.title": "設定",

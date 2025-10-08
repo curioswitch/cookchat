@@ -60,6 +60,9 @@ const (
 	FrontendServiceGetPlansProcedure = "/frontendapi.FrontendService/GetPlans"
 	// FrontendServiceGetPlanProcedure is the fully-qualified name of the FrontendService's GetPlan RPC.
 	FrontendServiceGetPlanProcedure = "/frontendapi.FrontendService/GetPlan"
+	// FrontendServiceUpdatePlanProcedure is the fully-qualified name of the FrontendService's
+	// UpdatePlan RPC.
+	FrontendServiceUpdatePlanProcedure = "/frontendapi.FrontendService/UpdatePlan"
 	// FrontendServiceAddBookmarkProcedure is the fully-qualified name of the FrontendService's
 	// AddBookmark RPC.
 	FrontendServiceAddBookmarkProcedure = "/frontendapi.FrontendService/AddBookmark"
@@ -158,6 +161,8 @@ type FrontendServiceClient interface {
 	GetPlans(context.Context, *connect.Request[_go.GetPlansRequest]) (*connect.Response[_go.GetPlansResponse], error)
 	// Get the details of a plan.
 	GetPlan(context.Context, *connect.Request[_go.GetPlanRequest]) (*connect.Response[_go.GetPlanResponse], error)
+	// Update the recipes in a plan.
+	UpdatePlan(context.Context, *connect.Request[_go.UpdatePlanRequest]) (*connect.Response[_go.UpdatePlanResponse], error)
 	// Add a bookmark for a recipe.
 	AddBookmark(context.Context, *connect.Request[_go.AddBookmarkRequest]) (*connect.Response[_go.AddBookmarkResponse], error)
 	// Remove a bookmark for a recipe.
@@ -223,6 +228,12 @@ func NewFrontendServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(frontendServiceMethods.ByName("GetPlan")),
 			connect.WithClientOptions(opts...),
 		),
+		updatePlan: connect.NewClient[_go.UpdatePlanRequest, _go.UpdatePlanResponse](
+			httpClient,
+			baseURL+FrontendServiceUpdatePlanProcedure,
+			connect.WithSchema(frontendServiceMethods.ByName("UpdatePlan")),
+			connect.WithClientOptions(opts...),
+		),
 		addBookmark: connect.NewClient[_go.AddBookmarkRequest, _go.AddBookmarkResponse](
 			httpClient,
 			baseURL+FrontendServiceAddBookmarkProcedure,
@@ -248,6 +259,7 @@ type frontendServiceClient struct {
 	generatePlan   *connect.Client[_go.GeneratePlanRequest, _go.GeneratePlanResponse]
 	getPlans       *connect.Client[_go.GetPlansRequest, _go.GetPlansResponse]
 	getPlan        *connect.Client[_go.GetPlanRequest, _go.GetPlanResponse]
+	updatePlan     *connect.Client[_go.UpdatePlanRequest, _go.UpdatePlanResponse]
 	addBookmark    *connect.Client[_go.AddBookmarkRequest, _go.AddBookmarkResponse]
 	removeBookmark *connect.Client[_go.RemoveBookmarkRequest, _go.RemoveBookmarkResponse]
 }
@@ -292,6 +304,11 @@ func (c *frontendServiceClient) GetPlan(ctx context.Context, req *connect.Reques
 	return c.getPlan.CallUnary(ctx, req)
 }
 
+// UpdatePlan calls frontendapi.FrontendService.UpdatePlan.
+func (c *frontendServiceClient) UpdatePlan(ctx context.Context, req *connect.Request[_go.UpdatePlanRequest]) (*connect.Response[_go.UpdatePlanResponse], error) {
+	return c.updatePlan.CallUnary(ctx, req)
+}
+
 // AddBookmark calls frontendapi.FrontendService.AddBookmark.
 func (c *frontendServiceClient) AddBookmark(ctx context.Context, req *connect.Request[_go.AddBookmarkRequest]) (*connect.Response[_go.AddBookmarkResponse], error) {
 	return c.addBookmark.CallUnary(ctx, req)
@@ -320,6 +337,8 @@ type FrontendServiceHandler interface {
 	GetPlans(context.Context, *connect.Request[_go.GetPlansRequest]) (*connect.Response[_go.GetPlansResponse], error)
 	// Get the details of a plan.
 	GetPlan(context.Context, *connect.Request[_go.GetPlanRequest]) (*connect.Response[_go.GetPlanResponse], error)
+	// Update the recipes in a plan.
+	UpdatePlan(context.Context, *connect.Request[_go.UpdatePlanRequest]) (*connect.Response[_go.UpdatePlanResponse], error)
 	// Add a bookmark for a recipe.
 	AddBookmark(context.Context, *connect.Request[_go.AddBookmarkRequest]) (*connect.Response[_go.AddBookmarkResponse], error)
 	// Remove a bookmark for a recipe.
@@ -381,6 +400,12 @@ func NewFrontendServiceHandler(svc FrontendServiceHandler, opts ...connect.Handl
 		connect.WithSchema(frontendServiceMethods.ByName("GetPlan")),
 		connect.WithHandlerOptions(opts...),
 	)
+	frontendServiceUpdatePlanHandler := connect.NewUnaryHandler(
+		FrontendServiceUpdatePlanProcedure,
+		svc.UpdatePlan,
+		connect.WithSchema(frontendServiceMethods.ByName("UpdatePlan")),
+		connect.WithHandlerOptions(opts...),
+	)
 	frontendServiceAddBookmarkHandler := connect.NewUnaryHandler(
 		FrontendServiceAddBookmarkProcedure,
 		svc.AddBookmark,
@@ -411,6 +436,8 @@ func NewFrontendServiceHandler(svc FrontendServiceHandler, opts ...connect.Handl
 			frontendServiceGetPlansHandler.ServeHTTP(w, r)
 		case FrontendServiceGetPlanProcedure:
 			frontendServiceGetPlanHandler.ServeHTTP(w, r)
+		case FrontendServiceUpdatePlanProcedure:
+			frontendServiceUpdatePlanHandler.ServeHTTP(w, r)
 		case FrontendServiceAddBookmarkProcedure:
 			frontendServiceAddBookmarkHandler.ServeHTTP(w, r)
 		case FrontendServiceRemoveBookmarkProcedure:
@@ -454,6 +481,10 @@ func (UnimplementedFrontendServiceHandler) GetPlans(context.Context, *connect.Re
 
 func (UnimplementedFrontendServiceHandler) GetPlan(context.Context, *connect.Request[_go.GetPlanRequest]) (*connect.Response[_go.GetPlanResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.GetPlan is not implemented"))
+}
+
+func (UnimplementedFrontendServiceHandler) UpdatePlan(context.Context, *connect.Request[_go.UpdatePlanRequest]) (*connect.Response[_go.UpdatePlanResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.UpdatePlan is not implemented"))
 }
 
 func (UnimplementedFrontendServiceHandler) AddBookmark(context.Context, *connect.Request[_go.AddBookmarkRequest]) (*connect.Response[_go.AddBookmarkResponse], error) {

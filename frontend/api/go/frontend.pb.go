@@ -2020,6 +2020,105 @@ func (x *GetPlanResponse) GetPlan() *Plan {
 	return nil
 }
 
+// A request for FrontendService.UpdatePlan.
+type UpdatePlanRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The date of the plan. The timestamp will begin on the date in UTC.
+	Date *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=date,proto3" json:"date,omitempty"`
+	// The recipes for the plan.
+	RecipeIds     []string `protobuf:"bytes,2,rep,name=recipe_ids,json=recipeIds,proto3" json:"recipe_ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdatePlanRequest) Reset() {
+	*x = UpdatePlanRequest{}
+	mi := &file_frontendapi_frontend_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdatePlanRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdatePlanRequest) ProtoMessage() {}
+
+func (x *UpdatePlanRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_frontendapi_frontend_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdatePlanRequest.ProtoReflect.Descriptor instead.
+func (*UpdatePlanRequest) Descriptor() ([]byte, []int) {
+	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *UpdatePlanRequest) GetDate() *timestamppb.Timestamp {
+	if x != nil {
+		return x.Date
+	}
+	return nil
+}
+
+func (x *UpdatePlanRequest) GetRecipeIds() []string {
+	if x != nil {
+		return x.RecipeIds
+	}
+	return nil
+}
+
+type UpdatePlanResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Plan          *Plan                  `protobuf:"bytes,1,opt,name=plan,proto3" json:"plan,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdatePlanResponse) Reset() {
+	*x = UpdatePlanResponse{}
+	mi := &file_frontendapi_frontend_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdatePlanResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdatePlanResponse) ProtoMessage() {}
+
+func (x *UpdatePlanResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_frontendapi_frontend_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdatePlanResponse.ProtoReflect.Descriptor instead.
+func (*UpdatePlanResponse) Descriptor() ([]byte, []int) {
+	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *UpdatePlanResponse) GetPlan() *Plan {
+	if x != nil {
+		return x.Plan
+	}
+	return nil
+}
+
 // A request for FrontendService.AddBookmark.
 type AddBookmarkRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2031,7 +2130,7 @@ type AddBookmarkRequest struct {
 
 func (x *AddBookmarkRequest) Reset() {
 	*x = AddBookmarkRequest{}
-	mi := &file_frontendapi_frontend_proto_msgTypes[28]
+	mi := &file_frontendapi_frontend_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2043,7 +2142,7 @@ func (x *AddBookmarkRequest) String() string {
 func (*AddBookmarkRequest) ProtoMessage() {}
 
 func (x *AddBookmarkRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_frontendapi_frontend_proto_msgTypes[28]
+	mi := &file_frontendapi_frontend_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2056,7 +2155,7 @@ func (x *AddBookmarkRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddBookmarkRequest.ProtoReflect.Descriptor instead.
 func (*AddBookmarkRequest) Descriptor() ([]byte, []int) {
-	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{28}
+	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *AddBookmarkRequest) GetRecipeId() string {
@@ -2075,7 +2174,7 @@ type AddBookmarkResponse struct {
 
 func (x *AddBookmarkResponse) Reset() {
 	*x = AddBookmarkResponse{}
-	mi := &file_frontendapi_frontend_proto_msgTypes[29]
+	mi := &file_frontendapi_frontend_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2087,7 +2186,7 @@ func (x *AddBookmarkResponse) String() string {
 func (*AddBookmarkResponse) ProtoMessage() {}
 
 func (x *AddBookmarkResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_frontendapi_frontend_proto_msgTypes[29]
+	mi := &file_frontendapi_frontend_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2100,7 +2199,7 @@ func (x *AddBookmarkResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddBookmarkResponse.ProtoReflect.Descriptor instead.
 func (*AddBookmarkResponse) Descriptor() ([]byte, []int) {
-	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{29}
+	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{31}
 }
 
 // A request for FrontendService.RemoveBookmark.
@@ -2114,7 +2213,7 @@ type RemoveBookmarkRequest struct {
 
 func (x *RemoveBookmarkRequest) Reset() {
 	*x = RemoveBookmarkRequest{}
-	mi := &file_frontendapi_frontend_proto_msgTypes[30]
+	mi := &file_frontendapi_frontend_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2126,7 +2225,7 @@ func (x *RemoveBookmarkRequest) String() string {
 func (*RemoveBookmarkRequest) ProtoMessage() {}
 
 func (x *RemoveBookmarkRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_frontendapi_frontend_proto_msgTypes[30]
+	mi := &file_frontendapi_frontend_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2139,7 +2238,7 @@ func (x *RemoveBookmarkRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveBookmarkRequest.ProtoReflect.Descriptor instead.
 func (*RemoveBookmarkRequest) Descriptor() ([]byte, []int) {
-	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{30}
+	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *RemoveBookmarkRequest) GetRecipeId() string {
@@ -2158,7 +2257,7 @@ type RemoveBookmarkResponse struct {
 
 func (x *RemoveBookmarkResponse) Reset() {
 	*x = RemoveBookmarkResponse{}
-	mi := &file_frontendapi_frontend_proto_msgTypes[31]
+	mi := &file_frontendapi_frontend_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2170,7 +2269,7 @@ func (x *RemoveBookmarkResponse) String() string {
 func (*RemoveBookmarkResponse) ProtoMessage() {}
 
 func (x *RemoveBookmarkResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_frontendapi_frontend_proto_msgTypes[31]
+	mi := &file_frontendapi_frontend_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2183,7 +2282,7 @@ func (x *RemoveBookmarkResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveBookmarkResponse.ProtoReflect.Descriptor instead.
 func (*RemoveBookmarkResponse) Descriptor() ([]byte, []int) {
-	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{31}
+	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{33}
 }
 
 type AddRecipeRequest_AddRecipeStep struct {
@@ -2198,7 +2297,7 @@ type AddRecipeRequest_AddRecipeStep struct {
 
 func (x *AddRecipeRequest_AddRecipeStep) Reset() {
 	*x = AddRecipeRequest_AddRecipeStep{}
-	mi := &file_frontendapi_frontend_proto_msgTypes[32]
+	mi := &file_frontendapi_frontend_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2210,7 +2309,7 @@ func (x *AddRecipeRequest_AddRecipeStep) String() string {
 func (*AddRecipeRequest_AddRecipeStep) ProtoMessage() {}
 
 func (x *AddRecipeRequest_AddRecipeStep) ProtoReflect() protoreflect.Message {
-	mi := &file_frontendapi_frontend_proto_msgTypes[32]
+	mi := &file_frontendapi_frontend_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2370,6 +2469,12 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\x0eGetPlanRequest\x12.\n" +
 	"\x04date\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x04date\"@\n" +
 	"\x0fGetPlanResponse\x12-\n" +
+	"\x04plan\x18\x01 \x01(\v2\x11.frontendapi.PlanB\x06\xbaH\x03\xc8\x01\x01R\x04plan\"b\n" +
+	"\x11UpdatePlanRequest\x12.\n" +
+	"\x04date\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x04date\x12\x1d\n" +
+	"\n" +
+	"recipe_ids\x18\x02 \x03(\tR\trecipeIds\"C\n" +
+	"\x12UpdatePlanResponse\x12-\n" +
 	"\x04plan\x18\x01 \x01(\v2\x11.frontendapi.PlanB\x06\xbaH\x03\xc8\x01\x01R\x04plan\"1\n" +
 	"\x12AddBookmarkRequest\x12\x1b\n" +
 	"\trecipe_id\x18\x01 \x01(\tR\brecipeId\"\x15\n" +
@@ -2393,7 +2498,7 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\x19RECIPE_SOURCE_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15RECIPE_SOURCE_COOKPAD\x10\x012N\n" +
 	"\vChatService\x12?\n" +
-	"\x04Chat\x12\x18.frontendapi.ChatRequest\x1a\x19.frontendapi.ChatResponse(\x010\x012\xb3\x06\n" +
+	"\x04Chat\x12\x18.frontendapi.ChatRequest\x1a\x19.frontendapi.ChatResponse(\x010\x012\x82\a\n" +
 	"\x0fFrontendService\x12J\n" +
 	"\tGetRecipe\x12\x1d.frontendapi.GetRecipeRequest\x1a\x1e.frontendapi.GetRecipeResponse\x12P\n" +
 	"\vListRecipes\x12\x1f.frontendapi.ListRecipesRequest\x1a .frontendapi.ListRecipesResponse\x12J\n" +
@@ -2402,7 +2507,9 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\x0eGenerateRecipe\x12\".frontendapi.GenerateRecipeRequest\x1a#.frontendapi.GenerateRecipeResponse\x12S\n" +
 	"\fGeneratePlan\x12 .frontendapi.GeneratePlanRequest\x1a!.frontendapi.GeneratePlanResponse\x12G\n" +
 	"\bGetPlans\x12\x1c.frontendapi.GetPlansRequest\x1a\x1d.frontendapi.GetPlansResponse\x12D\n" +
-	"\aGetPlan\x12\x1b.frontendapi.GetPlanRequest\x1a\x1c.frontendapi.GetPlanResponse\x12P\n" +
+	"\aGetPlan\x12\x1b.frontendapi.GetPlanRequest\x1a\x1c.frontendapi.GetPlanResponse\x12M\n" +
+	"\n" +
+	"UpdatePlan\x12\x1e.frontendapi.UpdatePlanRequest\x1a\x1f.frontendapi.UpdatePlanResponse\x12P\n" +
 	"\vAddBookmark\x12\x1f.frontendapi.AddBookmarkRequest\x1a .frontendapi.AddBookmarkResponse\x12Y\n" +
 	"\x0eRemoveBookmark\x12\".frontendapi.RemoveBookmarkRequest\x1a#.frontendapi.RemoveBookmarkResponseB=Z;github.com/curioswitch/cookchat/frontend/api/go;frontendapib\x06proto3"
 
@@ -2419,7 +2526,7 @@ func file_frontendapi_frontend_proto_rawDescGZIP() []byte {
 }
 
 var file_frontendapi_frontend_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_frontendapi_frontend_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
+var file_frontendapi_frontend_proto_msgTypes = make([]protoimpl.MessageInfo, 35)
 var file_frontendapi_frontend_proto_goTypes = []any{
 	(Language)(0),                          // 0: frontendapi.Language
 	(RecipeGenre)(0),                       // 1: frontendapi.RecipeGenre
@@ -2453,12 +2560,14 @@ var file_frontendapi_frontend_proto_goTypes = []any{
 	(*Plan)(nil),                           // 29: frontendapi.Plan
 	(*GetPlanRequest)(nil),                 // 30: frontendapi.GetPlanRequest
 	(*GetPlanResponse)(nil),                // 31: frontendapi.GetPlanResponse
-	(*AddBookmarkRequest)(nil),             // 32: frontendapi.AddBookmarkRequest
-	(*AddBookmarkResponse)(nil),            // 33: frontendapi.AddBookmarkResponse
-	(*RemoveBookmarkRequest)(nil),          // 34: frontendapi.RemoveBookmarkRequest
-	(*RemoveBookmarkResponse)(nil),         // 35: frontendapi.RemoveBookmarkResponse
-	(*AddRecipeRequest_AddRecipeStep)(nil), // 36: frontendapi.AddRecipeRequest.AddRecipeStep
-	(*timestamppb.Timestamp)(nil),          // 37: google.protobuf.Timestamp
+	(*UpdatePlanRequest)(nil),              // 32: frontendapi.UpdatePlanRequest
+	(*UpdatePlanResponse)(nil),             // 33: frontendapi.UpdatePlanResponse
+	(*AddBookmarkRequest)(nil),             // 34: frontendapi.AddBookmarkRequest
+	(*AddBookmarkResponse)(nil),            // 35: frontendapi.AddBookmarkResponse
+	(*RemoveBookmarkRequest)(nil),          // 36: frontendapi.RemoveBookmarkRequest
+	(*RemoveBookmarkResponse)(nil),         // 37: frontendapi.RemoveBookmarkResponse
+	(*AddRecipeRequest_AddRecipeStep)(nil), // 38: frontendapi.AddRecipeRequest.AddRecipeStep
+	(*timestamppb.Timestamp)(nil),          // 39: google.protobuf.Timestamp
 }
 var file_frontendapi_frontend_proto_depIdxs = []int32{
 	4,  // 0: frontendapi.ChatRequest.content:type_name -> frontendapi.ChatContent
@@ -2476,46 +2585,50 @@ var file_frontendapi_frontend_proto_depIdxs = []int32{
 	3,  // 12: frontendapi.StartChatRequest.model_provider:type_name -> frontendapi.StartChatRequest.ModelProvider
 	7,  // 13: frontendapi.AddRecipeRequest.ingredients:type_name -> frontendapi.RecipeIngredient
 	9,  // 14: frontendapi.AddRecipeRequest.additional_ingredients:type_name -> frontendapi.IngredientSection
-	36, // 15: frontendapi.AddRecipeRequest.steps:type_name -> frontendapi.AddRecipeRequest.AddRecipeStep
+	38, // 15: frontendapi.AddRecipeRequest.steps:type_name -> frontendapi.AddRecipeRequest.AddRecipeStep
 	0,  // 16: frontendapi.AddRecipeRequest.language:type_name -> frontendapi.Language
 	19, // 17: frontendapi.GenerateRecipeResponse.add_recipe_request:type_name -> frontendapi.AddRecipeRequest
 	1,  // 18: frontendapi.GeneratePlanRequest.genres:type_name -> frontendapi.RecipeGenre
 	8,  // 19: frontendapi.StepGroup.steps:type_name -> frontendapi.RecipeStep
-	37, // 20: frontendapi.PlanSnippet.date:type_name -> google.protobuf.Timestamp
+	39, // 20: frontendapi.PlanSnippet.date:type_name -> google.protobuf.Timestamp
 	14, // 21: frontendapi.PlanSnippet.recipes:type_name -> frontendapi.RecipeSnippet
 	26, // 22: frontendapi.GetPlansResponse.plans:type_name -> frontendapi.PlanSnippet
-	37, // 23: frontendapi.Plan.date:type_name -> google.protobuf.Timestamp
+	39, // 23: frontendapi.Plan.date:type_name -> google.protobuf.Timestamp
 	14, // 24: frontendapi.Plan.recipes:type_name -> frontendapi.RecipeSnippet
 	25, // 25: frontendapi.Plan.step_groups:type_name -> frontendapi.StepGroup
-	37, // 26: frontendapi.GetPlanRequest.date:type_name -> google.protobuf.Timestamp
+	39, // 26: frontendapi.GetPlanRequest.date:type_name -> google.protobuf.Timestamp
 	29, // 27: frontendapi.GetPlanResponse.plan:type_name -> frontendapi.Plan
-	5,  // 28: frontendapi.ChatService.Chat:input_type -> frontendapi.ChatRequest
-	11, // 29: frontendapi.FrontendService.GetRecipe:input_type -> frontendapi.GetRecipeRequest
-	15, // 30: frontendapi.FrontendService.ListRecipes:input_type -> frontendapi.ListRecipesRequest
-	17, // 31: frontendapi.FrontendService.StartChat:input_type -> frontendapi.StartChatRequest
-	19, // 32: frontendapi.FrontendService.AddRecipe:input_type -> frontendapi.AddRecipeRequest
-	21, // 33: frontendapi.FrontendService.GenerateRecipe:input_type -> frontendapi.GenerateRecipeRequest
-	23, // 34: frontendapi.FrontendService.GeneratePlan:input_type -> frontendapi.GeneratePlanRequest
-	27, // 35: frontendapi.FrontendService.GetPlans:input_type -> frontendapi.GetPlansRequest
-	30, // 36: frontendapi.FrontendService.GetPlan:input_type -> frontendapi.GetPlanRequest
-	32, // 37: frontendapi.FrontendService.AddBookmark:input_type -> frontendapi.AddBookmarkRequest
-	34, // 38: frontendapi.FrontendService.RemoveBookmark:input_type -> frontendapi.RemoveBookmarkRequest
-	6,  // 39: frontendapi.ChatService.Chat:output_type -> frontendapi.ChatResponse
-	12, // 40: frontendapi.FrontendService.GetRecipe:output_type -> frontendapi.GetRecipeResponse
-	16, // 41: frontendapi.FrontendService.ListRecipes:output_type -> frontendapi.ListRecipesResponse
-	18, // 42: frontendapi.FrontendService.StartChat:output_type -> frontendapi.StartChatResponse
-	20, // 43: frontendapi.FrontendService.AddRecipe:output_type -> frontendapi.AddRecipeResponse
-	22, // 44: frontendapi.FrontendService.GenerateRecipe:output_type -> frontendapi.GenerateRecipeResponse
-	24, // 45: frontendapi.FrontendService.GeneratePlan:output_type -> frontendapi.GeneratePlanResponse
-	28, // 46: frontendapi.FrontendService.GetPlans:output_type -> frontendapi.GetPlansResponse
-	31, // 47: frontendapi.FrontendService.GetPlan:output_type -> frontendapi.GetPlanResponse
-	33, // 48: frontendapi.FrontendService.AddBookmark:output_type -> frontendapi.AddBookmarkResponse
-	35, // 49: frontendapi.FrontendService.RemoveBookmark:output_type -> frontendapi.RemoveBookmarkResponse
-	39, // [39:50] is the sub-list for method output_type
-	28, // [28:39] is the sub-list for method input_type
-	28, // [28:28] is the sub-list for extension type_name
-	28, // [28:28] is the sub-list for extension extendee
-	0,  // [0:28] is the sub-list for field type_name
+	39, // 28: frontendapi.UpdatePlanRequest.date:type_name -> google.protobuf.Timestamp
+	29, // 29: frontendapi.UpdatePlanResponse.plan:type_name -> frontendapi.Plan
+	5,  // 30: frontendapi.ChatService.Chat:input_type -> frontendapi.ChatRequest
+	11, // 31: frontendapi.FrontendService.GetRecipe:input_type -> frontendapi.GetRecipeRequest
+	15, // 32: frontendapi.FrontendService.ListRecipes:input_type -> frontendapi.ListRecipesRequest
+	17, // 33: frontendapi.FrontendService.StartChat:input_type -> frontendapi.StartChatRequest
+	19, // 34: frontendapi.FrontendService.AddRecipe:input_type -> frontendapi.AddRecipeRequest
+	21, // 35: frontendapi.FrontendService.GenerateRecipe:input_type -> frontendapi.GenerateRecipeRequest
+	23, // 36: frontendapi.FrontendService.GeneratePlan:input_type -> frontendapi.GeneratePlanRequest
+	27, // 37: frontendapi.FrontendService.GetPlans:input_type -> frontendapi.GetPlansRequest
+	30, // 38: frontendapi.FrontendService.GetPlan:input_type -> frontendapi.GetPlanRequest
+	32, // 39: frontendapi.FrontendService.UpdatePlan:input_type -> frontendapi.UpdatePlanRequest
+	34, // 40: frontendapi.FrontendService.AddBookmark:input_type -> frontendapi.AddBookmarkRequest
+	36, // 41: frontendapi.FrontendService.RemoveBookmark:input_type -> frontendapi.RemoveBookmarkRequest
+	6,  // 42: frontendapi.ChatService.Chat:output_type -> frontendapi.ChatResponse
+	12, // 43: frontendapi.FrontendService.GetRecipe:output_type -> frontendapi.GetRecipeResponse
+	16, // 44: frontendapi.FrontendService.ListRecipes:output_type -> frontendapi.ListRecipesResponse
+	18, // 45: frontendapi.FrontendService.StartChat:output_type -> frontendapi.StartChatResponse
+	20, // 46: frontendapi.FrontendService.AddRecipe:output_type -> frontendapi.AddRecipeResponse
+	22, // 47: frontendapi.FrontendService.GenerateRecipe:output_type -> frontendapi.GenerateRecipeResponse
+	24, // 48: frontendapi.FrontendService.GeneratePlan:output_type -> frontendapi.GeneratePlanResponse
+	28, // 49: frontendapi.FrontendService.GetPlans:output_type -> frontendapi.GetPlansResponse
+	31, // 50: frontendapi.FrontendService.GetPlan:output_type -> frontendapi.GetPlanResponse
+	33, // 51: frontendapi.FrontendService.UpdatePlan:output_type -> frontendapi.UpdatePlanResponse
+	35, // 52: frontendapi.FrontendService.AddBookmark:output_type -> frontendapi.AddBookmarkResponse
+	37, // 53: frontendapi.FrontendService.RemoveBookmark:output_type -> frontendapi.RemoveBookmarkResponse
+	42, // [42:54] is the sub-list for method output_type
+	30, // [30:42] is the sub-list for method input_type
+	30, // [30:30] is the sub-list for extension type_name
+	30, // [30:30] is the sub-list for extension extendee
+	0,  // [0:30] is the sub-list for field type_name
 }
 
 func init() { file_frontendapi_frontend_proto_init() }
@@ -2541,7 +2654,7 @@ func file_frontendapi_frontend_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_frontendapi_frontend_proto_rawDesc), len(file_frontendapi_frontend_proto_rawDesc)),
 			NumEnums:      4,
-			NumMessages:   33,
+			NumMessages:   35,
 			NumExtensions: 0,
 			NumServices:   2,
 		},
