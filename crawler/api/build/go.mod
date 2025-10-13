@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/curioswitch/go-build v0.6.1
-	github.com/curioswitch/go-curiostack v0.0.0-20251002063118-ea8aa52c63a6
+	github.com/curioswitch/go-curiostack v0.0.0-20251007053838-2f2b6c39deac
 	github.com/goyek/x v0.3.0
 )
 
