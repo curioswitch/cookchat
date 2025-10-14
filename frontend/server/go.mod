@@ -4,19 +4,19 @@ go 1.25.0
 
 require (
 	cloud.google.com/go/discoveryengine v1.21.1
-	cloud.google.com/go/firestore v1.18.0
+	cloud.google.com/go/firestore v1.19.0
 	cloud.google.com/go/storage v1.57.0
-	connectrpc.com/connect v1.19.0
+	connectrpc.com/connect v1.19.1
 	firebase.google.com/go/v4 v4.18.0
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/frontend/api v0.0.0-00010101000000-000000000000
-	github.com/curioswitch/go-curiostack v0.0.0-20251002063118-ea8aa52c63a6
+	github.com/curioswitch/go-curiostack v0.0.0-20251007053838-2f2b6c39deac
 	github.com/curioswitch/go-usegcp v0.0.0-20250918012157-cdaf52dc3044
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/openai/openai-go/v2 v2.7.1
 	golang.org/x/sync v0.17.0
-	google.golang.org/api v0.251.0
-	google.golang.org/genai v1.28.0
+	google.golang.org/api v0.252.0
+	google.golang.org/genai v1.30.0
 	google.golang.org/protobuf v1.36.10
 )
 
@@ -24,7 +24,7 @@ require (
 	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.10-20250912141014-52f32327d4b0.1 // indirect
 	cel.dev/expr v0.24.0 // indirect
 	cloud.google.com/go v0.122.0 // indirect
-	cloud.google.com/go/auth v0.16.5 // indirect
+	cloud.google.com/go/auth v0.17.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
 	cloud.google.com/go/iam v1.5.2 // indirect
@@ -96,8 +96,8 @@ require (
 	google.golang.org/appengine/v2 v2.0.6 // indirect
 	google.golang.org/genproto v0.0.0-20250715232539-7130f93afb79 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250825161204-c5933d9347a5 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250929231259-57b25ae835d4 // indirect
-	google.golang.org/grpc v1.75.1 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20251002232023-7c0ddcbb5797 // indirect
+	google.golang.org/grpc v1.76.0 // indirect
 )
 
 replace (
