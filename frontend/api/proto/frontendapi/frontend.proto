@@ -351,6 +351,10 @@ message Plan {
 
   // A list of notes to help cook the plan.
   repeated string notes = 4;
+
+  repeated IngredientSection ingredients = 5;
+
+  repeated string serving_sizes = 6;
 }
 
 // A request for FrontendService.GetPlan.

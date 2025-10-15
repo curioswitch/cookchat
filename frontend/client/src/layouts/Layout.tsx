@@ -22,7 +22,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const cart = useCartStore();
   const chatStore = useChatStore();
 
-  console.log(pageContext.pageId);
   const pageI18nKey = (pageContext.pageId || "/src/index")
     .slice("/src/".length)
     .replaceAll("/", ".");
