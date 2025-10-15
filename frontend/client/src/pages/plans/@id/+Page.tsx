@@ -7,13 +7,35 @@ import {
   type StepGroup as StepGroupProto,
 } from "@cookchat/frontend-api";
 import { Image } from "@heroui/image";
+import { Textarea } from "@heroui/input";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaCheck, FaLightbulb, FaStar } from "react-icons/fa";
+import { HiAdjustments } from "react-icons/hi";
 import { usePageContext } from "vike-react/usePageContext";
+
+import {
+  clearCurrentPlan,
+  setCurrentPlan,
+  setPrompt,
+  useChatStore,
+} from "../../../stores";
 
 const validator = createValidator();
 
-function StepGroup({ group }: { group: StepGroupProto }) {
+function StepGroup({
+  group,
+  groupIdx,
+  setStepRef,
+}: {
+  group: StepGroupProto;
+  groupIdx: number;
+  setStepRef: (
+    groupIdx: number,
+    stepIdx: number,
+    node: HTMLDivElement | null,
+  ) => void;
+}) {
   return (
     <div className="p-4">
       <div className="p-4 bg-white border-1 border-primary-400 rounded-2xl">
@@ -23,6 +45,7 @@ function StepGroup({ group }: { group: StepGroupProto }) {
             <div
               // biome-ignore lint/suspicious/noArrayIndexKey: indexed list of items
               key={i}
+              ref={(node) => setStepRef(groupIdx, i, node)}
               className="border-l-6 border-primary p-4 bg-[#fff7ed] rounded-r-xl"
             >
               <h4 className="text-gray-600">{step.description}</h4>
@@ -51,11 +74,62 @@ export default function Page() {
   const { t } = useTranslation();
 
   const pageContext = usePageContext();
-  const planid = pageContext.routeParams.id;
+  const planId = pageContext.routeParams.id;
+
+  const chatStore = useChatStore();
 
   const { data: planRes, isPending } = useQuery(getPlan, {
-    date: timestampFromDate(new Date(planid)),
+    date: timestampFromDate(new Date(planId)),
   });
+
+  const stepRefs = useRef<Array<Array<HTMLDivElement | null>>>([]);
+
+  const setStepRef = useCallback(
+    (groupIdx: number, stepIdx: number, node: HTMLDivElement | null) => {
+      if (!stepRefs.current[groupIdx]) {
+        stepRefs.current[groupIdx] = [];
+      }
+      stepRefs.current[groupIdx][stepIdx] = node;
+    },
+    [],
+  );
+
+  const navigateToStep = useCallback((stepIdx: number, groupIdx: number) => {
+    stepRefs.current[groupIdx]?.[stepIdx]?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, []);
+
+  useEffect(() => {
+    if (planRes?.plan) {
+      setCurrentPlan(planId, navigateToStep);
+      for (let i = 0; i < planRes.plan.stepGroups.length; i++) {
+        stepRefs.current[i] = [];
+      }
+      return () => {
+        clearCurrentPlan();
+      };
+    }
+  }, [planId, planRes, navigateToStep]);
+
+  const [editPrompt, setEditPrompt] = useState(false);
+
+  const onEditPromptClick = useCallback(() => {
+    setEditPrompt((prev) => !prev);
+  }, []);
+
+  const onPromptChange = useCallback((prompt: string) => {
+    setPrompt(prompt);
+  }, []);
+
+  useEffect(() => {
+    if (!editPrompt) {
+      setPrompt("");
+    } else {
+      setPrompt(planRes?.llmPrompt ?? "");
+    }
+  }, [editPrompt, planRes]);
 
   if (isPending) {
     return <div>{t("Loading...")}</div>;
@@ -94,9 +168,24 @@ export default function Page() {
         </div>
       </div>
       <div>
+        <div className="p-4">
+          <HiAdjustments className="size-6" onClick={onEditPromptClick} />
+          {editPrompt && (
+            <Textarea
+              className="mt-0"
+              value={chatStore.prompt}
+              onValueChange={onPromptChange}
+            />
+          )}
+        </div>
         {plan.stepGroups.map((group, i) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: indexed list of items
-          <StepGroup key={i} group={group} />
+          <StepGroup
+            // biome-ignore lint/suspicious/noArrayIndexKey: indexed list of items
+            key={i}
+            group={group}
+            groupIdx={i}
+            setStepRef={setStepRef}
+          />
         ))}
       </div>
       {plan.notes.length > 0 && (

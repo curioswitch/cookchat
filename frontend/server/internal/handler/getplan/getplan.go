@@ -16,6 +16,8 @@ import (
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
+	"github.com/curioswitch/cookchat/frontend/server/internal/auth"
+	"github.com/curioswitch/cookchat/frontend/server/internal/llm"
 )
 
 func NewHandler(store *firestore.Client) *Handler {
@@ -94,5 +96,10 @@ func (h *Handler) GetPlan(ctx context.Context, req *frontendapi.GetPlanRequest) 
 	}
 	plan.Notes = dbPlan.Notes
 
-	return &frontendapi.GetPlanResponse{Plan: plan}, nil
+	prompt := ""
+	if auth.IsCurioSwitchUser(ctx) {
+		prompt = llm.PlanChatPrompt(ctx)
+	}
+
+	return &frontendapi.GetPlanResponse{Plan: plan, LlmPrompt: prompt}, nil
 }

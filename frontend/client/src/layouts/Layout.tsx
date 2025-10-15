@@ -75,9 +75,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </Link>
           <ChatButton
             className={
-              chatStore.currentRecipeId ? "fixed bottom-32 right-8" : "hidden"
+              chatStore.currentRecipeId || chatStore.currentPlanId
+                ? "fixed bottom-32 right-8"
+                : "hidden"
             }
             recipeId={chatStore.currentRecipeId}
+            planId={chatStore.currentPlanId}
             navigateToStep={chatStore.navigateToStep}
             prompt={chatStore.prompt}
           />
