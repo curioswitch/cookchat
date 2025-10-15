@@ -1,3 +1,4 @@
+import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { StartChatRequest_ModelProvider } from "@cookchat/frontend-api";
 import { RealtimeAgent, RealtimeSession } from "@openai/agents-realtime";
 import { useQueryClient } from "@tanstack/react-query";
@@ -31,7 +32,7 @@ class ChatStream implements ChatSession {
     private readonly model: string,
     private readonly startMessage: string,
 
-    private readonly navigateToStep: (idx: number) => void,
+    private readonly navigateToStep: (idx: number, idx2: number) => void,
     private readonly setSpeaking: (speaking: boolean) => void,
     private readonly setWaiting: (waiting: boolean) => void,
     private readonly microphoneDeviceId?: string,
@@ -98,8 +99,9 @@ class ChatStream implements ChatSession {
         case "toolCall": {
           const call = event.data.call;
           if (call.name === "navigate_to_step" && call.args) {
-            const idx = call.args.step as number;
-            this.navigateToStep(idx);
+            const step = call.args.step as number;
+            const group = call.args.group as number;
+            this.navigateToStep(step, group);
           }
           break;
         }
@@ -161,12 +163,14 @@ class OpenAISession implements ChatSession {
 export function ChatButton({
   className,
   recipeId,
+  planId,
   navigateToStep,
   prompt,
 }: {
   className?: string;
   recipeId: string;
-  navigateToStep?: (idx: number) => void;
+  planId: string;
+  navigateToStep?: (idx: number, idx2: number) => void;
   prompt?: string;
 }) {
   const [stream, setStream] = useState<ChatSession | undefined>(undefined);
@@ -200,10 +204,15 @@ export function ChatButton({
 
     const res = await queryClient.fetchQuery({
       ...frontendQueries.startChat({
-        recipe: {
-          case: "recipeId",
-          value: recipeId,
-        },
+        recipe: recipeId
+          ? {
+              case: "recipeId",
+              value: recipeId,
+            }
+          : {
+              case: "planId",
+              value: timestampFromDate(new Date(planId)),
+            },
         modelProvider,
         llmPrompt: prompt,
       }),
@@ -224,18 +233,26 @@ export function ChatButton({
               properties: {
                 step: {
                   type: "integer",
-                  description:
-                    "The index of the step to navigate to, starting from 0.",
+                  description: planId
+                    ? "The index of the step within the group to navigate to, starting from 0."
+                    : "The index of the step to navigate to, starting from 0.",
                 },
+                group: planId
+                  ? {
+                      type: "integer",
+                      description:
+                        "The index of the group containing the step to navigate to, starting from 0.",
+                    }
+                  : undefined,
               },
               additionalProperties: false,
-              required: ["step"],
+              required: planId ? ["step", "group"] : ["step"],
             },
             strict: false,
             needsApproval: async () => false,
             invoke: async (_, input) => {
               const req = JSON.parse(input);
-              navigateToStep(req.step);
+              navigateToStep(req.step, req.group);
               return "Done";
             },
           },
@@ -268,6 +285,7 @@ export function ChatButton({
     frontendQueries,
     stream,
     recipeId,
+    planId,
     navigateToStep,
     prompt,
     settings,

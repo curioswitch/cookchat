@@ -204,6 +204,9 @@ message StartChatRequest {
 
     // The ID of a cookchat recipe.
     string recipe_id = 3;
+
+    // The ID of a cookchat plan.
+    google.protobuf.Timestamp plan_id = 6;
   }
 
   enum ModelProvider {
@@ -359,6 +362,10 @@ message GetPlanRequest {
 // A response for FrontendService.GetPlan.
 message GetPlanResponse {
   Plan plan = 1 [(buf.validate.field).required = true];
+
+  // The LLM prompt used to interact with the recipe.
+  // Only returned for users with debugging access.
+  string llm_prompt = 2;
 }
 
 // A request for FrontendService.UpdatePlan.

@@ -167,16 +167,22 @@ export const useSettingsStore = create<SettingsStore>()(
 );
 
 export type Chat = {
+  currentPlanId: string;
   currentRecipeId: string;
   prompt: string;
-  navigateToStep: ((idx: number) => void) | undefined;
+  navigateToStep: ((idx: number, idx2: number) => void) | undefined;
 };
 
 export const useChatStore = create<Chat>()(() => ({
   currentRecipeId: "",
+  currentPlanId: "",
   prompt: "",
   navigateToStep: undefined,
 }));
+
+export const setPrompt = (prompt: string) => {
+  useChatStore.setState({ prompt });
+};
 
 export const setCurrentRecipe = (
   recipeId: string,
@@ -185,13 +191,24 @@ export const setCurrentRecipe = (
   useChatStore.setState({ currentRecipeId: recipeId, navigateToStep });
 };
 
-export const setPrompt = (prompt: string) => {
-  useChatStore.setState({ prompt });
-};
-
 export const clearCurrentRecipe = () => {
   useChatStore.setState({
     currentRecipeId: "",
+    prompt: "",
+    navigateToStep: undefined,
+  });
+};
+
+export const setCurrentPlan = (
+  planId: string,
+  navigateToStep: (idx: number, idx2: number) => void,
+) => {
+  useChatStore.setState({ currentPlanId: planId, navigateToStep });
+};
+
+export const clearCurrentPlan = () => {
+  useChatStore.setState({
+    currentPlanId: "",
     prompt: "",
     navigateToStep: undefined,
   });

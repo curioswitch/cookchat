@@ -110,9 +110,7 @@ export default function Page() {
 
   useEffect(() => {
     if (recipeRes?.recipe) {
-      setCurrentRecipe(recipeRes.recipe.id, (idx: number) =>
-        navigateToStep(idx),
-      );
+      setCurrentRecipe(recipeRes.recipe.id, navigateToStep);
       return () => {
         clearCurrentRecipe();
       };
