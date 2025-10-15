@@ -52,7 +52,10 @@ export const addRecipeToCart = (recipe: Recipe) =>
       ingredients,
     };
     return {
-      recipes: [...state.recipes, cartRecipe],
+      recipes: [
+        ...state.recipes.filter((r) => r.id !== cartRecipe.id),
+        cartRecipe,
+      ],
     };
   });
 

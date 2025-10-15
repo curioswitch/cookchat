@@ -68,9 +68,11 @@ func (h *Handler) GetPlan(ctx context.Context, req *frontendapi.GetPlanRequest) 
 	}
 
 	plan := &frontendapi.Plan{
-		Date:       timestamppb.New(dbPlan.Date),
-		Recipes:    make([]*frontendapi.RecipeSnippet, len(recipes)),
-		StepGroups: make([]*frontendapi.StepGroup, len(dbPlan.StepGroups)),
+		Date:         timestamppb.New(dbPlan.Date),
+		Recipes:      make([]*frontendapi.RecipeSnippet, len(recipes)),
+		Ingredients:  make([]*frontendapi.IngredientSection, len(recipes)),
+		ServingSizes: make([]string, len(recipes)),
+		StepGroups:   make([]*frontendapi.StepGroup, len(dbPlan.StepGroups)),
 	}
 	for i, recipe := range recipes {
 		plan.Recipes[i] = &frontendapi.RecipeSnippet{
@@ -79,6 +81,26 @@ func (h *Handler) GetPlan(ctx context.Context, req *frontendapi.GetPlanRequest) 
 			Summary:  recipe.Description,
 			ImageUrl: recipe.ImageURL,
 		}
+		plan.ServingSizes[i] = recipe.ServingSize
+		sec := &frontendapi.IngredientSection{
+			Title:       recipe.Title,
+			Ingredients: make([]*frontendapi.RecipeIngredient, len(recipe.Ingredients)),
+		}
+		for i, ing := range recipe.Ingredients {
+			sec.Ingredients[i] = &frontendapi.RecipeIngredient{
+				Name:     ing.Name,
+				Quantity: ing.Quantity,
+			}
+		}
+		for _, add := range recipe.AdditionalIngredients {
+			for _, ing := range add.Ingredients {
+				sec.Ingredients = append(sec.Ingredients, &frontendapi.RecipeIngredient{
+					Name:     ing.Name,
+					Quantity: ing.Quantity,
+				})
+			}
+		}
+		plan.Ingredients[i] = sec
 	}
 	for i, dbStepGroup := range dbPlan.StepGroups {
 		stepGroup := &frontendapi.StepGroup{
