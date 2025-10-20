@@ -22,7 +22,7 @@ permissions:
 
 jobs:
   ci:
-    uses: curioswitch/go-curiostack/.github/workflows/export-go-server-ci.yaml@ea8aa52c63a66d467fc6c02ef001bab16868746e
+    uses: curioswitch/go-curiostack/.github/workflows/export-go-server-ci.yaml@ee29355944096d118b9dd067963f25de321120d0
     with:
       project_dir: frontend/server
       service: frontend-server
