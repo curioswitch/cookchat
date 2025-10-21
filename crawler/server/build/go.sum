@@ -1,8 +1,8 @@
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
-github.com/curioswitch/go-build v0.6.1 h1:6rIt0hQkWVoVARaXjOEwAU/07wTEA0KkHglscAcBsWE=
-github.com/curioswitch/go-build v0.6.1/go.mod h1:6YV8tVSmfwamIWTkmKkMUzgoI+SnZNOUQI2CXFs5Rv8=
-github.com/curioswitch/go-curiostack v0.0.0-20251007053838-2f2b6c39deac h1:i9FqL3DexX4lvsF/slYjEDlF2S1pZIjwvTdQ0pHZ3sg=
-github.com/curioswitch/go-curiostack v0.0.0-20251007053838-2f2b6c39deac/go.mod h1:IFk0ch+vKRpNWbeyUrNXHIbTtgdS17p8xAvxlfV39lw=
+github.com/curioswitch/go-build v0.6.2 h1:prUNyksWzCe+l+Xgdnp6oPuMByg9ZlgxX/cmtDOFRyU=
+github.com/curioswitch/go-build v0.6.2/go.mod h1:6YV8tVSmfwamIWTkmKkMUzgoI+SnZNOUQI2CXFs5Rv8=
+github.com/curioswitch/go-curiostack v0.0.0-20251014013154-ee2935594409 h1:9Qyhwp4wHcPxHqAa+I/9gyvrT//Jrh2LXWYN3kAQM/A=
+github.com/curioswitch/go-curiostack v0.0.0-20251014013154-ee2935594409/go.mod h1:NCfdvA4DP76gbLHftJVmnr4RJT4evgR7cz+56re4SyU=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/fatih/color v1.18.0 h1:S8gINlzdQ840/4pfAwic/ZE0djQEH3wM94VfqLTZcOM=
@@ -51,8 +51,8 @@ github.com/stretchr/testify v1.11.1/go.mod h1:wZwfW3scLgRK+23gO65QZefKpKQRnfz6sD
 go.yaml.in/yaml/v3 v3.0.4 h1:tfq32ie2Jv2UxXFdLJdh3jXuOzWiL1fo0bu/FbuKpbc=
 go.yaml.in/yaml/v3 v3.0.4/go.mod h1:DhzuOOF2ATzADvBadXxruRBLzYTpT36CKvDb3+aBEFg=
 golang.org/x/sys v0.6.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
-golang.org/x/sys v0.36.0 h1:KVRy2GtZBrk1cBYA7MKu5bEZFxQk4NIDV6RLVcC8o0k=
-golang.org/x/sys v0.36.0/go.mod h1:OgkHotnGiDImocRcuBABYBEXf8A9a87e/uXjp9XT3ks=
+golang.org/x/sys v0.37.0 h1:fdNQudmxPjkdUTPnLn5mdQv7Zwvbvpaxqs831goi9kQ=
+golang.org/x/sys v0.37.0/go.mod h1:OgkHotnGiDImocRcuBABYBEXf8A9a87e/uXjp9XT3ks=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c h1:Hei/4ADfdWqJk1ZMxUNpqntNwaWcugrBjAiHlqqRiVk=
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c/go.mod h1:JHkPIbrfpd72SG/EVd6muEfDQjcINNoR0C8j2r3qZ4Q=
