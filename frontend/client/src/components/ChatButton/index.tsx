@@ -33,6 +33,7 @@ class ChatStream implements ChatSession {
     private readonly startMessage: string,
 
     private readonly navigateToStep: (idx: number, idx2: number) => void,
+    private readonly navigateToIngredients: () => void,
     private readonly setSpeaking: (speaking: boolean) => void,
     private readonly setWaiting: (waiting: boolean) => void,
     private readonly microphoneDeviceId?: string,
@@ -102,6 +103,8 @@ class ChatStream implements ChatSession {
             const step = call.args.step as number;
             const group = call.args.group as number;
             this.navigateToStep(step, group);
+          } else if (call.name === "navigate_to_ingredients") {
+            this.navigateToIngredients();
           }
           break;
         }
@@ -165,12 +168,14 @@ export function ChatButton({
   recipeId,
   planId,
   navigateToStep,
+  navigateToIngredients,
   prompt,
 }: {
   className?: string;
   recipeId: string;
   planId: string;
   navigateToStep?: (idx: number, idx2: number) => void;
+  navigateToIngredients?: () => void;
   prompt?: string;
 }) {
   const [stream, setStream] = useState<ChatSession | undefined>(undefined);
@@ -183,7 +188,7 @@ export function ChatButton({
   const settings = useSettingsStore();
 
   const onClick = useCallback(async () => {
-    if (!navigateToStep) {
+    if (!navigateToStep || !navigateToIngredients) {
       return;
     }
 
@@ -256,6 +261,23 @@ export function ChatButton({
               return "Done";
             },
           },
+          {
+            name: "navigate_to_ingredients",
+            description: "Navigate the UI to the ingredients section.",
+            type: "function",
+            parameters: {
+              type: "object",
+              properties: {},
+              additionalProperties: false,
+              required: [],
+            },
+            strict: false,
+            needsApproval: async () => false,
+            invoke: async () => {
+              navigateToIngredients();
+              return "Done";
+            },
+          },
         ],
       });
       const session = new RealtimeSession(agent, {
@@ -270,6 +292,7 @@ export function ChatButton({
         res.chatModel,
         res.startMessage,
         navigateToStep,
+        navigateToIngredients,
         setSpeaking,
         setWaiting,
         settings.microphoneDeviceId !== ""
@@ -287,6 +310,7 @@ export function ChatButton({
     recipeId,
     planId,
     navigateToStep,
+    navigateToIngredients,
     prompt,
     settings,
   ]);

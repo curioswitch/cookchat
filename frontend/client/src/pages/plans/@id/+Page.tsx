@@ -21,7 +21,7 @@ import { usePageContext } from "vike-react/usePageContext";
 
 import {
   addRecipeToCart,
-  clearCurrentPlan,
+  resetChat,
   setCurrentPlan,
   setPrompt,
   useChatStore,
@@ -128,6 +128,8 @@ export default function Page() {
     date: timestampFromDate(new Date(planId)),
   });
 
+  const ingredientsRef = useRef<HTMLDivElement | null>(null);
+
   const stepRefs = useRef<Array<Array<HTMLDivElement | null>>>([]);
 
   const setStepRef = useCallback(
@@ -147,17 +149,24 @@ export default function Page() {
     });
   }, []);
 
+  const navigateToIngredients = useCallback(() => {
+    ingredientsRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, []);
+
   useEffect(() => {
     if (planRes?.plan) {
-      setCurrentPlan(planId, navigateToStep);
+      setCurrentPlan(planId, navigateToStep, navigateToIngredients);
       for (let i = 0; i < planRes.plan.stepGroups.length; i++) {
         stepRefs.current[i] = [];
       }
       return () => {
-        clearCurrentPlan();
+        resetChat();
       };
     }
-  }, [planId, planRes, navigateToStep]);
+  }, [planId, planRes, navigateToStep, navigateToIngredients]);
 
   const [editPrompt, setEditPrompt] = useState(false);
 
@@ -235,7 +244,12 @@ export default function Page() {
         </div>
       </div>
       <div className="px-4 py-2 border-b-1 border-primary-400 bg-white">
-        <div className="flex justify-between mb-4">
+        <div
+          ref={(node) => {
+            ingredientsRef.current = node;
+          }}
+          className="flex justify-between mb-4"
+        >
           <h2 className="text-gray-600 text-xl">{t("Ingredients")}</h2>
           <button
             type="button"

@@ -197,7 +197,14 @@ func (h *Handler) startChatGemini(ctx context.Context, prompt string, isPlan boo
 			},
 			Tools: []*genai.Tool{
 				{
-					FunctionDeclarations: []*genai.FunctionDeclaration{navigateToStep},
+					FunctionDeclarations: []*genai.FunctionDeclaration{
+						navigateToStep,
+						{
+							Name:        "navigate_to_ingredients",
+							Description: "Navigate the UI to the ingredients list.",
+							Behavior:    genai.BehaviorNonBlocking,
+						},
+					},
 				},
 			},
 			GenerationConfig: genai.LiveConnectConfig{
