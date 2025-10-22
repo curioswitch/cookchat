@@ -81,6 +81,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             recipeId={chatStore.currentRecipeId}
             planId={chatStore.currentPlanId}
             navigateToStep={chatStore.navigateToStep}
+            navigateToIngredients={chatStore.navigateToIngredients}
             prompt={chatStore.prompt}
           />
           <Link

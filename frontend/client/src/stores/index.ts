@@ -174,6 +174,7 @@ export type Chat = {
   currentRecipeId: string;
   prompt: string;
   navigateToStep: ((idx: number, idx2: number) => void) | undefined;
+  navigateToIngredients: (() => void) | undefined;
 };
 
 export const useChatStore = create<Chat>()(() => ({
@@ -181,6 +182,7 @@ export const useChatStore = create<Chat>()(() => ({
   currentPlanId: "",
   prompt: "",
   navigateToStep: undefined,
+  navigateToIngredients: undefined,
 }));
 
 export const setPrompt = (prompt: string) => {
@@ -190,30 +192,34 @@ export const setPrompt = (prompt: string) => {
 export const setCurrentRecipe = (
   recipeId: string,
   navigateToStep: (idx: number) => void,
+  navigateToIngredients: () => void,
 ) => {
-  useChatStore.setState({ currentRecipeId: recipeId, navigateToStep });
-};
-
-export const clearCurrentRecipe = () => {
   useChatStore.setState({
-    currentRecipeId: "",
-    prompt: "",
-    navigateToStep: undefined,
+    currentRecipeId: recipeId,
+    navigateToStep,
+    navigateToIngredients,
   });
 };
 
 export const setCurrentPlan = (
   planId: string,
   navigateToStep: (idx: number, idx2: number) => void,
+  navigateToIngredients: () => void,
 ) => {
-  useChatStore.setState({ currentPlanId: planId, navigateToStep });
+  useChatStore.setState({
+    currentPlanId: planId,
+    navigateToStep,
+    navigateToIngredients,
+  });
 };
 
-export const clearCurrentPlan = () => {
+export const resetChat = () => {
   useChatStore.setState({
+    currentRecipeId: "",
     currentPlanId: "",
     prompt: "",
     navigateToStep: undefined,
+    navigateToIngredients: undefined,
   });
 };
 

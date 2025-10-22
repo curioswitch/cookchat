@@ -114,6 +114,9 @@ func (h *Handler) GeneratePlan(ctx context.Context, req *frontendapi.GeneratePla
 	}
 
 	for _, plan := range plans {
+		if len(plan.Recipes) > 3 {
+			plan.Recipes = plan.Recipes[:3]
+		}
 		rDocs, err := h.store.Collection("recipes").Query.WhereEntity(firestore.PropertyFilter{
 			Path: "id", Operator: "in", Value: plan.Recipes,
 		}).Documents(ctx).GetAll()

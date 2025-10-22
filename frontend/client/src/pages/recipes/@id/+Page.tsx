@@ -22,8 +22,8 @@ import {
   addPlanRecipe,
   addRecipeToCart,
   addRecipeToEditPlan,
-  clearCurrentRecipe,
   removeRecipeFromCart,
+  resetChat,
   setCurrentRecipe,
   setPrompt,
   useCartStore,
@@ -98,9 +98,16 @@ export default function Page() {
   const inCart = cart.recipes.some((recipe) => recipe.id === recipeId);
 
   const stepRefs = useRef<Array<HTMLElement | null>>([]);
+  const ingredientsRef = useRef<HTMLDivElement | null>(null);
 
   const navigateToStep = useCallback((idx: number) => {
     stepRefs.current[idx]?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, []);
+  const navigateToIngredients = useCallback(() => {
+    ingredientsRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "start",
     });
@@ -110,12 +117,16 @@ export default function Page() {
 
   useEffect(() => {
     if (recipeRes?.recipe) {
-      setCurrentRecipe(recipeRes.recipe.id, navigateToStep);
+      setCurrentRecipe(
+        recipeRes.recipe.id,
+        navigateToStep,
+        navigateToIngredients,
+      );
       return () => {
-        clearCurrentRecipe();
+        resetChat();
       };
     }
-  }, [recipeRes, navigateToStep]);
+  }, [recipeRes, navigateToStep, navigateToIngredients]);
 
   const [editPrompt, setEditPrompt] = useState(false);
 
@@ -243,7 +254,12 @@ export default function Page() {
           />
         )}
         <div className="flex flex-col gap-4 mt-2">
-          <div className="p-4 bg-white rounded-xl border-1 border-primary-200">
+          <div
+            ref={(node) => {
+              ingredientsRef.current = node;
+            }}
+            className="p-4 bg-white rounded-xl border-1 border-primary-200"
+          >
             <h3 className="flex items-center justify-between mt-0 prose">
               {t("Ingredients")}
               <HiAdjustments className="size-6" onClick={onEditPromptClick} />
