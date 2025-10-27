@@ -3,20 +3,20 @@ module github.com/curioswitch/cookchat/frontend/server
 go 1.25.0
 
 require (
-	cloud.google.com/go/discoveryengine v1.21.1
-	cloud.google.com/go/firestore v1.19.0
+	cloud.google.com/go/discoveryengine v1.22.0
+	cloud.google.com/go/firestore v1.20.0
 	cloud.google.com/go/storage v1.57.0
 	connectrpc.com/connect v1.19.1
 	firebase.google.com/go/v4 v4.18.0
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/frontend/api v0.0.0-00010101000000-000000000000
-	github.com/curioswitch/go-curiostack v0.0.0-20251014013154-ee2935594409
-	github.com/curioswitch/go-usegcp v0.0.0-20251014013103-c519ce0105e4
+	github.com/curioswitch/go-curiostack v0.0.0-20251021035235-ad733e7c7e49
+	github.com/curioswitch/go-usegcp v0.0.0-20251021035221-fc9dc60d218d
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/openai/openai-go/v2 v2.7.1
 	golang.org/x/sync v0.17.0
-	google.golang.org/api v0.252.0
-	google.golang.org/genai v1.31.0
+	google.golang.org/api v0.253.0
+	google.golang.org/genai v1.32.0
 	google.golang.org/protobuf v1.36.10
 )
 
@@ -92,11 +92,11 @@ require (
 	golang.org/x/oauth2 v0.32.0 // indirect
 	golang.org/x/sys v0.37.0 // indirect
 	golang.org/x/text v0.30.0 // indirect
-	golang.org/x/time v0.13.0 // indirect
+	golang.org/x/time v0.14.0 // indirect
 	google.golang.org/appengine/v2 v2.0.6 // indirect
 	google.golang.org/genproto v0.0.0-20250715232539-7130f93afb79 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250825161204-c5933d9347a5 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20251002232023-7c0ddcbb5797 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20251014184007-4626949a642f // indirect
 	google.golang.org/grpc v1.76.0 // indirect
 )
 
