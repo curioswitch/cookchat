@@ -2,6 +2,7 @@ node_modules
 
 .envrc
 .idea
+.DS_Store
 
 out
 dist
