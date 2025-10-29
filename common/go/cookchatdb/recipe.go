@@ -14,6 +14,10 @@ type RecipeSource string
 const (
 	// RecipeSourceCookpad is the source for recipes from cookpad.
 	RecipeSourceCookpad RecipeSource = "cookpad"
+	// RecipeSourceOrangePage is the source for recipes from OrangePage.
+	RecipeSourceOrangePage RecipeSource = "orangepage"
+	// RecipeSourceDelishKitchen is the source for recipes from DelishKitchen.
+	RecipeSourceDelishKitchen RecipeSource = "delishkitchen"
 	// RecipeSourceUser is the source for user-submitted recipes.
 	RecipeSourceUser RecipeSource = "user"
 )
