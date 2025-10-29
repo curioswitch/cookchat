@@ -20,6 +20,14 @@ message CrawlCookpadUserRequest {
 // A response from CrawlerService.CrawlCookpadUser.
 message CrawlCookpadUserResponse {}
 
+// A request for CrawlerService.CrawlRecipe.
+message CrawlRecipeRequest {
+  string url = 1;
+}
+
+// A response from CrawlerService.CrawlRecipe.
+message CrawlRecipeResponse {}
+
 // A service for crawling recipes.
 service CrawlerService {
   // Crawl a cookpad user, crawling all of their recipes.
@@ -27,4 +35,7 @@ service CrawlerService {
 
   // Crawl a cookpad recipe.
   rpc CrawlCookpadRecipe(CrawlCookpadRecipeRequest) returns (CrawlCookpadRecipeResponse);
+
+  // Crawl a recipe.
+  rpc CrawlRecipe(CrawlRecipeRequest) returns (CrawlRecipeResponse);
 }

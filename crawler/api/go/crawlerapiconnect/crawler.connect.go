@@ -39,6 +39,9 @@ const (
 	// CrawlerServiceCrawlCookpadRecipeProcedure is the fully-qualified name of the CrawlerService's
 	// CrawlCookpadRecipe RPC.
 	CrawlerServiceCrawlCookpadRecipeProcedure = "/crawlerapi.CrawlerService/CrawlCookpadRecipe"
+	// CrawlerServiceCrawlRecipeProcedure is the fully-qualified name of the CrawlerService's
+	// CrawlRecipe RPC.
+	CrawlerServiceCrawlRecipeProcedure = "/crawlerapi.CrawlerService/CrawlRecipe"
 )
 
 // CrawlerServiceClient is a client for the crawlerapi.CrawlerService service.
@@ -47,6 +50,8 @@ type CrawlerServiceClient interface {
 	CrawlCookpadUser(context.Context, *connect.Request[_go.CrawlCookpadUserRequest]) (*connect.Response[_go.CrawlCookpadUserResponse], error)
 	// Crawl a cookpad recipe.
 	CrawlCookpadRecipe(context.Context, *connect.Request[_go.CrawlCookpadRecipeRequest]) (*connect.Response[_go.CrawlCookpadRecipeResponse], error)
+	// Crawl a recipe.
+	CrawlRecipe(context.Context, *connect.Request[_go.CrawlRecipeRequest]) (*connect.Response[_go.CrawlRecipeResponse], error)
 }
 
 // NewCrawlerServiceClient constructs a client for the crawlerapi.CrawlerService service. By
@@ -72,6 +77,12 @@ func NewCrawlerServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(crawlerServiceMethods.ByName("CrawlCookpadRecipe")),
 			connect.WithClientOptions(opts...),
 		),
+		crawlRecipe: connect.NewClient[_go.CrawlRecipeRequest, _go.CrawlRecipeResponse](
+			httpClient,
+			baseURL+CrawlerServiceCrawlRecipeProcedure,
+			connect.WithSchema(crawlerServiceMethods.ByName("CrawlRecipe")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -79,6 +90,7 @@ func NewCrawlerServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 type crawlerServiceClient struct {
 	crawlCookpadUser   *connect.Client[_go.CrawlCookpadUserRequest, _go.CrawlCookpadUserResponse]
 	crawlCookpadRecipe *connect.Client[_go.CrawlCookpadRecipeRequest, _go.CrawlCookpadRecipeResponse]
+	crawlRecipe        *connect.Client[_go.CrawlRecipeRequest, _go.CrawlRecipeResponse]
 }
 
 // CrawlCookpadUser calls crawlerapi.CrawlerService.CrawlCookpadUser.
@@ -91,12 +103,19 @@ func (c *crawlerServiceClient) CrawlCookpadRecipe(ctx context.Context, req *conn
 	return c.crawlCookpadRecipe.CallUnary(ctx, req)
 }
 
+// CrawlRecipe calls crawlerapi.CrawlerService.CrawlRecipe.
+func (c *crawlerServiceClient) CrawlRecipe(ctx context.Context, req *connect.Request[_go.CrawlRecipeRequest]) (*connect.Response[_go.CrawlRecipeResponse], error) {
+	return c.crawlRecipe.CallUnary(ctx, req)
+}
+
 // CrawlerServiceHandler is an implementation of the crawlerapi.CrawlerService service.
 type CrawlerServiceHandler interface {
 	// Crawl a cookpad user, crawling all of their recipes.
 	CrawlCookpadUser(context.Context, *connect.Request[_go.CrawlCookpadUserRequest]) (*connect.Response[_go.CrawlCookpadUserResponse], error)
 	// Crawl a cookpad recipe.
 	CrawlCookpadRecipe(context.Context, *connect.Request[_go.CrawlCookpadRecipeRequest]) (*connect.Response[_go.CrawlCookpadRecipeResponse], error)
+	// Crawl a recipe.
+	CrawlRecipe(context.Context, *connect.Request[_go.CrawlRecipeRequest]) (*connect.Response[_go.CrawlRecipeResponse], error)
 }
 
 // NewCrawlerServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -118,12 +137,20 @@ func NewCrawlerServiceHandler(svc CrawlerServiceHandler, opts ...connect.Handler
 		connect.WithSchema(crawlerServiceMethods.ByName("CrawlCookpadRecipe")),
 		connect.WithHandlerOptions(opts...),
 	)
+	crawlerServiceCrawlRecipeHandler := connect.NewUnaryHandler(
+		CrawlerServiceCrawlRecipeProcedure,
+		svc.CrawlRecipe,
+		connect.WithSchema(crawlerServiceMethods.ByName("CrawlRecipe")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/crawlerapi.CrawlerService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case CrawlerServiceCrawlCookpadUserProcedure:
 			crawlerServiceCrawlCookpadUserHandler.ServeHTTP(w, r)
 		case CrawlerServiceCrawlCookpadRecipeProcedure:
 			crawlerServiceCrawlCookpadRecipeHandler.ServeHTTP(w, r)
+		case CrawlerServiceCrawlRecipeProcedure:
+			crawlerServiceCrawlRecipeHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -139,4 +166,8 @@ func (UnimplementedCrawlerServiceHandler) CrawlCookpadUser(context.Context, *con
 
 func (UnimplementedCrawlerServiceHandler) CrawlCookpadRecipe(context.Context, *connect.Request[_go.CrawlCookpadRecipeRequest]) (*connect.Response[_go.CrawlCookpadRecipeResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("crawlerapi.CrawlerService.CrawlCookpadRecipe is not implemented"))
+}
+
+func (UnimplementedCrawlerServiceHandler) CrawlRecipe(context.Context, *connect.Request[_go.CrawlRecipeRequest]) (*connect.Response[_go.CrawlRecipeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("crawlerapi.CrawlerService.CrawlRecipe is not implemented"))
 }
