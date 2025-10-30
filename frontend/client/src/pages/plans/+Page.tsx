@@ -44,20 +44,36 @@ function PlanSnippet({ plan }: { plan: PlanSnippetValid }) {
             onClick={onEditClick}
           />
         </div>
-        <div className="flex gap-2">
-          {plan.recipes.map((recipe) => (
-            <div
-              key={recipe.id}
-              className="block text-center p-4 border-1 border-gray-200 bg-gray-100 rounded-xl w-1/3"
-            >
+        <div className="flex flex-col gap-4">
+          {/* Main recipe - first one, displayed large */}
+          {plan.recipes[0] && (
+            <div className="block text-center p-2 border-1 border-gray-200 bg-gray-100 rounded-xl">
               <img
-                className="mt-0 mb-2 rounded-sm"
-                src={recipe.imageUrl}
-                alt={recipe.title}
+                className="mt-0 mb-2 rounded-lg w-full h-40 object-cover"
+                src={plan.recipes[0].imageUrl}
+                alt={plan.recipes[0].title}
               />
-              <h5 className="text-tiny text-gray-600">{recipe.title}</h5>
+              <h5 className="text-base text-gray-600">{plan.recipes[0].title}</h5>
             </div>
-          ))}
+          )}
+          {/* Remaining recipes - displayed in a row */}
+          {plan.recipes.length > 1 && (
+            <div className="grid grid-cols-2 gap-4">
+              {plan.recipes.slice(1).map((recipe) => (
+                <div
+                  key={recipe.id}
+                  className="block text-center p-2 border-1 border-gray-200 bg-gray-100 rounded-xl"
+                >
+                  <img
+                    className="mt-0 mb-2 rounded-lg w-full h-28 object-cover"
+                    src={recipe.imageUrl}
+                    alt={recipe.title}
+                  />
+                  <h5 className="text-sm text-gray-600">{recipe.title}</h5>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </Link>
