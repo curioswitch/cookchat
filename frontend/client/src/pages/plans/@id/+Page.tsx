@@ -12,12 +12,15 @@ import {
 import { Image } from "@heroui/image";
 import { Textarea } from "@heroui/input";
 import { Link } from "@heroui/link";
+import { useQuery as useTanstackQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaCheck, FaLightbulb, FaStar } from "react-icons/fa";
 import { HiAdjustments, HiShoppingCart } from "react-icons/hi";
 import { twMerge } from "tailwind-merge";
 import { usePageContext } from "vike-react/usePageContext";
+
+import { useFrontendQueries } from "../../../hooks/rpc";
 
 import {
   addRecipeToCart,
@@ -116,6 +119,80 @@ function Ingredients({
   );
 }
 
+function RecipeDetail({ recipeId }: { recipeId: string }) {
+  const queries = useFrontendQueries();
+  const { data: recipeRes, isPending } = useTanstackQuery(
+    queries.getRecipe({ recipeId }),
+  );
+
+  if (isPending) {
+    return <div className="p-4">読み込み中...</div>;
+  }
+
+  if (!recipeRes?.recipe) {
+    return <div className="p-4">レシピが見つかりません</div>;
+  }
+
+  const recipe = recipeRes.recipe;
+
+  return (
+    <div className="p-4">
+      <Image
+        src={recipe.imageUrl}
+        alt={recipe.title}
+        className="w-full h-48 object-cover rounded-lg mb-4"
+      />
+      <h3 className="text-xl font-semibold mb-4">{recipe.title}</h3>
+
+      {/* 材料 */}
+      <div className="mb-6">
+        <h4 className="text-lg font-semibold mb-2 text-primary">材料</h4>
+        <div className="bg-white rounded-lg p-4 border-1 border-gray-200">
+          {recipe.ingredients.map((ingredient) => (
+            <div
+              key={ingredient.name}
+              className="flex justify-between py-2 border-b-1 border-gray-100 last:border-b-0"
+            >
+              <div>{ingredient.name}</div>
+              <div className="text-gray-600">{ingredient.quantity}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 手順 */}
+      <div className="mb-6">
+        <h4 className="text-lg font-semibold mb-2 text-primary">作り方</h4>
+        <div className="flex flex-col gap-4">
+          {recipe.steps.map((step, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: indexed list of steps
+            <div
+              key={i}
+              className="bg-white rounded-lg p-4 border-1 border-primary-200"
+            >
+              <div className="flex items-start gap-2">
+                <div className="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold shrink-0">
+                  {i + 1}
+                </div>
+                <div className="flex-1">
+                  <p className="text-gray-700">{step.description}</p>
+                  {step.imageUrl && (
+                    <img
+                      src={step.imageUrl}
+                      alt={`手順${i + 1}`}
+                      className="mt-2 w-full h-32 object-cover rounded-lg"
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Page() {
   const { t } = useTranslation();
 
@@ -185,6 +262,10 @@ export default function Page() {
       setPrompt(planRes?.llmPrompt ?? "");
     }
   }, [editPrompt, planRes]);
+
+  // タブ用のstate
+  const [activeTab, setActiveTab] = useState<"parallel" | "individual">("parallel");
+  const [selectedRecipe, setSelectedRecipe] = useState(0);
 
   const addToCart = useCallback(() => {
     if (!planRes?.plan) {
@@ -281,15 +362,80 @@ export default function Page() {
           />
         )}
       </div>
-      {plan.stepGroups.map((group, i) => (
-        <StepGroup
-          // biome-ignore lint/suspicious/noArrayIndexKey: indexed list of items
-          key={i}
-          group={group}
-          groupIdx={i}
-          setStepRef={setStepRef}
-        />
-      ))}
+
+      {/* タブ */}
+      <div className="border-b-1 border-gray-200 bg-white">
+        <div className="flex">
+          <button
+            type="button"
+            onClick={() => setActiveTab("parallel")}
+            className={`flex-1 py-3 text-center font-semibold ${
+              activeTab === "parallel"
+                ? "text-primary border-b-2 border-primary"
+                : "text-gray-400"
+            }`}
+          >
+            並行作業レシピ
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("individual")}
+            className={`flex-1 py-3 text-center font-semibold ${
+              activeTab === "individual"
+                ? "text-primary border-b-2 border-primary"
+                : "text-gray-400"
+            }`}
+          >
+            個別レシピ
+          </button>
+        </div>
+      </div>
+
+      {/* 並行作業レシピ */}
+      {activeTab === "parallel" && (
+        <>
+          {plan.stepGroups.map((group, i) => (
+            <StepGroup
+              // biome-ignore lint/suspicious/noArrayIndexKey: indexed list of items
+              key={i}
+              group={group}
+              groupIdx={i}
+              setStepRef={setStepRef}
+            />
+          ))}
+        </>
+      )}
+
+      {/* 個別レシピ */}
+      {activeTab === "individual" && (
+        <>
+          {/* レシピ選択タブ */}
+          <div className="bg-white border-b-1 border-gray-200 overflow-x-auto">
+            <div className="flex px-4 py-2 gap-2">
+              {plan.recipes.map((recipe, i) => {
+                const labels = ["主菜", "副菜", "汁物"];
+                return (
+                  <button
+                    key={recipe.id}
+                    type="button"
+                    onClick={() => setSelectedRecipe(i)}
+                    className={`px-4 py-2 rounded-lg whitespace-nowrap ${
+                      selectedRecipe === i
+                        ? "bg-primary text-white"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {labels[i] || recipe.title}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 選択されたレシピの詳細 */}
+          <RecipeDetail recipeId={plan.recipes[selectedRecipe].id} />
+        </>
+      )}
       {plan.notes.length > 0 && (
         <div className="p-4">
           <div className="p-4 border-1 border-primary-400 rounded-2xl bg-linear-to-r from-[#ffedd5] to-[#fed7aa]">
