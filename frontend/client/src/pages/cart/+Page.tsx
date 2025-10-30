@@ -10,6 +10,7 @@ import {
   addExtraItemToCart,
   type CartIngredient,
   removeExtraItemFromCart,
+  removeRecipeFromCart,
   toggleCartIngredientSelection,
   useCartStore,
 } from "../../stores";
@@ -63,6 +64,104 @@ function ExtraItem({ item, idx }: { item: string; idx: number }) {
   );
 }
 
+function SwipeableRecipeCard({
+  recipe,
+}: {
+  recipe: {
+    id: string;
+    title: string;
+    servingSize: string;
+    ingredients: CartIngredient[];
+  };
+}) {
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+  const touchStartX = useRef(0);
+  const currentOffset = useRef(0);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    setIsSwiping(true);
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isSwiping) return;
+    const diff = e.touches[0].clientX - touchStartX.current;
+    // Only allow left swipe (negative offset)
+    if (diff < 0) {
+      setSwipeOffset(Math.max(diff, -100));
+    }
+  }, [isSwiping]);
+
+  const handleTouchEnd = useCallback(() => {
+    setIsSwiping(false);
+    // If swiped more than 50px, show delete button
+    if (swipeOffset < -50) {
+      setSwipeOffset(-80);
+      currentOffset.current = -80;
+    } else {
+      setSwipeOffset(0);
+      currentOffset.current = 0;
+    }
+  }, [swipeOffset]);
+
+  const handleDelete = useCallback(() => {
+    removeRecipeFromCart(recipe.id);
+  }, [recipe.id]);
+
+  return (
+    <>
+      <div className="relative overflow-hidden">
+        {/* Delete button background */}
+        <div className="absolute right-0 top-0 bottom-0 w-20 bg-red-500 flex items-center justify-center rounded-lg">
+          <HiTrash className="h-6 w-6 text-white" />
+        </div>
+        {/* Swipeable content */}
+        <div
+          className="relative bg-white transition-transform"
+          style={{
+            transform: `translateX(${swipeOffset}px)`,
+            transition: isSwiping ? "none" : "transform 0.3s ease-out",
+          }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          <Link
+            className="text-gray-600 w-full block"
+            href={`/recipes/${recipe.id}`}
+          >
+            <div className="bg-amber-50 p-4 rounded-lg w-full">
+              <div>{recipe.title}</div>
+              <div className="text-sm text-gray-400">
+                {recipe.servingSize}の素材
+              </div>
+            </div>
+          </Link>
+        </div>
+        {/* Delete confirmation button */}
+        {swipeOffset === -80 && (
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="absolute right-0 top-0 bottom-0 w-20 bg-red-500 flex items-center justify-center rounded-lg"
+          >
+            <HiTrash className="h-6 w-6 text-white" />
+          </button>
+        )}
+      </div>
+      {recipe.ingredients.map((ingredient, i) => (
+        <IngredientSelect
+          key={ingredient.name}
+          ingredient={ingredient}
+          recipeId={recipe.id}
+          ingredientIndex={i}
+        />
+      ))}
+    </>
+  );
+}
+
 export default function Page() {
   const { t } = useTranslation();
 
@@ -100,33 +199,11 @@ export default function Page() {
       {cart.recipes.length === 0 && (
         <div className="p-4">{t("Cart is empty")}</div>
       )}
-      {cart.recipes.map((recipe) => {
-        return (
-          <div key={recipe.id} className="mt-4">
-            <Link
-              className="text-gray-600 w-full"
-              href={`/recipes/${recipe.id}`}
-            >
-              <div className="bg-amber-50 p-4 rounded-lg w-full">
-                <div>{recipe.title}</div>
-                <div className="text-sm text-gray-400">
-                  {recipe.servingSize}の素材
-                </div>
-              </div>
-            </Link>
-            {recipe.ingredients.map((ingredient, i) => {
-              return (
-                <IngredientSelect
-                  key={ingredient.name}
-                  ingredient={ingredient}
-                  recipeId={recipe.id}
-                  ingredientIndex={i}
-                />
-              );
-            })}
-          </div>
-        );
-      })}
+      {cart.recipes.map((recipe) => (
+        <div key={recipe.id} className="mt-4">
+          <SwipeableRecipeCard recipe={recipe} />
+        </div>
+      ))}
       {cart.extraItems && (
         <div className="mt-4">
           <h4 className="text-gray-600">{t("Extra Items")}</h4>
