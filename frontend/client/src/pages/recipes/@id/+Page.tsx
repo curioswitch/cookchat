@@ -203,25 +203,6 @@ export default function Page() {
 
   return (
     <>
-      <div className="bg-white p-4">
-        {editingPlan ? (
-          <Button
-            onPress={onAddToPlan}
-            color="primary"
-            className="w-48 text-white"
-          >
-            {t("Add to plan")}
-          </Button>
-        ) : (
-          <Button
-            onPress={onCreatePlan}
-            color="primary"
-            className="w-48 text-white"
-          >
-            {t("Create Plan")}
-          </Button>
-        )}
-      </div>
       <Image radius="none" src={recipe.imageUrl} />
       <div className="px-4 py-2">
         <div className="px-2">
@@ -239,11 +220,32 @@ export default function Page() {
               />
             )}
           </div>
-          <div className="flex items-center gap-2 pt-2">
-            <HiUsers className="size-4 text-primary" />
-            <span className="text-gray-500 md:text-2xl mt-0.5">
-              {recipe.servingSize}
-            </span>
+          <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center gap-2">
+              <HiUsers className="size-4 text-primary" />
+              <span className="text-gray-500 md:text-2xl mt-0.5">
+                {recipe.servingSize}
+              </span>
+            </div>
+            {editingPlan ? (
+              <Button
+                onPress={onAddToPlan}
+                color="primary"
+                size="sm"
+                className="text-white"
+              >
+                {t("Add to plan")}
+              </Button>
+            ) : (
+              <Button
+                onPress={onCreatePlan}
+                color="primary"
+                size="sm"
+                className="text-white"
+              >
+                {t("Create Plan")}
+              </Button>
+            )}
           </div>
         </div>
         {editPrompt && (
