@@ -4,9 +4,8 @@ import { Input } from "@heroui/input";
 import { Link } from "@heroui/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { HiCheck, HiShare, HiTrash } from "react-icons/hi";
+import { HiCheck, HiTrash } from "react-icons/hi";
 
-import { BackButton } from "../../components/BackButton";
 import {
   addExtraItemToCart,
   type CartIngredient,
@@ -96,40 +95,8 @@ export default function Page() {
     }
   }, [addingItem]);
 
-  const onShareClick = useCallback(() => {
-    const texts = [];
-    for (const recipe of cart.recipes) {
-      texts.push(
-        `
-${recipe.title}
-${import.meta.env.PUBLIC_ENV__URL_BASE}recipes/${recipe.id}
-
-${recipe.ingredients
-  .filter((ingredient) => !ingredient.selected)
-  .map((ingredient) => `${ingredient.name} (${ingredient.quantity})`)
-  .join("\n")}
-`.trim(),
-      );
-    }
-    if (cart.extraItems) {
-      texts.push(
-        `
-追加の買い物:
-
-${cart.extraItems.join("\n")}
-      `.trim(),
-      );
-    }
-    navigator.share({ text: texts.join("\n\n") });
-  }, [cart]);
-
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center">
-        <BackButton className="size-6" />
-        <h3 className="mt-0 mb-0">{t("Shopping List")}</h3>
-        <HiShare onClick={onShareClick} className="size-6 text-orange-400" />
-      </div>
       {cart.recipes.length === 0 && (
         <div className="p-4">{t("Cart is empty")}</div>
       )}

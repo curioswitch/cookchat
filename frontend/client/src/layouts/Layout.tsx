@@ -1,9 +1,10 @@
 import { Badge } from "@heroui/badge";
 import { Divider } from "@heroui/divider";
 import { Link } from "@heroui/link";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { FaBookmark, FaCalendarAlt } from "react-icons/fa";
-import { HiShoppingCart } from "react-icons/hi";
+import { HiShare, HiShoppingCart } from "react-icons/hi";
 import { PiForkKnifeFill } from "react-icons/pi";
 import { twMerge } from "tailwind-merge";
 import { usePageContext } from "vike-react/usePageContext";
@@ -18,6 +19,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const pageContext = usePageContext();
   const path = pageContext.urlPathname;
   const isHome = path === "/";
+  const isCart = path === "/cart";
 
   const cart = useCartStore();
   const chatStore = useChatStore();
@@ -27,6 +29,33 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     .replaceAll("/", ".");
   const title = t(`${pageI18nKey}.title`);
 
+  const onShareClick = useCallback(() => {
+    const texts = [];
+    for (const recipe of cart.recipes) {
+      texts.push(
+        `
+${recipe.title}
+${import.meta.env.PUBLIC_ENV__URL_BASE}recipes/${recipe.id}
+
+${recipe.ingredients
+  .filter((ingredient) => !ingredient.selected)
+  .map((ingredient) => `${ingredient.name} (${ingredient.quantity})`)
+  .join("\n")}
+`.trim(),
+      );
+    }
+    if (cart.extraItems) {
+      texts.push(
+        `
+追加の買い物:
+
+${cart.extraItems.join("\n")}
+      `.trim(),
+      );
+    }
+    navigator.share({ text: texts.join("\n\n") });
+  }, [cart]);
+
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-1 container mx-auto min-h-screen max-w-full md:w-4xl pt-2 pb-24 bg-white">
@@ -35,7 +64,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="flex justify-between items-center pb-4">
               <BackButton className="flex-1/10 text-primary" />
               <h1 className="mt-0 mb-0 flex-8/10 text-center">{title}</h1>
-              <div className="flex-1/10 w-full" />
+              <div className="flex-1/10 w-full flex justify-end">
+                {isCart && (
+                  <HiShare
+                    onClick={onShareClick}
+                    className="size-6 text-orange-400 cursor-pointer"
+                  />
+                )}
+              </div>
             </div>
           )}
           <div
