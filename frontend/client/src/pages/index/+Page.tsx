@@ -47,17 +47,12 @@ export default function Page() {
     [data],
   );
 
-  // おすすめのレシピ（最初の2件）
   const recommendedRecipes = useMemo(
     () => recipes?.slice(0, 2) || [],
     [recipes],
   );
 
-  // 人気レシピ（残りのレシピ）
-  const popularRecipes = useMemo(
-    () => recipes?.slice(2) || [],
-    [recipes],
-  );
+  const popularRecipes = useMemo(() => recipes?.slice(2) || [], [recipes]);
 
   return (
     <div className="p-4">
@@ -84,9 +79,10 @@ export default function Page() {
 
       {!isPending && recipes && recipes.length > 0 && (
         <>
-          {/* おすすめのレシピセクション */}
           <div className="mt-6">
-            <h2 className="text-lg font-bold mb-4">{t("Recommended Recipes")}</h2>
+            <h2 className="text-lg font-bold mb-4">
+              {t("Recommended Recipes")}
+            </h2>
             <div className="grid grid-cols-2 gap-4">
               {recommendedRecipes.map((recipe) => (
                 <Link
@@ -107,8 +103,6 @@ export default function Page() {
               ))}
             </div>
           </div>
-
-          {/* 人気レシピセクション */}
           <div className="mt-6">
             <h2 className="text-lg font-bold mb-4">{t("Popular Recipes")}</h2>
             <div className="flex flex-col gap-2">

@@ -84,14 +84,17 @@ function SwipeableRecipeCard({
     setIsSwiping(true);
   }, []);
 
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!isSwiping) return;
-    const diff = e.touches[0].clientX - touchStartX.current;
-    // Only allow left swipe (negative offset)
-    if (diff < 0) {
-      setSwipeOffset(Math.max(diff, -100));
-    }
-  }, [isSwiping]);
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (!isSwiping) return;
+      const diff = e.touches[0].clientX - touchStartX.current;
+      // Only allow left swipe (negative offset)
+      if (diff < 0) {
+        setSwipeOffset(Math.max(diff, -100));
+      }
+    },
+    [isSwiping],
+  );
 
   const handleTouchEnd = useCallback(() => {
     setIsSwiping(false);

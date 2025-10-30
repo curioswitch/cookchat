@@ -45,7 +45,6 @@ function PlanSnippet({ plan }: { plan: PlanSnippetValid }) {
           />
         </div>
         <div className="flex flex-col gap-4">
-          {/* Main recipe - first one, displayed large */}
           {plan.recipes[0] && (
             <div className="block text-center p-2 border-1 border-gray-200 bg-gray-100 rounded-xl">
               <img
@@ -53,10 +52,11 @@ function PlanSnippet({ plan }: { plan: PlanSnippetValid }) {
                 src={plan.recipes[0].imageUrl}
                 alt={plan.recipes[0].title}
               />
-              <h5 className="text-base text-gray-600">{plan.recipes[0].title}</h5>
+              <h5 className="text-base text-gray-600">
+                {plan.recipes[0].title}
+              </h5>
             </div>
           )}
-          {/* Remaining recipes - displayed in a row */}
           {plan.recipes.length > 1 && (
             <div className="grid grid-cols-2 gap-4">
               {plan.recipes.slice(1).map((recipe) => (
