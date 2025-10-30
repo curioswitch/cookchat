@@ -326,30 +326,32 @@ export function ChatButton({
   return (
     <div
       className={twMerge(
-        "relative flex flex-col items-center gap-2 text-primary font-semibold",
+        "flex flex-col items-center gap-2 text-primary font-semibold",
         className,
       )}
     >
-      {/* Play animation after assistant finishes speaking. */}
-      {playing && waiting && <span className="mic-ping" />}
-      <button
-        type="button"
-        onClick={onClick}
-        className={twMerge(
-          playing && speaking
-            ? "bg-gray-400"
-            : "bg-linear-to-r from-[#f97316] to-[#fb923c]",
-          "z-10 rounded-full size-18 md:size-50 flex items-center justify-center cursor-pointer",
-        )}
-      >
-        {!playing ? (
-          <HiMicrophone className="text-white size-6 md:size-16" />
-        ) : waiting ? (
-          <div className="text-white text-lg">話して</div>
-        ) : (
-          <HiStop className="text-white size-6 md:size-16" />
-        )}
-      </button>
+      <div className="relative">
+        {/* Play animation after assistant finishes speaking. */}
+        {playing && waiting && <span className="mic-ping" />}
+        <button
+          type="button"
+          onClick={onClick}
+          className={twMerge(
+            playing && speaking
+              ? "bg-gray-400"
+              : "bg-linear-to-r from-[#f97316] to-[#fb923c]",
+            "z-10 rounded-full size-18 md:size-50 flex items-center justify-center cursor-pointer",
+          )}
+        >
+          {!playing ? (
+            <HiMicrophone className="text-white size-6 md:size-16" />
+          ) : waiting ? (
+            <div className="text-white text-lg">話して</div>
+          ) : (
+            <HiStop className="text-white size-6 md:size-16" />
+          )}
+        </button>
+      </div>
       <button
         type="button"
         onClick={onClick}
