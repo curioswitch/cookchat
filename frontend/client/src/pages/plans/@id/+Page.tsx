@@ -405,7 +405,7 @@ export default function Page() {
           <div className="bg-white border-b-1 border-gray-200 overflow-x-auto">
             <div className="flex px-4 py-2 gap-2">
               {plan.recipes.map((recipe, i) => {
-                const labels = ["主菜", "副菜", "汁物"];
+                const labels = [t("Main Dish"), t("Side Dish"), t("Soup")];
                 return (
                   <button
                     key={recipe.id}

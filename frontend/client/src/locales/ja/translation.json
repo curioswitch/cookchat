@@ -57,6 +57,9 @@
   "Save": "保存",
   "Parallel Recipes": "並行作業レシピ",
   "Individual Recipes": "個別レシピ",
+  "Main Dish": "主菜",
+  "Side Dish": "副菜",
+  "Soup": "汁物",
 
   "genre.japanese": "和食",
   "genre.chinese": "中華料理",
