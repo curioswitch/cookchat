@@ -120,16 +120,17 @@ function Ingredients({
 
 function RecipeDetail({ recipeId }: { recipeId: string }) {
   const queries = useFrontendQueries();
+  const { t } = useTranslation();
   const { data: recipeRes, isPending } = useTanstackQuery(
     queries.getRecipe({ recipeId }),
   );
 
   if (isPending) {
-    return <div className="p-4">読み込み中...</div>;
+    return <div className="p-4">{t("Loading...")}</div>;
   }
 
   if (!recipeRes?.recipe) {
-    return <div className="p-4">レシピが見つかりません</div>;
+    return <div className="p-4">{t("Not found")}</div>;
   }
 
   const recipe = recipeRes.recipe;
@@ -143,7 +144,6 @@ function RecipeDetail({ recipeId }: { recipeId: string }) {
       />
       <h3 className="text-xl font-semibold mb-4">{recipe.title}</h3>
 
-      {/* 材料 */}
       <div className="mb-6">
         <h4 className="text-lg font-semibold mb-2 text-primary">材料</h4>
         <div className="bg-white rounded-lg p-4 border-1 border-gray-200">
@@ -159,7 +159,6 @@ function RecipeDetail({ recipeId }: { recipeId: string }) {
         </div>
       </div>
 
-      {/* 手順 */}
       <div className="mb-6">
         <h4 className="text-lg font-semibold mb-2 text-primary">作り方</h4>
         <div className="flex flex-col gap-4">
@@ -178,7 +177,7 @@ function RecipeDetail({ recipeId }: { recipeId: string }) {
                   {step.imageUrl && (
                     <img
                       src={step.imageUrl}
-                      alt={`手順${i + 1}`}
+                      alt={`step ${i + 1}`}
                       className="mt-2 w-full h-32 object-cover rounded-lg"
                     />
                   )}
@@ -262,7 +261,6 @@ export default function Page() {
     }
   }, [editPrompt, planRes]);
 
-  // タブ用のstate
   const [activeTab, setActiveTab] = useState<"parallel" | "individual">(
     "parallel",
   );
@@ -364,7 +362,6 @@ export default function Page() {
         )}
       </div>
 
-      {/* タブ */}
       <div className="border-b-1 border-gray-200 bg-white">
         <div className="flex">
           <button
@@ -376,7 +373,7 @@ export default function Page() {
                 : "text-gray-400"
             }`}
           >
-            並行作業レシピ
+            {t("Parallel Recipes")}
           </button>
           <button
             type="button"
@@ -387,7 +384,7 @@ export default function Page() {
                 : "text-gray-400"
             }`}
           >
-            個別レシピ
+            {t("Individual Recipes")}
           </button>
         </div>
       </div>

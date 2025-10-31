@@ -16,6 +16,7 @@
   "Add item": "Add item",
   "CookChat Logo": "CookChat Logo",
   "Loading...": "Loading...",
+  "Not found": "Not found",
   "Menu": "Menu",
   "Failed to load recipe": "Failed to load recipe",
   "Recipe not received": "Recipe not received",
@@ -46,6 +47,8 @@
   "Click to select": "Click to select",
   "Add to plan": "Add to plan",
   "Save": "Save",
+  "Parallel Recipes": "Parallel Recipes",
+  "Individual Recipes": "Individual Recipes",
 
   "genre.japanese": "Japanese",
   "genre.chinese": "Chinese",
