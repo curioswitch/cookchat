@@ -99,24 +99,17 @@ export default function Page() {
     .map((r) => r.message);
 
   return (
-    <div className="pb-24">
+    <div>
       <div className="p-8 flex flex-col gap-4">
+        <Button as={Link} href="/plans/add" color="primary">
+          {t("Add Plan")}
+        </Button>
         {plans.map((plan) => (
           <PlanSnippet
             key={timestampDate(plan.date).toISOString()}
             plan={plan}
           />
         ))}
-      </div>
-      <div className="fixed bottom-24 left-0 right-0 z-10 py-4 px-8 flex justify-center">
-        <Button
-          as={Link}
-          href="/plans/add"
-          color="primary"
-          className="w-full max-w-md"
-        >
-          {t("Add Plan")}
-        </Button>
       </div>
     </div>
   );
