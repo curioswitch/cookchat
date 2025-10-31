@@ -109,7 +109,12 @@ export default function Page() {
         ))}
       </div>
       <div className="fixed bottom-24 left-0 right-0 z-10 py-4 px-8 flex justify-center">
-        <Button as={Link} href="/plans/add" color="primary" className="w-full max-w-md">
+        <Button
+          as={Link}
+          href="/plans/add"
+          color="primary"
+          className="w-full max-w-md"
+        >
           {t("Add Plan")}
         </Button>
       </div>

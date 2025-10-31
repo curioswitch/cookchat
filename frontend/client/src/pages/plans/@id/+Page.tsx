@@ -21,7 +21,6 @@ import { twMerge } from "tailwind-merge";
 import { usePageContext } from "vike-react/usePageContext";
 
 import { useFrontendQueries } from "../../../hooks/rpc";
-
 import {
   addRecipeToCart,
   resetChat,
@@ -165,8 +164,8 @@ function RecipeDetail({ recipeId }: { recipeId: string }) {
         <h4 className="text-lg font-semibold mb-2 text-primary">作り方</h4>
         <div className="flex flex-col gap-4">
           {recipe.steps.map((step, i) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: indexed list of steps
             <div
+              // biome-ignore lint/suspicious/noArrayIndexKey: indexed list of steps
               key={i}
               className="bg-white rounded-lg p-4 border-1 border-primary-200"
             >
@@ -264,7 +263,9 @@ export default function Page() {
   }, [editPrompt, planRes]);
 
   // タブ用のstate
-  const [activeTab, setActiveTab] = useState<"parallel" | "individual">("parallel");
+  const [activeTab, setActiveTab] = useState<"parallel" | "individual">(
+    "parallel",
+  );
   const [selectedRecipe, setSelectedRecipe] = useState(0);
 
   const addToCart = useCallback(() => {
@@ -391,25 +392,19 @@ export default function Page() {
         </div>
       </div>
 
-      {/* 並行作業レシピ */}
-      {activeTab === "parallel" && (
-        <>
-          {plan.stepGroups.map((group, i) => (
-            <StepGroup
-              // biome-ignore lint/suspicious/noArrayIndexKey: indexed list of items
-              key={i}
-              group={group}
-              groupIdx={i}
-              setStepRef={setStepRef}
-            />
-          ))}
-        </>
-      )}
+      {activeTab === "parallel" &&
+        plan.stepGroups.map((group, i) => (
+          <StepGroup
+            // biome-ignore lint/suspicious/noArrayIndexKey: indexed list of items
+            key={i}
+            group={group}
+            groupIdx={i}
+            setStepRef={setStepRef}
+          />
+        ))}
 
-      {/* 個別レシピ */}
       {activeTab === "individual" && (
         <>
-          {/* レシピ選択タブ */}
           <div className="bg-white border-b-1 border-gray-200 overflow-x-auto">
             <div className="flex px-4 py-2 gap-2">
               {plan.recipes.map((recipe, i) => {
@@ -432,7 +427,6 @@ export default function Page() {
             </div>
           </div>
 
-          {/* 選択されたレシピの詳細 */}
           <RecipeDetail recipeId={plan.recipes[selectedRecipe].id} />
         </>
       )}

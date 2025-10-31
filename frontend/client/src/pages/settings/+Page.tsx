@@ -18,17 +18,26 @@ export default function Page() {
 
   const settings = useSettingsStore();
 
-  const onLanguageChange = useCallback(async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    await i18n.changeLanguage(e.target.value);
-  }, []);
+  const onLanguageChange = useCallback(
+    async (e: React.ChangeEvent<HTMLSelectElement>) => {
+      await i18n.changeLanguage(e.target.value);
+    },
+    [],
+  );
 
-  const onSpeakerChange = useCallback(async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSpeakerDeviceId(e.target.value);
-  }, []);
+  const onSpeakerChange = useCallback(
+    async (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setSpeakerDeviceId(e.target.value);
+    },
+    [],
+  );
 
-  const onMicrophoneChange = useCallback(async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setMicrophoneDeviceId(e.target.value);
-  }, []);
+  const onMicrophoneChange = useCallback(
+    async (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setMicrophoneDeviceId(e.target.value);
+    },
+    [],
+  );
 
   useEffect(() => {
     async function getDevices() {
@@ -43,11 +52,13 @@ export default function Page() {
   return (
     <div className="p-4 max-w-md mx-auto">
       <div className="mb-6">
-        <label htmlFor="language" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="language"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           {t("Language")}
         </label>
         <select
-          id="language"
           value={i18n.language}
           onChange={onLanguageChange}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -58,11 +69,13 @@ export default function Page() {
       </div>
 
       <div className="mb-6">
-        <label htmlFor="speaker" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="speaker"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           {t("Speaker")}
         </label>
         <select
-          id="speaker"
           value={settings.speakerDeviceId}
           onChange={onSpeakerChange}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -76,11 +89,13 @@ export default function Page() {
       </div>
 
       <div className="mb-6">
-        <label htmlFor="microphone" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="microphone"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           {t("Microphone")}
         </label>
         <select
-          id="microphone"
           value={settings.microphoneDeviceId}
           onChange={onMicrophoneChange}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
