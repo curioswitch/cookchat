@@ -13,7 +13,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file frontendapi/frontend.proto.
  */
 export const file_frontendapi_frontend: GenFile = /*@__PURE__*/
-  fileDesc("Chpmcm9udGVuZGFwaS9mcm9udGVuZC5wcm90bxILZnJvbnRlbmRhcGkiPAoLQ2hhdENvbnRlbnQSEQoHbWVzc2FnZRgBIAEoCUgAEg8KBWF1ZGlvGAIgASgMSABCCQoHcGF5bG9hZCJuCgtDaGF0UmVxdWVzdBIpCgdjb250ZW50GAEgASgLMhguZnJvbnRlbmRhcGkuQ2hhdENvbnRlbnQSFQoLcmVjaXBlX3RleHQYAiABKAlIABITCglyZWNpcGVfaWQYAyABKAlIAEIICgZyZWNpcGUiOQoMQ2hhdFJlc3BvbnNlEikKB2NvbnRlbnQYASABKAsyGC5mcm9udGVuZGFwaS5DaGF0Q29udGVudCIyChBSZWNpcGVJbmdyZWRpZW50EgwKBG5hbWUYASABKAkSEAoIcXVhbnRpdHkYAiABKAkiNAoKUmVjaXBlU3RlcBITCgtkZXNjcmlwdGlvbhgBIAEoCRIRCglpbWFnZV91cmwYAiABKAkiVgoRSW5ncmVkaWVudFNlY3Rpb24SDQoFdGl0bGUYASABKAkSMgoLaW5ncmVkaWVudHMYAiADKAsyHS5mcm9udGVuZGFwaS5SZWNpcGVJbmdyZWRpZW50IuACCgZSZWNpcGUSCgoCaWQYASABKAkSKQoGc291cmNlGAIgASgOMhkuZnJvbnRlbmRhcGkuUmVjaXBlU291cmNlEg0KBXRpdGxlGAMgASgJEhEKCWltYWdlX3VybBgEIAEoCRITCgtkZXNjcmlwdGlvbhgFIAEoCRIyCgtpbmdyZWRpZW50cxgGIAMoCzIdLmZyb250ZW5kYXBpLlJlY2lwZUluZ3JlZGllbnQSPgoWYWRkaXRpb25hbF9pbmdyZWRpZW50cxgHIAMoCzIeLmZyb250ZW5kYXBpLkluZ3JlZGllbnRTZWN0aW9uEiYKBXN0ZXBzGAggAygLMhcuZnJvbnRlbmRhcGkuUmVjaXBlU3RlcBINCgVub3RlcxgJIAEoCRIUCgxzZXJ2aW5nX3NpemUYCiABKAkSJwoIbGFuZ3VhZ2UYCyABKA4yFS5mcm9udGVuZGFwaS5MYW5ndWFnZSIlChBHZXRSZWNpcGVSZXF1ZXN0EhEKCXJlY2lwZV9pZBgBIAEoCSJMChFHZXRSZWNpcGVSZXNwb25zZRIjCgZyZWNpcGUYASABKAsyEy5mcm9udGVuZGFwaS5SZWNpcGUSEgoKbGxtX3Byb21wdBgCIAEoCSIdCgpQYWdpbmF0aW9uEg8KB2xhc3RfaWQYASABKAkiTgoNUmVjaXBlU25pcHBldBIKCgJpZBgBIAEoCRINCgV0aXRsZRgCIAEoCRIPCgdzdW1tYXJ5GAMgASgJEhEKCWltYWdlX3VybBgEIAEoCSJQChJMaXN0UmVjaXBlc1JlcXVlc3QSDQoFcXVlcnkYASABKAkSKwoKcGFnaW5hdGlvbhgCIAEoCzIXLmZyb250ZW5kYXBpLlBhZ2luYXRpb24ibwoTTGlzdFJlY2lwZXNSZXNwb25zZRIrCgdyZWNpcGVzGAEgAygLMhouZnJvbnRlbmRhcGkuUmVjaXBlU25pcHBldBIrCgpwYWdpbmF0aW9uGAIgASgLMhcuZnJvbnRlbmRhcGkuUGFnaW5hdGlvbiKOAgoQU3RhcnRDaGF0UmVxdWVzdBIVCgtyZWNpcGVfdGV4dBgCIAEoCUgAEhMKCXJlY2lwZV9pZBgDIAEoCUgAEkMKDm1vZGVsX3Byb3ZpZGVyGAQgASgOMisuZnJvbnRlbmRhcGkuU3RhcnRDaGF0UmVxdWVzdC5Nb2RlbFByb3ZpZGVyEhIKCmxsbV9wcm9tcHQYBSABKAkiawoNTW9kZWxQcm92aWRlchIeChpNT0RFTF9QUk9WSURFUl9VTlNQRUNJRklFRBAAEh8KG01PREVMX1BST1ZJREVSX0dPT0dMRV9HRU5BSRABEhkKFU1PREVMX1BST1ZJREVSX09QRU5BSRACQggKBnJlY2lwZSJvChFTdGFydENoYXRSZXNwb25zZRIUCgxjaGF0X2FwaV9rZXkYASABKAkSEgoKY2hhdF9tb2RlbBgCIAEoCRIZChFjaGF0X2luc3RydWN0aW9ucxgDIAEoCRIVCg1zdGFydF9tZXNzYWdlGAQgASgJIoADChBBZGRSZWNpcGVSZXF1ZXN0Eg0KBXRpdGxlGAEgASgJEhsKE21haW5faW1hZ2VfZGF0YV91cmwYAiABKAkSEwoLZGVzY3JpcHRpb24YAyABKAkSMgoLaW5ncmVkaWVudHMYBCADKAsyHS5mcm9udGVuZGFwaS5SZWNpcGVJbmdyZWRpZW50Ej4KFmFkZGl0aW9uYWxfaW5ncmVkaWVudHMYBSADKAsyHi5mcm9udGVuZGFwaS5JbmdyZWRpZW50U2VjdGlvbhI6CgVzdGVwcxgGIAMoCzIrLmZyb250ZW5kYXBpLkFkZFJlY2lwZVJlcXVlc3QuQWRkUmVjaXBlU3RlcBIUCgxzZXJ2aW5nX3NpemUYByABKAkSJwoIbGFuZ3VhZ2UYCCABKA4yFS5mcm9udGVuZGFwaS5MYW5ndWFnZRo8Cg1BZGRSZWNpcGVTdGVwEhMKC2Rlc2NyaXB0aW9uGAEgASgJEhYKDmltYWdlX2RhdGFfdXJsGAIgASgJIiYKEUFkZFJlY2lwZVJlc3BvbnNlEhEKCXJlY2lwZV9pZBgBIAEoCSInChVHZW5lcmF0ZVJlY2lwZVJlcXVlc3QSDgoGcHJvbXB0GAEgASgJIlMKFkdlbmVyYXRlUmVjaXBlUmVzcG9uc2USOQoSYWRkX3JlY2lwZV9yZXF1ZXN0GAEgASgLMh0uZnJvbnRlbmRhcGkuQWRkUmVjaXBlUmVxdWVzdCJmChNHZW5lcmF0ZVBsYW5SZXF1ZXN0EhAKCG51bV9kYXlzGAEgASgNEhMKC2luZ3JlZGllbnRzGAIgAygJEigKBmdlbnJlcxgDIAMoDjIYLmZyb250ZW5kYXBpLlJlY2lwZUdlbnJlImUKBFBsYW4SMAoEZGF0ZRgBIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARIrCgdyZWNpcGVzGAIgAygLMhouZnJvbnRlbmRhcGkuUmVjaXBlU25pcHBldCIRCg9HZXRQbGFuc1JlcXVlc3QiNAoQR2V0UGxhbnNSZXNwb25zZRIgCgVwbGFucxgBIAMoCzIRLmZyb250ZW5kYXBpLlBsYW4iFgoUR2VuZXJhdGVQbGFuUmVzcG9uc2UqUQoITGFuZ3VhZ2USGAoUTEFOR1VBR0VfVU5TUEVDSUZJRUQQABIUChBMQU5HVUFHRV9FTkdMSVNIEAESFQoRTEFOR1VBR0VfSkFQQU5FU0UQAirGAQoLUmVjaXBlR2VucmUSHAoYUkVDSVBFX0dFTlJFX1VOU1BFQ0lGSUVEEAASGQoVUkVDSVBFX0dFTlJFX0pBUEFORVNFEAESGAoUUkVDSVBFX0dFTlJFX0NISU5FU0UQAhIYChRSRUNJUEVfR0VOUkVfV0VTVEVSThADEhcKE1JFQ0lQRV9HRU5SRV9LT1JFQU4QBBIYChRSRUNJUEVfR0VOUkVfSVRBTElBThAFEhcKE1JFQ0lQRV9HRU5SRV9FVEhOSUMQBipICgxSZWNpcGVTb3VyY2USHQoZUkVDSVBFX1NPVVJDRV9VTlNQRUNJRklFRBAAEhkKFVJFQ0lQRV9TT1VSQ0VfQ09PS1BBRBABMk4KC0NoYXRTZXJ2aWNlEj8KBENoYXQSGC5mcm9udGVuZGFwaS5DaGF0UmVxdWVzdBoZLmZyb250ZW5kYXBpLkNoYXRSZXNwb25zZSgBMAEywAQKD0Zyb250ZW5kU2VydmljZRJKCglHZXRSZWNpcGUSHS5mcm9udGVuZGFwaS5HZXRSZWNpcGVSZXF1ZXN0Gh4uZnJvbnRlbmRhcGkuR2V0UmVjaXBlUmVzcG9uc2USUAoLTGlzdFJlY2lwZXMSHy5mcm9udGVuZGFwaS5MaXN0UmVjaXBlc1JlcXVlc3QaIC5mcm9udGVuZGFwaS5MaXN0UmVjaXBlc1Jlc3BvbnNlEkoKCVN0YXJ0Q2hhdBIdLmZyb250ZW5kYXBpLlN0YXJ0Q2hhdFJlcXVlc3QaHi5mcm9udGVuZGFwaS5TdGFydENoYXRSZXNwb25zZRJKCglBZGRSZWNpcGUSHS5mcm9udGVuZGFwaS5BZGRSZWNpcGVSZXF1ZXN0Gh4uZnJvbnRlbmRhcGkuQWRkUmVjaXBlUmVzcG9uc2USWQoOR2VuZXJhdGVSZWNpcGUSIi5mcm9udGVuZGFwaS5HZW5lcmF0ZVJlY2lwZVJlcXVlc3QaIy5mcm9udGVuZGFwaS5HZW5lcmF0ZVJlY2lwZVJlc3BvbnNlElMKDEdlbmVyYXRlUGxhbhIgLmZyb250ZW5kYXBpLkdlbmVyYXRlUGxhblJlcXVlc3QaIS5mcm9udGVuZGFwaS5HZW5lcmF0ZVBsYW5SZXNwb25zZRJHCghHZXRQbGFucxIcLmZyb250ZW5kYXBpLkdldFBsYW5zUmVxdWVzdBodLmZyb250ZW5kYXBpLkdldFBsYW5zUmVzcG9uc2VCPVo7Z2l0aHViLmNvbS9jdXJpb3N3aXRjaC9jb29rY2hhdC9mcm9udGVuZC9hcGkvZ287ZnJvbnRlbmRhcGliBnByb3RvMw", [file_buf_validate_validate, file_google_protobuf_timestamp]);
+  fileDesc("Chpmcm9udGVuZGFwaS9mcm9udGVuZC5wcm90bxILZnJvbnRlbmRhcGkiPAoLQ2hhdENvbnRlbnQSEQoHbWVzc2FnZRgBIAEoCUgAEg8KBWF1ZGlvGAIgASgMSABCCQoHcGF5bG9hZCJuCgtDaGF0UmVxdWVzdBIpCgdjb250ZW50GAEgASgLMhguZnJvbnRlbmRhcGkuQ2hhdENvbnRlbnQSFQoLcmVjaXBlX3RleHQYAiABKAlIABITCglyZWNpcGVfaWQYAyABKAlIAEIICgZyZWNpcGUiOQoMQ2hhdFJlc3BvbnNlEikKB2NvbnRlbnQYASABKAsyGC5mcm9udGVuZGFwaS5DaGF0Q29udGVudCIyChBSZWNpcGVJbmdyZWRpZW50EgwKBG5hbWUYASABKAkSEAoIcXVhbnRpdHkYAiABKAkiNAoKUmVjaXBlU3RlcBITCgtkZXNjcmlwdGlvbhgBIAEoCRIRCglpbWFnZV91cmwYAiABKAkiVgoRSW5ncmVkaWVudFNlY3Rpb24SDQoFdGl0bGUYASABKAkSMgoLaW5ncmVkaWVudHMYAiADKAsyHS5mcm9udGVuZGFwaS5SZWNpcGVJbmdyZWRpZW50IuACCgZSZWNpcGUSCgoCaWQYASABKAkSKQoGc291cmNlGAIgASgOMhkuZnJvbnRlbmRhcGkuUmVjaXBlU291cmNlEg0KBXRpdGxlGAMgASgJEhEKCWltYWdlX3VybBgEIAEoCRITCgtkZXNjcmlwdGlvbhgFIAEoCRIyCgtpbmdyZWRpZW50cxgGIAMoCzIdLmZyb250ZW5kYXBpLlJlY2lwZUluZ3JlZGllbnQSPgoWYWRkaXRpb25hbF9pbmdyZWRpZW50cxgHIAMoCzIeLmZyb250ZW5kYXBpLkluZ3JlZGllbnRTZWN0aW9uEiYKBXN0ZXBzGAggAygLMhcuZnJvbnRlbmRhcGkuUmVjaXBlU3RlcBINCgVub3RlcxgJIAEoCRIUCgxzZXJ2aW5nX3NpemUYCiABKAkSJwoIbGFuZ3VhZ2UYCyABKA4yFS5mcm9udGVuZGFwaS5MYW5ndWFnZSIlChBHZXRSZWNpcGVSZXF1ZXN0EhEKCXJlY2lwZV9pZBgBIAEoCSJjChFHZXRSZWNpcGVSZXNwb25zZRIjCgZyZWNpcGUYASABKAsyEy5mcm9udGVuZGFwaS5SZWNpcGUSEgoKbGxtX3Byb21wdBgCIAEoCRIVCg1pc19ib29rbWFya2VkGAMgASgIIjsKClBhZ2luYXRpb24SDwoHbGFzdF9pZBgBIAEoCRIcChRsYXN0X3RpbWVzdGFtcF9uYW5vcxgCIAEoAyJOCg1SZWNpcGVTbmlwcGV0EgoKAmlkGAEgASgJEg0KBXRpdGxlGAIgASgJEg8KB3N1bW1hcnkYAyABKAkSEQoJaW1hZ2VfdXJsGAQgASgJImMKEkxpc3RSZWNpcGVzUmVxdWVzdBINCgVxdWVyeRgBIAEoCRIRCglib29rbWFya3MYAyABKAgSKwoKcGFnaW5hdGlvbhgCIAEoCzIXLmZyb250ZW5kYXBpLlBhZ2luYXRpb24ibwoTTGlzdFJlY2lwZXNSZXNwb25zZRIrCgdyZWNpcGVzGAEgAygLMhouZnJvbnRlbmRhcGkuUmVjaXBlU25pcHBldBIrCgpwYWdpbmF0aW9uGAIgASgLMhcuZnJvbnRlbmRhcGkuUGFnaW5hdGlvbiK9AgoQU3RhcnRDaGF0UmVxdWVzdBIVCgtyZWNpcGVfdGV4dBgCIAEoCUgAEhMKCXJlY2lwZV9pZBgDIAEoCUgAEi0KB3BsYW5faWQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSAASQwoObW9kZWxfcHJvdmlkZXIYBCABKA4yKy5mcm9udGVuZGFwaS5TdGFydENoYXRSZXF1ZXN0Lk1vZGVsUHJvdmlkZXISEgoKbGxtX3Byb21wdBgFIAEoCSJrCg1Nb2RlbFByb3ZpZGVyEh4KGk1PREVMX1BST1ZJREVSX1VOU1BFQ0lGSUVEEAASHwobTU9ERUxfUFJPVklERVJfR09PR0xFX0dFTkFJEAESGQoVTU9ERUxfUFJPVklERVJfT1BFTkFJEAJCCAoGcmVjaXBlIm8KEVN0YXJ0Q2hhdFJlc3BvbnNlEhQKDGNoYXRfYXBpX2tleRgBIAEoCRISCgpjaGF0X21vZGVsGAIgASgJEhkKEWNoYXRfaW5zdHJ1Y3Rpb25zGAMgASgJEhUKDXN0YXJ0X21lc3NhZ2UYBCABKAkigAMKEEFkZFJlY2lwZVJlcXVlc3QSDQoFdGl0bGUYASABKAkSGwoTbWFpbl9pbWFnZV9kYXRhX3VybBgCIAEoCRITCgtkZXNjcmlwdGlvbhgDIAEoCRIyCgtpbmdyZWRpZW50cxgEIAMoCzIdLmZyb250ZW5kYXBpLlJlY2lwZUluZ3JlZGllbnQSPgoWYWRkaXRpb25hbF9pbmdyZWRpZW50cxgFIAMoCzIeLmZyb250ZW5kYXBpLkluZ3JlZGllbnRTZWN0aW9uEjoKBXN0ZXBzGAYgAygLMisuZnJvbnRlbmRhcGkuQWRkUmVjaXBlUmVxdWVzdC5BZGRSZWNpcGVTdGVwEhQKDHNlcnZpbmdfc2l6ZRgHIAEoCRInCghsYW5ndWFnZRgIIAEoDjIVLmZyb250ZW5kYXBpLkxhbmd1YWdlGjwKDUFkZFJlY2lwZVN0ZXASEwoLZGVzY3JpcHRpb24YASABKAkSFgoOaW1hZ2VfZGF0YV91cmwYAiABKAkiJgoRQWRkUmVjaXBlUmVzcG9uc2USEQoJcmVjaXBlX2lkGAEgASgJIicKFUdlbmVyYXRlUmVjaXBlUmVxdWVzdBIOCgZwcm9tcHQYASABKAkiUwoWR2VuZXJhdGVSZWNpcGVSZXNwb25zZRI5ChJhZGRfcmVjaXBlX3JlcXVlc3QYASABKAsyHS5mcm9udGVuZGFwaS5BZGRSZWNpcGVSZXF1ZXN0InoKE0dlbmVyYXRlUGxhblJlcXVlc3QSEAoIbnVtX2RheXMYASABKA0SEwoLaW5ncmVkaWVudHMYAiADKAkSKAoGZ2VucmVzGAMgAygOMhguZnJvbnRlbmRhcGkuUmVjaXBlR2VucmUSEgoKcmVjaXBlX2lkcxgEIAMoCSIWChRHZW5lcmF0ZVBsYW5SZXNwb25zZSJQCglTdGVwR3JvdXASDQoFbGFiZWwYASABKAkSJgoFc3RlcHMYAiADKAsyFy5mcm9udGVuZGFwaS5SZWNpcGVTdGVwEgwKBG5vdGUYAyABKAkibAoLUGxhblNuaXBwZXQSMAoEZGF0ZRgBIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARIrCgdyZWNpcGVzGAIgAygLMhouZnJvbnRlbmRhcGkuUmVjaXBlU25pcHBldCIRCg9HZXRQbGFuc1JlcXVlc3QiOwoQR2V0UGxhbnNSZXNwb25zZRInCgVwbGFucxgBIAMoCzIYLmZyb250ZW5kYXBpLlBsYW5TbmlwcGV0Iu0BCgRQbGFuEjAKBGRhdGUYASABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESKwoHcmVjaXBlcxgCIAMoCzIaLmZyb250ZW5kYXBpLlJlY2lwZVNuaXBwZXQSKwoLc3RlcF9ncm91cHMYAyADKAsyFi5mcm9udGVuZGFwaS5TdGVwR3JvdXASDQoFbm90ZXMYBCADKAkSMwoLaW5ncmVkaWVudHMYBSADKAsyHi5mcm9udGVuZGFwaS5JbmdyZWRpZW50U2VjdGlvbhIVCg1zZXJ2aW5nX3NpemVzGAYgAygJIjoKDkdldFBsYW5SZXF1ZXN0EigKBGRhdGUYASABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIk4KD0dldFBsYW5SZXNwb25zZRInCgRwbGFuGAEgASgLMhEuZnJvbnRlbmRhcGkuUGxhbkIGukgDyAEBEhIKCmxsbV9wcm9tcHQYAiABKAkiUQoRVXBkYXRlUGxhblJlcXVlc3QSKAoEZGF0ZRgBIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASEgoKcmVjaXBlX2lkcxgCIAMoCSI9ChJVcGRhdGVQbGFuUmVzcG9uc2USJwoEcGxhbhgBIAEoCzIRLmZyb250ZW5kYXBpLlBsYW5CBrpIA8gBASInChJBZGRCb29rbWFya1JlcXVlc3QSEQoJcmVjaXBlX2lkGAEgASgJIhUKE0FkZEJvb2ttYXJrUmVzcG9uc2UiKgoVUmVtb3ZlQm9va21hcmtSZXF1ZXN0EhEKCXJlY2lwZV9pZBgBIAEoCSIYChZSZW1vdmVCb29rbWFya1Jlc3BvbnNlKlEKCExhbmd1YWdlEhgKFExBTkdVQUdFX1VOU1BFQ0lGSUVEEAASFAoQTEFOR1VBR0VfRU5HTElTSBABEhUKEUxBTkdVQUdFX0pBUEFORVNFEAIqxgEKC1JlY2lwZUdlbnJlEhwKGFJFQ0lQRV9HRU5SRV9VTlNQRUNJRklFRBAAEhkKFVJFQ0lQRV9HRU5SRV9KQVBBTkVTRRABEhgKFFJFQ0lQRV9HRU5SRV9DSElORVNFEAISGAoUUkVDSVBFX0dFTlJFX1dFU1RFUk4QAxIXChNSRUNJUEVfR0VOUkVfS09SRUFOEAQSGAoUUkVDSVBFX0dFTlJFX0lUQUxJQU4QBRIXChNSRUNJUEVfR0VOUkVfRVRITklDEAYqiQEKDFJlY2lwZVNvdXJjZRIdChlSRUNJUEVfU09VUkNFX1VOU1BFQ0lGSUVEEAASGQoVUkVDSVBFX1NPVVJDRV9DT09LUEFEEAESHQoZUkVDSVBFX1NPVVJDRV9PUkFOR0VfUEFHRRACEiAKHFJFQ0lQRV9TT1VSQ0VfREVMSVNIX0tJVENIRU4QAzJOCgtDaGF0U2VydmljZRI/CgRDaGF0EhguZnJvbnRlbmRhcGkuQ2hhdFJlcXVlc3QaGS5mcm9udGVuZGFwaS5DaGF0UmVzcG9uc2UoATABMoIHCg9Gcm9udGVuZFNlcnZpY2USSgoJR2V0UmVjaXBlEh0uZnJvbnRlbmRhcGkuR2V0UmVjaXBlUmVxdWVzdBoeLmZyb250ZW5kYXBpLkdldFJlY2lwZVJlc3BvbnNlElAKC0xpc3RSZWNpcGVzEh8uZnJvbnRlbmRhcGkuTGlzdFJlY2lwZXNSZXF1ZXN0GiAuZnJvbnRlbmRhcGkuTGlzdFJlY2lwZXNSZXNwb25zZRJKCglTdGFydENoYXQSHS5mcm9udGVuZGFwaS5TdGFydENoYXRSZXF1ZXN0Gh4uZnJvbnRlbmRhcGkuU3RhcnRDaGF0UmVzcG9uc2USSgoJQWRkUmVjaXBlEh0uZnJvbnRlbmRhcGkuQWRkUmVjaXBlUmVxdWVzdBoeLmZyb250ZW5kYXBpLkFkZFJlY2lwZVJlc3BvbnNlElkKDkdlbmVyYXRlUmVjaXBlEiIuZnJvbnRlbmRhcGkuR2VuZXJhdGVSZWNpcGVSZXF1ZXN0GiMuZnJvbnRlbmRhcGkuR2VuZXJhdGVSZWNpcGVSZXNwb25zZRJTCgxHZW5lcmF0ZVBsYW4SIC5mcm9udGVuZGFwaS5HZW5lcmF0ZVBsYW5SZXF1ZXN0GiEuZnJvbnRlbmRhcGkuR2VuZXJhdGVQbGFuUmVzcG9uc2USRwoIR2V0UGxhbnMSHC5mcm9udGVuZGFwaS5HZXRQbGFuc1JlcXVlc3QaHS5mcm9udGVuZGFwaS5HZXRQbGFuc1Jlc3BvbnNlEkQKB0dldFBsYW4SGy5mcm9udGVuZGFwaS5HZXRQbGFuUmVxdWVzdBocLmZyb250ZW5kYXBpLkdldFBsYW5SZXNwb25zZRJNCgpVcGRhdGVQbGFuEh4uZnJvbnRlbmRhcGkuVXBkYXRlUGxhblJlcXVlc3QaHy5mcm9udGVuZGFwaS5VcGRhdGVQbGFuUmVzcG9uc2USUAoLQWRkQm9va21hcmsSHy5mcm9udGVuZGFwaS5BZGRCb29rbWFya1JlcXVlc3QaIC5mcm9udGVuZGFwaS5BZGRCb29rbWFya1Jlc3BvbnNlElkKDlJlbW92ZUJvb2ttYXJrEiIuZnJvbnRlbmRhcGkuUmVtb3ZlQm9va21hcmtSZXF1ZXN0GiMuZnJvbnRlbmRhcGkuUmVtb3ZlQm9va21hcmtSZXNwb25zZUI9WjtnaXRodWIuY29tL2N1cmlvc3dpdGNoL2Nvb2tjaGF0L2Zyb250ZW5kL2FwaS9nbztmcm9udGVuZGFwaWIGcHJvdG8z", [file_buf_validate_validate, file_google_protobuf_timestamp]);
 
 /**
  * The content of a chat message.
@@ -347,6 +347,13 @@ export type GetRecipeResponse = Message<"frontendapi.GetRecipeResponse"> & {
    * @generated from field: string llm_prompt = 2;
    */
   llmPrompt: string;
+
+  /**
+   * Whether the recipe is bookmarked by the user.
+   *
+   * @generated from field: bool is_bookmarked = 3;
+   */
+  isBookmarked: boolean;
 };
 
 export type GetRecipeResponseValid = GetRecipeResponse;
@@ -368,6 +375,11 @@ export type Pagination = Message<"frontendapi.Pagination"> & {
    * @generated from field: string last_id = 1;
    */
   lastId: string;
+
+  /**
+   * @generated from field: int64 last_timestamp_nanos = 2;
+   */
+  lastTimestampNanos: bigint;
 };
 
 export type PaginationValid = Pagination;
@@ -435,6 +447,13 @@ export type ListRecipesRequest = Message<"frontendapi.ListRecipesRequest"> & {
    * @generated from field: string query = 1;
    */
   query: string;
+
+  /**
+   * Whether to only return bookmarked recipes.
+   *
+   * @generated from field: bool bookmarks = 3;
+   */
+  bookmarks: boolean;
 
   /**
    * The pagination token for the next page of recipes.
@@ -511,6 +530,14 @@ export type StartChatRequest = Message<"frontendapi.StartChatRequest"> & {
      */
     value: string;
     case: "recipeId";
+  } | {
+    /**
+     * The ID of a cookchat plan.
+     *
+     * @generated from field: google.protobuf.Timestamp plan_id = 6;
+     */
+    value: Timestamp;
+    case: "planId";
   } | { case: undefined; value?: undefined };
 
   /**
@@ -805,6 +832,13 @@ export type GeneratePlanRequest = Message<"frontendapi.GeneratePlanRequest"> & {
    * @generated from field: repeated frontendapi.RecipeGenre genres = 3;
    */
   genres: RecipeGenre[];
+
+  /**
+   * Recipe IDs to use as main dishes.
+   *
+   * @generated from field: repeated string recipe_ids = 4;
+   */
+  recipeIds: string[];
 };
 
 export type GeneratePlanRequestValid = GeneratePlanRequest;
@@ -815,6 +849,145 @@ export type GeneratePlanRequestValid = GeneratePlanRequest;
  */
 export const GeneratePlanRequestSchema: GenMessage<GeneratePlanRequest, {validType: GeneratePlanRequestValid}> = /*@__PURE__*/
   messageDesc(file_frontendapi_frontend, 19);
+
+/**
+ * A response for FrontendService.GeneratePlan.
+ *
+ * @generated from message frontendapi.GeneratePlanResponse
+ */
+export type GeneratePlanResponse = Message<"frontendapi.GeneratePlanResponse"> & {
+};
+
+export type GeneratePlanResponseValid = GeneratePlanResponse;
+
+/**
+ * Describes the message frontendapi.GeneratePlanResponse.
+ * Use `create(GeneratePlanResponseSchema)` to create a new message.
+ */
+export const GeneratePlanResponseSchema: GenMessage<GeneratePlanResponse, {validType: GeneratePlanResponseValid}> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 20);
+
+/**
+ * A group of steps within a plan that can be executed together.
+ *
+ * @generated from message frontendapi.StepGroup
+ */
+export type StepGroup = Message<"frontendapi.StepGroup"> & {
+  /**
+   * The label of the group.
+   *
+   * @generated from field: string label = 1;
+   */
+  label: string;
+
+  /**
+   * The actual steps.
+   *
+   * @generated from field: repeated frontendapi.RecipeStep steps = 2;
+   */
+  steps: RecipeStep[];
+
+  /**
+   * Useful note for the group.
+   *
+   * @generated from field: string note = 3;
+   */
+  note: string;
+};
+
+export type StepGroupValid = StepGroup;
+
+/**
+ * Describes the message frontendapi.StepGroup.
+ * Use `create(StepGroupSchema)` to create a new message.
+ */
+export const StepGroupSchema: GenMessage<StepGroup, {validType: StepGroupValid}> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 21);
+
+/**
+ * A snippet of a plan, without executiond details.
+ *
+ * @generated from message frontendapi.PlanSnippet
+ */
+export type PlanSnippet = Message<"frontendapi.PlanSnippet"> & {
+  /**
+   * The date of the plan. The timestamp will begin on the date in UTC.
+   *
+   * @generated from field: google.protobuf.Timestamp date = 1;
+   */
+  date?: Timestamp;
+
+  /**
+   * The recipes for the plan.
+   *
+   * @generated from field: repeated frontendapi.RecipeSnippet recipes = 2;
+   */
+  recipes: RecipeSnippet[];
+};
+
+/**
+ * A snippet of a plan, without executiond details.
+ *
+ * @generated from message frontendapi.PlanSnippet
+ */
+export type PlanSnippetValid = Message<"frontendapi.PlanSnippet"> & {
+  /**
+   * The date of the plan. The timestamp will begin on the date in UTC.
+   *
+   * @generated from field: google.protobuf.Timestamp date = 1;
+   */
+  date: Timestamp;
+
+  /**
+   * The recipes for the plan.
+   *
+   * @generated from field: repeated frontendapi.RecipeSnippet recipes = 2;
+   */
+  recipes: RecipeSnippetValid[];
+};
+
+/**
+ * Describes the message frontendapi.PlanSnippet.
+ * Use `create(PlanSnippetSchema)` to create a new message.
+ */
+export const PlanSnippetSchema: GenMessage<PlanSnippet, {validType: PlanSnippetValid}> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 22);
+
+/**
+ * @generated from message frontendapi.GetPlansRequest
+ */
+export type GetPlansRequest = Message<"frontendapi.GetPlansRequest"> & {
+};
+
+export type GetPlansRequestValid = GetPlansRequest;
+
+/**
+ * Describes the message frontendapi.GetPlansRequest.
+ * Use `create(GetPlansRequestSchema)` to create a new message.
+ */
+export const GetPlansRequestSchema: GenMessage<GetPlansRequest, {validType: GetPlansRequestValid}> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 23);
+
+/**
+ * @generated from message frontendapi.GetPlansResponse
+ */
+export type GetPlansResponse = Message<"frontendapi.GetPlansResponse"> & {
+  /**
+   * The users current plans.
+   *
+   * @generated from field: repeated frontendapi.PlanSnippet plans = 1;
+   */
+  plans: PlanSnippet[];
+};
+
+export type GetPlansResponseValid = GetPlansResponse;
+
+/**
+ * Describes the message frontendapi.GetPlansResponse.
+ * Use `create(GetPlansResponseSchema)` to create a new message.
+ */
+export const GetPlansResponseSchema: GenMessage<GetPlansResponse, {validType: GetPlansResponseValid}> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 24);
 
 /**
  * A cooking plan.
@@ -835,6 +1008,30 @@ export type Plan = Message<"frontendapi.Plan"> & {
    * @generated from field: repeated frontendapi.RecipeSnippet recipes = 2;
    */
   recipes: RecipeSnippet[];
+
+  /**
+   * The step groups for the plan.
+   *
+   * @generated from field: repeated frontendapi.StepGroup step_groups = 3;
+   */
+  stepGroups: StepGroup[];
+
+  /**
+   * A list of notes to help cook the plan.
+   *
+   * @generated from field: repeated string notes = 4;
+   */
+  notes: string[];
+
+  /**
+   * @generated from field: repeated frontendapi.IngredientSection ingredients = 5;
+   */
+  ingredients: IngredientSection[];
+
+  /**
+   * @generated from field: repeated string serving_sizes = 6;
+   */
+  servingSizes: string[];
 };
 
 /**
@@ -856,6 +1053,30 @@ export type PlanValid = Message<"frontendapi.Plan"> & {
    * @generated from field: repeated frontendapi.RecipeSnippet recipes = 2;
    */
   recipes: RecipeSnippetValid[];
+
+  /**
+   * The step groups for the plan.
+   *
+   * @generated from field: repeated frontendapi.StepGroup step_groups = 3;
+   */
+  stepGroups: StepGroupValid[];
+
+  /**
+   * A list of notes to help cook the plan.
+   *
+   * @generated from field: repeated string notes = 4;
+   */
+  notes: string[];
+
+  /**
+   * @generated from field: repeated frontendapi.IngredientSection ingredients = 5;
+   */
+  ingredients: IngredientSectionValid[];
+
+  /**
+   * @generated from field: repeated string serving_sizes = 6;
+   */
+  servingSizes: string[];
 };
 
 /**
@@ -863,60 +1084,214 @@ export type PlanValid = Message<"frontendapi.Plan"> & {
  * Use `create(PlanSchema)` to create a new message.
  */
 export const PlanSchema: GenMessage<Plan, {validType: PlanValid}> = /*@__PURE__*/
-  messageDesc(file_frontendapi_frontend, 20);
+  messageDesc(file_frontendapi_frontend, 25);
 
 /**
- * @generated from message frontendapi.GetPlansRequest
- */
-export type GetPlansRequest = Message<"frontendapi.GetPlansRequest"> & {
-};
-
-export type GetPlansRequestValid = GetPlansRequest;
-
-/**
- * Describes the message frontendapi.GetPlansRequest.
- * Use `create(GetPlansRequestSchema)` to create a new message.
- */
-export const GetPlansRequestSchema: GenMessage<GetPlansRequest, {validType: GetPlansRequestValid}> = /*@__PURE__*/
-  messageDesc(file_frontendapi_frontend, 21);
-
-/**
- * @generated from message frontendapi.GetPlansResponse
- */
-export type GetPlansResponse = Message<"frontendapi.GetPlansResponse"> & {
-  /**
-   * The users current plans.
-   *
-   * @generated from field: repeated frontendapi.Plan plans = 1;
-   */
-  plans: Plan[];
-};
-
-export type GetPlansResponseValid = GetPlansResponse;
-
-/**
- * Describes the message frontendapi.GetPlansResponse.
- * Use `create(GetPlansResponseSchema)` to create a new message.
- */
-export const GetPlansResponseSchema: GenMessage<GetPlansResponse, {validType: GetPlansResponseValid}> = /*@__PURE__*/
-  messageDesc(file_frontendapi_frontend, 22);
-
-/**
- * A response for FrontendService.GeneratePlan.
+ * A request for FrontendService.GetPlan.
  *
- * @generated from message frontendapi.GeneratePlanResponse
+ * @generated from message frontendapi.GetPlanRequest
  */
-export type GeneratePlanResponse = Message<"frontendapi.GeneratePlanResponse"> & {
+export type GetPlanRequest = Message<"frontendapi.GetPlanRequest"> & {
+  /**
+   * The date of the plan. The timestamp will begin on the date in UTC.
+   *
+   * @generated from field: google.protobuf.Timestamp date = 1;
+   */
+  date?: Timestamp;
 };
 
-export type GeneratePlanResponseValid = GeneratePlanResponse;
+export type GetPlanRequestValid = GetPlanRequest;
 
 /**
- * Describes the message frontendapi.GeneratePlanResponse.
- * Use `create(GeneratePlanResponseSchema)` to create a new message.
+ * Describes the message frontendapi.GetPlanRequest.
+ * Use `create(GetPlanRequestSchema)` to create a new message.
  */
-export const GeneratePlanResponseSchema: GenMessage<GeneratePlanResponse, {validType: GeneratePlanResponseValid}> = /*@__PURE__*/
-  messageDesc(file_frontendapi_frontend, 23);
+export const GetPlanRequestSchema: GenMessage<GetPlanRequest, {validType: GetPlanRequestValid}> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 26);
+
+/**
+ * A response for FrontendService.GetPlan.
+ *
+ * @generated from message frontendapi.GetPlanResponse
+ */
+export type GetPlanResponse = Message<"frontendapi.GetPlanResponse"> & {
+  /**
+   * @generated from field: frontendapi.Plan plan = 1;
+   */
+  plan?: Plan;
+
+  /**
+   * The LLM prompt used to interact with the recipe.
+   * Only returned for users with debugging access.
+   *
+   * @generated from field: string llm_prompt = 2;
+   */
+  llmPrompt: string;
+};
+
+/**
+ * A response for FrontendService.GetPlan.
+ *
+ * @generated from message frontendapi.GetPlanResponse
+ */
+export type GetPlanResponseValid = Message<"frontendapi.GetPlanResponse"> & {
+  /**
+   * @generated from field: frontendapi.Plan plan = 1;
+   */
+  plan: PlanValid;
+
+  /**
+   * The LLM prompt used to interact with the recipe.
+   * Only returned for users with debugging access.
+   *
+   * @generated from field: string llm_prompt = 2;
+   */
+  llmPrompt: string;
+};
+
+/**
+ * Describes the message frontendapi.GetPlanResponse.
+ * Use `create(GetPlanResponseSchema)` to create a new message.
+ */
+export const GetPlanResponseSchema: GenMessage<GetPlanResponse, {validType: GetPlanResponseValid}> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 27);
+
+/**
+ * A request for FrontendService.UpdatePlan.
+ *
+ * @generated from message frontendapi.UpdatePlanRequest
+ */
+export type UpdatePlanRequest = Message<"frontendapi.UpdatePlanRequest"> & {
+  /**
+   * The date of the plan. The timestamp will begin on the date in UTC.
+   *
+   * @generated from field: google.protobuf.Timestamp date = 1;
+   */
+  date?: Timestamp;
+
+  /**
+   * The recipes for the plan.
+   *
+   * @generated from field: repeated string recipe_ids = 2;
+   */
+  recipeIds: string[];
+};
+
+export type UpdatePlanRequestValid = UpdatePlanRequest;
+
+/**
+ * Describes the message frontendapi.UpdatePlanRequest.
+ * Use `create(UpdatePlanRequestSchema)` to create a new message.
+ */
+export const UpdatePlanRequestSchema: GenMessage<UpdatePlanRequest, {validType: UpdatePlanRequestValid}> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 28);
+
+/**
+ * @generated from message frontendapi.UpdatePlanResponse
+ */
+export type UpdatePlanResponse = Message<"frontendapi.UpdatePlanResponse"> & {
+  /**
+   * @generated from field: frontendapi.Plan plan = 1;
+   */
+  plan?: Plan;
+};
+
+/**
+ * @generated from message frontendapi.UpdatePlanResponse
+ */
+export type UpdatePlanResponseValid = Message<"frontendapi.UpdatePlanResponse"> & {
+  /**
+   * @generated from field: frontendapi.Plan plan = 1;
+   */
+  plan: PlanValid;
+};
+
+/**
+ * Describes the message frontendapi.UpdatePlanResponse.
+ * Use `create(UpdatePlanResponseSchema)` to create a new message.
+ */
+export const UpdatePlanResponseSchema: GenMessage<UpdatePlanResponse, {validType: UpdatePlanResponseValid}> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 29);
+
+/**
+ * A request for FrontendService.AddBookmark.
+ *
+ * @generated from message frontendapi.AddBookmarkRequest
+ */
+export type AddBookmarkRequest = Message<"frontendapi.AddBookmarkRequest"> & {
+  /**
+   * The ID of the recipe to add a bookmark for.
+   *
+   * @generated from field: string recipe_id = 1;
+   */
+  recipeId: string;
+};
+
+export type AddBookmarkRequestValid = AddBookmarkRequest;
+
+/**
+ * Describes the message frontendapi.AddBookmarkRequest.
+ * Use `create(AddBookmarkRequestSchema)` to create a new message.
+ */
+export const AddBookmarkRequestSchema: GenMessage<AddBookmarkRequest, {validType: AddBookmarkRequestValid}> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 30);
+
+/**
+ * A response for FrontendService.AddBookmark.
+ *
+ * @generated from message frontendapi.AddBookmarkResponse
+ */
+export type AddBookmarkResponse = Message<"frontendapi.AddBookmarkResponse"> & {
+};
+
+export type AddBookmarkResponseValid = AddBookmarkResponse;
+
+/**
+ * Describes the message frontendapi.AddBookmarkResponse.
+ * Use `create(AddBookmarkResponseSchema)` to create a new message.
+ */
+export const AddBookmarkResponseSchema: GenMessage<AddBookmarkResponse, {validType: AddBookmarkResponseValid}> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 31);
+
+/**
+ * A request for FrontendService.RemoveBookmark.
+ *
+ * @generated from message frontendapi.RemoveBookmarkRequest
+ */
+export type RemoveBookmarkRequest = Message<"frontendapi.RemoveBookmarkRequest"> & {
+  /**
+   * The ID of the recipe to remove a bookmark for.
+   *
+   * @generated from field: string recipe_id = 1;
+   */
+  recipeId: string;
+};
+
+export type RemoveBookmarkRequestValid = RemoveBookmarkRequest;
+
+/**
+ * Describes the message frontendapi.RemoveBookmarkRequest.
+ * Use `create(RemoveBookmarkRequestSchema)` to create a new message.
+ */
+export const RemoveBookmarkRequestSchema: GenMessage<RemoveBookmarkRequest, {validType: RemoveBookmarkRequestValid}> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 32);
+
+/**
+ * A response for FrontendService.RemoveBookmark.
+ *
+ * @generated from message frontendapi.RemoveBookmarkResponse
+ */
+export type RemoveBookmarkResponse = Message<"frontendapi.RemoveBookmarkResponse"> & {
+};
+
+export type RemoveBookmarkResponseValid = RemoveBookmarkResponse;
+
+/**
+ * Describes the message frontendapi.RemoveBookmarkResponse.
+ * Use `create(RemoveBookmarkResponseSchema)` to create a new message.
+ */
+export const RemoveBookmarkResponseSchema: GenMessage<RemoveBookmarkResponse, {validType: RemoveBookmarkResponseValid}> = /*@__PURE__*/
+  messageDesc(file_frontendapi_frontend, 33);
 
 /**
  * @generated from enum frontendapi.Language
@@ -1015,6 +1390,20 @@ export enum RecipeSource {
    * @generated from enum value: RECIPE_SOURCE_COOKPAD = 1;
    */
   COOKPAD = 1,
+
+  /**
+   * Recipe from orange page.
+   *
+   * @generated from enum value: RECIPE_SOURCE_ORANGE_PAGE = 2;
+   */
+  ORANGE_PAGE = 2,
+
+  /**
+   * Recipe from delish kitchen.
+   *
+   * @generated from enum value: RECIPE_SOURCE_DELISH_KITCHEN = 3;
+   */
+  DELISH_KITCHEN = 3,
 }
 
 /**
@@ -1115,6 +1504,46 @@ export const FrontendService: GenService<{
     methodKind: "unary";
     input: typeof GetPlansRequestSchema;
     output: typeof GetPlansResponseSchema;
+  },
+  /**
+   * Get the details of a plan.
+   *
+   * @generated from rpc frontendapi.FrontendService.GetPlan
+   */
+  getPlan: {
+    methodKind: "unary";
+    input: typeof GetPlanRequestSchema;
+    output: typeof GetPlanResponseSchema;
+  },
+  /**
+   * Update the recipes in a plan.
+   *
+   * @generated from rpc frontendapi.FrontendService.UpdatePlan
+   */
+  updatePlan: {
+    methodKind: "unary";
+    input: typeof UpdatePlanRequestSchema;
+    output: typeof UpdatePlanResponseSchema;
+  },
+  /**
+   * Add a bookmark for a recipe.
+   *
+   * @generated from rpc frontendapi.FrontendService.AddBookmark
+   */
+  addBookmark: {
+    methodKind: "unary";
+    input: typeof AddBookmarkRequestSchema;
+    output: typeof AddBookmarkResponseSchema;
+  },
+  /**
+   * Remove a bookmark for a recipe.
+   *
+   * @generated from rpc frontendapi.FrontendService.RemoveBookmark
+   */
+  removeBookmark: {
+    methodKind: "unary";
+    input: typeof RemoveBookmarkRequestSchema;
+    output: typeof RemoveBookmarkResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_frontendapi_frontend, 1);

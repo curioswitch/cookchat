@@ -219,6 +219,11 @@ func (h *Handler) saveFile(ctx context.Context, path string, contents []byte) er
 	return nil
 }
 
+type classificationResult struct {
+	Type  cookchatdb.RecipeType  `json:"type"`
+	Genre cookchatdb.RecipeGenre `json:"genre"`
+}
+
 func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Recipe) error {
 	if recipe.Content.Title == "" {
 		recipe.Content = cookchatdb.RecipeContent{
@@ -237,12 +242,12 @@ func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Reci
 			recipe.StepImageURLs[i] = step.ImageURL
 		}
 	}
-	if len(recipe.LocalizedContent) != 1 {
-		sourceJSON, err := json.Marshal(recipe.Content)
-		if err != nil {
-			return fmt.Errorf("cookpad:recipe: failed to marshal recipe content: %w", err)
-		}
 
+	sourceJSON, err := json.Marshal(recipe.Content)
+	if err != nil {
+		return fmt.Errorf("cookpad:recipe: failed to marshal recipe content: %w", err)
+	}
+	if len(recipe.LocalizedContent) != 1 {
 		ingredientsSchema := &genai.Schema{
 			Type:        "array",
 			Description: "The ingredients in English.",
@@ -347,12 +352,70 @@ func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Reci
 			return fmt.Errorf("cookpad:recipe: generate ai translation: %w", err)
 		}
 		if len(res.Candidates) != 1 || len(res.Candidates[0].Content.Parts) != 1 || res.Candidates[0].Content.Parts[0].Text == "" {
-			return fmt.Errorf("cookpad:recipe: unexpected response from generate ai: %v", res)
+			return fmt.Errorf("cookpad:recipe: unexpected translate response from generate ai: %v", res)
 		}
 		text := res.Candidates[0].Content.Parts[0].Text
 		if err := json.Unmarshal([]byte(text), &recipe.LocalizedContent); err != nil {
 			return fmt.Errorf("cookpad:recipe: failed to unmarshal localized content: %w", err)
 		}
+	}
+
+	if recipe.Type == "" || recipe.Genre == "" {
+		res, err := h.genAI.Models.GenerateContent(ctx, "gemini-2.5-flash", []*genai.Content{
+			{
+				Role: "user",
+				Parts: []*genai.Part{
+					{
+						Text: string(sourceJSON),
+					},
+				},
+			},
+		}, &genai.GenerateContentConfig{
+			SystemInstruction: &genai.Content{
+				Role: "model",
+				Parts: []*genai.Part{
+					{
+						Text: "Classify the type and genre of the recipe. Return unknown for either if low confidence.",
+					},
+				},
+			},
+			ResponseMIMEType: "application/json",
+			ResponseSchema: &genai.Schema{
+				Type: "object",
+				Properties: map[string]*genai.Schema{
+					"type": {
+						Type:        "string",
+						Description: "The type of the recipe.",
+						Enum:        []string{string(cookchatdb.RecipeTypeUnknown), string(cookchatdb.RecipeTypeMainDish), string(cookchatdb.RecipeTypeSideDish), string(cookchatdb.RecipeTypeSoup)},
+					},
+					"genre": {
+						Type:        "string",
+						Description: "The genre of the recipe.",
+						Enum: []string{
+							string(cookchatdb.RecipeGenreUnknown),
+							string(cookchatdb.RecipeGenreJapanese),
+							string(cookchatdb.RecipeGenreWestern),
+							string(cookchatdb.RecipeGenreChinese),
+							string(cookchatdb.RecipeGenreEthnic),
+						},
+					},
+				},
+				Required: []string{"type", "genre"},
+			},
+		})
+		if err != nil {
+			return fmt.Errorf("cookpad:recipe: classify recipe: %w", err)
+		}
+		if len(res.Candidates) != 1 || len(res.Candidates[0].Content.Parts) != 1 || res.Candidates[0].Content.Parts[0].Text == "" {
+			return fmt.Errorf("cookpad:recipe: unexpected classification response from generate ai: %v", res)
+		}
+		text := res.Candidates[0].Content.Parts[0].Text
+		var classRes classificationResult
+		if err := json.Unmarshal([]byte(text), &classRes); err != nil {
+			return fmt.Errorf("cookpad:recipe: failed to unmarshal classification result: %w", err)
+		}
+		recipe.Type = classRes.Type
+		recipe.Genre = classRes.Genre
 	}
 
 	return nil

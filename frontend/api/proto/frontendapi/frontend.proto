@@ -70,6 +70,10 @@ enum RecipeSource {
   RECIPE_SOURCE_UNSPECIFIED = 0;
   // Recipe from cookpad.
   RECIPE_SOURCE_COOKPAD = 1;
+  // Recipe from orange page.
+  RECIPE_SOURCE_ORANGE_PAGE = 2;
+  // Recipe from delish kitchen.
+  RECIPE_SOURCE_DELISH_KITCHEN = 3;
 }
 
 // An ingredient in a recipe.
@@ -146,11 +150,16 @@ message GetRecipeResponse {
   // The LLM prompt used to interact with the recipe.
   // Only returned for users with debugging access.
   string llm_prompt = 2;
+
+  // Whether the recipe is bookmarked by the user.
+  bool is_bookmarked = 3;
 }
 
 // A token returned to retrieve a subsequent page of items.
 message Pagination {
   string last_id = 1;
+
+  int64 last_timestamp_nanos = 2;
 }
 
 // A snippet of a recipe for list views.
@@ -172,6 +181,9 @@ message RecipeSnippet {
 message ListRecipesRequest {
   // A text query to filter by.
   string query = 1;
+
+  // Whether to only return bookmarked recipes.
+  bool bookmarks = 3;
 
   // The pagination token for the next page of recipes.
   // If unset, the first page is returned.
@@ -196,6 +208,9 @@ message StartChatRequest {
 
     // The ID of a cookchat recipe.
     string recipe_id = 3;
+
+    // The ID of a cookchat plan.
+    google.protobuf.Timestamp plan_id = 6;
   }
 
   enum ModelProvider {
@@ -291,10 +306,28 @@ message GeneratePlanRequest {
 
   // Genres to prioritize during planning.
   repeated RecipeGenre genres = 3;
+
+  // Recipe IDs to use as main dishes.
+  repeated string recipe_ids = 4;
 }
 
-// A cooking plan.
-message Plan {
+// A response for FrontendService.GeneratePlan.
+message GeneratePlanResponse {}
+
+// A group of steps within a plan that can be executed together.
+message StepGroup {
+  // The label of the group.
+  string label = 1;
+
+  // The actual steps.
+  repeated RecipeStep steps = 2;
+
+  // Useful note for the group.
+  string note = 3;
+}
+
+// A snippet of a plan, without executiond details.
+message PlanSnippet {
   // The date of the plan. The timestamp will begin on the date in UTC.
   google.protobuf.Timestamp date = 1 [(buf.validate.field).required = true];
 
@@ -306,11 +339,73 @@ message GetPlansRequest {}
 
 message GetPlansResponse {
   // The users current plans.
-  repeated Plan plans = 1;
+  repeated PlanSnippet plans = 1;
 }
 
-// A response for FrontendService.GeneratePlan.
-message GeneratePlanResponse {}
+// A cooking plan.
+message Plan {
+  // The date of the plan. The timestamp will begin on the date in UTC.
+  google.protobuf.Timestamp date = 1 [(buf.validate.field).required = true];
+
+  // The recipes for the plan.
+  repeated RecipeSnippet recipes = 2;
+
+  // The step groups for the plan.
+  repeated StepGroup step_groups = 3;
+
+  // A list of notes to help cook the plan.
+  repeated string notes = 4;
+
+  repeated IngredientSection ingredients = 5;
+
+  repeated string serving_sizes = 6;
+}
+
+// A request for FrontendService.GetPlan.
+message GetPlanRequest {
+  // The date of the plan. The timestamp will begin on the date in UTC.
+  google.protobuf.Timestamp date = 1;
+}
+
+// A response for FrontendService.GetPlan.
+message GetPlanResponse {
+  Plan plan = 1 [(buf.validate.field).required = true];
+
+  // The LLM prompt used to interact with the recipe.
+  // Only returned for users with debugging access.
+  string llm_prompt = 2;
+}
+
+// A request for FrontendService.UpdatePlan.
+message UpdatePlanRequest {
+  // The date of the plan. The timestamp will begin on the date in UTC.
+  google.protobuf.Timestamp date = 1;
+
+  // The recipes for the plan.
+  repeated string recipe_ids = 2;
+}
+
+message UpdatePlanResponse {
+  Plan plan = 1 [(buf.validate.field).required = true];
+}
+
+// A request for FrontendService.AddBookmark.
+message AddBookmarkRequest {
+  // The ID of the recipe to add a bookmark for.
+  string recipe_id = 1;
+}
+
+// A response for FrontendService.AddBookmark.
+message AddBookmarkResponse {}
+
+// A request for FrontendService.RemoveBookmark.
+message RemoveBookmarkRequest {
+  // The ID of the recipe to remove a bookmark for.
+  string recipe_id = 1;
+}
+
+// A response for FrontendService.RemoveBookmark.
+message RemoveBookmarkResponse {}
 
 service FrontendService {
   // Get the recipe for a given recipe ID.
@@ -333,4 +428,16 @@ service FrontendService {
 
   // Get the plans for the user.
   rpc GetPlans(GetPlansRequest) returns (GetPlansResponse);
+
+  // Get the details of a plan.
+  rpc GetPlan(GetPlanRequest) returns (GetPlanResponse);
+
+  // Update the recipes in a plan.
+  rpc UpdatePlan(UpdatePlanRequest) returns (UpdatePlanResponse);
+
+  // Add a bookmark for a recipe.
+  rpc AddBookmark(AddBookmarkRequest) returns (AddBookmarkResponse);
+
+  // Remove a bookmark for a recipe.
+  rpc RemoveBookmark(RemoveBookmarkRequest) returns (RemoveBookmarkResponse);
 }

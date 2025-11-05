@@ -20,18 +20,23 @@ import (
 	"github.com/curioswitch/go-curiostack/server"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/openai/openai-go/v2"
 	"google.golang.org/genai"
 
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
 	"github.com/curioswitch/cookchat/frontend/api/go/frontendapiconnect"
 	"github.com/curioswitch/cookchat/frontend/server/internal/config"
+	"github.com/curioswitch/cookchat/frontend/server/internal/handler/addbookmark"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/addrecipe"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/generateplan"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/generaterecipe"
+	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getplan"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getplans"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getrecipe"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/listrecipes"
+	"github.com/curioswitch/cookchat/frontend/server/internal/handler/removebookmark"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/startchat"
+	"github.com/curioswitch/cookchat/frontend/server/internal/handler/updateplan"
 	"github.com/curioswitch/cookchat/frontend/server/internal/i18n"
 )
 
@@ -95,6 +100,8 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		return fmt.Errorf("creating genai client: %w", err)
 	}
 
+	oai := openai.NewClient()
+
 	authorizedEmails := strings.Split(conf.Authorization.EmailsCSV, ",")
 
 	fbMW := firebaseauth.NewMiddleware(fbAuth)
@@ -146,12 +153,15 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 			{
 				Query: "玉ねぎ",
 			},
+			{
+				Bookmarks: true,
+			},
 		},
 	)
 
 	server.HandleConnectUnary(s,
 		frontendapiconnect.FrontendServiceStartChatProcedure,
-		startchat.NewHandler(genAI, firestore).StartChat,
+		startchat.NewHandler(genAI, &oai, firestore).StartChat,
 		[]*frontendapi.StartChatRequest{
 			{
 				Recipe: &frontendapi.StartChatRequest_RecipeId{
@@ -171,7 +181,7 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 
 	server.HandleConnectUnary(s,
 		frontendapiconnect.FrontendServiceGeneratePlanProcedure,
-		generateplan.NewHandler(genAI, firestore).GeneratePlan,
+		generateplan.NewHandler(genAI, firestore, search).GeneratePlan,
 		[]*frontendapi.GeneratePlanRequest{
 			{
 				NumDays:     3,
@@ -184,9 +194,23 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		})
 
 	server.HandleConnectUnary(s,
+		frontendapiconnect.FrontendServiceUpdatePlanProcedure,
+		updateplan.NewHandler(genAI, firestore).UpdatePlan,
+		[]*frontendapi.UpdatePlanRequest{
+			{},
+		})
+
+	server.HandleConnectUnary(s,
 		frontendapiconnect.FrontendServiceGetPlansProcedure,
 		getplans.NewHandler(firestore).GetPlans,
 		[]*frontendapi.GetPlansRequest{
+			{},
+		})
+
+	server.HandleConnectUnary(s,
+		frontendapiconnect.FrontendServiceGetPlanProcedure,
+		getplan.NewHandler(firestore).GetPlan,
+		[]*frontendapi.GetPlanRequest{
 			{},
 		})
 
@@ -257,6 +281,24 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 						ImageDataUrl: addRecipeStepImageURL,
 					},
 				},
+			},
+		})
+
+	server.HandleConnectUnary(s,
+		frontendapiconnect.FrontendServiceAddBookmarkProcedure,
+		addbookmark.NewHandler(firestore).AddBookmark,
+		[]*frontendapi.AddBookmarkRequest{
+			{
+				RecipeId: "02JNMi0W1605TLxzQt6v",
+			},
+		})
+
+	server.HandleConnectUnary(s,
+		frontendapiconnect.FrontendServiceRemoveBookmarkProcedure,
+		removebookmark.NewHandler(firestore).RemoveBookmark,
+		[]*frontendapi.RemoveBookmarkRequest{
+			{
+				RecipeId: "02JNMi0W1605TLxzQt6v",
 			},
 		})
 

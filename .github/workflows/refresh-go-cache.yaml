@@ -1,0 +1,16 @@
+name: Refresh Go Cache
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - go.work
+      - "**/go.mod"
+      - "**/versions.go"
+      - .github/workflows/refresh-go-cache.yaml
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    uses: curioswitch/go-build/.github/workflows/export-refresh-go-cache.yaml@43d89fa5a241b51ac68f94cb38b12f7e92704b93 # v0.6.2

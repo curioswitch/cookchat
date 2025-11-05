@@ -23,8 +23,9 @@ import (
 	crawlerapi "github.com/curioswitch/cookchat/crawler/api/go"
 	"github.com/curioswitch/cookchat/crawler/api/go/crawlerapiconnect"
 	"github.com/curioswitch/cookchat/crawler/server/internal/config"
-	"github.com/curioswitch/cookchat/crawler/server/internal/handler/cookpad/recipe"
+	cookpadrecipe "github.com/curioswitch/cookchat/crawler/server/internal/handler/cookpad/recipe"
 	"github.com/curioswitch/cookchat/crawler/server/internal/handler/cookpad/user"
+	"github.com/curioswitch/cookchat/crawler/server/internal/handler/recipe"
 )
 
 //go:embed conf/*.yaml
@@ -82,8 +83,21 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 	}
 
 	server.HandleConnectUnary(s,
+		crawlerapiconnect.CrawlerServiceCrawlRecipeProcedure,
+		recipe.NewHandler(baseCollector, firestore, storage, genAI, publicBucket).CrawlRecipe,
+		[]*crawlerapi.CrawlRecipeRequest{
+			{
+				Url: "https://www.orangepage.net/recipes/300487",
+			},
+			{
+				Url: "https://delishkitchen.tv/recipes/144271072034816499",
+			},
+		},
+	)
+
+	server.HandleConnectUnary(s,
 		crawlerapiconnect.CrawlerServiceCrawlCookpadRecipeProcedure,
-		recipe.NewHandler(baseCollector, firestore, storage, genAI, publicBucket).CrawlCookpadRecipe,
+		cookpadrecipe.NewHandler(baseCollector, firestore, storage, genAI, publicBucket).CrawlCookpadRecipe,
 		[]*crawlerapi.CrawlCookpadRecipeRequest{
 			{
 				RecipeId: "24664122",

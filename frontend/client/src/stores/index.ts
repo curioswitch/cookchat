@@ -1,4 +1,4 @@
-import type { Recipe } from "@cookchat/frontend-api";
+import type { Recipe, RecipeSnippet } from "@cookchat/frontend-api";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -52,7 +52,10 @@ export const addRecipeToCart = (recipe: Recipe) =>
       ingredients,
     };
     return {
-      recipes: [...state.recipes, cartRecipe],
+      recipes: [
+        ...state.recipes.filter((r) => r.id !== cartRecipe.id),
+        cartRecipe,
+      ],
     };
   });
 
@@ -167,32 +170,133 @@ export const useSettingsStore = create<SettingsStore>()(
 );
 
 export type Chat = {
+  currentPlanId: string;
   currentRecipeId: string;
   prompt: string;
-  navigateToStep: ((idx: number) => void) | undefined;
+  navigateToStep: ((idx: number, idx2: number) => void) | undefined;
+  navigateToIngredients: (() => void) | undefined;
 };
 
 export const useChatStore = create<Chat>()(() => ({
   currentRecipeId: "",
+  currentPlanId: "",
   prompt: "",
   navigateToStep: undefined,
+  navigateToIngredients: undefined,
 }));
-
-export const setCurrentRecipe = (
-  recipeId: string,
-  navigateToStep: (idx: number) => void,
-) => {
-  useChatStore.setState({ currentRecipeId: recipeId, navigateToStep });
-};
 
 export const setPrompt = (prompt: string) => {
   useChatStore.setState({ prompt });
 };
 
-export const clearCurrentRecipe = () => {
+export const setCurrentRecipe = (
+  recipeId: string,
+  navigateToStep: (idx: number) => void,
+  navigateToIngredients: () => void,
+) => {
+  useChatStore.setState({
+    currentRecipeId: recipeId,
+    navigateToStep,
+    navigateToIngredients,
+  });
+};
+
+export const setCurrentPlan = (
+  planId: string,
+  navigateToStep: (idx: number, idx2: number) => void,
+  navigateToIngredients: () => void,
+) => {
+  useChatStore.setState({
+    currentPlanId: planId,
+    navigateToStep,
+    navigateToIngredients,
+  });
+};
+
+export const resetChat = () => {
   useChatStore.setState({
     currentRecipeId: "",
+    currentPlanId: "",
     prompt: "",
     navigateToStep: undefined,
+    navigateToIngredients: undefined,
   });
+};
+
+export type PlanRecipe = {
+  id: string;
+  title: string;
+  imageUrl: string;
+};
+
+export type PlanStore = {
+  recipes: PlanRecipe[];
+  numDays: number;
+  ingredients: string;
+  genres: string[];
+};
+
+export const usePlanStore = create<PlanStore>()(() => ({
+  recipes: [],
+  numDays: 1,
+  ingredients: "",
+  genres: [],
+}));
+
+export const addPlanRecipe = (recipe: PlanRecipe) => {
+  if (usePlanStore.getState().recipes.find((r) => r.id === recipe.id)) {
+    return;
+  }
+  usePlanStore.setState((state) => ({
+    recipes: [...state.recipes, recipe],
+  }));
+};
+
+export const setPlanDays = (days: number) => {
+  usePlanStore.setState({ numDays: days });
+};
+
+export const setPlanIngredients = (ingredients: string) =>
+  usePlanStore.setState({ ingredients });
+
+export const setPlanGenres = (genres: string[]) =>
+  usePlanStore.setState({ genres });
+
+export const clearPlanRecipes = () => {
+  usePlanStore.setState({ recipes: [] });
+};
+
+export type EditPlanStore = {
+  editing: boolean;
+  planId: string;
+  recipes: RecipeSnippet[];
+};
+
+export const useEditPlanStore = create<EditPlanStore>(() => ({
+  editing: false,
+  planId: "",
+  recipes: [],
+}));
+
+export const enableEditPlan = (planId: string, recipes: RecipeSnippet[]) => {
+  useEditPlanStore.setState({ editing: true, planId, recipes });
+};
+
+export const disableEditPlan = () => {
+  useEditPlanStore.setState({ editing: false, planId: "", recipes: [] });
+};
+
+export const addRecipeToEditPlan = (recipe: RecipeSnippet) => {
+  if (useEditPlanStore.getState().recipes.find((r) => r.id === recipe.id)) {
+    return;
+  }
+  useEditPlanStore.setState((state) => ({
+    recipes: [...state.recipes, recipe],
+  }));
+};
+
+export const removeRecipeFromEditPlan = (recipeId: string) => {
+  useEditPlanStore.setState((state) => ({
+    recipes: state.recipes.filter((r) => r.id !== recipeId),
+  }));
 };

@@ -1,3 +1,4 @@
+import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { StartChatRequest_ModelProvider } from "@cookchat/frontend-api";
 import { RealtimeAgent, RealtimeSession } from "@openai/agents-realtime";
 import { useQueryClient } from "@tanstack/react-query";
@@ -31,7 +32,8 @@ class ChatStream implements ChatSession {
     private readonly model: string,
     private readonly startMessage: string,
 
-    private readonly navigateToStep: (idx: number) => void,
+    private readonly navigateToStep: (idx: number, idx2: number) => void,
+    private readonly navigateToIngredients: () => void,
     private readonly setSpeaking: (speaking: boolean) => void,
     private readonly setWaiting: (waiting: boolean) => void,
     private readonly microphoneDeviceId?: string,
@@ -98,8 +100,11 @@ class ChatStream implements ChatSession {
         case "toolCall": {
           const call = event.data.call;
           if (call.name === "navigate_to_step" && call.args) {
-            const idx = call.args.step as number;
-            this.navigateToStep(idx);
+            const step = call.args.step as number;
+            const group = call.args.group as number;
+            this.navigateToStep(step, group);
+          } else if (call.name === "navigate_to_ingredients") {
+            this.navigateToIngredients();
           }
           break;
         }
@@ -161,12 +166,16 @@ class OpenAISession implements ChatSession {
 export function ChatButton({
   className,
   recipeId,
+  planId,
   navigateToStep,
+  navigateToIngredients,
   prompt,
 }: {
   className?: string;
   recipeId: string;
-  navigateToStep?: (idx: number) => void;
+  planId: string;
+  navigateToStep?: (idx: number, idx2: number) => void;
+  navigateToIngredients?: () => void;
   prompt?: string;
 }) {
   const [stream, setStream] = useState<ChatSession | undefined>(undefined);
@@ -179,7 +188,7 @@ export function ChatButton({
   const settings = useSettingsStore();
 
   const onClick = useCallback(async () => {
-    if (!navigateToStep) {
+    if (!navigateToStep || !navigateToIngredients) {
       return;
     }
 
@@ -200,10 +209,15 @@ export function ChatButton({
 
     const res = await queryClient.fetchQuery({
       ...frontendQueries.startChat({
-        recipe: {
-          case: "recipeId",
-          value: recipeId,
-        },
+        recipe: recipeId
+          ? {
+              case: "recipeId",
+              value: recipeId,
+            }
+          : {
+              case: "planId",
+              value: timestampFromDate(new Date(planId)),
+            },
         modelProvider,
         llmPrompt: prompt,
       }),
@@ -214,7 +228,6 @@ export function ChatButton({
       const agent = new RealtimeAgent({
         name: "CookChat",
         instructions: res.chatInstructions,
-        voice: "sage",
         tools: [
           {
             name: "navigate_to_step",
@@ -225,18 +238,43 @@ export function ChatButton({
               properties: {
                 step: {
                   type: "integer",
-                  description:
-                    "The index of the step to navigate to, starting from 0.",
+                  description: planId
+                    ? "The index of the step within the group to navigate to, starting from 0."
+                    : "The index of the step to navigate to, starting from 0.",
                 },
+                group: planId
+                  ? {
+                      type: "integer",
+                      description:
+                        "The index of the group containing the step to navigate to, starting from 0.",
+                    }
+                  : undefined,
               },
               additionalProperties: false,
-              required: ["step"],
+              required: planId ? ["step", "group"] : ["step"],
             },
             strict: false,
             needsApproval: async () => false,
             invoke: async (_, input) => {
               const req = JSON.parse(input);
-              navigateToStep(req.step);
+              navigateToStep(req.step, req.group);
+              return "Done";
+            },
+          },
+          {
+            name: "navigate_to_ingredients",
+            description: "Navigate the UI to the ingredients section.",
+            type: "function",
+            parameters: {
+              type: "object",
+              properties: {},
+              additionalProperties: false,
+              required: [],
+            },
+            strict: false,
+            needsApproval: async () => false,
+            invoke: async () => {
+              navigateToIngredients();
               return "Done";
             },
           },
@@ -254,6 +292,7 @@ export function ChatButton({
         res.chatModel,
         res.startMessage,
         navigateToStep,
+        navigateToIngredients,
         setSpeaking,
         setWaiting,
         settings.microphoneDeviceId !== ""
@@ -269,7 +308,9 @@ export function ChatButton({
     frontendQueries,
     stream,
     recipeId,
+    planId,
     navigateToStep,
+    navigateToIngredients,
     prompt,
     settings,
   ]);
@@ -285,30 +326,32 @@ export function ChatButton({
   return (
     <div
       className={twMerge(
-        "relative flex flex-col items-center gap-2 text-primary font-semibold",
+        "flex flex-col items-center gap-2 text-primary font-semibold",
         className,
       )}
     >
-      {/* Play animation after assistant finishes speaking. */}
-      {playing && waiting && <span className="mic-ping" />}
-      <button
-        type="button"
-        onClick={onClick}
-        className={twMerge(
-          playing && speaking
-            ? "bg-gray-400"
-            : "bg-linear-to-r from-[#f97316] to-[#fb923c]",
-          "z-10 rounded-full size-18 md:size-50 flex items-center justify-center cursor-pointer",
-        )}
-      >
-        {!playing ? (
-          <HiMicrophone className="text-white size-6 md:size-16" />
-        ) : waiting ? (
-          <div className="text-white text-lg">話して</div>
-        ) : (
-          <HiStop className="text-white size-6 md:size-16" />
-        )}
-      </button>
+      <div className="relative">
+        {/* Play animation after assistant finishes speaking. */}
+        {playing && waiting && <span className="mic-ping" />}
+        <button
+          type="button"
+          onClick={onClick}
+          className={twMerge(
+            playing && speaking
+              ? "bg-gray-400"
+              : "bg-linear-to-r from-[#f97316] to-[#fb923c]",
+            "z-10 rounded-full size-18 md:size-50 flex items-center justify-center cursor-pointer",
+          )}
+        >
+          {!playing ? (
+            <HiMicrophone className="text-white size-6 md:size-16" />
+          ) : waiting ? (
+            <div className="text-white text-lg">話して</div>
+          ) : (
+            <HiStop className="text-white size-6 md:size-16" />
+          )}
+        </button>
+      </div>
       <button
         type="button"
         onClick={onClick}

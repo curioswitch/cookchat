@@ -30,7 +30,7 @@ type Handler struct {
 
 func (h *Handler) GetPlans(ctx context.Context, _ *frontendapi.GetPlansRequest) (*frontendapi.GetPlansResponse, error) {
 	now := time.Now()
-	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 
 	userID := firebaseauth.TokenFromContext(ctx).UID
 
@@ -39,7 +39,7 @@ func (h *Handler) GetPlans(ctx context.Context, _ *frontendapi.GetPlansRequest) 
 		Path:     firestore.DocumentID,
 		Operator: ">=",
 		Value:    plansCol.Doc(today.Format(time.DateOnly)),
-	}).Documents(ctx)
+	}).Limit(5).Documents(ctx)
 	defer iter.Stop()
 
 	var dbPlans []cookchatdb.Plan
@@ -87,9 +87,9 @@ func (h *Handler) GetPlans(ctx context.Context, _ *frontendapi.GetPlansRequest) 
 		}
 	}
 
-	plans := make([]*frontendapi.Plan, len(dbPlans))
+	plans := make([]*frontendapi.PlanSnippet, len(dbPlans))
 	for i, dbPlan := range dbPlans {
-		plan := &frontendapi.Plan{
+		plan := &frontendapi.PlanSnippet{
 			Date: timestamppb.New(dbPlan.Date),
 		}
 		for _, recipeID := range dbPlan.Recipes {

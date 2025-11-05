@@ -3,13 +3,21 @@
 
 package cookchatdb
 
-import "google.golang.org/genai"
+import (
+	"time"
+
+	"google.golang.org/genai"
+)
 
 type RecipeSource string
 
 const (
 	// RecipeSourceCookpad is the source for recipes from cookpad.
 	RecipeSourceCookpad RecipeSource = "cookpad"
+	// RecipeSourceOrangePage is the source for recipes from OrangePage.
+	RecipeSourceOrangePage RecipeSource = "orangepage"
+	// RecipeSourceDelishKitchen is the source for recipes from DelishKitchen.
+	RecipeSourceDelishKitchen RecipeSource = "delishkitchen"
 	// RecipeSourceUser is the source for user-submitted recipes.
 	RecipeSourceUser RecipeSource = "user"
 )
@@ -19,6 +27,27 @@ type LanguageCode string
 const (
 	LanguageCodeEn LanguageCode = "en"
 	LanguageCodeJa LanguageCode = "ja"
+)
+
+type RecipeType string
+
+const (
+	RecipeTypeUnknown  RecipeType = "unknown"
+	RecipeTypeMainDish RecipeType = "main_dish"
+	RecipeTypeSideDish RecipeType = "side_dish"
+	RecipeTypeSoup     RecipeType = "soup"
+)
+
+type RecipeGenre string
+
+const (
+	RecipeGenreUnknown  RecipeGenre = "unknown"
+	RecipeGenreJapanese RecipeGenre = "japanese"
+	RecipeGenreChinese  RecipeGenre = "chinese"
+	RecipeGenreWestern  RecipeGenre = "western"
+	RecipeGenreKorean   RecipeGenre = "korean"
+	RecipeGenreItalian  RecipeGenre = "italian"
+	RecipeGenreEthnic   RecipeGenre = "ethnic"
 )
 
 // RecipeIngredient represents an ingredient in a recipe.
@@ -86,6 +115,12 @@ type Recipe struct {
 	// UserID is the ID of the user who created the recipe.
 	UserID string `firestore:"userId"`
 
+	// Type is the type of the recipe.
+	Type RecipeType `firestore:"type"`
+
+	// Genre is the genre of the recipe.
+	Genre RecipeGenre `firestore:"genre"`
+
 	// Title is the title of the recipe.
 	Title string `firestore:"title"`
 
@@ -122,6 +157,15 @@ type Recipe struct {
 
 	// LocalizedContent contains localized content for the recipe.
 	LocalizedContent map[string]*RecipeContent `firestore:"localizedContent,omitempty"`
+}
+
+// RecipeBookmark is a bookmarked recipe.
+type RecipeBookmark struct {
+	// The ID of the recipe being bookmarked.
+	RecipeID string `firestore:"recipeId"`
+
+	// The time the bookmark was created.
+	CreatedAt time.Time `firestore:"createdAt"`
 }
 
 var ingredientsSchema = &genai.Schema{

@@ -1,22 +1,34 @@
-import type { RecipeIngredient } from "@cookchat/frontend-api";
+import { create } from "@bufbuild/protobuf";
+import { useMutation } from "@connectrpc/connect-query";
+import {
+  addBookmark,
+  type RecipeIngredient,
+  RecipeSnippetSchema,
+  removeBookmark,
+} from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
 import { Image } from "@heroui/image";
 import { Textarea } from "@heroui/input";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import { HiAdjustments, HiShoppingCart, HiUsers } from "react-icons/hi";
+import { navigate } from "vike/client/router";
 import { usePageContext } from "vike-react/usePageContext";
 
 import { useFrontendQueries } from "../../../hooks/rpc";
 import {
+  addPlanRecipe,
   addRecipeToCart,
-  clearCurrentRecipe,
+  addRecipeToEditPlan,
   removeRecipeFromCart,
+  resetChat,
   setCurrentRecipe,
   setPrompt,
   useCartStore,
   useChatStore,
+  useEditPlanStore,
 } from "../../../stores";
 
 function Ingredients({ ingredients }: { ingredients: RecipeIngredient[] }) {
@@ -46,13 +58,56 @@ export default function Page() {
 
   const { data: recipeRes, isPending } = useQuery(getRecipeQuery);
 
+  const queryClient = useQueryClient();
+
+  const doAddBookmark = useMutation(addBookmark, {
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getRecipeQuery.queryKey,
+      });
+    },
+  });
+  const doRemoveBookmark = useMutation(removeBookmark, {
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getRecipeQuery.queryKey,
+      });
+    },
+  });
+
+  const onBookmarkClick = useCallback(() => {
+    if (
+      !recipeRes ||
+      !recipeRes.recipe ||
+      doAddBookmark.isPending ||
+      doRemoveBookmark.isPending
+    ) {
+      return;
+    }
+
+    if (recipeRes.isBookmarked) {
+      doRemoveBookmark.mutate({ recipeId: recipeRes.recipe.id });
+    } else {
+      doAddBookmark.mutate({ recipeId: recipeRes.recipe.id });
+    }
+  }, [recipeRes, doRemoveBookmark, doAddBookmark]);
+
+  const { editing: editingPlan } = useEditPlanStore();
+
   const cart = useCartStore();
   const inCart = cart.recipes.some((recipe) => recipe.id === recipeId);
 
   const stepRefs = useRef<Array<HTMLElement | null>>([]);
+  const ingredientsRef = useRef<HTMLDivElement | null>(null);
 
   const navigateToStep = useCallback((idx: number) => {
     stepRefs.current[idx]?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, []);
+  const navigateToIngredients = useCallback(() => {
+    ingredientsRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "start",
     });
@@ -62,14 +117,16 @@ export default function Page() {
 
   useEffect(() => {
     if (recipeRes?.recipe) {
-      setCurrentRecipe(recipeRes.recipe.id, (idx: number) =>
-        navigateToStep(idx),
+      setCurrentRecipe(
+        recipeRes.recipe.id,
+        navigateToStep,
+        navigateToIngredients,
       );
       return () => {
-        clearCurrentRecipe();
+        resetChat();
       };
     }
-  }, [recipeRes, navigateToStep]);
+  }, [recipeRes, navigateToStep, navigateToIngredients]);
 
   const [editPrompt, setEditPrompt] = useState(false);
 
@@ -80,6 +137,32 @@ export default function Page() {
   const onPromptChange = useCallback((prompt: string) => {
     setPrompt(prompt);
   }, []);
+
+  const onCreatePlan = useCallback(() => {
+    const recipe = recipeRes?.recipe;
+    if (!recipe) {
+      return;
+    }
+
+    addPlanRecipe(recipe);
+    navigate("/plans/add");
+  }, [recipeRes]);
+
+  const onAddToPlan = useCallback(() => {
+    const recipe = recipeRes?.recipe;
+    if (!recipe) {
+      return;
+    }
+
+    addRecipeToEditPlan(
+      create(RecipeSnippetSchema, {
+        id: recipe.id,
+        title: recipe.title,
+        imageUrl: recipe.imageUrl,
+      }),
+    );
+    navigate("/plans/edit");
+  }, [recipeRes]);
 
   useEffect(() => {
     if (!editPrompt) {
@@ -123,12 +206,46 @@ export default function Page() {
       <Image radius="none" src={recipe.imageUrl} />
       <div className="px-4 py-2">
         <div className="px-2">
-          <h2 className="">{recipe.title}</h2>
-          <div className="flex items-center gap-2 pt-2">
-            <HiUsers className="size-4 text-primary" />
-            <span className="text-gray-500 md:text-2xl mt-0.5">
-              {recipe.servingSize}
-            </span>
+          <div className="flex items-center justify-between">
+            <h2 className="">{recipe.title}</h2>
+            {recipeRes.isBookmarked ? (
+              <FaBookmark
+                onClick={onBookmarkClick}
+                className="fill-primary-400 cursor-pointer"
+              />
+            ) : (
+              <FaRegBookmark
+                onClick={onBookmarkClick}
+                className="fill-primary-400 cursor-pointer"
+              />
+            )}
+          </div>
+          <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center gap-2">
+              <HiUsers className="size-4 text-primary" />
+              <span className="text-gray-500 md:text-2xl mt-0.5">
+                {recipe.servingSize}
+              </span>
+            </div>
+            {editingPlan ? (
+              <Button
+                onPress={onAddToPlan}
+                color="primary"
+                size="sm"
+                className="text-white"
+              >
+                {t("Add to plan")}
+              </Button>
+            ) : (
+              <Button
+                onPress={onCreatePlan}
+                color="primary"
+                size="sm"
+                className="text-white"
+              >
+                {t("Create Plan")}
+              </Button>
+            )}
           </div>
         </div>
         {editPrompt && (
@@ -139,7 +256,12 @@ export default function Page() {
           />
         )}
         <div className="flex flex-col gap-4 mt-2">
-          <div className="p-4 bg-white rounded-xl border-1 border-primary-200">
+          <div
+            ref={(node) => {
+              ingredientsRef.current = node;
+            }}
+            className="p-4 bg-white rounded-xl border-1 border-primary-200"
+          >
             <h3 className="flex items-center justify-between mt-0 prose">
               {t("Ingredients")}
               <HiAdjustments className="size-6" onClick={onEditPromptClick} />

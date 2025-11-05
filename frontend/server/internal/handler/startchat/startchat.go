@@ -11,10 +11,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
+	"time"
 
 	"cloud.google.com/go/firestore"
 	"connectrpc.com/connect"
+	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
+	"github.com/openai/openai-go/v2"
+	"github.com/openai/openai-go/v2/realtime"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genai"
 
@@ -26,24 +29,29 @@ import (
 )
 
 // NewHandler returns a Handler.
-func NewHandler(genAI *genai.Client, store *firestore.Client) *Handler {
+func NewHandler(genAI *genai.Client, openai *openai.Client, store *firestore.Client) *Handler {
 	return &Handler{
-		genAI: genAI,
-		store: store,
+		genAI:  genAI,
+		openai: openai,
+		store:  store,
 	}
 }
 
 // Handler starts a new chat.
 type Handler struct {
-	genAI *genai.Client
-	store *firestore.Client
+	genAI  *genai.Client
+	openai *openai.Client
+	store  *firestore.Client
 }
 
 func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatRequest) (*frontendapi.StartChatResponse, error) {
+	userID := firebaseauth.TokenFromContext(ctx).UID
 	language := i18n.UserLanguage(ctx)
 
+	prompt := ""
 	recipePrompt := ""
 	if r := req.GetRecipeText(); r != "" {
+		prompt = llm.RecipeChatPrompt(ctx)
 		recipePrompt = "The recipe is as follows:\n" + r
 	} else if rid := req.GetRecipeId(); rid != "" {
 		recipeDoc, err := h.store.Collection("recipes").Where("id", "==", rid).Limit(1).Documents(ctx).Next()
@@ -66,10 +74,55 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 		if err != nil {
 			return nil, fmt.Errorf("chat: marshalling recipe to JSON: %w", err)
 		}
+		prompt = llm.RecipeChatPrompt(ctx)
 		recipePrompt = "The recipe in structured JSON format is as follows:\n" + string(recipeJSON)
+	} else if pid := req.GetPlanId(); pid != nil {
+		col := h.store.Collection("users").Doc(userID).Collection("plans")
+		doc, err := col.Doc(pid.AsTime().Format(time.DateOnly)).Get(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("startchat: fetching plan: %w", err)
+		}
+
+		var plan cookchatdb.Plan
+		if err := doc.DataTo(&plan); err != nil {
+			return nil, fmt.Errorf("startchat: decoding plan: %w", err)
+		}
+		stepsJSON, err := json.Marshal(plan.StepGroups)
+		if err != nil {
+			return nil, fmt.Errorf("startchat: marshalling plan: %w", err)
+		}
+		recipesCol := h.store.Collection("recipes")
+		iter := recipesCol.Query.WhereEntity(firestore.PropertyFilter{
+			Path:     "id",
+			Operator: "in",
+			Value:    plan.Recipes,
+		}).Documents(ctx)
+		defer iter.Stop()
+
+		recipes := make([]cookchatdb.Recipe, 0, len(plan.Recipes))
+		for {
+			doc, err := iter.Next()
+			if errors.Is(err, iterator.Done) {
+				break
+			}
+			if err != nil {
+				return nil, fmt.Errorf("startchat: fetching recipe: %w", err)
+			}
+			var recipe cookchatdb.Recipe
+			if err := doc.DataTo(&recipe); err != nil {
+				return nil, fmt.Errorf("startchat: decoding recipe: %w", err)
+			}
+			recipes = append(recipes, recipe)
+		}
+		recipesJSON, err := json.Marshal(recipes)
+		if err != nil {
+			return nil, fmt.Errorf("startchat: marshalling recipes: %w", err)
+		}
+
+		prompt = llm.PlanChatPrompt(ctx)
+		recipePrompt = fmt.Sprintf("The plan's step groups in structured JSON format are as follows:\n%s\n\nThe recipes in structured JSON format are as follows:\n%s", stepsJSON, recipesJSON)
 	}
 
-	prompt := llm.RecipeChatPrompt(ctx)
 	if p := req.GetLlmPrompt(); p != "" && auth.IsCurioSwitchUser(ctx) {
 		prompt = p + "\n\n"
 	}
@@ -79,7 +132,7 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 	var err error
 	switch req.GetModelProvider() {
 	case frontendapi.StartChatRequest_MODEL_PROVIDER_UNSPECIFIED, frontendapi.StartChatRequest_MODEL_PROVIDER_GOOGLE_GENAI:
-		res, err = h.startChatGemini(ctx, prompt)
+		res, err = h.startChatGemini(ctx, prompt, req.GetPlanId().IsValid())
 	case frontendapi.StartChatRequest_MODEL_PROVIDER_OPENAI:
 		res, err = h.startChatOpenAI(ctx, prompt)
 	}
@@ -98,10 +151,34 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 	return res, nil
 }
 
-func (h *Handler) startChatGemini(ctx context.Context, prompt string) (*frontendapi.StartChatResponse, error) {
+func (h *Handler) startChatGemini(ctx context.Context, prompt string, isPlan bool) (*frontendapi.StartChatResponse, error) {
 	languageCode := "ja-JP"
 	if i18n.UserLanguage(ctx) == "en" {
 		languageCode = "en-US"
+	}
+
+	navigateToStep := &genai.FunctionDeclaration{
+		Name:        "navigate_to_step",
+		Description: "Navigate the UI to a specific step in the recipe.",
+		Behavior:    genai.BehaviorNonBlocking,
+		Parameters: &genai.Schema{
+			Type: "object",
+			Properties: map[string]*genai.Schema{
+				"step": {
+					Type:        "integer",
+					Description: "The index of the step to navigate to, starting from 0.",
+				},
+			},
+			Required: []string{"step"},
+		},
+	}
+	if isPlan {
+		navigateToStep.Parameters.Properties["group"] = &genai.Schema{
+			Type:        "integer",
+			Description: "The index of the group containing the step to navigate to, starting from 0.",
+		}
+		navigateToStep.Parameters.Required = append(navigateToStep.Parameters.Required, "group")
+		navigateToStep.Parameters.Properties["step"].Description = "The index of the step within the group to navigate to, starting from 0."
 	}
 
 	// Until genai Go SDK supports token creation, issue request manually.
@@ -121,20 +198,11 @@ func (h *Handler) startChatGemini(ctx context.Context, prompt string) (*frontend
 			Tools: []*genai.Tool{
 				{
 					FunctionDeclarations: []*genai.FunctionDeclaration{
+						navigateToStep,
 						{
-							Name:        "navigate_to_step",
-							Description: "Navigate the UI to a specific step in the recipe.",
+							Name:        "navigate_to_ingredients",
+							Description: "Navigate the UI to the ingredients list.",
 							Behavior:    genai.BehaviorNonBlocking,
-							Parameters: &genai.Schema{
-								Type: "object",
-								Properties: map[string]*genai.Schema{
-									"step": {
-										Type:        "integer",
-										Description: "The index of the step to navigate to, starting from 0.",
-									},
-								},
-								Required: []string{"step"},
-							},
 						},
 					},
 				},
@@ -203,83 +271,27 @@ type tokenResponse struct {
 	Name string `json:"name"`
 }
 
-type openaiTool struct {
-	Name        string       `json:"name"`
-	Description string       `json:"description"`
-	Type        string       `json:"type"`
-	Parameters  genai.Schema `json:"parameters"`
-}
-
-type realtimeSessionsRequest struct {
-	Model        string       `json:"model"`
-	Instructions string       `json:"instructions"`
-	Tools        []openaiTool `json:"tools"`
-	Voice        string       `json:"voice"`
-}
-
-type clientSecret struct {
-	Value string `json:"value"`
-}
-
-type realtimeSessionsResponse struct {
-	ClientSecret clientSecret `json:"client_secret"`
-}
-
 func (h *Handler) startChatOpenAI(ctx context.Context, prompt string) (*frontendapi.StartChatResponse, error) {
-	apiKey := os.Getenv("OPENAI_API_KEY")
-	model := "gpt-4o-realtime-preview"
-	req := realtimeSessionsRequest{
-		Model:        model,
-		Instructions: prompt,
-		Voice:        "echo",
-		Tools: []openaiTool{
-			{
-				Name:        "navigate_to_step",
-				Description: "Navigate the UI to a specific step in the recipe.",
-				Type:        "function",
-				Parameters: genai.Schema{
-					Type: "object",
-					Properties: map[string]*genai.Schema{
-						"step": {
-							Type:        "integer",
-							Description: "The index of the step to navigate to, starting from 0.",
-						},
+	model := "gpt-realtime"
+	res, err := h.openai.Realtime.ClientSecrets.New(ctx, realtime.ClientSecretNewParams{
+		Session: realtime.ClientSecretNewParamsSessionUnion{
+			OfRealtime: &realtime.RealtimeSessionCreateRequestParam{
+				Model:        model,
+				Instructions: openai.String(prompt),
+				Audio: realtime.RealtimeAudioConfigParam{
+					Output: realtime.RealtimeAudioConfigOutputParam{
+						Voice: "marin",
 					},
-					Required: []string{"step"},
 				},
 			},
 		},
-	}
-
-	reqJSON, err := json.Marshal(req)
+	})
 	if err != nil {
-		return nil, fmt.Errorf("chat: marshalling realtime request: %w", err)
+		return nil, fmt.Errorf("startchat: creating OpenAI Realtime session: %w", err)
 	}
 
-	httpReq, _ := http.NewRequestWithContext(ctx, http.MethodPost, "https://api.openai.com/v1/realtime/sessions", bytes.NewReader(reqJSON))
-	httpReq.Header.Set("Content-Type", "application/json")
-	httpReq.Header.Set("Authorization", "Bearer "+apiKey)
-	httpRes, err := http.DefaultClient.Do(httpReq)
-	if err != nil {
-		return nil, fmt.Errorf("startchat: sending realtime request: %w", err)
-	}
-	defer func() {
-		_ = httpRes.Body.Close()
-	}()
-	if httpRes.StatusCode != http.StatusOK {
-		body, err := io.ReadAll(httpRes.Body)
-		if err != nil {
-			return nil, fmt.Errorf("startchat: reading realtime error body: %w", err)
-		}
-		return nil, fmt.Errorf("startchat: realtime request failed with status %d: %s", httpRes.StatusCode, body) //nolint:err113
-	}
-
-	var res realtimeSessionsResponse
-	if err := json.NewDecoder(httpRes.Body).Decode(&res); err != nil {
-		return nil, fmt.Errorf("startchat: decoding realtime response: %w", err)
-	}
 	return &frontendapi.StartChatResponse{
-		ChatApiKey:       res.ClientSecret.Value,
+		ChatApiKey:       res.Value,
 		ChatModel:        model,
 		ChatInstructions: prompt,
 	}, nil
