@@ -70,6 +70,10 @@ enum RecipeSource {
   RECIPE_SOURCE_UNSPECIFIED = 0;
   // Recipe from cookpad.
   RECIPE_SOURCE_COOKPAD = 1;
+  // Recipe from orange page.
+  RECIPE_SOURCE_ORANGE_PAGE = 2;
+  // Recipe from delish kitchen.
+  RECIPE_SOURCE_DELISH_KITCHEN = 3;
 }
 
 // An ingredient in a recipe.
