@@ -15,7 +15,7 @@ require (
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/openai/openai-go/v2 v2.7.1
 	golang.org/x/sync v0.17.0
-	google.golang.org/api v0.254.0
+	google.golang.org/api v0.255.0
 	google.golang.org/genai v1.33.0
 	google.golang.org/protobuf v1.36.10
 )
@@ -96,7 +96,7 @@ require (
 	google.golang.org/appengine/v2 v2.0.6 // indirect
 	google.golang.org/genproto v0.0.0-20250715232539-7130f93afb79 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250825161204-c5933d9347a5 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20251022142026-3a174f9686a8 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20251029180050-ab9386a59fda // indirect
 	google.golang.org/grpc v1.76.0 // indirect
 )
 
