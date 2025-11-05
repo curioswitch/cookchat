@@ -100,6 +100,9 @@ func (h *Handler) GeneratePlan(ctx context.Context, req *frontendapi.GeneratePla
 
 	var grp errgroup.Group
 	for i, plan := range plans {
+		if len(plan.Recipes) > 3 {
+			plan.Recipes = plan.Recipes[:3]
+		}
 		grp.Go(func() error {
 			filled, err := h.fillPlan(ctx, plan)
 			if err != nil {
@@ -111,24 +114,6 @@ func (h *Handler) GeneratePlan(ctx context.Context, req *frontendapi.GeneratePla
 	}
 	if err := grp.Wait(); err != nil {
 		return nil, fmt.Errorf("generateplan: filling plans: %w", err)
-	}
-
-	for _, plan := range plans {
-		if len(plan.Recipes) > 3 {
-			plan.Recipes = plan.Recipes[:3]
-		}
-		rDocs, err := h.store.Collection("recipes").Query.WhereEntity(firestore.PropertyFilter{
-			Path: "id", Operator: "in", Value: plan.Recipes,
-		}).Documents(ctx).GetAll()
-		if err != nil {
-			return nil, fmt.Errorf("generateplan: fetching recipes for plan: %w", err)
-		}
-		recipes := make([]cookchatdb.Recipe, len(rDocs))
-		for i, doc := range rDocs {
-			if err := doc.DataTo(&recipes[i]); err != nil {
-				return nil, fmt.Errorf("generateplan: failed to unmarshal recipe document: %w", err)
-			}
-		}
 	}
 
 	now := time.Now()
