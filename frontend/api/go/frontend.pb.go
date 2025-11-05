@@ -144,6 +144,10 @@ const (
 	RecipeSource_RECIPE_SOURCE_UNSPECIFIED RecipeSource = 0
 	// Recipe from cookpad.
 	RecipeSource_RECIPE_SOURCE_COOKPAD RecipeSource = 1
+	// Recipe from orange page.
+	RecipeSource_RECIPE_SOURCE_ORANGE_PAGE RecipeSource = 2
+	// Recipe from delish kitchen.
+	RecipeSource_RECIPE_SOURCE_DELISH_KITCHEN RecipeSource = 3
 )
 
 // Enum value maps for RecipeSource.
@@ -151,10 +155,14 @@ var (
 	RecipeSource_name = map[int32]string{
 		0: "RECIPE_SOURCE_UNSPECIFIED",
 		1: "RECIPE_SOURCE_COOKPAD",
+		2: "RECIPE_SOURCE_ORANGE_PAGE",
+		3: "RECIPE_SOURCE_DELISH_KITCHEN",
 	}
 	RecipeSource_value = map[string]int32{
-		"RECIPE_SOURCE_UNSPECIFIED": 0,
-		"RECIPE_SOURCE_COOKPAD":     1,
+		"RECIPE_SOURCE_UNSPECIFIED":    0,
+		"RECIPE_SOURCE_COOKPAD":        1,
+		"RECIPE_SOURCE_ORANGE_PAGE":    2,
+		"RECIPE_SOURCE_DELISH_KITCHEN": 3,
 	}
 )
 
@@ -2541,10 +2549,12 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\x14RECIPE_GENRE_WESTERN\x10\x03\x12\x17\n" +
 	"\x13RECIPE_GENRE_KOREAN\x10\x04\x12\x18\n" +
 	"\x14RECIPE_GENRE_ITALIAN\x10\x05\x12\x17\n" +
-	"\x13RECIPE_GENRE_ETHNIC\x10\x06*H\n" +
+	"\x13RECIPE_GENRE_ETHNIC\x10\x06*\x89\x01\n" +
 	"\fRecipeSource\x12\x1d\n" +
 	"\x19RECIPE_SOURCE_UNSPECIFIED\x10\x00\x12\x19\n" +
-	"\x15RECIPE_SOURCE_COOKPAD\x10\x012N\n" +
+	"\x15RECIPE_SOURCE_COOKPAD\x10\x01\x12\x1d\n" +
+	"\x19RECIPE_SOURCE_ORANGE_PAGE\x10\x02\x12 \n" +
+	"\x1cRECIPE_SOURCE_DELISH_KITCHEN\x10\x032N\n" +
 	"\vChatService\x12?\n" +
 	"\x04Chat\x12\x18.frontendapi.ChatRequest\x1a\x19.frontendapi.ChatResponse(\x010\x012\x82\a\n" +
 	"\x0fFrontendService\x12J\n" +

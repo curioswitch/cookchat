@@ -100,6 +100,10 @@ func recipeSourceToProto(src cookchatdb.RecipeSource) frontendapi.RecipeSource {
 	switch src {
 	case cookchatdb.RecipeSourceCookpad:
 		return frontendapi.RecipeSource_RECIPE_SOURCE_COOKPAD
+	case cookchatdb.RecipeSourceOrangePage:
+		return frontendapi.RecipeSource_RECIPE_SOURCE_ORANGE_PAGE
+	case cookchatdb.RecipeSourceDelishKitchen:
+		return frontendapi.RecipeSource_RECIPE_SOURCE_DELISH_KITCHEN
 	case cookchatdb.RecipeSourceUser:
 		fallthrough
 	default:
