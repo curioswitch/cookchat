@@ -4,15 +4,19 @@
 package recipe
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"image/jpeg"
+	"image/png"
 	"strings"
 
 	"cloud.google.com/go/firestore"
 	"cloud.google.com/go/storage"
 	"github.com/gocolly/colly/v2"
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/genai"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -204,7 +208,43 @@ type classificationResult struct {
 }
 
 func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Recipe) error {
-	if recipe.Content.Title == "" {
+	sourceJSON, err := json.Marshal(recipe)
+	if err != nil {
+		return fmt.Errorf("recipe: failed to marshal recipe content: %w", err)
+	}
+
+	res, err := h.genAI.Models.GenerateContent(ctx, "gemini-2.5-flash", []*genai.Content{
+		{
+			Role: "user",
+			Parts: []*genai.Part{
+				{
+					Text: string(sourceJSON),
+				},
+			},
+		},
+	}, &genai.GenerateContentConfig{
+		SystemInstruction: &genai.Content{
+			Role: "model",
+			Parts: []*genai.Part{
+				{
+					Text: "Read the provided recipe and return the same recipe, with title, recipe description, and step description updated to be told by you, in Japanese. Do not copy-paste the input as-is, but update these by retelling them. It must be the same recipe conceptually. Return all other fields as-is from the input.",
+				},
+			},
+		},
+		ResponseMIMEType: "application/json",
+		ResponseSchema:   cookchatdb.RecipeContentSchema,
+	})
+	if err != nil {
+		return fmt.Errorf("recipe: recreate recipe: %w", err)
+	}
+	if len(res.Candidates) != 1 || len(res.Candidates[0].Content.Parts) != 1 || res.Candidates[0].Content.Parts[0].Text == "" {
+		return fmt.Errorf("cookpad:recipe: unexpected recipe recreation response from generate ai: %v", res)
+	}
+	if err := json.Unmarshal([]byte(res.Candidates[0].Content.Parts[0].Text), &recipe); err != nil {
+		return fmt.Errorf("recipe: unmarshal recreated recipe: %w", err)
+	}
+
+	if true { // if recipe.Content.Title == "" {
 		recipe.Content = cookchatdb.RecipeContent{
 			Title:                 recipe.Title,
 			Description:           recipe.Description,
@@ -215,18 +255,108 @@ func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Reci
 			ServingSize:           recipe.ServingSize,
 		}
 	}
+	hasImage := recipe.ImageURL != ""
+
 	if len(recipe.StepImageURLs) == 0 {
 		recipe.StepImageURLs = make([]string, len(recipe.Steps))
 		for i, step := range recipe.Steps {
 			recipe.StepImageURLs[i] = step.ImageURL
+			if step.ImageURL != "" {
+				hasImage = true
+			}
 		}
 	}
 
-	sourceJSON, err := json.Marshal(recipe.Content)
+	sourceJSON, err = json.Marshal(recipe.Content)
 	if err != nil {
-		return fmt.Errorf("cookpad:recipe: failed to marshal recipe content: %w", err)
+		return fmt.Errorf("recipe: failed to marshal recipe content: %w", err)
 	}
-	if len(recipe.LocalizedContent) != 1 {
+
+	if true || !hasImage {
+		prompts := []string{
+			"Generate an photo for the provided recipe. This usually represents the final product. If you cannot generate a photo with confidence it represents the recipe, do not return an image.",
+		}
+		for range recipe.Content.Steps {
+			prompts = append(prompts, "Generate a photo for the provided recipe step. This usually represents the ingredients used in the step and possibly action described in the step. If you cannot generate a photo with confidence it represents the step, do not return an image.")
+		}
+
+		var grp errgroup.Group
+		imageURLs := make([]string, len(prompts))
+		for i, prompt := range prompts {
+			grp.Go(func() error {
+				var content string
+				if i == 0 {
+					content = string(sourceJSON)
+				} else {
+					content = recipe.Steps[i-1].Description
+				}
+
+				res, err := h.genAI.Models.GenerateContent(ctx, "gemini-2.5-flash-image", []*genai.Content{
+					{
+						Role: "user",
+						Parts: []*genai.Part{
+							{
+								Text: content,
+							},
+						},
+					},
+				}, &genai.GenerateContentConfig{
+					ResponseModalities: []string{"IMAGE"},
+					SystemInstruction: &genai.Content{
+						Role: "model",
+						Parts: []*genai.Part{
+							{
+								Text: prompt,
+							},
+						},
+					},
+				})
+				if err != nil {
+					return fmt.Errorf("recipe: generate ai image: %w", err)
+				}
+				if len(res.Candidates) > 0 && len(res.Candidates[0].Content.Parts) > 0 && res.Candidates[0].Content.Parts[0].InlineData != nil {
+					filename := "main-image.jpg"
+					if i > 0 {
+						filename = fmt.Sprintf("step-%03d.jpg", i-1)
+					}
+
+					imageBlob := res.Candidates[0].Content.Parts[0].InlineData
+					image := imageBlob.Data
+					if imageBlob.MIMEType == "image/png" {
+						img, err := png.Decode(bytes.NewReader(image))
+						if err != nil {
+							return fmt.Errorf("recipe: decoding png image: %w", err)
+						}
+						var buf bytes.Buffer
+						if err := jpeg.Encode(&buf, img, nil); err != nil {
+							return fmt.Errorf("recipe: encoding png to jpeg: %w", err)
+						}
+						image = buf.Bytes()
+					} else if imageBlob.MIMEType != "image/jpeg" {
+						return nil
+					}
+
+					path := fmt.Sprintf("recipes/%s/%s", recipe.ID, filename)
+					if err := h.saveFile(ctx, path, image); err != nil {
+						return fmt.Errorf("recipe: saving image to storage: %w", err)
+					}
+
+					imageURLs[i] = fmt.Sprintf("https://storage.googleapis.com/%s/%s", h.publicBucket, path)
+				}
+				return nil
+			})
+		}
+		if err := grp.Wait(); err != nil {
+			return err
+		}
+		recipe.ImageURL = imageURLs[0]
+		for i := 1; i < len(imageURLs); i++ {
+			recipe.StepImageURLs[i-1] = imageURLs[i]
+			recipe.Steps[i-1].ImageURL = imageURLs[i]
+		}
+	}
+
+	if true { // len(recipe.LocalizedContent) != 1 {
 		ingredientsSchema := &genai.Schema{
 			Type:        "array",
 			Description: "The ingredients in English.",
@@ -397,5 +527,18 @@ func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Reci
 		recipe.Genre = classRes.Genre
 	}
 
+	return nil
+}
+
+func (h *Handler) saveFile(ctx context.Context, path string, contents []byte) error {
+	w := h.storage.Bucket(h.publicBucket).Object(path).NewWriter(ctx)
+	defer func() {
+		// TODO: Log error
+		_ = w.Close()
+	}()
+	w.ContentType = "image/jpeg"
+	if _, err := w.Write(contents); err != nil {
+		return fmt.Errorf("cookpad:recipe: save image: %w", err)
+	}
 	return nil
 }
