@@ -244,7 +244,7 @@ func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Reci
 		return fmt.Errorf("recipe: unmarshal recreated recipe: %w", err)
 	}
 
-	if true { // if recipe.Content.Title == "" {
+	if recipe.Content.Title == "" {
 		recipe.Content = cookchatdb.RecipeContent{
 			Title:                 recipe.Title,
 			Description:           recipe.Description,
@@ -272,7 +272,7 @@ func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Reci
 		return fmt.Errorf("recipe: failed to marshal recipe content: %w", err)
 	}
 
-	if true || !hasImage {
+	if !hasImage {
 		prompts := []string{
 			"Generate an photo for the provided recipe. This usually represents the final product. If you cannot generate a photo with confidence it represents the recipe, do not return an image.",
 		}
@@ -356,7 +356,7 @@ func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Reci
 		}
 	}
 
-	if true { // len(recipe.LocalizedContent) != 1 {
+	if len(recipe.LocalizedContent) != 1 {
 		ingredientsSchema := &genai.Schema{
 			Type:        "array",
 			Description: "The ingredients in English.",
