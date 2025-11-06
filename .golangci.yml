@@ -105,6 +105,9 @@ linters:
       template: |-
         Copyright (c) CurioSwitch (choko@curioswitch.org)
         SPDX-License-Identifier: BUSL-1.1
+    wrapcheck:
+      extra-ignore-sigs:
+        - (*golang.org/x/sync/errgroup.Group).Wait()
   exclusions:
     presets:
       - comments
