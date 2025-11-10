@@ -2,7 +2,7 @@ module github.com/curioswitch/cookchat/common
 
 go 1.25.0
 
-require google.golang.org/genai v1.33.0
+require google.golang.org/genai v1.34.0
 
 require (
 	cloud.google.com/go v0.122.0 // indirect
@@ -25,6 +25,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.38.0 // indirect
 	golang.org/x/crypto v0.43.0 // indirect
 	golang.org/x/net v0.46.0 // indirect
+	golang.org/x/sync v0.18.0 // indirect
 	golang.org/x/sys v0.37.0 // indirect
 	golang.org/x/text v0.30.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251029180050-ab9386a59fda // indirect

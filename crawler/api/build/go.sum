@@ -1,6 +1,6 @@
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
-github.com/curioswitch/go-build v0.6.2 h1:prUNyksWzCe+l+Xgdnp6oPuMByg9ZlgxX/cmtDOFRyU=
-github.com/curioswitch/go-build v0.6.2/go.mod h1:6YV8tVSmfwamIWTkmKkMUzgoI+SnZNOUQI2CXFs5Rv8=
+github.com/curioswitch/go-build v0.6.3 h1:BGH61C9QOds9JjvpP5VHsXCF7JwNL1HHhCK612Ai7Rg=
+github.com/curioswitch/go-build v0.6.3/go.mod h1:6YV8tVSmfwamIWTkmKkMUzgoI+SnZNOUQI2CXFs5Rv8=
 github.com/curioswitch/go-curiostack v0.0.0-20251028010430-4710e4d4054c h1:0wDBL2/ML4gr1/ZfpXyHpCi6Oz5IKbEBvv93MtjaU0A=
 github.com/curioswitch/go-curiostack v0.0.0-20251028010430-4710e4d4054c/go.mod h1:k8FsaxAwGjUVsEYbYE9P5BjtrCq0UN2bZGif5JyTRMM=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
