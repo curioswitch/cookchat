@@ -107,10 +107,12 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 			ingredients = rlc.Ingredients
 		}
 
-		summary := ""
+		var summaryBldr strings.Builder
 		for _, ingredient := range ingredients {
-			summary += ingredient.Name + "・"
+			summaryBldr.WriteString(ingredient.Name)
+			summaryBldr.WriteString("・")
 		}
+		summary := summaryBldr.String()
 		if len(summary) > 0 {
 			summary = summary[:len(summary)-len("・")]
 		}

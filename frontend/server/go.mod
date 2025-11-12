@@ -14,9 +14,9 @@ require (
 	github.com/curioswitch/go-usegcp v0.0.0-20251021035221-fc9dc60d218d
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/openai/openai-go/v2 v2.7.1
-	golang.org/x/sync v0.17.0
+	golang.org/x/sync v0.18.0
 	google.golang.org/api v0.255.0
-	google.golang.org/genai v1.33.0
+	google.golang.org/genai v1.34.0
 	google.golang.org/protobuf v1.36.10
 )
 
