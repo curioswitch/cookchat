@@ -18,7 +18,7 @@ plugins:
       - go
       - run
       # renovate: github.com/wasilibs/go-protoc-gen-es/v2
-      - github.com/wasilibs/go-protoc-gen-es/v2/cmd/protoc-gen-es@v2.10.0
+      - github.com/wasilibs/go-protoc-gen-es/v2/cmd/protoc-gen-es@v2.10.1
     out: typescript
     include_imports: true
     opt:
