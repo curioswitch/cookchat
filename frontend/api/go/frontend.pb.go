@@ -2495,8 +2495,11 @@ func (x *ChatPlanRequest) GetMessages() []*ChatMessage {
 
 // A response for FrontendService.ChatPlan.
 type ChatPlanResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Messages      []*ChatMessage         `protobuf:"bytes,1,rep,name=messages,proto3" json:"messages,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The messages in the chat, including a new one.
+	Messages []*ChatMessage `protobuf:"bytes,1,rep,name=messages,proto3" json:"messages,omitempty"`
+	// The ID of the plan created/modified.
+	PlanId        string `protobuf:"bytes,2,opt,name=plan_id,json=planId,proto3" json:"plan_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2536,6 +2539,13 @@ func (x *ChatPlanResponse) GetMessages() []*ChatMessage {
 		return x.Messages
 	}
 	return nil
+}
+
+func (x *ChatPlanResponse) GetPlanId() string {
+	if x != nil {
+		return x.PlanId
+	}
+	return ""
 }
 
 type AddRecipeRequest_AddRecipeStep struct {
@@ -2749,9 +2759,10 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\tROLE_USER\x10\x01\x12\x12\n" +
 	"\x0eROLE_ASSISTANT\x10\x02\"G\n" +
 	"\x0fChatPlanRequest\x124\n" +
-	"\bmessages\x18\x01 \x03(\v2\x18.frontendapi.ChatMessageR\bmessages\"H\n" +
+	"\bmessages\x18\x01 \x03(\v2\x18.frontendapi.ChatMessageR\bmessages\"a\n" +
 	"\x10ChatPlanResponse\x124\n" +
-	"\bmessages\x18\x01 \x03(\v2\x18.frontendapi.ChatMessageR\bmessages*Q\n" +
+	"\bmessages\x18\x01 \x03(\v2\x18.frontendapi.ChatMessageR\bmessages\x12\x17\n" +
+	"\aplan_id\x18\x02 \x01(\tR\x06planId*Q\n" +
 	"\bLanguage\x12\x18\n" +
 	"\x14LANGUAGE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10LANGUAGE_ENGLISH\x10\x01\x12\x15\n" +
