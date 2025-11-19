@@ -13,6 +13,7 @@ import { forwardRef, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FiSend } from "react-icons/fi";
 import { twMerge } from "tailwind-merge";
+import { navigate } from "vike/client/router";
 
 function ChatBubbleLoading() {
   return (
@@ -62,6 +63,10 @@ const ChatBubble = forwardRef<HTMLDivElement, { message: ChatMessage }>(
   },
 );
 
+const loadingMessage = create(ChatMessageSchema, {
+  role: ChatMessage_Role.ASSISTANT,
+});
+
 export function ChatPlan() {
   const { t } = useTranslation();
 
@@ -77,7 +82,11 @@ export function ChatPlan() {
 
   const doChatPlan = useMutation(chatPlan, {
     onSuccess: (resp) => {
-      setMessages(resp.messages);
+      if (resp.planId) {
+        navigate(`/plans/${resp.planId}`);
+      } else {
+        setMessages(resp.messages);
+      }
     },
   });
 
@@ -95,11 +104,6 @@ export function ChatPlan() {
     doChatPlan.mutate({
       messages: m,
     });
-    messages.push(
-      create(ChatMessageSchema, {
-        role: ChatMessage_Role.ASSISTANT,
-      }),
-    );
   }, [doChatPlan, messages, loaded]);
 
   const onSendClick = useCallback(() => {
@@ -114,11 +118,6 @@ export function ChatPlan() {
     doChatPlan.mutate({
       messages: m,
     });
-    messages.push(
-      create(ChatMessageSchema, {
-        role: ChatMessage_Role.ASSISTANT,
-      }),
-    );
   }, [messages, inputText, doChatPlan]);
 
   useEffect(() => {
@@ -129,16 +128,22 @@ export function ChatPlan() {
   return (
     <div>
       {messages.map((msg, i) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+        // biome-ignore lint/suspicious/noArrayIndexKey: ordered list of items
         <ChatBubble key={i} message={msg} />
       ))}
+      {doChatPlan.isPending && <ChatBubble message={loadingMessage} />}
       <div className="p-6 bg-white border-1 border-gray-200 rounded-2xl flex gap-4">
         <Input
           placeholder={t("Enter message...")}
           value={inputText}
           onValueChange={setInputText}
         />
-        <Button color="primary" className="text-white" onPress={onSendClick}>
+        <Button
+          color="primary"
+          className="text-white"
+          onPress={onSendClick}
+          disabled={doChatPlan.isPending}
+        >
           <FiSend />
         </Button>
       </div>

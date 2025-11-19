@@ -20,6 +20,8 @@ const (
 	RecipeSourceDelishKitchen RecipeSource = "delishkitchen"
 	// RecipeSourceUser is the source for user-submitted recipes.
 	RecipeSourceUser RecipeSource = "user"
+	// RecipeSourceAI is the source for AI-generated recipes.
+	RecipeSourceAI RecipeSource = "ai"
 )
 
 type LanguageCode string

@@ -431,7 +431,11 @@ message ChatPlanRequest {
 
 // A response for FrontendService.ChatPlan.
 message ChatPlanResponse {
+  // The messages in the chat, including a new one.
   repeated ChatMessage messages = 1;
+
+  // The ID of the plan created/modified.
+  string plan_id = 2;
 }
 
 service FrontendService {
