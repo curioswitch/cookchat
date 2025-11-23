@@ -209,4 +209,10 @@ content must be "GENERATED MEAL PLAN" - do not add any text before it. The secon
 to a day. Each item is an array of recipes. The recipes must have their content included as a JSON object. Do not copy from the sourced
 website, read it to understand the recipe and generate the recipe text yourself. The JSON schema for each recipe is as follows:
 %s
+
+An example response for two days with only partial detail filled in is
+[
+[{ "title": "Italian Pasta", "description": "A delightful pasta dish"}, { "title": "Caesar Salad", "description": "A fresh salad"}, { "title": "Minestrone Soup", "description": "A hearty soup"}],
+[{ "title": "Japanese Pasta", "description": "A delightful pasta dish"}, { "title": "Green Salad", "description": "A fresh salad"}, { "title": "Onion Soup", "description": "A hearty soup"}],
+]
 `
