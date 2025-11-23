@@ -60,7 +60,11 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 	}
 	resText := strings.TrimSpace(res.Candidates[0].Content.Parts[0].Text)
 	if _, resJSON, ok := strings.Cut(resText, "GENERATED MEAL PLAN\n"); ok {
-		plan, err := h.savePlan(ctx, resJSON)
+		var plans [][]cookchatdb.RecipeContent
+		if err := json.Unmarshal([]byte(resJSON), &plans); err != nil {
+			return nil, fmt.Errorf("chatplan: error deserializing LLM JSON response: %w", err)
+		}
+		plan, err := h.savePlan(ctx, plans[0])
 		if err != nil {
 			return nil, err
 		}
@@ -99,11 +103,7 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 	}, nil
 }
 
-func (h *Handler) savePlan(ctx context.Context, resJSON string) (cookchatdb.Plan, error) {
-	var recipeContents []cookchatdb.RecipeContent
-	if err := json.Unmarshal([]byte(resJSON), &recipeContents); err != nil {
-		return cookchatdb.Plan{}, fmt.Errorf("chatplan: error deserializing LLM JSON response: %w", err)
-	}
+func (h *Handler) savePlan(ctx context.Context, recipeContents []cookchatdb.RecipeContent) (cookchatdb.Plan, error) {
 	recipes := make([]cookchatdb.Recipe, len(recipeContents))
 	for i, rc := range recipeContents {
 		recipes[i] = cookchatdb.Recipe{
