@@ -16,8 +16,8 @@ import (
 	"cloud.google.com/go/firestore"
 	"connectrpc.com/connect"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
-	"github.com/openai/openai-go/v2"
-	"github.com/openai/openai-go/v2/realtime"
+	"github.com/openai/openai-go/v3"
+	"github.com/openai/openai-go/v3/realtime"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genai"
 

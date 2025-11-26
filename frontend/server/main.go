@@ -20,7 +20,7 @@ import (
 	"github.com/curioswitch/go-curiostack/server"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/openai/openai-go/v2"
+	"github.com/openai/openai-go/v3"
 	"google.golang.org/genai"
 
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
