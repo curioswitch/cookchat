@@ -122,8 +122,9 @@ export function ChatPlan() {
 
   useEffect(() => {
     const _ = messages;
+    const __ = doChatPlan.isPending;
     window.scrollTo(0, document.body.scrollHeight);
-  }, [messages]);
+  }, [messages, doChatPlan.isPending]);
 
   return (
     <div>

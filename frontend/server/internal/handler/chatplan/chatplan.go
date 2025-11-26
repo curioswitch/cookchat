@@ -6,13 +6,17 @@ package chatplan
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"maps"
+	"slices"
 	"strings"
 	"time"
 
 	discoveryengine "cloud.google.com/go/discoveryengine/apiv1"
 	"cloud.google.com/go/firestore"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
+	"google.golang.org/api/iterator"
 	"google.golang.org/genai"
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
@@ -35,6 +39,11 @@ type Handler struct {
 }
 
 func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest) (*frontendapi.ChatPlanResponse, error) {
+	recentRecipes, err := h.getRecentRecipes(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("chatplan: getting recent recipes: %w", err)
+	}
+
 	content := make([]*genai.Content, len(req.GetMessages()))
 	for i, message := range req.GetMessages() {
 		role := genai.Role(genai.RoleUser)
@@ -45,7 +54,7 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 	}
 
 	res, err := h.genAI.Models.GenerateContent(ctx, "gemini-2.5-flash", content, &genai.GenerateContentConfig{
-		SystemInstruction: genai.NewContentFromText(llm.ChatPlanPrompt(), genai.RoleModel),
+		SystemInstruction: genai.NewContentFromText(llm.ChatPlanPrompt(strings.Join(recentRecipes, ", ")), genai.RoleModel),
 		Tools: []*genai.Tool{
 			{
 				GoogleSearch: &genai.GoogleSearch{},
@@ -248,4 +257,78 @@ func (h *Handler) generatePlan(ctx context.Context, recipes []cookchatdb.Recipe)
 		return plan, fmt.Errorf("generateplan: failed to unmarshal received plan: %w", err)
 	}
 	return plan, nil
+}
+
+func (h *Handler) getRecentRecipes(ctx context.Context) ([]string, error) {
+	now := time.Now()
+	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+	start := today.Add(-2 * 7 * 24 * time.Hour)
+
+	userID := firebaseauth.TokenFromContext(ctx).UID
+
+	plansCol := h.store.Collection("users").Doc(userID).Collection("plans")
+	iter := plansCol.Query.WhereEntity(firestore.AndFilter{
+		Filters: []firestore.EntityFilter{
+			firestore.PropertyFilter{
+				Path:     firestore.DocumentID,
+				Operator: ">=",
+				Value:    plansCol.Doc(start.Format(time.DateOnly)),
+			},
+			firestore.PropertyFilter{
+				Path:     firestore.DocumentID,
+				Operator: "<=",
+				Value:    plansCol.Doc(today.Format(time.DateOnly)),
+			},
+		},
+	}).Documents(ctx)
+	defer iter.Stop()
+
+	recipeIDs := make(map[string]struct{})
+	for {
+		doc, err := iter.Next()
+		if errors.Is(err, iterator.Done) {
+			break
+		}
+		if err != nil {
+			return nil, fmt.Errorf("chatplan: fetching plan: %w", err)
+		}
+
+		var plan cookchatdb.Plan
+		if err := doc.DataTo(&plan); err != nil {
+			return nil, fmt.Errorf("chatplan: decoding plan: %w", err)
+		}
+		for _, recipeID := range plan.Recipes {
+			recipeIDs[recipeID] = struct{}{}
+		}
+	}
+
+	var recipeTitles []string
+	if len(recipeIDs) == 0 {
+		return recipeTitles, nil
+	}
+
+	recipesCol := h.store.Collection("recipes")
+	iter = recipesCol.Query.WhereEntity(firestore.PropertyFilter{
+		Path:     "id",
+		Operator: "in",
+		Value:    slices.Collect(maps.Keys(recipeIDs)),
+	}).Documents(ctx)
+	defer iter.Stop()
+
+	for {
+		doc, err := iter.Next()
+		if errors.Is(err, iterator.Done) {
+			break
+		}
+		if err != nil {
+			return nil, fmt.Errorf("chatplan: fetching recipe: %w", err)
+		}
+		var recipe cookchatdb.Recipe
+		if err := doc.DataTo(&recipe); err != nil {
+			return nil, fmt.Errorf("chatplan: decoding recipe: %w", err)
+		}
+		recipeTitles = append(recipeTitles, recipe.Title)
+	}
+
+	return recipeTitles, nil
 }
