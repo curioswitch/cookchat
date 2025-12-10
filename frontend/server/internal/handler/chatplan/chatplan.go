@@ -15,6 +15,7 @@ import (
 
 	discoveryengine "cloud.google.com/go/discoveryengine/apiv1"
 	"cloud.google.com/go/firestore"
+	"github.com/cenkalti/backoff/v5"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genai"
@@ -53,20 +54,27 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 		content[i] = genai.NewContentFromText(message.GetContent(), role)
 	}
 
-	res, err := h.genAI.Models.GenerateContent(ctx, "gemini-2.5-flash", content, &genai.GenerateContentConfig{
-		SystemInstruction: genai.NewContentFromText(llm.ChatPlanPrompt(strings.Join(recentRecipes, ", ")), genai.RoleModel),
-		Tools: []*genai.Tool{
-			{
-				GoogleSearch: &genai.GoogleSearch{},
+	res, err := backoff.Retry(ctx, func() (*genai.GenerateContentResponse, error) {
+		res, err := h.genAI.Models.GenerateContent(ctx, "gemini-2.5-flash", content, &genai.GenerateContentConfig{
+			SystemInstruction: genai.NewContentFromText(llm.ChatPlanPrompt(strings.Join(recentRecipes, ", ")), genai.RoleModel),
+			Tools: []*genai.Tool{
+				{
+					GoogleSearch: &genai.GoogleSearch{},
+				},
 			},
-		},
+		})
+		if err != nil {
+			return nil, fmt.Errorf("chatplan: calling GenerateContent for plan: %w", err)
+		}
+		if len(res.Candidates) != 1 || len(res.Candidates[0].Content.Parts) != 1 || res.Candidates[0].Content.Parts[0].Text == "" {
+			return nil, fmt.Errorf("chatplan: unexpected response from generate ai for plan: %v", res)
+		}
+		return res, nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("chatplan: calling GenerateContent for plan: %w", err)
+		return nil, err
 	}
-	if len(res.Candidates) != 1 || len(res.Candidates[0].Content.Parts) != 1 || res.Candidates[0].Content.Parts[0].Text == "" {
-		return nil, fmt.Errorf("chatplan: unexpected response from generate ai for plan: %v", res)
-	}
+
 	resText := strings.TrimSpace(res.Candidates[0].Content.Parts[0].Text)
 	if _, resJSON, ok := strings.Cut(resText, "GENERATED MEAL PLAN\n"); ok {
 		var plans [][]cookchatdb.RecipeContent
