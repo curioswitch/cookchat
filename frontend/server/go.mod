@@ -8,6 +8,7 @@ require (
 	cloud.google.com/go/storage v1.57.2
 	connectrpc.com/connect v1.19.1
 	firebase.google.com/go/v4 v4.18.0
+	github.com/cenkalti/backoff/v5 v5.0.3
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/frontend/api v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/go-curiostack v0.0.0-20251028010430-4710e4d4054c
@@ -36,7 +37,6 @@ require (
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.53.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator v0.54.0 // indirect
 	github.com/MicahParks/keyfunc v1.9.0 // indirect
-	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cncf/xds/go v0.0.0-20251022180443-0feb69152e9f // indirect
 	github.com/curioswitch/go-docs-handler v0.1.5 // indirect
