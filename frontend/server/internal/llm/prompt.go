@@ -186,6 +186,7 @@ Requirements for a meal plan
 - Up to three recipes. 
 - There must be one main dish.
 - There should be a side dish and a soup when the combination makes sense.
+- The first recipe in the plan must be the main dish.
 - If the user provides any dietary restrictions or denies any recipe feature (e.g., "no seafood"), the recipes must comply with them.
 - The meal should aim to provide a delicious experience.
 
