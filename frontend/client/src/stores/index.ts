@@ -253,7 +253,7 @@ export const addPlanRecipe = (recipe: PlanRecipe) => {
 };
 
 export const setPlanDays = (days: number) => {
-  usePlanStore.setState({ numDays: days });
+  usePlanStore.setState({ numDays: days < 1 ? 1 : days });
 };
 
 export const setPlanIngredients = (ingredients: string) =>

@@ -108,18 +108,16 @@ ${cart.extraItems.join("\n")}
             <FaCalendarAlt className="size-8 md:size-12" />
             <div>{t("Plan")}</div>
           </Link>
-          <ChatButton
-            className={
-              chatStore.currentRecipeId || chatStore.currentPlanId
-                ? "fixed bottom-32 right-8"
-                : "hidden"
-            }
-            recipeId={chatStore.currentRecipeId}
-            planId={chatStore.currentPlanId}
-            navigateToStep={chatStore.navigateToStep}
-            navigateToIngredients={chatStore.navigateToIngredients}
-            prompt={chatStore.prompt}
-          />
+          {(chatStore.currentRecipeId || chatStore.currentPlanId) && (
+            <ChatButton
+              className={"fixed bottom-32 right-8"}
+              recipeId={chatStore.currentRecipeId}
+              planId={chatStore.currentPlanId}
+              navigateToStep={chatStore.navigateToStep}
+              navigateToIngredients={chatStore.navigateToIngredients}
+              prompt={chatStore.prompt}
+            />
+          )}
           <Link
             href="/bookmarks"
             className={twMerge(
