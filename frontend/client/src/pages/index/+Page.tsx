@@ -104,7 +104,9 @@ export default function Page() {
             </div>
           </div>
           <div className="mt-6">
-            <h2 className="text-lg font-bold mb-4">{t("Popular Recipes")}</h2>
+            <h2 className="text-lg font-bold mb-4 pr-[3px]">
+              {t("Popular Recipes")}
+            </h2>
             <div className="flex flex-col gap-2">
               {popularRecipes.map((recipe, i) => (
                 <Link
@@ -122,8 +124,10 @@ export default function Page() {
                     src={recipe.imageUrl}
                     alt={recipe.title}
                   />
-                  <div className="flex-3/4">
-                    <h3 className="mt-0">{recipe.title}</h3>
+                  <div className="flex-3/4 pr-4">
+                    <h3 className="mt-0 mb-1 text-[0.95rem]">
+                      {recipe.title}
+                    </h3>
                     <p className="mb-2 text-small font-thin text-gray-400 line-clamp-1">
                       {recipe.summary}
                     </p>

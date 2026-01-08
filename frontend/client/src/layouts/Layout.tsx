@@ -3,9 +3,13 @@ import { Divider } from "@heroui/divider";
 import { Link } from "@heroui/link";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { FaBookmark, FaCalendarAlt } from "react-icons/fa";
-import { HiShare, HiShoppingCart } from "react-icons/hi";
-import { PiForkKnifeFill } from "react-icons/pi";
+import {
+  FiBookmark,
+  FiBookOpen,
+  FiCalendar,
+  FiShoppingCart,
+} from "react-icons/fi";
+import { HiShare } from "react-icons/hi";
 import { twMerge } from "tailwind-merge";
 import { usePageContext } from "vike-react/usePageContext";
 
@@ -20,6 +24,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const path = pageContext.urlPathname;
   const isHome = path === "/";
   const isCart = path === "/cart";
+  const isBookmarks = path === "/bookmarks";
 
   const cart = useCartStore();
   const chatStore = useChatStore();
@@ -62,7 +67,7 @@ ${cart.extraItems.join("\n")}
         <div className="p-2 flex flex-col flex-1">
           {!isHome && (
             <div className="flex justify-between items-center pb-4">
-              <BackButton className="flex-1/10 text-primary" />
+              <BackButton className="flex-1/10 text-primary-400" />
               <h1 className="mt-0 mb-0 flex-8/10 text-center">{title}</h1>
               <div className="flex-1/10 w-full flex justify-end">
                 {isCart && (
@@ -76,7 +81,10 @@ ${cart.extraItems.join("\n")}
           )}
           <div
             className={twMerge(
-              !isHome && "flex-1 bg-linear-to-r from-[#fff7ed] to-[#ffedd5]",
+              !isHome &&
+                !isBookmarks &&
+                "flex-1 bg-linear-to-r from-[#fff7ed] to-[#ffedd5]",
+              isBookmarks && "flex-1 bg-white",
             )}
           >
             {children}
@@ -84,29 +92,29 @@ ${cart.extraItems.join("\n")}
         </div>
       </div>
       <div className="fixed bottom-0 w-full h-24 md:h-24 bg-white z-50">
-        <Divider />
-        <div className="px-4 flex items-center justify-between h-full w-full">
+        <Divider className="bg-yellow-300" />
+        <div className="px-6 md:px-8 flex items-center justify-between h-full w-full">
           <Link
             href="/"
             className={twMerge(
               "flex flex-col gap-1",
               path === "/" || path.startsWith("/recipes/")
-                ? "text-orange-400"
+                ? "text-primary-400"
                 : "text-gray-400",
             )}
           >
-            <PiForkKnifeFill className="size-8 md:size-12" />
-            <div>{t("Recipe")}</div>
+            <FiBookOpen className="size-7 md:size-10" />
+            <div className="text-xs md:text-sm">{t("Recipe")}</div>
           </Link>
           <Link
             href="/plans"
             className={twMerge(
               "flex flex-col gap-1",
-              path.startsWith("/plans") ? "text-orange-400" : "text-gray-400",
+              path.startsWith("/plans") ? "text-primary-400" : "text-gray-400",
             )}
           >
-            <FaCalendarAlt className="size-8 md:size-12" />
-            <div>{t("Plan")}</div>
+            <FiCalendar className="size-7 md:size-10" />
+            <div className="text-xs md:text-sm">{t("Plan")}</div>
           </Link>
           {(chatStore.currentRecipeId || chatStore.currentPlanId) && (
             <ChatButton
@@ -122,26 +130,26 @@ ${cart.extraItems.join("\n")}
             href="/bookmarks"
             className={twMerge(
               "flex flex-col gap-1",
-              path === "/bookmarks" ? "text-orange-400" : "text-gray-400",
+              path === "/bookmarks" ? "text-primary-400" : "text-gray-400",
             )}
           >
-            <FaBookmark className="size-8 md:size-12" />
-            <div>{t("Bookmarks")}</div>
+            <FiBookmark className="size-7 md:size-10" />
+            <div className="text-xs md:text-sm">{t("Bookmarks")}</div>
           </Link>
           <Link
             href="/cart"
             className={twMerge(
               "flex flex-col gap-1",
-              path === "/cart" ? "text-orange-400" : "text-gray-400",
+              path === "/cart" ? "text-primary-400" : "text-gray-400",
             )}
           >
             <Badge
               content={cart.recipes.length}
               isInvisible={cart.recipes.length === 0}
             >
-              <HiShoppingCart className="size-8 md:size-12" />
+              <FiShoppingCart className="size-7 md:size-10" />
             </Badge>
-            <div>{t("Cart")}</div>
+            <div className="text-xs md:text-sm">{t("Cart")}</div>
           </Link>
         </div>
       </div>
