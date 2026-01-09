@@ -41,7 +41,9 @@ const ChatBubble = forwardRef<HTMLDivElement, { message: ChatMessage }>(
         <div
           className={twMerge(
             "max-w-2xl rounded-3xl py-3 px-4 md:px-7 h-fit whitespace-pre-line speech-bubble mt-4 leading-7 md:text-xl md:font-medium md:leading-8 flex items-center",
-            isUser ? "right text-right bg-primary text-white" : "left bg-white",
+            isUser
+              ? "right text-right bg-primary-400 text-white"
+              : "left bg-white",
           )}
         >
           <div>
@@ -140,8 +142,7 @@ export function ChatPlan() {
           onValueChange={setInputText}
         />
         <Button
-          color="primary"
-          className="text-white"
+          className="bg-primary-400 text-white hover:bg-primary-500"
           onPress={onSendClick}
           disabled={doChatPlan.isPending}
         >

@@ -48,11 +48,11 @@ export default function Page() {
   );
 
   const recommendedRecipes = useMemo(
-    () => recipes?.slice(0, 2) || [],
+    () => recipes?.slice(0, 4) || [],
     [recipes],
   );
 
-  const popularRecipes = useMemo(() => recipes?.slice(2) || [], [recipes]);
+  const popularRecipes = useMemo(() => recipes?.slice(4) || [], [recipes]);
 
   return (
     <div className="p-4">
@@ -92,7 +92,7 @@ export default function Page() {
                   className="block"
                 >
                   <Image
-                    className="w-full h-32 object-cover rounded-2xl"
+                    className="w-full aspect-square object-cover rounded-2xl"
                     src={recipe.imageUrl}
                     alt={recipe.title}
                   />
