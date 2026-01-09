@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { FaEdit } from "react-icons/fa";
 import { navigate } from "vike/client/router";
 
+import kitchenSVG from "../../assets/kitchen.svg";
 import { enableEditPlan } from "../../stores";
 
 const validator = createValidator();
@@ -99,9 +100,29 @@ export default function Page() {
     .map((r) => r.message);
 
   return (
-    <div>
+    <div className="min-h-screen bg-white">
       <div className="p-8 flex flex-col gap-4">
-        <Button as={Link} href="/plans/add" color="primary">
+        <div className="flex flex-col items-center gap-3 bg-white text-center">
+          <div>
+            <p className="m-0 text-sm font-semibold text-gray-700">
+              {t("Plan CTA Title")}
+            </p>
+            <p className="mt-1 mb-0 text-xs text-gray-500">
+              {t("Plan CTA Subtitle")}
+            </p>
+          </div>
+          <img
+            src={kitchenSVG}
+            alt=""
+            aria-hidden="true"
+            className="size-24"
+          />
+        </div>
+        <Button
+          as={Link}
+          href="/plans/add"
+          className="bg-primary-400 text-white"
+        >
           {t("Add Plan")}
         </Button>
         {plans.map((plan) => (

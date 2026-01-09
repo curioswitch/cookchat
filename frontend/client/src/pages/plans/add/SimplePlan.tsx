@@ -232,8 +232,7 @@ export function SimplePlan() {
         </div>
         <div>
           <Button
-            className="mt-4 text-white h-16"
-            color="primary"
+            className="mt-4 h-12 bg-primary-400 text-white hover:bg-primary-500"
             fullWidth
             onPress={onGenerateClick}
             disabled={doGeneratePlan.isPending}

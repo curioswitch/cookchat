@@ -339,7 +339,7 @@ export function ChatButton({
           className={twMerge(
             playing && speaking
               ? "bg-gray-400"
-              : "bg-linear-to-r from-[#f97316] to-[#fb923c]",
+              : "bg-primary-400",
             "z-10 rounded-full size-18 md:size-50 flex items-center justify-center cursor-pointer",
           )}
         >
@@ -356,7 +356,7 @@ export function ChatButton({
         type="button"
         onClick={onClick}
         className={twMerge(
-          "rounded-2xl py-1 px-2 bg-[#ea580c] font-light text-white !text-tiny",
+          "rounded-2xl py-1 px-2 bg-primary-400 font-light text-white !text-tiny",
           playing && "invisible",
         )}
       >

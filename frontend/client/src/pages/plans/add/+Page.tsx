@@ -8,13 +8,25 @@ export default function Page() {
   const { t } = useTranslation();
 
   return (
-    <div className="p-4 h-full">
-      <Tabs fullWidth color="primary">
+    <div className="min-h-screen bg-white p-4">
+      <Tabs
+        fullWidth
+        color="primary"
+        classNames={{
+          tabList: "bg-white p-1 rounded-2xl",
+          tab: "data-[selected=true]:bg-primary-400 data-[selected=true]:text-white",
+          cursor: "bg-primary-400",
+        }}
+      >
         <Tab title={t("Simple Plan")}>
-          <SimplePlan />
+          <div className="bg-primary-400/10 rounded-2xl p-4">
+            <SimplePlan />
+          </div>
         </Tab>
         <Tab title={t("Deep Research")}>
-          <ChatPlan />
+          <div className="bg-primary-400/10 rounded-2xl p-4">
+            <ChatPlan />
+          </div>
         </Tab>
       </Tabs>
     </div>

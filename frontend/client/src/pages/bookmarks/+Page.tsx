@@ -48,25 +48,25 @@ export default function Page() {
               href={`/recipes/${recipe.id}`}
               color="foreground"
               key={recipe.id}
-              className="flex bg-white border-1 rounded-2xl items-start border-primary-100 gap-4 h-32"
+              className="flex bg-white border-1 rounded-2xl items-center border-primary-100 gap-4 h-28 overflow-hidden"
               ref={i === recipes.length - 1 ? handleLastItem : null}
             >
               <Image
-                className="flex-1/5 rounded-none rounded-l-large object-cover h-24"
+                className="flex-1/5 rounded-none rounded-l-large object-cover h-full"
                 classNames={{
-                  wrapper: "flex-1/4",
+                  wrapper: "flex-1/4 h-full",
                 }}
                 src={recipe.imageUrl}
                 alt={recipe.title}
               />
-              <div className="flex-3/5 pr-4 pt-4">
+              <div className="flex-3/5 pr-4 py-2">
                 <h3>{recipe.title}</h3>
                 <p className="text-small font-thin text-gray-400 line-clamp-1">
                   {recipe.summary}
                 </p>
               </div>
-              <div className="flex-1/10 pt-5">
-                <FaBookmark className="fill-primary-500 cursor-pointer" />
+              <div className="flex-1/10 flex items-center justify-start -ml-1">
+                <FaBookmark className="size-5 fill-primary-400 cursor-pointer" />
               </div>
             </Link>
           ))}
