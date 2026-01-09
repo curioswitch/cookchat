@@ -83,8 +83,10 @@ ${cart.extraItems.join("\n")}
             className={twMerge(
               !isHome &&
                 !isBookmarks &&
+                !path.startsWith("/recipes/") &&
                 "flex-1 bg-linear-to-r from-[#fff7ed] to-[#ffedd5]",
               isBookmarks && "flex-1 bg-white",
+              path.startsWith("/recipes/") && "flex-1 bg-white",
             )}
           >
             {children}
