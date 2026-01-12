@@ -4,17 +4,17 @@ go 1.25.4
 
 require (
 	cloud.google.com/go/firestore v1.20.0
-	cloud.google.com/go/storage v1.57.2
+	cloud.google.com/go/storage v1.59.0
 	connectrpc.com/connect v1.19.1
 	firebase.google.com/go/v4 v4.18.0
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/crawler/api v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/go-curiostack v0.0.0-20251028010430-4710e4d4054c
-	github.com/gocolly/colly/v2 v2.2.0
+	github.com/gocolly/colly/v2 v2.3.0
 	github.com/wandb/parallel v0.2.3
-	golang.org/x/sync v0.18.0
-	google.golang.org/genai v1.36.0
-	google.golang.org/grpc v1.77.0
+	golang.org/x/sync v0.19.0
+	google.golang.org/genai v1.41.0
+	google.golang.org/grpc v1.78.0
 )
 
 require (

@@ -2,7 +2,7 @@ module github.com/curioswitch/cookchat/common
 
 go 1.25.4
 
-require google.golang.org/genai v1.36.0
+require google.golang.org/genai v1.41.0
 
 require (
 	cloud.google.com/go v0.122.0 // indirect
