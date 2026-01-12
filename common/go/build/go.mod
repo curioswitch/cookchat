@@ -4,7 +4,7 @@ go 1.25.4
 
 require (
 	github.com/curioswitch/go-build v0.6.3
-	github.com/goyek/x v0.3.0
+	github.com/goyek/x v0.4.0
 )
 
 require (
