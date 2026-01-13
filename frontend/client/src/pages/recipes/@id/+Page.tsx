@@ -13,7 +13,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
-import { HiAdjustments, HiShoppingCart, HiUsers } from "react-icons/hi";
+import { FiUsers } from "react-icons/fi";
+import { HiAdjustments, HiShoppingCart } from "react-icons/hi";
 import { navigate } from "vike/client/router";
 import { usePageContext } from "vike-react/usePageContext";
 
@@ -203,26 +204,42 @@ export default function Page() {
 
   return (
     <>
-      <Image radius="none" src={recipe.imageUrl} />
+      <div className="relative">
+        <Image
+          radius="none"
+          src={recipe.imageUrl}
+          classNames={{ wrapper: "w-full", img: "w-full" }}
+        />
+        {!editingPlan && (
+          <Button
+            onPress={onCreatePlan}
+            size="sm"
+            className="absolute left-3 bottom-3 z-10 bg-primary-400 text-white"
+          >
+            {t("Create Plan")}
+          </Button>
+        )}
+        <button
+          type="button"
+          onClick={onBookmarkClick}
+          className="absolute right-3 bottom-3 z-10 rounded-full bg-white p-3 shadow-sm"
+          aria-label={t("Bookmarks")}
+        >
+          {recipeRes.isBookmarked ? (
+            <FaBookmark className="size-6 fill-primary-400" />
+          ) : (
+            <FaRegBookmark className="size-6 fill-primary-400" />
+          )}
+        </button>
+      </div>
       <div className="px-4 py-2">
         <div className="px-2">
           <div className="flex items-center justify-between">
             <h2 className="">{recipe.title}</h2>
-            {recipeRes.isBookmarked ? (
-              <FaBookmark
-                onClick={onBookmarkClick}
-                className="fill-primary-400 cursor-pointer"
-              />
-            ) : (
-              <FaRegBookmark
-                onClick={onBookmarkClick}
-                className="fill-primary-400 cursor-pointer"
-              />
-            )}
           </div>
           <div className="flex items-center justify-between pt-2">
             <div className="flex items-center gap-2">
-              <HiUsers className="size-4 text-primary" />
+              <FiUsers className="size-5 text-primary-400" />
               <span className="text-gray-500 md:text-2xl mt-0.5">
                 {recipe.servingSize}
               </span>
@@ -236,16 +253,7 @@ export default function Page() {
               >
                 {t("Add to plan")}
               </Button>
-            ) : (
-              <Button
-                onPress={onCreatePlan}
-                color="primary"
-                size="sm"
-                className="text-white"
-              >
-                {t("Create Plan")}
-              </Button>
-            )}
+            ) : null}
           </div>
         </div>
         {editPrompt && (
@@ -262,6 +270,16 @@ export default function Page() {
             }}
             className="p-4 bg-white rounded-xl border-1 border-primary-200"
           >
+            <Button
+              fullWidth
+              className="mb-4 text-primary-400 py-4 px-6 bg-primary-400/20 md:py-8 md:text-large"
+              onPress={onCartToggle}
+            >
+              <HiShoppingCart className="size-5 md:size-8" />
+              {inCart
+                ? t("Remove from shopping list")
+                : t("Add to shopping list")}
+            </Button>
             <h3 className="flex items-center justify-between mt-0 prose">
               {t("Ingredients")}
               <HiAdjustments className="size-6" onClick={onEditPromptClick} />
@@ -273,16 +291,6 @@ export default function Page() {
                 <Ingredients ingredients={section.ingredients} />
               </div>
             ))}
-            <Button
-              fullWidth
-              className="mt-4 text-[#c2410c] py-4 px-6 bg-[#ffedd5] md:py-8 md:text-large"
-              onPress={onCartToggle}
-            >
-              <HiShoppingCart className="size-5 md:size-8" />
-              {inCart
-                ? t("Remove from shopping list")
-                : t("Add to shopping list")}
-            </Button>
           </div>
           {recipe.steps.map((step, i) => (
             <div
@@ -294,7 +302,7 @@ export default function Page() {
               className="p-4 bg-white rounded-xl border-1 border-primary-200"
             >
               <div className="flex gap-2">
-                <div className="flex-none bg-[#fed7aa] text-[#c2410c] size-8 md:size-10 text-base md:text-lg rounded-full flex justify-center items-center">
+                <div className="flex-none bg-primary-400/20 text-primary-400 size-8 md:size-10 text-base md:text-lg rounded-full flex justify-center items-center">
                   {i + 1}
                 </div>
                 <p className="text-md md:text-2xl font-light prose">
