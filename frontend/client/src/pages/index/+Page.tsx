@@ -125,9 +125,7 @@ export default function Page() {
                     alt={recipe.title}
                   />
                   <div className="flex-3/4 pr-4">
-                    <h3 className="mt-0 mb-1 text-[0.95rem]">
-                      {recipe.title}
-                    </h3>
+                    <h3 className="mt-0 mb-1 text-[0.95rem]">{recipe.title}</h3>
                     <p className="mb-2 text-small font-thin text-gray-400 line-clamp-1">
                       {recipe.summary}
                     </p>

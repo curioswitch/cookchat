@@ -111,12 +111,7 @@ export default function Page() {
               {t("Plan CTA Subtitle")}
             </p>
           </div>
-          <img
-            src={kitchenSVG}
-            alt=""
-            aria-hidden="true"
-            className="size-24"
-          />
+          <img src={kitchenSVG} alt="" aria-hidden="true" className="size-24" />
         </div>
         <Button
           as={Link}

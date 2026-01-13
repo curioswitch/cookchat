@@ -337,9 +337,7 @@ export function ChatButton({
           type="button"
           onClick={onClick}
           className={twMerge(
-            playing && speaking
-              ? "bg-gray-400"
-              : "bg-primary-400",
+            playing && speaking ? "bg-gray-400" : "bg-primary-400",
             "z-10 rounded-full size-18 md:size-50 flex items-center justify-center cursor-pointer",
           )}
         >
