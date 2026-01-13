@@ -105,10 +105,10 @@ export default function Page() {
         <div className="flex flex-col items-center gap-3 bg-white text-center">
           <div>
             <p className="m-0 text-sm font-semibold text-gray-700">
-              {t("Plan CTA Title")}
+              {t("Plan a meal with AI!")}
             </p>
             <p className="mt-1 mb-0 text-xs text-gray-500">
-              {t("Plan CTA Subtitle")}
+              {t("Let's find a perfect plan for you.")}
             </p>
           </div>
           <img src={kitchenSVG} alt="" aria-hidden="true" className="size-24" />
