@@ -222,7 +222,7 @@ An example response for two days with only partial detail filled in is
 
 const generateRecipeImagePrompt = `You support users generating recipes they will cook. Given the details of a recipe as JSON, generate
 an appropriate image that represents the recipe. The image should be appetizing and relevant to the dish being prepared. The image should be in a realistic photographic style,
-with good lighting and composition. The image will be used in lists of search results, bookmarks, etc.`
+with good lighting and composition. The image will be used in lists of search results, bookmarks, etc. The image must not include any text.`
 
 func GenerateRecipeImagePrompt() string {
 	return generateRecipeImagePrompt
