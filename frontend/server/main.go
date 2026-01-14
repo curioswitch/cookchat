@@ -256,7 +256,7 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 	}
 	server.HandleConnectUnary(s,
 		frontendapiconnect.FrontendServiceChatPlanProcedure,
-		chatplan.NewHandler(genAI, firestore, search).ChatPlan,
+		chatplan.NewHandler(genAI, firestore, search, storage, publicBucket).ChatPlan,
 		[]*frontendapi.ChatPlanRequest{
 			{
 				Messages: messagesEN[:1],
