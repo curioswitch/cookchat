@@ -5,6 +5,7 @@ package getplan
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -118,9 +119,17 @@ func (h *Handler) GetPlan(ctx context.Context, req *frontendapi.GetPlanRequest) 
 	}
 	plan.Notes = dbPlan.Notes
 
+	stepsJSON, err := json.Marshal(plan.GetStepGroups())
+	if err != nil {
+		return nil, fmt.Errorf("getplan: marshalling plan: %w", err)
+	}
+	recipesJSON, err := json.Marshal(recipes)
+	if err != nil {
+		return nil, fmt.Errorf("getplan: marshalling recipes: %w", err)
+	}
 	prompt := ""
 	if auth.IsCurioSwitchUser(ctx) {
-		prompt = llm.PlanChatPrompt(ctx)
+		prompt = llm.PlanChatPrompt(ctx, string(stepsJSON), string(recipesJSON))
 	}
 
 	return &frontendapi.GetPlanResponse{Plan: plan, LlmPrompt: prompt}, nil
