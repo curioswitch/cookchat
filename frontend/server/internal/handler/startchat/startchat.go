@@ -50,8 +50,9 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 
 	prompt := ""
 	recipePrompt := ""
+
 	if r := req.GetRecipeText(); r != "" {
-		prompt = llm.RecipeChatPrompt(ctx)
+		prompt = llm.RecipeChatPrompt(ctx, r)
 		recipePrompt = "The recipe is as follows:\n" + r
 	} else if rid := req.GetRecipeId(); rid != "" {
 		recipeDoc, err := h.store.Collection("recipes").Where("id", "==", rid).Limit(1).Documents(ctx).Next()
@@ -74,7 +75,7 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 		if err != nil {
 			return nil, fmt.Errorf("chat: marshalling recipe to JSON: %w", err)
 		}
-		prompt = llm.RecipeChatPrompt(ctx)
+		prompt = llm.RecipeChatPrompt(ctx, string(recipeJSON))
 		recipePrompt = "The recipe in structured JSON format is as follows:\n" + string(recipeJSON)
 	} else if pid := req.GetPlanId(); pid != nil {
 		col := h.store.Collection("users").Doc(userID).Collection("plans")
@@ -119,14 +120,13 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 			return nil, fmt.Errorf("startchat: marshalling recipes: %w", err)
 		}
 
-		prompt = llm.PlanChatPrompt(ctx)
+		prompt = llm.PlanChatPrompt(ctx, string(stepsJSON), string(recipesJSON))
 		recipePrompt = fmt.Sprintf("The plan's step groups in structured JSON format are as follows:\n%s\n\nThe recipes in structured JSON format are as follows:\n%s", stepsJSON, recipesJSON)
 	}
 
 	if p := req.GetLlmPrompt(); p != "" && auth.IsCurioSwitchUser(ctx) {
-		prompt = p + "\n\n"
+		prompt = p + "\n\n" + recipePrompt
 	}
-	prompt += recipePrompt + "\n\n"
 
 	var res *frontendapi.StartChatResponse
 	var err error

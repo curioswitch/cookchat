@@ -5,6 +5,7 @@ package getrecipe
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -53,9 +54,20 @@ func (h *Handler) GetRecipe(ctx context.Context, req *frontendapi.GetRecipeReque
 		bookmarked = true
 	}
 
+	language := i18n.UserLanguage(ctx)
+	var recipeJSON []byte
+	if rlc := recipe.LocalizedContent[language]; rlc != nil {
+		recipeJSON, err = json.Marshal(rlc)
+	} else {
+		recipeJSON, err = json.Marshal(recipe)
+	}
+	if err != nil {
+		return nil, fmt.Errorf("chat: marshalling recipe to JSON: %w", err)
+	}
+
 	prompt := ""
 	if auth.IsCurioSwitchUser(ctx) {
-		prompt = llm.RecipeChatPrompt(ctx)
+		prompt = llm.RecipeChatPrompt(ctx, string(recipeJSON))
 	}
 	return &frontendapi.GetRecipeResponse{
 		Recipe:       recipeToProto(&recipe, i18n.UserLanguage(ctx)),
