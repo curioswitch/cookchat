@@ -4,21 +4,21 @@ go 1.25.6
 
 require (
 	cloud.google.com/go/discoveryengine v1.22.0
-	cloud.google.com/go/firestore v1.20.0
-	cloud.google.com/go/storage v1.57.2
+	cloud.google.com/go/firestore v1.21.0
+	cloud.google.com/go/storage v1.59.1
 	connectrpc.com/connect v1.19.1
-	firebase.google.com/go/v4 v4.18.0
+	firebase.google.com/go/v4 v4.19.0
 	github.com/cenkalti/backoff/v5 v5.0.3
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/frontend/api v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/go-curiostack v0.0.0-20251028010430-4710e4d4054c
 	github.com/curioswitch/go-usegcp v0.0.0-20251021035221-fc9dc60d218d
-	github.com/go-chi/chi/v5 v5.2.3
-	github.com/openai/openai-go/v3 v3.8.1
-	golang.org/x/sync v0.18.0
-	google.golang.org/api v0.256.0
-	google.golang.org/genai v1.36.0
-	google.golang.org/protobuf v1.36.10
+	github.com/go-chi/chi/v5 v5.2.4
+	github.com/openai/openai-go/v3 v3.16.0
+	golang.org/x/sync v0.19.0
+	google.golang.org/api v0.262.0
+	google.golang.org/genai v1.43.0
+	google.golang.org/protobuf v1.36.11
 )
 
 require (
