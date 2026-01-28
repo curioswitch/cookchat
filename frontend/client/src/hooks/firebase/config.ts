@@ -5,7 +5,7 @@ export function getFirebaseConfig() {
   if (import.meta.env.PUBLIC_ENV__FIREBASE_APP === "cookchat-dev") {
     return {
       apiKey: "AIzaSyAtNbka56GMp9Hoa62EdUIeOjHgqwqZYCw",
-      authDomain: "alpha.cookchat.curioswitch.org",
+      authDomain: "alpha.coopii.app",
       projectId: "cookchat-dev",
       storageBucket: "cookchat-dev.firebasestorage.app",
       messagingSenderId: "408496405753",
