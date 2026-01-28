@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import i18n from "../../layouts/i18n";
 import {
   setMicrophoneDeviceId,
+  setModel,
   setSpeakerDeviceId,
   setUseOpenAI,
   useSettingsStore,
@@ -90,6 +91,20 @@ export default function Page() {
       >
         Use OpenAI
       </Checkbox>
+      {settings.useOpenAI && (
+        <Select
+          label={t("Model")}
+          labelPlacement="outside-left"
+          selectedKeys={[settings.model]}
+          onSelectionChange={(e: SharedSelection) => {
+            setModel(e.currentKey ?? "");
+          }}
+          className="mt-4"
+        >
+          <SelectItem key="gpt-realtime-mini">gpt-realtime-mini</SelectItem>
+          <SelectItem key="gpt-realtime">gpt-realtime</SelectItem>
+        </Select>
+      )}
     </div>
   );
 }

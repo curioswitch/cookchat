@@ -229,6 +229,9 @@ message StartChatRequest {
   // The prompt to use with the chat.
   // Only recognized for users with debugging access.
   string llm_prompt = 5;
+
+  // The model to use for the chat.
+  string model = 7;
 }
 
 // A response to start a chat session.

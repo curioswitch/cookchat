@@ -114,6 +114,7 @@ export type SettingsStore = {
   speakerDeviceId: string;
   microphoneDeviceId: string;
   useOpenAI: boolean;
+  model: string;
 };
 
 export const setSpeakerDeviceId = (deviceId: string) =>
@@ -125,12 +126,15 @@ export const setMicrophoneDeviceId = (deviceId: string) =>
 export const setUseOpenAI = (useOpenAI: boolean) =>
   useSettingsStore.setState({ useOpenAI });
 
+export const setModel = (model: string) => useSettingsStore.setState({ model });
+
 export const useSettingsStore = create<SettingsStore>()(
   persist(
     () => ({
       speakerDeviceId: "",
       microphoneDeviceId: "",
       useOpenAI: false as boolean,
+      model: "",
     }),
     {
       name: "settings-storage",
