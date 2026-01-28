@@ -9,7 +9,7 @@ require (
 	firebase.google.com/go/v4 v4.19.0
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/crawler/api v0.0.0-00010101000000-000000000000
-	github.com/curioswitch/go-curiostack v0.0.0-20260128050038-d5b0717bf345
+	github.com/curioswitch/go-curiostack v0.0.0-20260128051004-075609c7945e
 	github.com/gocolly/colly/v2 v2.2.0
 	github.com/wandb/parallel v0.2.3
 	golang.org/x/sync v0.19.0

@@ -11,7 +11,7 @@ require (
 	github.com/cenkalti/backoff/v5 v5.0.3
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/frontend/api v0.0.0-00010101000000-000000000000
-	github.com/curioswitch/go-curiostack v0.0.0-20260128050038-d5b0717bf345
+	github.com/curioswitch/go-curiostack v0.0.0-20260128051004-075609c7945e
 	github.com/curioswitch/go-usegcp v0.0.0-20251112061520-c500c3a65003
 	github.com/go-chi/chi/v5 v5.2.4
 	github.com/openai/openai-go/v3 v3.8.1
