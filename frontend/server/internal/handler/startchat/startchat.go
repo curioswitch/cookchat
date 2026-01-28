@@ -134,7 +134,7 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 	case frontendapi.StartChatRequest_MODEL_PROVIDER_UNSPECIFIED, frontendapi.StartChatRequest_MODEL_PROVIDER_GOOGLE_GENAI:
 		res, err = h.startChatGemini(ctx, prompt, req.GetPlanId().IsValid())
 	case frontendapi.StartChatRequest_MODEL_PROVIDER_OPENAI:
-		res, err = h.startChatOpenAI(ctx, prompt)
+		res, err = h.startChatOpenAI(ctx, req, prompt)
 	}
 
 	if err != nil {
@@ -271,8 +271,11 @@ type tokenResponse struct {
 	Name string `json:"name"`
 }
 
-func (h *Handler) startChatOpenAI(ctx context.Context, prompt string) (*frontendapi.StartChatResponse, error) {
-	model := "gpt-realtime"
+func (h *Handler) startChatOpenAI(ctx context.Context, req *frontendapi.StartChatRequest, prompt string) (*frontendapi.StartChatResponse, error) {
+	model := "gpt-realtime-mini"
+	if m := req.GetModel(); m != "" {
+		model = m
+	}
 	res, err := h.openai.Realtime.ClientSecrets.New(ctx, realtime.ClientSecretNewParams{
 		Session: realtime.ClientSecretNewParamsSessionUnion{
 			OfRealtime: &realtime.RealtimeSessionCreateRequestParam{

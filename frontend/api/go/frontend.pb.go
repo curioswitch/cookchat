@@ -1194,7 +1194,9 @@ type StartChatRequest struct {
 	ModelProvider StartChatRequest_ModelProvider `protobuf:"varint,4,opt,name=model_provider,json=modelProvider,proto3,enum=frontendapi.StartChatRequest_ModelProvider" json:"model_provider,omitempty"`
 	// The prompt to use with the chat.
 	// Only recognized for users with debugging access.
-	LlmPrompt     string `protobuf:"bytes,5,opt,name=llm_prompt,json=llmPrompt,proto3" json:"llm_prompt,omitempty"`
+	LlmPrompt string `protobuf:"bytes,5,opt,name=llm_prompt,json=llmPrompt,proto3" json:"llm_prompt,omitempty"`
+	// The model to use for the chat.
+	Model         string `protobuf:"bytes,7,opt,name=model,proto3" json:"model,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1273,6 +1275,13 @@ func (x *StartChatRequest) GetModelProvider() StartChatRequest_ModelProvider {
 func (x *StartChatRequest) GetLlmPrompt() string {
 	if x != nil {
 		return x.LlmPrompt
+	}
+	return ""
+}
+
+func (x *StartChatRequest) GetModel() string {
+	if x != nil {
+		return x.Model
 	}
 	return ""
 }
@@ -2668,7 +2677,7 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\arecipes\x18\x01 \x03(\v2\x1a.frontendapi.RecipeSnippetR\arecipes\x127\n" +
 	"\n" +
 	"pagination\x18\x02 \x01(\v2\x17.frontendapi.PaginationR\n" +
-	"pagination\"\xf5\x02\n" +
+	"pagination\"\x8b\x03\n" +
 	"\x10StartChatRequest\x12!\n" +
 	"\vrecipe_text\x18\x02 \x01(\tH\x00R\n" +
 	"recipeText\x12\x1d\n" +
@@ -2676,7 +2685,8 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\aplan_id\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x06planId\x12R\n" +
 	"\x0emodel_provider\x18\x04 \x01(\x0e2+.frontendapi.StartChatRequest.ModelProviderR\rmodelProvider\x12\x1d\n" +
 	"\n" +
-	"llm_prompt\x18\x05 \x01(\tR\tllmPrompt\"k\n" +
+	"llm_prompt\x18\x05 \x01(\tR\tllmPrompt\x12\x14\n" +
+	"\x05model\x18\a \x01(\tR\x05model\"k\n" +
 	"\rModelProvider\x12\x1e\n" +
 	"\x1aMODEL_PROVIDER_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bMODEL_PROVIDER_GOOGLE_GENAI\x10\x01\x12\x19\n" +

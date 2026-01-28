@@ -220,6 +220,7 @@ export function ChatButton({
             },
         modelProvider,
         llmPrompt: prompt,
+        model: settings.model,
       }),
       staleTime: 0,
     });
