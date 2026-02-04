@@ -10,7 +10,6 @@ import {
 } from "@cookchat/frontend-api";
 import { Image } from "@heroui/image";
 import { Textarea } from "@heroui/input";
-import { Link } from "@heroui/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaCheck, FaLightbulb, FaStar } from "react-icons/fa";
@@ -225,7 +224,7 @@ export default function Page() {
         <h2 className="text-gray-600 text-xl mb-2">{t("Today's Plan")}</h2>
         <div className="flex gap-4 justify-between">
           {plan.recipes.map((recipe) => (
-            <Link
+            <a
               key={recipe.id}
               href={`/recipes/${recipe.id}`}
               className="flex flex-col gap-2 items-center"
@@ -238,7 +237,7 @@ export default function Page() {
               <div className="max-w-20 truncate text-tiny text-gray-600">
                 {recipe.title}
               </div>
-            </Link>
+            </a>
           ))}
         </div>
       </div>

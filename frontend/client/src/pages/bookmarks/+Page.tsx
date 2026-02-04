@@ -1,5 +1,4 @@
 import { Image } from "@heroui/image";
-import { Link } from "@heroui/link";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -44,7 +43,7 @@ export default function Page() {
       {(isPending && <div>{t("Loading...")}</div>) || (
         <div className="flex flex-col gap-2">
           {recipes?.map((recipe, i) => (
-            <Link
+            <a
               href={`/recipes/${recipe.id}`}
               color="foreground"
               key={recipe.id}
@@ -68,7 +67,7 @@ export default function Page() {
               <div className="flex-1/10 flex items-center justify-start -ml-1">
                 <FaBookmark className="size-5 fill-primary-400 cursor-pointer" />
               </div>
-            </Link>
+            </a>
           ))}
         </div>
       )}

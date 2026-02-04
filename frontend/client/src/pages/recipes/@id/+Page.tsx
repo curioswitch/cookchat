@@ -93,7 +93,7 @@ export default function Page() {
     }
   }, [recipeRes, doRemoveBookmark, doAddBookmark]);
 
-  const { editing: editingPlan } = useEditPlanStore();
+  const { editing: editingPlan, planId } = useEditPlanStore();
 
   const cart = useCartStore();
   const inCart = cart.recipes.some((recipe) => recipe.id === recipeId);
@@ -162,8 +162,8 @@ export default function Page() {
         imageUrl: recipe.imageUrl,
       }),
     );
-    navigate("/plans/edit");
-  }, [recipeRes]);
+    navigate(`/plans/${planId}/edit`);
+  }, [recipeRes, planId]);
 
   useEffect(() => {
     if (!editPrompt) {

@@ -2,7 +2,6 @@ import { useMutation } from "@connectrpc/connect-query";
 import { type RecipeSnippet, updatePlan } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
 import { Image } from "@heroui/image";
-import { Link } from "@heroui/link";
 import { Spinner } from "@heroui/spinner";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -65,7 +64,7 @@ export default function Page() {
           ) : (
             // biome-ignore lint/suspicious/noArrayIndexKey: fine
             <div key={i} className="text-gray-600">
-              <Link href="/">{t("Click to select")}</Link>
+              <a href="/">{t("Click to select")}</a>
             </div>
           ),
         )}

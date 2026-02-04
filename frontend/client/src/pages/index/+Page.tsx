@@ -1,6 +1,5 @@
 import { Image } from "@heroui/image";
 import { Input } from "@heroui/input";
-import { Link } from "@heroui/link";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useRef, useState } from "react";
@@ -58,9 +57,9 @@ export default function Page() {
     <div className="p-4">
       <div className="flex items-center justify-between mt-2 mb-4">
         <Image radius="none" src={logoSVG} alt={t("CookChat Logo")} />
-        <Link href="/settings">
+        <a href="/settings">
           <FaRegUserCircle className="size-6 text-primary-400" />
-        </Link>
+        </a>
       </div>
       <Input
         fullWidth
@@ -85,7 +84,7 @@ export default function Page() {
             </h2>
             <div className="grid grid-cols-2 gap-4">
               {recommendedRecipes.map((recipe) => (
-                <Link
+                <a
                   href={`/recipes/${recipe.id}`}
                   color="foreground"
                   key={recipe.id}
@@ -99,7 +98,7 @@ export default function Page() {
                   <h3 className="mt-2 mb-0 text-sm font-semibold line-clamp-2">
                     {recipe.title}
                   </h3>
-                </Link>
+                </a>
               ))}
             </div>
           </div>
@@ -109,7 +108,7 @@ export default function Page() {
             </h2>
             <div className="flex flex-col gap-2">
               {popularRecipes.map((recipe, i) => (
-                <Link
+                <a
                   href={`/recipes/${recipe.id}`}
                   color="foreground"
                   key={recipe.id}
@@ -130,7 +129,7 @@ export default function Page() {
                       {recipe.summary}
                     </p>
                   </div>
-                </Link>
+                </a>
               ))}
             </div>
           </div>

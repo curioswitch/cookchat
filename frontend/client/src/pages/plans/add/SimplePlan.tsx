@@ -5,7 +5,6 @@ import { CheckboxGroup, useCheckbox } from "@heroui/checkbox";
 import { Chip } from "@heroui/chip";
 import { Image } from "@heroui/image";
 import { Input } from "@heroui/input";
-import { Link } from "@heroui/link";
 import { NumberInput } from "@heroui/number-input";
 import { Spinner } from "@heroui/spinner";
 import { Switch } from "@heroui/switch";
@@ -81,7 +80,7 @@ function Option(props: { value: string; children: React.ReactNode }) {
 function MainDishPlaceholder() {
   const { t } = useTranslation();
   return (
-    <Link
+    <a
       href="/"
       className="flex items-center gap-2 p-4 bg-white rounded-2xl border-1 border-primary-400"
     >
@@ -89,7 +88,7 @@ function MainDishPlaceholder() {
       <div className="text-gray-600">
         {t("Generating with AI. Click to select instead.")}
       </div>
-    </Link>
+    </a>
   );
 }
 
