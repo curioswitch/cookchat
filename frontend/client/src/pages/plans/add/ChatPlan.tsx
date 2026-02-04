@@ -5,15 +5,19 @@ import {
   ChatMessage_Role,
   ChatMessageSchema,
   chatPlan,
+  GetChatMessagesResponseSchema,
 } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Link } from "@heroui/link";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { forwardRef, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FiSend } from "react-icons/fi";
 import { twMerge } from "tailwind-merge";
 import { navigate } from "vike/client/router";
+
+import { useFrontendQueries } from "../../../hooks/rpc";
 
 function ChatBubbleLoading() {
   return (
@@ -72,61 +76,79 @@ const loadingMessage = create(ChatMessageSchema, {
 export function ChatPlan() {
   const { t } = useTranslation();
 
+  const queries = useFrontendQueries();
+  const getChatMessagesQuery = queries.getChatMessages();
+  const queryClient = useQueryClient();
+
+  const { data: getChatMessagesRes, isPending } =
+    useQuery(getChatMessagesQuery);
+
   const [loaded, setLoaded] = useState<boolean>(false);
   const [inputText, setInputText] = useState<string>("");
 
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    create(ChatMessageSchema, {
-      role: ChatMessage_Role.USER,
-      content: t("Hello"),
-    }),
-  ]);
-
   const doChatPlan = useMutation(chatPlan, {
+    onMutate: (req) => {
+      const messages = getChatMessagesRes?.messages ?? [];
+      messages.push(
+        create(ChatMessageSchema, {
+          role: ChatMessage_Role.USER,
+          content: req.message,
+        }),
+      );
+    },
     onSuccess: (resp) => {
       if (resp.planId) {
         navigate(`/plans/${resp.planId}`);
       } else {
-        setMessages(resp.messages);
+        queryClient.setQueryData(
+          getChatMessagesQuery.queryKey,
+          create(GetChatMessagesResponseSchema, {
+            chatId: resp.chatId,
+            messages: resp.messages,
+          }),
+        );
       }
     },
   });
 
   useEffect(() => {
-    if (loaded) {
+    if (loaded || !getChatMessagesRes) {
       return;
     }
     setLoaded(true);
-    const m = [...messages];
-    // For double-render in React dev mode. We will eventually have
-    // server side state for the chat and this will stop being a problem.
-    if (!m[m.length - 1].content) {
-      return;
+
+    if (getChatMessagesRes.messages.length === 0) {
+      doChatPlan.mutate({
+        chatId: getChatMessagesRes?.chatId,
+        message: t("Hello"),
+      });
     }
-    doChatPlan.mutate({
-      messages: m,
-    });
-  }, [doChatPlan, messages, loaded]);
+  }, [doChatPlan, getChatMessagesRes, loaded, t]);
 
   const onSendClick = useCallback(() => {
-    messages.push(
-      create(ChatMessageSchema, {
-        role: ChatMessage_Role.USER,
-        content: inputText,
-      }),
-    );
+    const message = inputText;
     setInputText("");
-    const m = [...messages];
     doChatPlan.mutate({
-      messages: m,
+      chatId: getChatMessagesRes?.chatId,
+      message: message,
     });
-  }, [messages, inputText, doChatPlan]);
+  }, [getChatMessagesRes, inputText, doChatPlan]);
 
   useEffect(() => {
-    const _ = messages;
+    const _ = getChatMessagesRes;
     const __ = doChatPlan.isPending;
     window.scrollTo(0, document.body.scrollHeight);
-  }, [messages, doChatPlan.isPending]);
+  }, [getChatMessagesRes, doChatPlan.isPending]);
+
+  if (isPending) {
+    return <div>{t("Loading...")}</div>;
+  }
+
+  if (!getChatMessagesRes) {
+    throw new Error("Chat messages not loaded");
+  }
+
+  const messages = getChatMessagesRes.messages;
 
   return (
     <div>

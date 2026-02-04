@@ -34,6 +34,7 @@ import (
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/chatplan"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/generateplan"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/generaterecipe"
+	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getchatmessages"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getplan"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getplans"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getrecipe"
@@ -200,93 +201,25 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 			},
 		})
 
-	messagesEN := []*frontendapi.ChatMessage{
-		{
-			Role:    frontendapi.ChatMessage_ROLE_USER,
-			Content: "Hello.",
+	server.HandleConnectUnary(s,
+		frontendapiconnect.FrontendServiceGetChatMessagesProcedure,
+		getchatmessages.NewHandler(firestore).GetChatMessages,
+		[]*frontendapi.GetChatMessagesRequest{
+			{},
 		},
-		{
-			Role:    frontendapi.ChatMessage_ROLE_ASSISTANT,
-			Content: "Hello! I can help you plan your meals. To get started, please tell me:\n\n1.  How many days would you like to plan meals for?\n2.  Are there any ingredients you'd like to use up or feature in your meals?\n3.  Do you have any dietary restrictions (e.g., vegetarian, gluten-free, no nuts) or preferences (e.g., \"I love spicy food,\" \"no seafood\")?",
-		},
-		{
-			Role:    frontendapi.ChatMessage_ROLE_USER,
-			Content: "1 day. I want to use onions and tomatoes. No seafood.",
-		},
-		{
-			Role:    frontendapi.ChatMessage_ROLE_ASSISTANT,
-			Content: "Great! Onions and tomatoes are versatile ingredients. I've found a couple of delicious main dish options that feature them and are completely free of seafood.\n\nHere are two options for your main dish. Please let me know which one sounds better to you, or if you'd like to explore other choices:\n\n1.  **Chicken Stew with Onions, Tomatoes, and Dijon**: This is a hearty and flavorful stew with chicken, lots of red onions, and canned tomatoes, seasoned with Dijon mustard. It's a comforting meal that makes good use of your requested ingredients.\n2.  **Shakshuka**: A popular North African and Middle Eastern vegetarian dish. It features eggs poached in a flavorful sauce of sautéed onions, bell peppers, garlic, and tomatoes, seasoned with spices like paprika, cumin, and chili powder. It's typically eaten for breakfast but can be enjoyed any time of day.\n\nOnce you choose a main dish, I can also suggest a complementary side or soup, if you'd like!",
-		},
-		{
-			Role:    frontendapi.ChatMessage_ROLE_USER,
-			Content: "Let's go with the Shakshuka.",
-		},
-		{
-			Role:    frontendapi.ChatMessage_ROLE_ASSISTANT,
-			Content: "Excellent choice! Shakshuka is a fantastic and flavorful dish, perfect for using up your onions and tomatoes.\n\nTo complement the Shakshuka, which is quite rich and satisfying on its own, I recommend either:\n\n1.  **Warm Pita Bread**: Perfect for scooping up all that delicious tomato sauce and runny egg yolk.\n2.  **A Simple Green Salad**: Something light and refreshing, like an arugula salad with a lemon vinaigrette, would cut through the richness of the Shakshuka beautifully.\n3.  **Hummus**: A creamy, savory dip that pairs wonderfully with the flavors of Shakshuka and pita bread.\n\nWhich of these sounds best for your meal?",
-		},
-		{
-			Role:    frontendapi.ChatMessage_ROLE_USER,
-			Content: "Green salad and hummus. That's it.",
-		},
-	}
-	messagesJA := []*frontendapi.ChatMessage{
-		{
-			Role:    frontendapi.ChatMessage_ROLE_USER,
-			Content: "こんにちは",
-		},
-		{
-			Role:    frontendapi.ChatMessage_ROLE_ASSISTANT,
-			Content: "こんにちは！献立作成のお手伝いをさせていただきます。\n\nまず、いくつか質問させてください。\n\n1.  何日分の献立を立てたいですか？\n2.  使いたい食材はありますか？（例：鶏肉、大根、きのこなど）\n3.  何か食べ物の好みや、アレルギー、避けてほしい食材など、食事に関する制約はありますか？（例：辛いものが苦手、乳製品アレルギー、魚は食べたくないなど）",
-		},
-		{
-			Role:    frontendapi.ChatMessage_ROLE_USER,
-			Content: "1日分。玉ねぎとトマトを使いたい。魚なしで。",
-		},
-		{
-			Role:    frontendapi.ChatMessage_ROLE_ASSISTANT,
-			Content: "1日分の献立ですね！玉ねぎとトマトを使って、魚なしというご希望、承知いたしました。\n\nメイン料理として、玉ねぎとトマトをたっぷり使った「新玉ねぎの肉詰めチーズトマト煮」はいかがでしょうか？豚ひき肉を詰めた新玉ねぎを、トマトソースとチーズで煮込んだ、ボリュームたっぷりで食べ応えのある一品です。とろとろの玉ねぎとジューシーな肉だね、そしてトマトの酸味とチーズのコクが絶妙にマッチしますよ。\n\nこのレシピでよろしければ、副菜とスープも提案させていただきます。",
-		},
-		{
-			Role:    frontendapi.ChatMessage_ROLE_USER,
-			Content: "それにします。",
-		},
-		{
-			Role:    frontendapi.ChatMessage_ROLE_ASSISTANT,
-			Content: "かしこまりました！メインを「新玉ねぎの肉詰めチーズトマト煮」で進めさせていただきます。\n\nそれでは、このメインに合う副菜とスープを提案しますね。\n\n**副菜の提案**\n*   **【ひらひら無限ピーマン】**：ピーマンを薄切りにして、ツナ缶と調味料で炒め煮するだけの簡単レシピです。ピーマンの苦みが和らぎ、いくらでも食べられるおいしさです。彩りも良く、栄養バランスも整います。\n*   **【大根とツナの和風サラダ】**：千切りにした大根とツナを、ポン酢ベースのドレッシングで和えるさっぱりとしたサラダです。トマト煮の濃厚さに合う、箸休めにぴったりな一品です。\n\n**スープの提案**\n*   **【レタスと卵の中華スープ】**：鶏ガラスープベースに、レタスとふんわり卵を合わせた優しい味わいのスープです。トマト煮の洋風な味付けとも相性が良く、簡単に作れます。\n*   **【キャベツとベーコンのコンソメスープ】**：キャベツとベーコンをコンソメで煮込んだ、シンプルな味わいのスープです。トマト煮との相性も良く、ホッと温まります。\n\nこの中から、気になる副菜とスープはありますか？それとも、他に何か好みがあれば教えてください。",
-		},
-		{
-			Role:    frontendapi.ChatMessage_ROLE_USER,
-			Content: "ひらひら無限ピーマンとレタスと卵の中華スープにします。",
-		},
-	}
+	)
+
 	server.HandleConnectUnary(s,
 		frontendapiconnect.FrontendServiceChatPlanProcedure,
 		chatplan.NewHandler(genAI, firestore, search, processor).ChatPlan,
 		[]*frontendapi.ChatPlanRequest{
 			{
-				Messages: messagesEN[:1],
+				Message: "Hello.",
+				NewChat: true,
 			},
 			{
-				Messages: messagesEN[:3],
-			},
-			{
-				Messages: messagesEN[:5],
-			},
-			{
-				Messages: messagesEN[:7],
-			},
-			{
-				Messages: messagesJA[:1],
-			},
-			{
-				Messages: messagesJA[:3],
-			},
-			{
-				Messages: messagesJA[:5],
-			},
-			{
-				Messages: messagesJA[:7],
+				Message: "こんにちは",
+				NewChat: true,
 			},
 		})
 

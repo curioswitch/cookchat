@@ -54,6 +54,13 @@ export const generatePlan = FrontendService.method.generatePlan;
 export const chatPlan = FrontendService.method.chatPlan;
 
 /**
+ * Get the messages in the current chat session.
+ *
+ * @generated from rpc frontendapi.FrontendService.GetChatMessages
+ */
+export const getChatMessages = FrontendService.method.getChatMessages;
+
+/**
  * Get the plans for the user.
  *
  * @generated from rpc frontendapi.FrontendService.GetPlans

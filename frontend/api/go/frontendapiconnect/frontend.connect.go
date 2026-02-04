@@ -58,6 +58,9 @@ const (
 	// FrontendServiceChatPlanProcedure is the fully-qualified name of the FrontendService's ChatPlan
 	// RPC.
 	FrontendServiceChatPlanProcedure = "/frontendapi.FrontendService/ChatPlan"
+	// FrontendServiceGetChatMessagesProcedure is the fully-qualified name of the FrontendService's
+	// GetChatMessages RPC.
+	FrontendServiceGetChatMessagesProcedure = "/frontendapi.FrontendService/GetChatMessages"
 	// FrontendServiceGetPlansProcedure is the fully-qualified name of the FrontendService's GetPlans
 	// RPC.
 	FrontendServiceGetPlansProcedure = "/frontendapi.FrontendService/GetPlans"
@@ -162,6 +165,8 @@ type FrontendServiceClient interface {
 	GeneratePlan(context.Context, *connect.Request[_go.GeneratePlanRequest]) (*connect.Response[_go.GeneratePlanResponse], error)
 	// Create a meal plan via a text chat.
 	ChatPlan(context.Context, *connect.Request[_go.ChatPlanRequest]) (*connect.Response[_go.ChatPlanResponse], error)
+	// Get the messages in the current chat session.
+	GetChatMessages(context.Context, *connect.Request[_go.GetChatMessagesRequest]) (*connect.Response[_go.GetChatMessagesResponse], error)
 	// Get the plans for the user.
 	GetPlans(context.Context, *connect.Request[_go.GetPlansRequest]) (*connect.Response[_go.GetPlansResponse], error)
 	// Get the details of a plan.
@@ -227,6 +232,12 @@ func NewFrontendServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(frontendServiceMethods.ByName("ChatPlan")),
 			connect.WithClientOptions(opts...),
 		),
+		getChatMessages: connect.NewClient[_go.GetChatMessagesRequest, _go.GetChatMessagesResponse](
+			httpClient,
+			baseURL+FrontendServiceGetChatMessagesProcedure,
+			connect.WithSchema(frontendServiceMethods.ByName("GetChatMessages")),
+			connect.WithClientOptions(opts...),
+		),
 		getPlans: connect.NewClient[_go.GetPlansRequest, _go.GetPlansResponse](
 			httpClient,
 			baseURL+FrontendServiceGetPlansProcedure,
@@ -262,18 +273,19 @@ func NewFrontendServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 
 // frontendServiceClient implements FrontendServiceClient.
 type frontendServiceClient struct {
-	getRecipe      *connect.Client[_go.GetRecipeRequest, _go.GetRecipeResponse]
-	listRecipes    *connect.Client[_go.ListRecipesRequest, _go.ListRecipesResponse]
-	startChat      *connect.Client[_go.StartChatRequest, _go.StartChatResponse]
-	addRecipe      *connect.Client[_go.AddRecipeRequest, _go.AddRecipeResponse]
-	generateRecipe *connect.Client[_go.GenerateRecipeRequest, _go.GenerateRecipeResponse]
-	generatePlan   *connect.Client[_go.GeneratePlanRequest, _go.GeneratePlanResponse]
-	chatPlan       *connect.Client[_go.ChatPlanRequest, _go.ChatPlanResponse]
-	getPlans       *connect.Client[_go.GetPlansRequest, _go.GetPlansResponse]
-	getPlan        *connect.Client[_go.GetPlanRequest, _go.GetPlanResponse]
-	updatePlan     *connect.Client[_go.UpdatePlanRequest, _go.UpdatePlanResponse]
-	addBookmark    *connect.Client[_go.AddBookmarkRequest, _go.AddBookmarkResponse]
-	removeBookmark *connect.Client[_go.RemoveBookmarkRequest, _go.RemoveBookmarkResponse]
+	getRecipe       *connect.Client[_go.GetRecipeRequest, _go.GetRecipeResponse]
+	listRecipes     *connect.Client[_go.ListRecipesRequest, _go.ListRecipesResponse]
+	startChat       *connect.Client[_go.StartChatRequest, _go.StartChatResponse]
+	addRecipe       *connect.Client[_go.AddRecipeRequest, _go.AddRecipeResponse]
+	generateRecipe  *connect.Client[_go.GenerateRecipeRequest, _go.GenerateRecipeResponse]
+	generatePlan    *connect.Client[_go.GeneratePlanRequest, _go.GeneratePlanResponse]
+	chatPlan        *connect.Client[_go.ChatPlanRequest, _go.ChatPlanResponse]
+	getChatMessages *connect.Client[_go.GetChatMessagesRequest, _go.GetChatMessagesResponse]
+	getPlans        *connect.Client[_go.GetPlansRequest, _go.GetPlansResponse]
+	getPlan         *connect.Client[_go.GetPlanRequest, _go.GetPlanResponse]
+	updatePlan      *connect.Client[_go.UpdatePlanRequest, _go.UpdatePlanResponse]
+	addBookmark     *connect.Client[_go.AddBookmarkRequest, _go.AddBookmarkResponse]
+	removeBookmark  *connect.Client[_go.RemoveBookmarkRequest, _go.RemoveBookmarkResponse]
 }
 
 // GetRecipe calls frontendapi.FrontendService.GetRecipe.
@@ -309,6 +321,11 @@ func (c *frontendServiceClient) GeneratePlan(ctx context.Context, req *connect.R
 // ChatPlan calls frontendapi.FrontendService.ChatPlan.
 func (c *frontendServiceClient) ChatPlan(ctx context.Context, req *connect.Request[_go.ChatPlanRequest]) (*connect.Response[_go.ChatPlanResponse], error) {
 	return c.chatPlan.CallUnary(ctx, req)
+}
+
+// GetChatMessages calls frontendapi.FrontendService.GetChatMessages.
+func (c *frontendServiceClient) GetChatMessages(ctx context.Context, req *connect.Request[_go.GetChatMessagesRequest]) (*connect.Response[_go.GetChatMessagesResponse], error) {
+	return c.getChatMessages.CallUnary(ctx, req)
 }
 
 // GetPlans calls frontendapi.FrontendService.GetPlans.
@@ -352,6 +369,8 @@ type FrontendServiceHandler interface {
 	GeneratePlan(context.Context, *connect.Request[_go.GeneratePlanRequest]) (*connect.Response[_go.GeneratePlanResponse], error)
 	// Create a meal plan via a text chat.
 	ChatPlan(context.Context, *connect.Request[_go.ChatPlanRequest]) (*connect.Response[_go.ChatPlanResponse], error)
+	// Get the messages in the current chat session.
+	GetChatMessages(context.Context, *connect.Request[_go.GetChatMessagesRequest]) (*connect.Response[_go.GetChatMessagesResponse], error)
 	// Get the plans for the user.
 	GetPlans(context.Context, *connect.Request[_go.GetPlansRequest]) (*connect.Response[_go.GetPlansResponse], error)
 	// Get the details of a plan.
@@ -413,6 +432,12 @@ func NewFrontendServiceHandler(svc FrontendServiceHandler, opts ...connect.Handl
 		connect.WithSchema(frontendServiceMethods.ByName("ChatPlan")),
 		connect.WithHandlerOptions(opts...),
 	)
+	frontendServiceGetChatMessagesHandler := connect.NewUnaryHandler(
+		FrontendServiceGetChatMessagesProcedure,
+		svc.GetChatMessages,
+		connect.WithSchema(frontendServiceMethods.ByName("GetChatMessages")),
+		connect.WithHandlerOptions(opts...),
+	)
 	frontendServiceGetPlansHandler := connect.NewUnaryHandler(
 		FrontendServiceGetPlansProcedure,
 		svc.GetPlans,
@@ -459,6 +484,8 @@ func NewFrontendServiceHandler(svc FrontendServiceHandler, opts ...connect.Handl
 			frontendServiceGeneratePlanHandler.ServeHTTP(w, r)
 		case FrontendServiceChatPlanProcedure:
 			frontendServiceChatPlanHandler.ServeHTTP(w, r)
+		case FrontendServiceGetChatMessagesProcedure:
+			frontendServiceGetChatMessagesHandler.ServeHTTP(w, r)
 		case FrontendServiceGetPlansProcedure:
 			frontendServiceGetPlansHandler.ServeHTTP(w, r)
 		case FrontendServiceGetPlanProcedure:
@@ -504,6 +531,10 @@ func (UnimplementedFrontendServiceHandler) GeneratePlan(context.Context, *connec
 
 func (UnimplementedFrontendServiceHandler) ChatPlan(context.Context, *connect.Request[_go.ChatPlanRequest]) (*connect.Response[_go.ChatPlanResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.ChatPlan is not implemented"))
+}
+
+func (UnimplementedFrontendServiceHandler) GetChatMessages(context.Context, *connect.Request[_go.GetChatMessagesRequest]) (*connect.Response[_go.GetChatMessagesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.GetChatMessages is not implemented"))
 }
 
 func (UnimplementedFrontendServiceHandler) GetPlans(context.Context, *connect.Request[_go.GetPlansRequest]) (*connect.Response[_go.GetPlansResponse], error) {

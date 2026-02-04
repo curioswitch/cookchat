@@ -45,22 +45,66 @@ type Handler struct {
 }
 
 func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest) (*frontendapi.ChatPlanResponse, error) {
-	recentRecipes, err := h.getRecentRecipes(ctx)
+	userID := firebaseauth.TokenFromContext(ctx).UID
+
+	recentRecipes, err := h.getRecentRecipes(ctx, userID)
 	if err != nil {
 		return nil, fmt.Errorf("chatplan: getting recent recipes: %w", err)
 	}
 
-	content := make([]*genai.Content, len(req.GetMessages()))
-	for i, message := range req.GetMessages() {
+	now := time.Now()
+
+	chats := h.store.Collection("users").Doc(userID).Collection("chats")
+	var chat cookchatdb.Chat
+	if cid := req.GetChatId(); cid != "" {
+		doc, err := chats.Doc(cid).Get(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("chatplan: getting chat document: %w", err)
+		}
+		if err := doc.DataTo(&chat); err != nil {
+			return nil, fmt.Errorf("chatplan: decoding chat document: %w", err)
+		}
+	} else {
+		foundChat := false
+		if !req.GetNewChat() {
+			lastChat, err := chats.Query.OrderBy("createdAt", firestore.Desc).Limit(1).Documents(ctx).Next()
+			if err != nil && !errors.Is(err, iterator.Done) {
+				return nil, fmt.Errorf("chatplan: getting last chat document: %w", err)
+			}
+			if lastChat != nil {
+				if err := lastChat.DataTo(&chat); err != nil {
+					return nil, fmt.Errorf("chatplan: decoding last chat document: %w", err)
+				}
+				if chat.PlanID == "" {
+					foundChat = true
+				}
+			}
+		}
+		if !foundChat {
+			cid := chats.NewDoc().ID
+			chat = cookchatdb.Chat{
+				ID:        cid,
+				CreatedAt: now,
+			}
+		}
+	}
+	chat.UpdatedAt = now
+	chat.Messages = append(chat.Messages, cookchatdb.ChatMessage{
+		Role:    cookchatdb.ChatRoleUser,
+		Content: req.GetMessage(),
+	})
+
+	content := make([]*genai.Content, len(chat.Messages))
+	for i, message := range chat.Messages {
 		role := genai.Role(genai.RoleUser)
-		if message.GetRole() == frontendapi.ChatMessage_ROLE_ASSISTANT {
+		if message.Role == cookchatdb.ChatRoleAssistant {
 			role = genai.RoleModel
 		}
-		content[i] = genai.NewContentFromText(message.GetContent(), role)
+		content[i] = genai.NewContentFromText(message.Content, role)
 	}
 
 	res, err := backoff.Retry(ctx, func() (*genai.GenerateContentResponse, error) {
-		res, err := h.genAI.Models.GenerateContent(ctx, "gemini-2.5-flash", content, &genai.GenerateContentConfig{
+		res, err := h.genAI.Models.GenerateContent(ctx, "gemini-3-flash-preview", content, &genai.GenerateContentConfig{
 			SystemInstruction: genai.NewContentFromText(llm.ChatPlanPrompt(strings.Join(recentRecipes, ", ")), genai.RoleModel),
 			Tools: []*genai.Tool{
 				{
@@ -92,16 +136,39 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 		}
 		planID := plan.Date.Format(time.DateOnly)
 
+		chat.PlanID = planID
+		if _, err := chats.Doc(chat.ID).Set(ctx, chat); err != nil {
+			return nil, fmt.Errorf("chatplan: saving chat plan ID: %w", err)
+		}
 		return &frontendapi.ChatPlanResponse{
+			ChatId: chat.ID,
 			PlanId: planID,
 		}, nil
 	}
 
-	messages := append([]*frontendapi.ChatMessage{}, req.GetMessages()...)
-	message := &frontendapi.ChatMessage{
-		Role:    frontendapi.ChatMessage_ROLE_ASSISTANT,
+	chat.Messages = append(chat.Messages, cookchatdb.ChatMessage{
+		Role:    cookchatdb.ChatRoleAssistant,
 		Content: resText,
+	})
+
+	if _, err := chats.Doc(chat.ID).Set(ctx, chat); err != nil {
+		return nil, fmt.Errorf("chatplan: saving chat document: %w", err)
 	}
+
+	messages := make([]*frontendapi.ChatMessage, len(chat.Messages))
+	for i, message := range chat.Messages {
+		msg := &frontendapi.ChatMessage{
+			Content: message.Content,
+		}
+		switch message.Role {
+		case cookchatdb.ChatRoleUser:
+			msg.Role = frontendapi.ChatMessage_ROLE_USER
+		case cookchatdb.ChatRoleAssistant:
+			msg.Role = frontendapi.ChatMessage_ROLE_ASSISTANT
+		}
+		messages[i] = msg
+	}
+	message := messages[len(messages)-1]
 	if cm := res.Candidates[0].CitationMetadata; cm != nil {
 		for _, citation := range cm.Citations {
 			if u := citation.URI; u != "" {
@@ -118,9 +185,9 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 			}
 		}
 	}
-	messages = append(messages, message)
 
 	return &frontendapi.ChatPlanResponse{
+		ChatId:   chat.ID,
 		Messages: messages,
 	}, nil
 }
@@ -196,7 +263,7 @@ func (h *Handler) generatePlan(ctx context.Context, recipes []cookchatdb.Recipe)
 		content[i] = genai.NewContentFromText(string(recipeJSON), genai.RoleUser)
 	}
 
-	res, err := h.genAI.Models.GenerateContent(ctx, "gemini-2.5-flash", content, &genai.GenerateContentConfig{
+	res, err := h.genAI.Models.GenerateContent(ctx, "gemini-3-flash-preview", content, &genai.GenerateContentConfig{
 		SystemInstruction: genai.NewContentFromText(llm.GenerateExecutionPlanPrompt(), genai.RoleModel),
 		ResponseMIMEType:  "application/json",
 		ResponseSchema: &genai.Schema{
@@ -269,12 +336,10 @@ func (h *Handler) generatePlan(ctx context.Context, recipes []cookchatdb.Recipe)
 	return plan, nil
 }
 
-func (h *Handler) getRecentRecipes(ctx context.Context) ([]string, error) {
+func (h *Handler) getRecentRecipes(ctx context.Context, userID string) ([]string, error) {
 	now := time.Now()
 	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 	start := today.Add(-2 * 7 * 24 * time.Hour)
-
-	userID := firebaseauth.TokenFromContext(ctx).UID
 
 	plansCol := h.store.Collection("users").Doc(userID).Collection("plans")
 	iter := plansCol.Query.WhereEntity(firestore.AndFilter{
