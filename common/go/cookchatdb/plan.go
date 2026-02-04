@@ -17,6 +17,13 @@ type StepGroup struct {
 	Note string `firestore:"note"`
 }
 
+type PlanStatus string
+
+const (
+	PlanStatusProcessing PlanStatus = "processing"
+	PlanStatusCompleted  PlanStatus = "completed"
+)
+
 // Plan is the plan for a single day. Plans are stored in the
 // plans collection for a user, with the ID YYYY-mm-dd.
 type Plan struct {

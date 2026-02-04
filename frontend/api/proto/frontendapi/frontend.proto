@@ -429,16 +429,39 @@ message ChatMessage {
 
 // A request for FrontendService.ChatPlan.
 message ChatPlanRequest {
-  repeated ChatMessage messages = 1;
+  // The ID of the chat session. If unset, and new_chat is true, a new chat session is created.
+  // If new_chat is not set, the most recent chat is resumed if it has not finished, or a new chat is created.
+  string chat_id = 1;
+
+  // Whether to start a new chat session.
+  bool new_chat = 2;
+
+  // The message from the user.
+  string message = 3;
 }
 
 // A response for FrontendService.ChatPlan.
 message ChatPlanResponse {
+  // The ID of the chat session.
+  string chat_id = 1;
+
   // The messages in the chat, including a new one.
-  repeated ChatMessage messages = 1;
+  repeated ChatMessage messages = 2;
 
   // The ID of the plan created/modified.
-  string plan_id = 2;
+  string plan_id = 3;
+}
+
+// A request for FrontendService.GetChatMessages.
+message GetChatMessagesRequest {}
+
+// A response for FrontendService.GetChatMessages.
+message GetChatMessagesResponse {
+  // The ID of the chat.
+  string chat_id = 1;
+
+  // The messages in the chat.
+  repeated ChatMessage messages = 2;
 }
 
 service FrontendService {
@@ -462,6 +485,9 @@ service FrontendService {
 
   // Create a meal plan via a text chat.
   rpc ChatPlan(ChatPlanRequest) returns (ChatPlanResponse);
+
+  // Get the messages in the current chat session.
+  rpc GetChatMessages(GetChatMessagesRequest) returns (GetChatMessagesResponse);
 
   // Get the plans for the user.
   rpc GetPlans(GetPlansRequest) returns (GetPlansResponse);
