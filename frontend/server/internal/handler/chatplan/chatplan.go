@@ -139,7 +139,7 @@ func (h *Handler) savePlan(ctx context.Context, recipeContents []cookchatdb.Reci
 				Content:      content,
 				LanguageCode: language,
 			}
-			if err := h.processor.PostProcessRecipe(&recipe); err != nil {
+			if err := h.processor.PostProcessRecipe(ctx, &recipe); err != nil {
 				return fmt.Errorf("chatplan: postprocessing recipe %q: %w", recipe.ID, err)
 			}
 			recipes[i] = recipe

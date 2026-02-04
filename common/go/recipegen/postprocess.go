@@ -33,7 +33,7 @@ func NewPostProcessor(genAI *genai.Client, store *firestore.Client, images *imag
 	}
 }
 
-func (p *PostProcessor) PostProcessRecipe(recipe *cookchatdb.Recipe) error {
+func (p *PostProcessor) PostProcessRecipe(ctx context.Context, recipe *cookchatdb.Recipe) error {
 	if recipe.LanguageCode == "" {
 		recipe.LanguageCode = string(cookchatdb.LanguageCodeJa)
 	}
@@ -56,7 +56,7 @@ func (p *PostProcessor) PostProcessRecipe(recipe *cookchatdb.Recipe) error {
 	var grp errgroup.Group
 	for _, lang := range targetLanguages {
 		grp.Go(func() error {
-			cnt, err := p.translateRecipe(context.Background(), recipe.ID, contentJSON, cookchatdb.LanguageCode(recipe.LanguageCode), lang)
+			cnt, err := p.translateRecipe(ctx, recipe.ID, contentJSON, cookchatdb.LanguageCode(recipe.LanguageCode), lang)
 			if err != nil {
 				return err
 			}
@@ -71,7 +71,7 @@ func (p *PostProcessor) PostProcessRecipe(recipe *cookchatdb.Recipe) error {
 			continue
 		}
 		grp.Go(func() error {
-			cnt, err := p.rewriteRecipe(context.Background(), recipe.ID, contentJSON)
+			cnt, err := p.rewriteRecipe(ctx, recipe.ID, contentJSON)
 			if err != nil {
 				return err
 			}
@@ -81,7 +81,7 @@ func (p *PostProcessor) PostProcessRecipe(recipe *cookchatdb.Recipe) error {
 	}
 	if recipe.ImageURL == "" {
 		grp.Go(func() error {
-			url, err := p.generateRecipeImage(context.Background(), recipe.ID, contentJSON)
+			url, err := p.generateRecipeImage(ctx, recipe.ID, contentJSON)
 			if err != nil {
 				return err
 			}
