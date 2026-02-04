@@ -55,12 +55,11 @@ func (h *Handler) GetRecipe(ctx context.Context, req *frontendapi.GetRecipeReque
 	}
 
 	language := i18n.UserLanguage(ctx)
-	var recipeJSON []byte
-	if rlc := recipe.LocalizedContent[language]; rlc != nil {
-		recipeJSON, err = json.Marshal(rlc)
-	} else {
-		recipeJSON, err = json.Marshal(recipe)
+	cnt := recipe.LocalizedContent[language]
+	if cnt == nil {
+		cnt = &recipe.Content
 	}
+	recipeJSON, err := json.Marshal(cnt)
 	if err != nil {
 		return nil, fmt.Errorf("chat: marshalling recipe to JSON: %w", err)
 	}
@@ -70,13 +69,13 @@ func (h *Handler) GetRecipe(ctx context.Context, req *frontendapi.GetRecipeReque
 		prompt = llm.RecipeChatPrompt(ctx, string(recipeJSON))
 	}
 	return &frontendapi.GetRecipeResponse{
-		Recipe:       recipeToProto(&recipe, i18n.UserLanguage(ctx)),
+		Recipe:       recipeToProto(&recipe, cnt),
 		LlmPrompt:    prompt,
 		IsBookmarked: bookmarked,
 	}, nil
 }
 
-func recipeToProto(recipe *cookchatdb.Recipe, lng string) *frontendapi.Recipe {
+func recipeToProto(recipe *cookchatdb.Recipe, cnt *cookchatdb.RecipeContent) *frontendapi.Recipe {
 	res := &frontendapi.Recipe{
 		Id:       recipe.ID,
 		Source:   recipeSourceToProto(recipe.Source),
@@ -84,26 +83,17 @@ func recipeToProto(recipe *cookchatdb.Recipe, lng string) *frontendapi.Recipe {
 		Language: languageCodeToProto(recipe.LanguageCode),
 	}
 
-	if rlng, rlc := recipe.LanguageCode, recipe.LocalizedContent[lng]; rlng != lng && rlc != nil {
-		res.Title = rlc.Title
-		res.Description = rlc.Description
-		res.Ingredients = ingredientsToProto(rlc.Ingredients)
-		res.AdditionalIngredients = ingredientSectionsToProto(rlc.AdditionalIngredients)
-		res.Steps = stepsToProto(rlc.Steps)
-		for i, step := range res.GetSteps() {
-			step.ImageUrl = recipe.Steps[i].ImageURL
-		}
-		res.Notes = rlc.Notes
-		res.ServingSize = rlc.ServingSize
-	} else {
-		res.Title = recipe.Title
-		res.Description = recipe.Description
-		res.Ingredients = ingredientsToProto(recipe.Ingredients)
-		res.AdditionalIngredients = ingredientSectionsToProto(recipe.AdditionalIngredients)
-		res.Steps = stepsToProto(recipe.Steps)
-		res.Notes = recipe.Notes
-		res.ServingSize = recipe.ServingSize
+	res.Title = cnt.Title
+	res.Description = cnt.Description
+	res.Ingredients = ingredientsToProto(cnt.Ingredients)
+	res.AdditionalIngredients = ingredientSectionsToProto(cnt.AdditionalIngredients)
+	steps := stepsToProto(cnt.Steps)
+	for i, step := range steps {
+		step.ImageUrl = steps[i].GetImageUrl()
 	}
+	res.Steps = steps
+	res.Notes = cnt.Notes
+	res.ServingSize = cnt.ServingSize
 
 	return res
 }

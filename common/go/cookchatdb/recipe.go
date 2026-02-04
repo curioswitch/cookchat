@@ -31,6 +31,11 @@ const (
 	LanguageCodeJa LanguageCode = "ja"
 )
 
+var AllLanguageCodes = []LanguageCode{
+	LanguageCodeEn,
+	LanguageCodeJa,
+}
+
 type RecipeType string
 
 const (
@@ -55,28 +60,28 @@ const (
 // RecipeIngredient represents an ingredient in a recipe.
 type RecipeIngredient struct {
 	// Name is the name of the ingredient.
-	Name string `firestore:"name"`
+	Name string `firestore:"name" json:"name"`
 
 	// Quantity is the quantity of the ingredient as free-form text.
-	Quantity string `firestore:"quantity"`
+	Quantity string `firestore:"quantity" json:"quantity"`
 }
 
 // RecipeStep represents a step in a recipe.
 type RecipeStep struct {
 	// Description is the description of the step.
-	Description string `firestore:"description"`
+	Description string `firestore:"description" json:"description"`
 
 	// ImageURL is the URL of an image of the step.
-	ImageURL string `firestore:"imageUrl"`
+	ImageURL string `firestore:"imageUrl" json:"imageUrl"`
 }
 
 // IngredientSection represents a section of ingredients in a recipe.
 type IngredientSection struct {
 	// Title is the title of the ingredient section.
-	Title string `firestore:"title"`
+	Title string `firestore:"title" json:"title"`
 
 	// Ingredients are the ingredients in the section.
-	Ingredients []RecipeIngredient `firestore:"ingredients"`
+	Ingredients []RecipeIngredient `firestore:"ingredients" json:"ingredients"`
 }
 
 // RecipeContent is the text content of a recipe.
@@ -101,6 +106,9 @@ type RecipeContent struct {
 
 	// ServingSize is the serving size of the recipe as free-form text.
 	ServingSize string `firestore:"servingSize" json:"servingSize"`
+
+	// Version of the content schema. We increment this when changing post-processing logic, etc.
+	Version int `firestore:"version" json:"version"`
 }
 
 // Recipe represents a recipe stored in Firestore.
@@ -123,32 +131,11 @@ type Recipe struct {
 	// Genre is the genre of the recipe.
 	Genre RecipeGenre `firestore:"genre"`
 
-	// Title is the title of the recipe.
-	Title string `firestore:"title"`
-
 	// ImageURL is the URL for the main image of the recipe.
 	ImageURL string `firestore:"imageUrl"`
 
-	// Description is the description of the recipe.
-	Description string `firestore:"description"`
-
-	// Ingredients are the main ingredients of the recipe.
-	Ingredients []RecipeIngredient `firestore:"ingredients"`
-
-	// AdditionalIngredients are additional ingredients grouped into sections.
-	AdditionalIngredients []IngredientSection `firestore:"additionalIngredients"`
-
-	// Steps are the steps to prepare the recipe.
-	Steps []RecipeStep `firestore:"steps"`
-
 	// StepImageURLs are URLs for images of the steps in the recipe.
 	StepImageURLs []string `firestore:"stepImageUrls"`
-
-	// Notes are additional notes or comments about the recipe.
-	Notes string `firestore:"notes"`
-
-	// ServingSize is the serving size of the recipe as free-form text.
-	ServingSize string `firestore:"servingSize"`
 
 	// LanguageCode is the source language code of the recipe.
 	// For example, "en" for English, "ja" for Japanese.

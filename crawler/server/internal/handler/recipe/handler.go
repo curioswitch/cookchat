@@ -159,14 +159,16 @@ func (h *Handler) CrawlRecipe(ctx context.Context, req *crawlerapi.CrawlRecipeRe
 		}
 
 		recipe = &cookchatdb.Recipe{
-			ID:           recipeID,
-			Source:       source,
-			SourceID:     sourceID,
-			Title:        recipeJSON.Name,
-			Description:  description,
-			Ingredients:  ingredients,
-			Steps:        steps,
-			ServingSize:  servingSize,
+			ID:       recipeID,
+			Source:   source,
+			SourceID: sourceID,
+			Content: cookchatdb.RecipeContent{
+				Title:       recipeJSON.Name,
+				Description: description,
+				Ingredients: ingredients,
+				Steps:       steps,
+				ServingSize: servingSize,
+			},
 			LanguageCode: "ja",
 		}
 	})
@@ -244,22 +246,11 @@ func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Reci
 		return fmt.Errorf("recipe: unmarshal recreated recipe: %w", err)
 	}
 
-	if recipe.Content.Title == "" {
-		recipe.Content = cookchatdb.RecipeContent{
-			Title:                 recipe.Title,
-			Description:           recipe.Description,
-			Ingredients:           recipe.Ingredients,
-			AdditionalIngredients: recipe.AdditionalIngredients,
-			Steps:                 recipe.Steps,
-			Notes:                 recipe.Notes,
-			ServingSize:           recipe.ServingSize,
-		}
-	}
 	hasImage := recipe.ImageURL != ""
 
 	if len(recipe.StepImageURLs) == 0 {
-		recipe.StepImageURLs = make([]string, len(recipe.Steps))
-		for i, step := range recipe.Steps {
+		recipe.StepImageURLs = make([]string, len(recipe.Content.Steps))
+		for i, step := range recipe.Content.Steps {
 			recipe.StepImageURLs[i] = step.ImageURL
 			if step.ImageURL != "" {
 				hasImage = true
@@ -288,7 +279,7 @@ func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Reci
 				if i == 0 {
 					content = string(sourceJSON)
 				} else {
-					content = recipe.Steps[i-1].Description
+					content = recipe.Content.Steps[i-1].Description
 				}
 
 				res, err := h.genAI.Models.GenerateContent(ctx, "gemini-2.5-flash-image", []*genai.Content{
@@ -352,7 +343,7 @@ func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Reci
 		recipe.ImageURL = imageURLs[0]
 		for i := 1; i < len(imageURLs); i++ {
 			recipe.StepImageURLs[i-1] = imageURLs[i]
-			recipe.Steps[i-1].ImageURL = imageURLs[i]
+			recipe.Content.Steps[i-1].ImageURL = imageURLs[i]
 		}
 	}
 

@@ -42,8 +42,10 @@ func (h *Handler) AddRecipe(ctx context.Context, req *frontendapi.AddRecipeReque
 	rID := doc.ID
 	doc.ID = "user-" + rID
 	recipe := cookchatdb.Recipe{
-		ID:          rID,
-		Source:      cookchatdb.RecipeSourceUser,
+		ID:     rID,
+		Source: cookchatdb.RecipeSourceUser,
+	}
+	cnt := cookchatdb.RecipeContent{
 		Title:       req.GetTitle(),
 		Description: req.GetDescription(),
 		ServingSize: req.GetServingSize(),
@@ -57,7 +59,7 @@ func (h *Handler) AddRecipe(ctx context.Context, req *frontendapi.AddRecipeReque
 		// Leave unset
 	}
 	for _, ingredient := range req.GetIngredients() {
-		recipe.Ingredients = append(recipe.Ingredients, cookchatdb.RecipeIngredient{
+		cnt.Ingredients = append(cnt.Ingredients, cookchatdb.RecipeIngredient{
 			Name:     ingredient.GetName(),
 			Quantity: ingredient.GetQuantity(),
 		})
@@ -72,7 +74,7 @@ func (h *Handler) AddRecipe(ctx context.Context, req *frontendapi.AddRecipeReque
 				Quantity: ingredient.GetQuantity(),
 			})
 		}
-		recipe.AdditionalIngredients = append(recipe.AdditionalIngredients, section)
+		cnt.AdditionalIngredients = append(cnt.AdditionalIngredients, section)
 	}
 	if req.GetMainImageDataUrl() != "" {
 		url, err := h.saveImage(ctx, fmt.Sprintf("recipes/%s/main-image", rID), req.GetMainImageDataUrl())
@@ -90,12 +92,12 @@ func (h *Handler) AddRecipe(ctx context.Context, req *frontendapi.AddRecipeReque
 			}
 			imageURL = stepURL
 		}
-		recipe.Steps = append(recipe.Steps, cookchatdb.RecipeStep{
+		cnt.Steps = append(cnt.Steps, cookchatdb.RecipeStep{
 			Description: step.GetDescription(),
 			ImageURL:    imageURL,
 		})
 	}
-
+	recipe.Content = cnt
 	if _, err := doc.Create(ctx, recipe); err != nil {
 		return nil, fmt.Errorf("addrecipe: creating recipe in firestore: %w", err)
 	}

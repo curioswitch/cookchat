@@ -18,6 +18,7 @@ import (
 	"github.com/curioswitch/cookchat/common/cookchatdb"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
 	"github.com/curioswitch/cookchat/frontend/server/internal/auth"
+	"github.com/curioswitch/cookchat/frontend/server/internal/i18n"
 	"github.com/curioswitch/cookchat/frontend/server/internal/llm"
 )
 
@@ -33,6 +34,7 @@ type Handler struct {
 
 func (h *Handler) GetPlan(ctx context.Context, req *frontendapi.GetPlanRequest) (*frontendapi.GetPlanResponse, error) {
 	userID := firebaseauth.TokenFromContext(ctx).UID
+	language := i18n.UserLanguage(ctx)
 
 	col := h.store.Collection("users").Doc(userID).Collection("plans")
 	doc, err := col.Doc(req.GetDate().AsTime().Format(time.DateOnly)).Get(ctx)
@@ -76,24 +78,28 @@ func (h *Handler) GetPlan(ctx context.Context, req *frontendapi.GetPlanRequest) 
 		StepGroups:   make([]*frontendapi.StepGroup, len(dbPlan.StepGroups)),
 	}
 	for i, recipe := range recipes {
+		cnt := recipe.LocalizedContent[language]
+		if cnt == nil {
+			cnt = &recipe.Content
+		}
 		plan.Recipes[i] = &frontendapi.RecipeSnippet{
 			Id:       recipe.ID,
-			Title:    recipe.Title,
-			Summary:  recipe.Description,
+			Title:    cnt.Title,
+			Summary:  cnt.Description,
 			ImageUrl: recipe.ImageURL,
 		}
-		plan.ServingSizes[i] = recipe.ServingSize
+		plan.ServingSizes[i] = cnt.ServingSize
 		sec := &frontendapi.IngredientSection{
-			Title:       recipe.Title,
-			Ingredients: make([]*frontendapi.RecipeIngredient, len(recipe.Ingredients)),
+			Title:       cnt.Title,
+			Ingredients: make([]*frontendapi.RecipeIngredient, len(cnt.Ingredients)),
 		}
-		for i, ing := range recipe.Ingredients {
+		for i, ing := range cnt.Ingredients {
 			sec.Ingredients[i] = &frontendapi.RecipeIngredient{
 				Name:     ing.Name,
 				Quantity: ing.Quantity,
 			}
 		}
-		for _, add := range recipe.AdditionalIngredients {
+		for _, add := range cnt.AdditionalIngredients {
 			for _, ing := range add.Ingredients {
 				sec.Ingredients = append(sec.Ingredients, &frontendapi.RecipeIngredient{
 					Name:     ing.Name,

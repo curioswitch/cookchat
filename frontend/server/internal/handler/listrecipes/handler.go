@@ -100,12 +100,13 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 			return nil, fmt.Errorf("listrecipes: unmarshalling recipe: %w", err)
 		}
 
-		title := recipe.Title
-		ingredients := recipe.Ingredients
-		if rlng, rlc := recipe.LanguageCode, recipe.LocalizedContent[lng]; rlng != lng && rlc != nil {
-			title = rlc.Title
-			ingredients = rlc.Ingredients
+		cnt := recipe.LocalizedContent[lng]
+		if cnt == nil {
+			cnt = &recipe.Content
 		}
+
+		title := cnt.Title
+		ingredients := cnt.Ingredients
 
 		var summaryBldr strings.Builder
 		for _, ingredient := range ingredients {

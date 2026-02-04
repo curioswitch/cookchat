@@ -160,18 +160,20 @@ func (h *Handler) CrawlCookpadRecipe(ctx context.Context, req *crawlerapi.CrawlC
 		}
 
 		recipe = &cookchatdb.Recipe{
-			ID:                    recipeID,
-			Source:                cookchatdb.RecipeSourceCookpad,
-			SourceID:              req.GetRecipeId(),
-			UserID:                userID,
-			Title:                 title,
-			ImageURL:              recipeImageURL,
-			Description:           description,
-			Ingredients:           baseIngredients,
-			AdditionalIngredients: additionalSections,
-			Steps:                 steps,
-			ServingSize:           servingSize,
-			LanguageCode:          "ja",
+			ID:       recipeID,
+			Source:   cookchatdb.RecipeSourceCookpad,
+			SourceID: req.GetRecipeId(),
+			UserID:   userID,
+			ImageURL: recipeImageURL,
+			Content: cookchatdb.RecipeContent{
+				Title:                 title,
+				Description:           description,
+				Ingredients:           baseIngredients,
+				AdditionalIngredients: additionalSections,
+				Steps:                 steps,
+				ServingSize:           servingSize,
+			},
+			LanguageCode: "ja",
 		}
 	})
 
@@ -225,20 +227,9 @@ type classificationResult struct {
 }
 
 func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Recipe) error {
-	if recipe.Content.Title == "" {
-		recipe.Content = cookchatdb.RecipeContent{
-			Title:                 recipe.Title,
-			Description:           recipe.Description,
-			Ingredients:           recipe.Ingredients,
-			AdditionalIngredients: recipe.AdditionalIngredients,
-			Steps:                 recipe.Steps,
-			Notes:                 recipe.Notes,
-			ServingSize:           recipe.ServingSize,
-		}
-	}
 	if len(recipe.StepImageURLs) == 0 {
-		recipe.StepImageURLs = make([]string, len(recipe.Steps))
-		for i, step := range recipe.Steps {
+		recipe.StepImageURLs = make([]string, len(recipe.Content.Steps))
+		for i, step := range recipe.Content.Steps {
 			recipe.StepImageURLs[i] = step.ImageURL
 		}
 	}
