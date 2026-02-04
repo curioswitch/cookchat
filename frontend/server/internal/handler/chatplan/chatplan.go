@@ -4,13 +4,10 @@
 package chatplan
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"image/jpeg"
-	"image/png"
 	"maps"
 	"slices"
 	"strings"
@@ -18,7 +15,6 @@ import (
 
 	discoveryengine "cloud.google.com/go/discoveryengine/apiv1"
 	"cloud.google.com/go/firestore"
-	"cloud.google.com/go/storage"
 	"github.com/cenkalti/backoff/v5"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
 	"golang.org/x/sync/errgroup"
@@ -26,26 +22,26 @@ import (
 	"google.golang.org/genai"
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
+	"github.com/curioswitch/cookchat/common/recipegen"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
+	"github.com/curioswitch/cookchat/frontend/server/internal/i18n"
 	"github.com/curioswitch/cookchat/frontend/server/internal/llm"
 )
 
-func NewHandler(genAI *genai.Client, store *firestore.Client, search *discoveryengine.SearchClient, storage *storage.Client, publicBucket string) *Handler {
+func NewHandler(genAI *genai.Client, store *firestore.Client, search *discoveryengine.SearchClient, processor *recipegen.PostProcessor) *Handler {
 	return &Handler{
-		genAI:        genAI,
-		store:        store,
-		search:       search,
-		storage:      storage,
-		publicBucket: publicBucket,
+		genAI:     genAI,
+		store:     store,
+		search:    search,
+		processor: processor,
 	}
 }
 
 type Handler struct {
-	genAI        *genai.Client
-	store        *firestore.Client
-	search       *discoveryengine.SearchClient
-	storage      *storage.Client
-	publicBucket string
+	genAI     *genai.Client
+	store     *firestore.Client
+	search    *discoveryengine.SearchClient
+	processor *recipegen.PostProcessor
 }
 
 func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest) (*frontendapi.ChatPlanResponse, error) {
@@ -132,59 +128,26 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 func (h *Handler) savePlan(ctx context.Context, recipeContents []cookchatdb.RecipeContent) (cookchatdb.Plan, error) {
 	recipes := make([]cookchatdb.Recipe, len(recipeContents))
 
+	language := i18n.UserLanguage(ctx)
 	var grp errgroup.Group
-	for i, recipe := range recipeContents {
-		rDoc := h.store.Collection("recipes").NewDoc()
-		recipeID := "chatplan-" + rDoc.ID
-		recipes[i] = cookchatdb.Recipe{ID: recipeID}
+	for i, content := range recipeContents {
 		grp.Go(func() error {
-			recipeJSON, err := json.Marshal(recipe)
-			if err != nil {
-				return fmt.Errorf("chatplan: marshalling recipe for image generation: %w", err)
+			recipeID := h.store.Collection("recipes").NewDoc().ID
+			recipe := cookchatdb.Recipe{
+				ID:           recipeID,
+				Source:       cookchatdb.RecipeSourceAI,
+				Content:      content,
+				LanguageCode: language,
 			}
-			res, err := h.genAI.Models.GenerateContent(ctx, "gemini-2.5-flash-image", genai.Text(string(recipeJSON)), &genai.GenerateContentConfig{
-				SystemInstruction: genai.NewContentFromText(llm.GenerateRecipeImagePrompt(), genai.RoleModel),
-			})
-			if err != nil {
-				return fmt.Errorf("chatplan: generating recipe image: %w", err)
+			if err := h.processor.PostProcessRecipe(ctx, &recipe); err != nil {
+				return fmt.Errorf("chatplan: postprocessing recipe %q: %w", recipe.ID, err)
 			}
-			if len(res.Candidates) != 1 || len(res.Candidates[0].Content.Parts) == 0 {
-				return fmt.Errorf("chatplan: no candidates in response from generate ai for recipe image: %v", res)
-			}
+			recipes[i] = recipe
 
-			var imageBlob *genai.Blob
-			for _, part := range res.Candidates[0].Content.Parts {
-				if part.InlineData != nil {
-					imageBlob = part.InlineData
-					break
-				}
+			rDoc := h.store.Collection("recipes").Doc("chatplan-" + recipe.ID)
+			if _, err := rDoc.Create(ctx, recipe); err != nil {
+				return fmt.Errorf("chatplan: saving recipe %q: %w", recipe.ID, err)
 			}
-			if imageBlob == nil {
-				return nil
-			}
-
-			image := imageBlob.Data
-			filename := "main-image.jpg"
-			if imageBlob.MIMEType == "image/png" {
-				img, err := png.Decode(bytes.NewReader(image))
-				if err != nil {
-					return fmt.Errorf("recipe: decoding png image: %w", err)
-				}
-				var buf bytes.Buffer
-				if err := jpeg.Encode(&buf, img, nil); err != nil {
-					return fmt.Errorf("recipe: encoding png to jpeg: %w", err)
-				}
-				image = buf.Bytes()
-			} else if imageBlob.MIMEType != "image/jpeg" {
-				return nil
-			}
-
-			path := fmt.Sprintf("recipes/%s/%s", recipeID, filename)
-			if err := h.saveFile(ctx, path, image); err != nil {
-				return fmt.Errorf("recipe: saving image to storage: %w", err)
-			}
-
-			recipes[i].ImageURL = fmt.Sprintf("https://storage.googleapis.com/%s/%s", h.publicBucket, path)
 
 			return nil
 		})
@@ -193,42 +156,6 @@ func (h *Handler) savePlan(ctx context.Context, recipeContents []cookchatdb.Reci
 		return cookchatdb.Plan{}, err
 	}
 
-	for i, rc := range recipeContents {
-		recipes[i].Title = rc.Title
-		recipes[i].Description = rc.Description
-		recipes[i].ServingSize = rc.ServingSize
-		recipes[i].Content = rc
-		for _, ingredient := range rc.Ingredients {
-			recipes[i].Ingredients = append(recipes[i].Ingredients, cookchatdb.RecipeIngredient{
-				Name:     ingredient.Name,
-				Quantity: ingredient.Quantity,
-			})
-		}
-		for _, section := range rc.AdditionalIngredients {
-			ingSection := cookchatdb.IngredientSection{
-				Title: section.Title,
-			}
-			for _, ingredient := range section.Ingredients {
-				ingSection.Ingredients = append(ingSection.Ingredients, cookchatdb.RecipeIngredient{
-					Name:     ingredient.Name,
-					Quantity: ingredient.Quantity,
-				})
-			}
-			recipes[i].AdditionalIngredients = append(recipes[i].AdditionalIngredients, ingSection)
-		}
-		for _, step := range rc.Steps {
-			recipes[i].Steps = append(recipes[i].Steps, cookchatdb.RecipeStep{
-				Description: step.Description,
-				ImageURL:    step.ImageURL,
-			})
-		}
-
-		rDoc := h.store.Collection("recipes").Doc(recipes[i].ID)
-		recipes[i].Source = cookchatdb.RecipeSourceAI
-		if _, err := rDoc.Create(ctx, recipes[i]); err != nil {
-			return cookchatdb.Plan{}, fmt.Errorf("chatplan: saving recipe %q: %w", recipes[i].Title, err)
-		}
-	}
 	plan, err := h.generatePlan(ctx, recipes)
 	if err != nil {
 		return plan, fmt.Errorf("chatplan: generating plan from recipes: %w", err)
@@ -249,12 +176,20 @@ func (h *Handler) savePlan(ctx context.Context, recipeContents []cookchatdb.Reci
 	return plan, nil
 }
 
+type contentWithID struct {
+	RecipeID string                   `json:"recipeId"`
+	Content  cookchatdb.RecipeContent `json:"content"`
+}
+
 func (h *Handler) generatePlan(ctx context.Context, recipes []cookchatdb.Recipe) (cookchatdb.Plan, error) {
 	var plan cookchatdb.Plan
 
 	content := make([]*genai.Content, len(recipes))
 	for i, recipe := range recipes {
-		recipeJSON, err := json.Marshal(recipe)
+		recipeJSON, err := json.Marshal(contentWithID{
+			RecipeID: recipe.ID,
+			Content:  recipe.Content,
+		})
 		if err != nil {
 			return plan, fmt.Errorf("generateplan: marshalling recipe document to JSON: %w", err)
 		}
@@ -402,21 +337,8 @@ func (h *Handler) getRecentRecipes(ctx context.Context) ([]string, error) {
 		if err := doc.DataTo(&recipe); err != nil {
 			return nil, fmt.Errorf("chatplan: decoding recipe: %w", err)
 		}
-		recipeTitles = append(recipeTitles, recipe.Title)
+		recipeTitles = append(recipeTitles, recipe.Content.Title)
 	}
 
 	return recipeTitles, nil
-}
-
-func (h *Handler) saveFile(ctx context.Context, path string, contents []byte) error {
-	w := h.storage.Bucket(h.publicBucket).Object(path).NewWriter(ctx)
-	defer func() {
-		// TODO: Log error
-		_ = w.Close()
-	}()
-	w.ContentType = "image/jpeg"
-	if _, err := w.Write(contents); err != nil {
-		return fmt.Errorf("cookpad:recipe: save image: %w", err)
-	}
-	return nil
 }

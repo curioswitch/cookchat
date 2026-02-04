@@ -96,8 +96,8 @@ func (h *Handler) GetPlans(ctx context.Context, _ *frontendapi.GetPlansRequest) 
 			if recipe, ok := recipes[recipeID]; ok {
 				plan.Recipes = append(plan.Recipes, &frontendapi.RecipeSnippet{
 					Id:       recipe.ID,
-					Title:    recipe.Title,
-					Summary:  recipe.Description,
+					Title:    recipe.Content.Title,
+					Summary:  recipe.Content.Description,
 					ImageUrl: recipe.ImageURL,
 				})
 			} else {
