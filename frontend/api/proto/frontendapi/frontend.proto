@@ -331,8 +331,8 @@ message StepGroup {
 
 // A snippet of a plan, without executiond details.
 message PlanSnippet {
-  // The date of the plan. The timestamp will begin on the date in UTC.
-  google.protobuf.Timestamp date = 1 [(buf.validate.field).required = true];
+  // The ID of the plan.
+  string id = 1;
 
   // The recipes for the plan.
   repeated RecipeSnippet recipes = 2;
@@ -347,8 +347,8 @@ message GetPlansResponse {
 
 // A cooking plan.
 message Plan {
-  // The date of the plan. The timestamp will begin on the date in UTC.
-  google.protobuf.Timestamp date = 1 [(buf.validate.field).required = true];
+  // The ID of the plan.
+  string id = 1;
 
   // The recipes for the plan.
   repeated RecipeSnippet recipes = 2;
@@ -366,8 +366,8 @@ message Plan {
 
 // A request for FrontendService.GetPlan.
 message GetPlanRequest {
-  // The date of the plan. The timestamp will begin on the date in UTC.
-  google.protobuf.Timestamp date = 1;
+  // The ID of the plan to get.
+  string plan_id = 1;
 }
 
 // A response for FrontendService.GetPlan.
@@ -381,8 +381,8 @@ message GetPlanResponse {
 
 // A request for FrontendService.UpdatePlan.
 message UpdatePlanRequest {
-  // The date of the plan. The timestamp will begin on the date in UTC.
-  google.protobuf.Timestamp date = 1;
+  // The ID of the plan to update.
+  string plan_id = 1;
 
   // The recipes for the plan.
   repeated string recipe_ids = 2;

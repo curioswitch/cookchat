@@ -1,4 +1,3 @@
-import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { createValidator } from "@bufbuild/protovalidate";
 import { useQuery } from "@connectrpc/connect-query";
 import {
@@ -20,24 +19,23 @@ const validator = createValidator();
 
 function PlanSnippet({ plan }: { plan: PlanSnippetValid }) {
   const { t } = useTranslation();
-  const date = timestampDate(plan.date);
 
   const onEditClick = useCallback(
     (e: React.MouseEvent) => {
-      enableEditPlan(date.toISOString(), plan.recipes);
-      navigate("/plans/edit");
+      enableEditPlan(plan.recipes);
+      navigate(`/plans/${plan.id}/edit`);
       e.preventDefault();
     },
-    [plan, date],
+    [plan],
   );
 
   return (
-    <Link href={`/plans/${timestampDate(plan.date).toUTCString()}`}>
+    <Link href={`/plans/${plan.id}`}>
       <div className="p-4 border-1 bg-white border-primary-400 text-black rounded-2xl">
         <div className="flex gap-4 justify-between items-center mb-2">
           <h3 className="mt-0 font-light">
             {t("global.dateOnly", {
-              val: date,
+              val: new Date(),
             })}
           </h3>
           <FaEdit
@@ -121,10 +119,7 @@ export default function Page() {
           {t("Add Plan")}
         </Button>
         {plans.map((plan) => (
-          <PlanSnippet
-            key={timestampDate(plan.date).toISOString()}
-            plan={plan}
-          />
+          <PlanSnippet key={plan.id} plan={plan} />
         ))}
       </div>
     </div>

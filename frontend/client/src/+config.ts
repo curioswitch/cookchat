@@ -9,8 +9,6 @@ export default {
   Wrapper,
   title: "Let's Cook!",
   ssr: false,
-  prerender: {
-    partial: true,
-  },
+  prerender: false,
   extends: vikeReact,
 } satisfies Config;

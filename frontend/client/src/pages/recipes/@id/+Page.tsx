@@ -37,7 +37,7 @@ function Ingredients({ ingredients }: { ingredients: RecipeIngredient[] }) {
     <div>
       {ingredients.map((ingredient) => (
         <div
-          className="flex justify-between py-2 md:py-4 [&:not(:last-child)]:border-b-1 border-gray-100 text-sm prose"
+          className="flex justify-between py-2 md:py-4 not-last:border-b-1 border-gray-100 text-sm prose"
           key={ingredient.name}
         >
           <div className="">{ingredient.name}</div>

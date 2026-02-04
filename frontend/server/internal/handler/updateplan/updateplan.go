@@ -7,7 +7,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"cloud.google.com/go/firestore"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
@@ -45,7 +44,7 @@ func (h *Handler) UpdatePlan(ctx context.Context, req *frontendapi.UpdatePlanReq
 	}
 
 	plan, err := h.fillPlan(ctx, cookchatdb.Plan{
-		Date:    req.GetDate().AsTime(),
+		ID:      req.GetPlanId(),
 		Recipes: req.GetRecipeIds(),
 	})
 	if err != nil {
@@ -54,7 +53,7 @@ func (h *Handler) UpdatePlan(ctx context.Context, req *frontendapi.UpdatePlanReq
 
 	userID := firebaseauth.TokenFromContext(ctx).UID
 	plansCol := h.store.Collection("users").Doc(userID).Collection("plans")
-	planID := plan.Date.Format(time.DateOnly)
+	planID := plan.ID
 	planDoc := plansCol.Doc(planID)
 	if _, err := planDoc.Set(ctx, plan); err != nil {
 		return nil, fmt.Errorf("updateplan: failed to set plan document: %w", err)

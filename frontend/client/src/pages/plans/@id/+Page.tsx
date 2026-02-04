@@ -1,5 +1,4 @@
 import { create } from "@bufbuild/protobuf";
-import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { createValidator } from "@bufbuild/protovalidate";
 import { useQuery } from "@connectrpc/connect-query";
 import {
@@ -101,7 +100,7 @@ function Ingredients({
             <div className="text-tiny">{ingredient.name}</div>
             <div
               className={twMerge(
-                "!text-tiny",
+                "text-tiny!",
                 styleIdx === 0 && "text-[#ea580c]",
                 styleIdx === 1 && "text-[#16a34a]",
                 styleIdx === 2 && "text-[#d97706]",
@@ -125,7 +124,7 @@ export default function Page() {
   const chatStore = useChatStore();
 
   const { data: planRes, isPending } = useQuery(getPlan, {
-    date: timestampFromDate(new Date(planId)),
+    planId,
   });
 
   const ingredientsRef = useRef<HTMLDivElement | null>(null);
