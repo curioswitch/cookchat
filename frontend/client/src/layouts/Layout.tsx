@@ -1,6 +1,5 @@
 import { Badge } from "@heroui/badge";
 import { Divider } from "@heroui/divider";
-import { Link } from "@heroui/link";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -96,10 +95,10 @@ ${cart.extraItems.join("\n")}
       <div className="fixed bottom-0 w-full h-24 md:h-24 bg-white z-50">
         <Divider className="bg-yellow-300" />
         <div className="px-6 md:px-8 flex items-center justify-between h-full w-full">
-          <Link
+          <a
             href="/"
             className={twMerge(
-              "flex flex-col gap-1",
+              "flex flex-col gap-1 items-center",
               path === "/" || path.startsWith("/recipes/")
                 ? "text-primary-400"
                 : "text-gray-400",
@@ -107,17 +106,17 @@ ${cart.extraItems.join("\n")}
           >
             <FiBookOpen className="size-7 md:size-10" />
             <div className="text-xs md:text-sm">{t("Recipe")}</div>
-          </Link>
-          <Link
+          </a>
+          <a
             href="/plans"
             className={twMerge(
-              "flex flex-col gap-1",
+              "flex flex-col gap-1 items-center",
               path.startsWith("/plans") ? "text-primary-400" : "text-gray-400",
             )}
           >
             <FiCalendar className="size-7 md:size-10" />
             <div className="text-xs md:text-sm">{t("Plan")}</div>
-          </Link>
+          </a>
           {(chatStore.currentRecipeId || chatStore.currentPlanId) && (
             <ChatButton
               className={"fixed bottom-32 right-8"}
@@ -128,20 +127,20 @@ ${cart.extraItems.join("\n")}
               prompt={chatStore.prompt}
             />
           )}
-          <Link
+          <a
             href="/bookmarks"
             className={twMerge(
-              "flex flex-col gap-1",
+              "flex flex-col gap-1 items-center",
               path === "/bookmarks" ? "text-primary-400" : "text-gray-400",
             )}
           >
             <FiBookmark className="size-7 md:size-10" />
             <div className="text-xs md:text-sm">{t("Bookmarks")}</div>
-          </Link>
-          <Link
+          </a>
+          <a
             href="/cart"
             className={twMerge(
-              "flex flex-col gap-1",
+              "flex flex-col gap-1 items-center",
               path === "/cart" ? "text-primary-400" : "text-gray-400",
             )}
           >
@@ -152,7 +151,7 @@ ${cart.extraItems.join("\n")}
               <FiShoppingCart className="size-7 md:size-10" />
             </Badge>
             <div className="text-xs md:text-sm">{t("Cart")}</div>
-          </Link>
+          </a>
         </div>
       </div>
     </div>

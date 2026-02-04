@@ -272,20 +272,22 @@ export const clearPlanRecipes = () => {
 
 export type EditPlanStore = {
   editing: boolean;
+  planId: string;
   recipes: RecipeSnippet[];
 };
 
 export const useEditPlanStore = create<EditPlanStore>(() => ({
   editing: false,
+  planId: "",
   recipes: [],
 }));
 
-export const enableEditPlan = (recipes: RecipeSnippet[]) => {
-  useEditPlanStore.setState({ editing: true, recipes });
+export const enableEditPlan = (planId: string, recipes: RecipeSnippet[]) => {
+  useEditPlanStore.setState({ editing: true, planId, recipes });
 };
 
 export const disableEditPlan = () => {
-  useEditPlanStore.setState({ editing: false, recipes: [] });
+  useEditPlanStore.setState({ editing: false, planId: "", recipes: [] });
 };
 
 export const addRecipeToEditPlan = (recipe: RecipeSnippet) => {

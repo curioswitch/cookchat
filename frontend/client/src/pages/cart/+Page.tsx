@@ -1,7 +1,6 @@
 import { Button } from "@heroui/button";
 import { Checkbox } from "@heroui/checkbox";
 import { Input } from "@heroui/input";
-import { Link } from "@heroui/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { HiCheck, HiTrash } from "react-icons/hi";
@@ -130,7 +129,7 @@ function SwipeableRecipeCard({
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          <Link
+          <a
             className="text-gray-600 w-full block"
             href={`/recipes/${recipe.id}`}
           >
@@ -140,7 +139,7 @@ function SwipeableRecipeCard({
                 {recipe.servingSize}の素材
               </div>
             </div>
-          </Link>
+          </a>
         </div>
         {/* Delete confirmation button */}
         {swipeOffset === -80 && (

@@ -6,7 +6,6 @@ import {
   type PlanSnippetValid,
 } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
-import { Link } from "@heroui/link";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { FaEdit } from "react-icons/fa";
@@ -22,15 +21,17 @@ function PlanSnippet({ plan }: { plan: PlanSnippetValid }) {
 
   const onEditClick = useCallback(
     (e: React.MouseEvent) => {
-      enableEditPlan(plan.recipes);
+      console.log("foo");
+      enableEditPlan(plan.id, plan.recipes);
       navigate(`/plans/${plan.id}/edit`);
       e.preventDefault();
+      e.stopPropagation();
     },
     [plan],
   );
 
   return (
-    <Link href={`/plans/${plan.id}`}>
+    <a href={`/plans/${plan.id}`}>
       <div className="p-4 border-1 bg-white border-primary-400 text-black rounded-2xl">
         <div className="flex gap-4 justify-between items-center mb-2">
           <h3 className="mt-0 font-light">
@@ -75,7 +76,7 @@ function PlanSnippet({ plan }: { plan: PlanSnippetValid }) {
           )}
         </div>
       </div>
-    </Link>
+    </a>
   );
 }
 
@@ -111,11 +112,7 @@ export default function Page() {
           </div>
           <img src={kitchenSVG} alt="" aria-hidden="true" className="size-24" />
         </div>
-        <Button
-          as={Link}
-          href="/plans/add"
-          className="bg-primary-400 text-white"
-        >
+        <Button as="a" href="/plans/add" className="bg-primary-400 text-white">
           {t("Add Plan")}
         </Button>
         {plans.map((plan) => (
