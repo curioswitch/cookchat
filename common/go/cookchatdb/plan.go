@@ -27,8 +27,8 @@ const (
 // Plan is the plan for a single day. Plans are stored in the
 // plans collection for a user, with the ID YYYY-mm-dd.
 type Plan struct {
-	// Date is the date of the day.
-	Date time.Time `firestore:"date"`
+	// The ID of the plan.
+	ID string `firestore:"id"`
 
 	// Recipes is the list of recipe IDs for the day.
 	Recipes []string `firestore:"recipes"`
@@ -38,4 +38,7 @@ type Plan struct {
 
 	// Any notes about the plan.
 	Notes []string `firestore:"notes"`
+
+	// The time the plan was created.
+	CreatedAt time.Time `firestore:"createdAt"`
 }

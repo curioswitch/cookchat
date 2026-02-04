@@ -8,12 +8,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
 
 	"cloud.google.com/go/firestore"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
 	"google.golang.org/api/iterator"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
@@ -37,14 +35,14 @@ func (h *Handler) GetPlan(ctx context.Context, req *frontendapi.GetPlanRequest) 
 	language := i18n.UserLanguage(ctx)
 
 	col := h.store.Collection("users").Doc(userID).Collection("plans")
-	doc, err := col.Doc(req.GetDate().AsTime().Format(time.DateOnly)).Get(ctx)
+	doc, err := col.Doc(req.GetPlanId()).Get(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("getplan: fetching plan: %w", err)
 	}
 
 	var dbPlan cookchatdb.Plan
 	if err := doc.DataTo(&dbPlan); err != nil {
-		return nil, fmt.Errorf("getplans: decoding plan: %w", err)
+		return nil, fmt.Errorf("getplan: decoding plan: %w", err)
 	}
 	recipesCol := h.store.Collection("recipes")
 	iter := recipesCol.Query.WhereEntity(firestore.PropertyFilter{
@@ -61,17 +59,17 @@ func (h *Handler) GetPlan(ctx context.Context, req *frontendapi.GetPlanRequest) 
 			break
 		}
 		if err != nil {
-			return nil, fmt.Errorf("getplans: fetching recipe: %w", err)
+			return nil, fmt.Errorf("getplan: fetching recipe: %w", err)
 		}
 		var recipe cookchatdb.Recipe
 		if err := doc.DataTo(&recipe); err != nil {
-			return nil, fmt.Errorf("getplans: decoding recipe: %w", err)
+			return nil, fmt.Errorf("getplan: decoding recipe: %w", err)
 		}
 		recipes = append(recipes, recipe)
 	}
 
 	plan := &frontendapi.Plan{
-		Date:         timestamppb.New(dbPlan.Date),
+		Id:           dbPlan.ID,
 		Recipes:      make([]*frontendapi.RecipeSnippet, len(recipes)),
 		Ingredients:  make([]*frontendapi.IngredientSection, len(recipes)),
 		ServingSizes: make([]string, len(recipes)),

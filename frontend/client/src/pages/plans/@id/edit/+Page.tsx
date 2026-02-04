@@ -1,4 +1,3 @@
-import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { useMutation } from "@connectrpc/connect-query";
 import { type RecipeSnippet, updatePlan } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
@@ -9,8 +8,9 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { FaTrash } from "react-icons/fa";
 import { navigate } from "vike/client/router";
+import { usePageContext } from "vike-react/usePageContext";
 
-import { removeRecipeFromEditPlan, useEditPlanStore } from "../../../stores";
+import { removeRecipeFromEditPlan, useEditPlanStore } from "../../../../stores";
 
 function RecipeSlot({ recipe }: { recipe: RecipeSnippet }) {
   const onDeleteClick = useCallback(() => {
@@ -33,7 +33,10 @@ function RecipeSlot({ recipe }: { recipe: RecipeSnippet }) {
 export default function Page() {
   const { t } = useTranslation();
 
-  const { planId, recipes: storeRecipes } = useEditPlanStore();
+  const pageContext = usePageContext();
+  const planId = pageContext.routeParams.id;
+
+  const { recipes: storeRecipes } = useEditPlanStore();
 
   const doUpdatePlan = useMutation(updatePlan, {
     onSuccess: () => {
@@ -43,7 +46,7 @@ export default function Page() {
 
   const onSaveClick = useCallback(() => {
     doUpdatePlan.mutate({
-      date: timestampFromDate(new Date(planId)),
+      planId,
       recipeIds: storeRecipes.map((r) => r.id),
     });
   }, [doUpdatePlan, planId, storeRecipes]);

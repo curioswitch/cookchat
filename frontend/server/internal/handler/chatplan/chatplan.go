@@ -134,7 +134,7 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 		if err != nil {
 			return nil, err
 		}
-		planID := plan.Date.Format(time.DateOnly)
+		planID := plan.ID
 
 		chat.PlanID = planID
 		if _, err := chats.Doc(chat.ID).Set(ctx, chat); err != nil {
@@ -228,14 +228,12 @@ func (h *Handler) savePlan(ctx context.Context, recipeContents []cookchatdb.Reci
 		return plan, fmt.Errorf("chatplan: generating plan from recipes: %w", err)
 	}
 
-	now := time.Now()
-	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 	userID := firebaseauth.TokenFromContext(ctx).UID
 
 	plansCol := h.store.Collection("users").Doc(userID).Collection("plans")
-	plan.Date = today
-	planID := plan.Date.Format(time.DateOnly)
-	planDoc := plansCol.Doc(planID)
+	planDoc := plansCol.NewDoc()
+	plan.ID = planDoc.ID
+	plan.CreatedAt = time.Now()
 	if _, err := planDoc.Set(ctx, plan); err != nil {
 		return plan, fmt.Errorf("chatplan: failed to set plan document: %w", err)
 	}

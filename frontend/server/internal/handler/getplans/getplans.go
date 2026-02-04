@@ -12,7 +12,6 @@ import (
 	"cloud.google.com/go/firestore"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
 	"google.golang.org/api/iterator"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
@@ -36,9 +35,9 @@ func (h *Handler) GetPlans(ctx context.Context, _ *frontendapi.GetPlansRequest) 
 
 	plansCol := h.store.Collection("users").Doc(userID).Collection("plans")
 	iter := plansCol.Query.WhereEntity(firestore.PropertyFilter{
-		Path:     firestore.DocumentID,
+		Path:     "createdAt",
 		Operator: ">=",
-		Value:    plansCol.Doc(today.Format(time.DateOnly)),
+		Value:    today,
 	}).Limit(5).Documents(ctx)
 	defer iter.Stop()
 
@@ -90,7 +89,7 @@ func (h *Handler) GetPlans(ctx context.Context, _ *frontendapi.GetPlansRequest) 
 	plans := make([]*frontendapi.PlanSnippet, len(dbPlans))
 	for i, dbPlan := range dbPlans {
 		plan := &frontendapi.PlanSnippet{
-			Date: timestamppb.New(dbPlan.Date),
+			Id: dbPlan.ID,
 		}
 		for _, recipeID := range dbPlan.Recipes {
 			if recipe, ok := recipes[recipeID]; ok {
@@ -101,7 +100,7 @@ func (h *Handler) GetPlans(ctx context.Context, _ *frontendapi.GetPlansRequest) 
 					ImageUrl: recipe.ImageURL,
 				})
 			} else {
-				return nil, fmt.Errorf("getplans: recipe %s not found for plan %s", recipeID, dbPlan.Date.Format(time.DateOnly))
+				return nil, fmt.Errorf("getplans: recipe %s not found for plan %s", recipeID, dbPlan.ID)
 			}
 		}
 		plans[i] = plan
