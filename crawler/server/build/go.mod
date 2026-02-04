@@ -3,7 +3,7 @@ module github.com/curioswitch/cookchat/crawler/server/build
 go 1.25.6
 
 require (
-	github.com/curioswitch/go-build v0.7.1
+	github.com/curioswitch/go-build v0.7.2
 	github.com/curioswitch/go-curiostack v0.0.0-20260128051004-075609c7945e
 	github.com/goyek/x v0.4.0
 )
