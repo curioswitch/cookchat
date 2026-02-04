@@ -10,7 +10,6 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/firestore"
-	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
 	"google.golang.org/api/iterator"
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
@@ -31,12 +30,10 @@ type Handler struct {
 }
 
 func (h *Handler) GetPlan(ctx context.Context, req *frontendapi.GetPlanRequest) (*frontendapi.GetPlanResponse, error) {
-	userID := firebaseauth.TokenFromContext(ctx).UID
 	language := i18n.UserLanguage(ctx)
 
-	col := h.store.Collection("users").Doc(userID).Collection("plans")
-	doc, err := col.Doc(req.GetPlanId()).Get(ctx)
-	if err != nil {
+	doc, err := h.store.CollectionGroup("plans").Where("id", "==", req.GetPlanId()).Limit(1).Documents(ctx).Next()
+	if err != nil && !errors.Is(err, iterator.Done) {
 		return nil, fmt.Errorf("getplan: fetching plan: %w", err)
 	}
 
