@@ -1,6 +1,6 @@
 module github.com/curioswitch/cookchat/crawler/server
 
-go 1.25.6
+go 1.25.7
 
 require (
 	cloud.google.com/go/firestore v1.21.0
