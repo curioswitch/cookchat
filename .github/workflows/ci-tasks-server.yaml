@@ -1,0 +1,30 @@
+name: Tasks Server CI
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - tasks/server/**
+      - tasks/api/go/**
+      - .github/workflows/ci-tasks-server.yaml
+  pull_request:
+    paths:
+      - tasks/server/**
+      - tasks/api/go/**
+      - .github/workflows/ci-tasks-server.yaml
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+jobs:
+  ci:
+    uses: curioswitch/go-curiostack/.github/workflows/export-go-server-ci.yaml@075609c7945ee4889b49b5d7ed32f332922461a3
+    with:
+      project_dir: tasks/server
+      service: tasks-server
+      deploy_dev: false
+    secrets: inherit

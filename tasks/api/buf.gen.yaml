@@ -1,0 +1,16 @@
+version: v2
+plugins:
+  - local:
+      - go
+      - run
+      # renovate: google.golang.org/protobuf
+      - google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
+    out: .
+    opt: module=github.com/curioswitch/cookchat/tasks/api
+  - local:
+      - go
+      - run
+      # renovate: connectrpc.com/connect
+      - connectrpc.com/connect/cmd/protoc-gen-connect-go@v1.19.1
+    out: .
+    opt: module=github.com/curioswitch/cookchat/tasks/api
