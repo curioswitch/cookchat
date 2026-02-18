@@ -21,7 +21,7 @@ type PlanStatus string
 
 const (
 	PlanStatusProcessing PlanStatus = "processing"
-	PlanStatusCompleted  PlanStatus = "completed"
+	PlanStatusActive     PlanStatus = "active"
 )
 
 // Plan is the plan for a single day. Plans are stored in the
@@ -41,4 +41,7 @@ type Plan struct {
 
 	// The time the plan was created.
 	CreatedAt time.Time `firestore:"createdAt"`
+
+	// Status of the plan.
+	Status PlanStatus `firestore:"status"`
 }

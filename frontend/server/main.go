@@ -14,6 +14,7 @@ import (
 	"slices"
 	"strings"
 
+	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
 	discoveryengine "cloud.google.com/go/discoveryengine/apiv1"
 	"cloud.google.com/go/storage"
 	firebase "firebase.google.com/go/v4"
@@ -104,6 +105,16 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 	if err != nil {
 		return fmt.Errorf("creating genai client: %w", err)
 	}
+
+	tasks, err := cloudtasks.NewClient(ctx)
+	if err != nil {
+		return fmt.Errorf("main: create cloud tasks client: %w", err)
+	}
+	defer func() {
+		if err := tasks.Close(); err != nil {
+			slog.ErrorContext(ctx, "main: close cloud tasks client", "error", err)
+		}
+	}()
 
 	io := file.NewIO(storage, publicBucket)
 	processor := recipegen.NewPostProcessor(genAI, firestore, image.NewWriter(io))
@@ -211,7 +222,7 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 
 	server.HandleConnectUnary(s,
 		frontendapiconnect.FrontendServiceChatPlanProcedure,
-		chatplan.NewHandler(genAI, firestore, search, processor).ChatPlan,
+		chatplan.NewHandler(genAI, firestore, search, processor, tasks, conf.Tasks).ChatPlan,
 		[]*frontendapi.ChatPlanRequest{
 			{
 				Message: "Hello.",

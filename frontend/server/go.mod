@@ -3,6 +3,7 @@ module github.com/curioswitch/cookchat/frontend/server
 go 1.26.0
 
 require (
+	cloud.google.com/go/cloudtasks v1.13.7
 	cloud.google.com/go/discoveryengine v1.23.0
 	cloud.google.com/go/firestore v1.21.0
 	cloud.google.com/go/storage v1.60.0
@@ -11,6 +12,7 @@ require (
 	github.com/cenkalti/backoff/v5 v5.0.3
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/frontend/api v0.0.0-00010101000000-000000000000
+	github.com/curioswitch/cookchat/tasks/api v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/go-curiostack v0.0.0-20260128051004-075609c7945e
 	github.com/curioswitch/go-usegcp v0.0.0-20251112061520-c500c3a65003
 	github.com/go-chi/chi/v5 v5.2.5
@@ -103,4 +105,5 @@ require (
 replace (
 	github.com/curioswitch/cookchat/common => ../../common/go
 	github.com/curioswitch/cookchat/frontend/api => ../api
+	github.com/curioswitch/cookchat/tasks/api => ../../tasks/api
 )

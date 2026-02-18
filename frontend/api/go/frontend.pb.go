@@ -193,6 +193,111 @@ func (RecipeSource) EnumDescriptor() ([]byte, []int) {
 	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{2}
 }
 
+// The status of a recipe.
+type RecipeStatus int32
+
+const (
+	// Unknown status.
+	RecipeStatus_RECIPE_STATUS_UNSPECIFIED RecipeStatus = 0
+	// The recipe is being processed by the system, and is not yet ready to be used in chats or plans.
+	RecipeStatus_RECIPE_STATUS_PROCESSING RecipeStatus = 1
+	// The recipe is active and can be used in chats and plans.
+	RecipeStatus_RECIPE_STATUS_ACTIVE RecipeStatus = 2
+)
+
+// Enum value maps for RecipeStatus.
+var (
+	RecipeStatus_name = map[int32]string{
+		0: "RECIPE_STATUS_UNSPECIFIED",
+		1: "RECIPE_STATUS_PROCESSING",
+		2: "RECIPE_STATUS_ACTIVE",
+	}
+	RecipeStatus_value = map[string]int32{
+		"RECIPE_STATUS_UNSPECIFIED": 0,
+		"RECIPE_STATUS_PROCESSING":  1,
+		"RECIPE_STATUS_ACTIVE":      2,
+	}
+)
+
+func (x RecipeStatus) Enum() *RecipeStatus {
+	p := new(RecipeStatus)
+	*p = x
+	return p
+}
+
+func (x RecipeStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (RecipeStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_frontendapi_frontend_proto_enumTypes[3].Descriptor()
+}
+
+func (RecipeStatus) Type() protoreflect.EnumType {
+	return &file_frontendapi_frontend_proto_enumTypes[3]
+}
+
+func (x RecipeStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use RecipeStatus.Descriptor instead.
+func (RecipeStatus) EnumDescriptor() ([]byte, []int) {
+	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{3}
+}
+
+type PlanStatus int32
+
+const (
+	// Unknown status.
+	PlanStatus_PLAN_STATUS_UNSPECIFIED PlanStatus = 0
+	// The plan is being processed, and is not yet ready to be viewed or cooked.
+	PlanStatus_PLAN_STATUS_PROCESSING PlanStatus = 1
+	// The plan is active and can be viewed and cooked.
+	PlanStatus_PLAN_STATUS_ACTIVE PlanStatus = 2
+)
+
+// Enum value maps for PlanStatus.
+var (
+	PlanStatus_name = map[int32]string{
+		0: "PLAN_STATUS_UNSPECIFIED",
+		1: "PLAN_STATUS_PROCESSING",
+		2: "PLAN_STATUS_ACTIVE",
+	}
+	PlanStatus_value = map[string]int32{
+		"PLAN_STATUS_UNSPECIFIED": 0,
+		"PLAN_STATUS_PROCESSING":  1,
+		"PLAN_STATUS_ACTIVE":      2,
+	}
+)
+
+func (x PlanStatus) Enum() *PlanStatus {
+	p := new(PlanStatus)
+	*p = x
+	return p
+}
+
+func (x PlanStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (PlanStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_frontendapi_frontend_proto_enumTypes[4].Descriptor()
+}
+
+func (PlanStatus) Type() protoreflect.EnumType {
+	return &file_frontendapi_frontend_proto_enumTypes[4]
+}
+
+func (x PlanStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use PlanStatus.Descriptor instead.
+func (PlanStatus) EnumDescriptor() ([]byte, []int) {
+	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{4}
+}
+
 type StartChatRequest_ModelProvider int32
 
 const (
@@ -229,11 +334,11 @@ func (x StartChatRequest_ModelProvider) String() string {
 }
 
 func (StartChatRequest_ModelProvider) Descriptor() protoreflect.EnumDescriptor {
-	return file_frontendapi_frontend_proto_enumTypes[3].Descriptor()
+	return file_frontendapi_frontend_proto_enumTypes[5].Descriptor()
 }
 
 func (StartChatRequest_ModelProvider) Type() protoreflect.EnumType {
-	return &file_frontendapi_frontend_proto_enumTypes[3]
+	return &file_frontendapi_frontend_proto_enumTypes[5]
 }
 
 func (x StartChatRequest_ModelProvider) Number() protoreflect.EnumNumber {
@@ -278,11 +383,11 @@ func (x ChatMessage_Role) String() string {
 }
 
 func (ChatMessage_Role) Descriptor() protoreflect.EnumDescriptor {
-	return file_frontendapi_frontend_proto_enumTypes[4].Descriptor()
+	return file_frontendapi_frontend_proto_enumTypes[6].Descriptor()
 }
 
 func (ChatMessage_Role) Type() protoreflect.EnumType {
-	return &file_frontendapi_frontend_proto_enumTypes[4]
+	return &file_frontendapi_frontend_proto_enumTypes[6]
 }
 
 func (x ChatMessage_Role) Number() protoreflect.EnumNumber {
@@ -693,24 +798,26 @@ type Recipe struct {
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// The source of the recipe.
 	Source RecipeSource `protobuf:"varint,2,opt,name=source,proto3,enum=frontendapi.RecipeSource" json:"source,omitempty"`
+	// The status of the recipe.
+	Status RecipeStatus `protobuf:"varint,3,opt,name=status,proto3,enum=frontendapi.RecipeStatus" json:"status,omitempty"`
 	// The title of the recipe.
-	Title string `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
+	Title string `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
 	// The URL for the main image of the recipe.
-	ImageUrl string `protobuf:"bytes,4,opt,name=image_url,json=imageUrl,proto3" json:"image_url,omitempty"`
+	ImageUrl string `protobuf:"bytes,5,opt,name=image_url,json=imageUrl,proto3" json:"image_url,omitempty"`
 	// The description of the recipe.
-	Description string `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
+	Description string `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
 	// The main ingredients of the recipe.
-	Ingredients []*RecipeIngredient `protobuf:"bytes,6,rep,name=ingredients,proto3" json:"ingredients,omitempty"`
+	Ingredients []*RecipeIngredient `protobuf:"bytes,7,rep,name=ingredients,proto3" json:"ingredients,omitempty"`
 	// Additional ingredients grouped into sections.
-	AdditionalIngredients []*IngredientSection `protobuf:"bytes,7,rep,name=additional_ingredients,json=additionalIngredients,proto3" json:"additional_ingredients,omitempty"`
+	AdditionalIngredients []*IngredientSection `protobuf:"bytes,8,rep,name=additional_ingredients,json=additionalIngredients,proto3" json:"additional_ingredients,omitempty"`
 	// The steps to prepare the recipe.
-	Steps []*RecipeStep `protobuf:"bytes,8,rep,name=steps,proto3" json:"steps,omitempty"`
+	Steps []*RecipeStep `protobuf:"bytes,9,rep,name=steps,proto3" json:"steps,omitempty"`
 	// Additional notes or comments about the recipe.
-	Notes string `protobuf:"bytes,9,opt,name=notes,proto3" json:"notes,omitempty"`
+	Notes string `protobuf:"bytes,10,opt,name=notes,proto3" json:"notes,omitempty"`
 	// The serving size of the recipe as free-form text.
-	ServingSize string `protobuf:"bytes,10,opt,name=serving_size,json=servingSize,proto3" json:"serving_size,omitempty"`
+	ServingSize string `protobuf:"bytes,11,opt,name=serving_size,json=servingSize,proto3" json:"serving_size,omitempty"`
 	// The language of the recipe.
-	Language      Language `protobuf:"varint,11,opt,name=language,proto3,enum=frontendapi.Language" json:"language,omitempty"`
+	Language      Language `protobuf:"varint,12,opt,name=language,proto3,enum=frontendapi.Language" json:"language,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -757,6 +864,13 @@ func (x *Recipe) GetSource() RecipeSource {
 		return x.Source
 	}
 	return RecipeSource_RECIPE_SOURCE_UNSPECIFIED
+}
+
+func (x *Recipe) GetStatus() RecipeStatus {
+	if x != nil {
+		return x.Status
+	}
+	return RecipeStatus_RECIPE_STATUS_UNSPECIFIED
 }
 
 func (x *Recipe) GetTitle() string {
@@ -1944,14 +2058,16 @@ type Plan struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The ID of the plan.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// The status of the plan.
+	Status PlanStatus `protobuf:"varint,2,opt,name=status,proto3,enum=frontendapi.PlanStatus" json:"status,omitempty"`
 	// The recipes for the plan.
-	Recipes []*RecipeSnippet `protobuf:"bytes,2,rep,name=recipes,proto3" json:"recipes,omitempty"`
+	Recipes []*RecipeSnippet `protobuf:"bytes,3,rep,name=recipes,proto3" json:"recipes,omitempty"`
 	// The step groups for the plan.
-	StepGroups []*StepGroup `protobuf:"bytes,3,rep,name=step_groups,json=stepGroups,proto3" json:"step_groups,omitempty"`
+	StepGroups []*StepGroup `protobuf:"bytes,4,rep,name=step_groups,json=stepGroups,proto3" json:"step_groups,omitempty"`
 	// A list of notes to help cook the plan.
-	Notes         []string             `protobuf:"bytes,4,rep,name=notes,proto3" json:"notes,omitempty"`
-	Ingredients   []*IngredientSection `protobuf:"bytes,5,rep,name=ingredients,proto3" json:"ingredients,omitempty"`
-	ServingSizes  []string             `protobuf:"bytes,6,rep,name=serving_sizes,json=servingSizes,proto3" json:"serving_sizes,omitempty"`
+	Notes         []string             `protobuf:"bytes,5,rep,name=notes,proto3" json:"notes,omitempty"`
+	Ingredients   []*IngredientSection `protobuf:"bytes,6,rep,name=ingredients,proto3" json:"ingredients,omitempty"`
+	ServingSizes  []string             `protobuf:"bytes,7,rep,name=serving_sizes,json=servingSizes,proto3" json:"serving_sizes,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1991,6 +2107,13 @@ func (x *Plan) GetId() string {
 		return x.Id
 	}
 	return ""
+}
+
+func (x *Plan) GetStatus() PlanStatus {
+	if x != nil {
+		return x.Status
+	}
+	return PlanStatus_PLAN_STATUS_UNSPECIFIED
 }
 
 func (x *Plan) GetRecipes() []*RecipeSnippet {
@@ -2758,20 +2881,21 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\timage_url\x18\x02 \x01(\tR\bimageUrl\"j\n" +
 	"\x11IngredientSection\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12?\n" +
-	"\vingredients\x18\x02 \x03(\v2\x1d.frontendapi.RecipeIngredientR\vingredients\"\xd3\x03\n" +
+	"\vingredients\x18\x02 \x03(\v2\x1d.frontendapi.RecipeIngredientR\vingredients\"\x86\x04\n" +
 	"\x06Recipe\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x121\n" +
-	"\x06source\x18\x02 \x01(\x0e2\x19.frontendapi.RecipeSourceR\x06source\x12\x14\n" +
-	"\x05title\x18\x03 \x01(\tR\x05title\x12\x1b\n" +
-	"\timage_url\x18\x04 \x01(\tR\bimageUrl\x12 \n" +
-	"\vdescription\x18\x05 \x01(\tR\vdescription\x12?\n" +
-	"\vingredients\x18\x06 \x03(\v2\x1d.frontendapi.RecipeIngredientR\vingredients\x12U\n" +
-	"\x16additional_ingredients\x18\a \x03(\v2\x1e.frontendapi.IngredientSectionR\x15additionalIngredients\x12-\n" +
-	"\x05steps\x18\b \x03(\v2\x17.frontendapi.RecipeStepR\x05steps\x12\x14\n" +
-	"\x05notes\x18\t \x01(\tR\x05notes\x12!\n" +
-	"\fserving_size\x18\n" +
-	" \x01(\tR\vservingSize\x121\n" +
-	"\blanguage\x18\v \x01(\x0e2\x15.frontendapi.LanguageR\blanguage\"/\n" +
+	"\x06source\x18\x02 \x01(\x0e2\x19.frontendapi.RecipeSourceR\x06source\x121\n" +
+	"\x06status\x18\x03 \x01(\x0e2\x19.frontendapi.RecipeStatusR\x06status\x12\x14\n" +
+	"\x05title\x18\x04 \x01(\tR\x05title\x12\x1b\n" +
+	"\timage_url\x18\x05 \x01(\tR\bimageUrl\x12 \n" +
+	"\vdescription\x18\x06 \x01(\tR\vdescription\x12?\n" +
+	"\vingredients\x18\a \x03(\v2\x1d.frontendapi.RecipeIngredientR\vingredients\x12U\n" +
+	"\x16additional_ingredients\x18\b \x03(\v2\x1e.frontendapi.IngredientSectionR\x15additionalIngredients\x12-\n" +
+	"\x05steps\x18\t \x03(\v2\x17.frontendapi.RecipeStepR\x05steps\x12\x14\n" +
+	"\x05notes\x18\n" +
+	" \x01(\tR\x05notes\x12!\n" +
+	"\fserving_size\x18\v \x01(\tR\vservingSize\x121\n" +
+	"\blanguage\x18\f \x01(\x0e2\x15.frontendapi.LanguageR\blanguage\"/\n" +
 	"\x10GetRecipeRequest\x12\x1b\n" +
 	"\trecipe_id\x18\x01 \x01(\tR\brecipeId\"\x84\x01\n" +
 	"\x11GetRecipeResponse\x12+\n" +
@@ -2854,15 +2978,16 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\arecipes\x18\x02 \x03(\v2\x1a.frontendapi.RecipeSnippetR\arecipes\"\x11\n" +
 	"\x0fGetPlansRequest\"B\n" +
 	"\x10GetPlansResponse\x12.\n" +
-	"\x05plans\x18\x01 \x03(\v2\x18.frontendapi.PlanSnippetR\x05plans\"\x82\x02\n" +
+	"\x05plans\x18\x01 \x03(\v2\x18.frontendapi.PlanSnippetR\x05plans\"\xb3\x02\n" +
 	"\x04Plan\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x124\n" +
-	"\arecipes\x18\x02 \x03(\v2\x1a.frontendapi.RecipeSnippetR\arecipes\x127\n" +
-	"\vstep_groups\x18\x03 \x03(\v2\x16.frontendapi.StepGroupR\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12/\n" +
+	"\x06status\x18\x02 \x01(\x0e2\x17.frontendapi.PlanStatusR\x06status\x124\n" +
+	"\arecipes\x18\x03 \x03(\v2\x1a.frontendapi.RecipeSnippetR\arecipes\x127\n" +
+	"\vstep_groups\x18\x04 \x03(\v2\x16.frontendapi.StepGroupR\n" +
 	"stepGroups\x12\x14\n" +
-	"\x05notes\x18\x04 \x03(\tR\x05notes\x12@\n" +
-	"\vingredients\x18\x05 \x03(\v2\x1e.frontendapi.IngredientSectionR\vingredients\x12#\n" +
-	"\rserving_sizes\x18\x06 \x03(\tR\fservingSizes\")\n" +
+	"\x05notes\x18\x05 \x03(\tR\x05notes\x12@\n" +
+	"\vingredients\x18\x06 \x03(\v2\x1e.frontendapi.IngredientSectionR\vingredients\x12#\n" +
+	"\rserving_sizes\x18\a \x03(\tR\fservingSizes\")\n" +
 	"\x0eGetPlanRequest\x12\x17\n" +
 	"\aplan_id\x18\x01 \x01(\tR\x06planId\"_\n" +
 	"\x0fGetPlanResponse\x12-\n" +
@@ -2917,7 +3042,16 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\x19RECIPE_SOURCE_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15RECIPE_SOURCE_COOKPAD\x10\x01\x12\x1d\n" +
 	"\x19RECIPE_SOURCE_ORANGE_PAGE\x10\x02\x12 \n" +
-	"\x1cRECIPE_SOURCE_DELISH_KITCHEN\x10\x032N\n" +
+	"\x1cRECIPE_SOURCE_DELISH_KITCHEN\x10\x03*e\n" +
+	"\fRecipeStatus\x12\x1d\n" +
+	"\x19RECIPE_STATUS_UNSPECIFIED\x10\x00\x12\x1c\n" +
+	"\x18RECIPE_STATUS_PROCESSING\x10\x01\x12\x18\n" +
+	"\x14RECIPE_STATUS_ACTIVE\x10\x02*]\n" +
+	"\n" +
+	"PlanStatus\x12\x1b\n" +
+	"\x17PLAN_STATUS_UNSPECIFIED\x10\x00\x12\x1a\n" +
+	"\x16PLAN_STATUS_PROCESSING\x10\x01\x12\x16\n" +
+	"\x12PLAN_STATUS_ACTIVE\x10\x022N\n" +
 	"\vChatService\x12?\n" +
 	"\x04Chat\x12\x18.frontendapi.ChatRequest\x1a\x19.frontendapi.ChatResponse(\x010\x012\xa9\b\n" +
 	"\x0fFrontendService\x12J\n" +
@@ -2948,121 +3082,125 @@ func file_frontendapi_frontend_proto_rawDescGZIP() []byte {
 	return file_frontendapi_frontend_proto_rawDescData
 }
 
-var file_frontendapi_frontend_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_frontendapi_frontend_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
 var file_frontendapi_frontend_proto_msgTypes = make([]protoimpl.MessageInfo, 40)
 var file_frontendapi_frontend_proto_goTypes = []any{
 	(Language)(0),                          // 0: frontendapi.Language
 	(RecipeGenre)(0),                       // 1: frontendapi.RecipeGenre
 	(RecipeSource)(0),                      // 2: frontendapi.RecipeSource
-	(StartChatRequest_ModelProvider)(0),    // 3: frontendapi.StartChatRequest.ModelProvider
-	(ChatMessage_Role)(0),                  // 4: frontendapi.ChatMessage.Role
-	(*ChatContent)(nil),                    // 5: frontendapi.ChatContent
-	(*ChatRequest)(nil),                    // 6: frontendapi.ChatRequest
-	(*ChatResponse)(nil),                   // 7: frontendapi.ChatResponse
-	(*RecipeIngredient)(nil),               // 8: frontendapi.RecipeIngredient
-	(*RecipeStep)(nil),                     // 9: frontendapi.RecipeStep
-	(*IngredientSection)(nil),              // 10: frontendapi.IngredientSection
-	(*Recipe)(nil),                         // 11: frontendapi.Recipe
-	(*GetRecipeRequest)(nil),               // 12: frontendapi.GetRecipeRequest
-	(*GetRecipeResponse)(nil),              // 13: frontendapi.GetRecipeResponse
-	(*Pagination)(nil),                     // 14: frontendapi.Pagination
-	(*RecipeSnippet)(nil),                  // 15: frontendapi.RecipeSnippet
-	(*ListRecipesRequest)(nil),             // 16: frontendapi.ListRecipesRequest
-	(*ListRecipesResponse)(nil),            // 17: frontendapi.ListRecipesResponse
-	(*StartChatRequest)(nil),               // 18: frontendapi.StartChatRequest
-	(*StartChatResponse)(nil),              // 19: frontendapi.StartChatResponse
-	(*AddRecipeRequest)(nil),               // 20: frontendapi.AddRecipeRequest
-	(*AddRecipeResponse)(nil),              // 21: frontendapi.AddRecipeResponse
-	(*GenerateRecipeRequest)(nil),          // 22: frontendapi.GenerateRecipeRequest
-	(*GenerateRecipeResponse)(nil),         // 23: frontendapi.GenerateRecipeResponse
-	(*GeneratePlanRequest)(nil),            // 24: frontendapi.GeneratePlanRequest
-	(*GeneratePlanResponse)(nil),           // 25: frontendapi.GeneratePlanResponse
-	(*StepGroup)(nil),                      // 26: frontendapi.StepGroup
-	(*PlanSnippet)(nil),                    // 27: frontendapi.PlanSnippet
-	(*GetPlansRequest)(nil),                // 28: frontendapi.GetPlansRequest
-	(*GetPlansResponse)(nil),               // 29: frontendapi.GetPlansResponse
-	(*Plan)(nil),                           // 30: frontendapi.Plan
-	(*GetPlanRequest)(nil),                 // 31: frontendapi.GetPlanRequest
-	(*GetPlanResponse)(nil),                // 32: frontendapi.GetPlanResponse
-	(*UpdatePlanRequest)(nil),              // 33: frontendapi.UpdatePlanRequest
-	(*UpdatePlanResponse)(nil),             // 34: frontendapi.UpdatePlanResponse
-	(*AddBookmarkRequest)(nil),             // 35: frontendapi.AddBookmarkRequest
-	(*AddBookmarkResponse)(nil),            // 36: frontendapi.AddBookmarkResponse
-	(*RemoveBookmarkRequest)(nil),          // 37: frontendapi.RemoveBookmarkRequest
-	(*RemoveBookmarkResponse)(nil),         // 38: frontendapi.RemoveBookmarkResponse
-	(*ChatMessage)(nil),                    // 39: frontendapi.ChatMessage
-	(*ChatPlanRequest)(nil),                // 40: frontendapi.ChatPlanRequest
-	(*ChatPlanResponse)(nil),               // 41: frontendapi.ChatPlanResponse
-	(*GetChatMessagesRequest)(nil),         // 42: frontendapi.GetChatMessagesRequest
-	(*GetChatMessagesResponse)(nil),        // 43: frontendapi.GetChatMessagesResponse
-	(*AddRecipeRequest_AddRecipeStep)(nil), // 44: frontendapi.AddRecipeRequest.AddRecipeStep
-	(*timestamppb.Timestamp)(nil),          // 45: google.protobuf.Timestamp
+	(RecipeStatus)(0),                      // 3: frontendapi.RecipeStatus
+	(PlanStatus)(0),                        // 4: frontendapi.PlanStatus
+	(StartChatRequest_ModelProvider)(0),    // 5: frontendapi.StartChatRequest.ModelProvider
+	(ChatMessage_Role)(0),                  // 6: frontendapi.ChatMessage.Role
+	(*ChatContent)(nil),                    // 7: frontendapi.ChatContent
+	(*ChatRequest)(nil),                    // 8: frontendapi.ChatRequest
+	(*ChatResponse)(nil),                   // 9: frontendapi.ChatResponse
+	(*RecipeIngredient)(nil),               // 10: frontendapi.RecipeIngredient
+	(*RecipeStep)(nil),                     // 11: frontendapi.RecipeStep
+	(*IngredientSection)(nil),              // 12: frontendapi.IngredientSection
+	(*Recipe)(nil),                         // 13: frontendapi.Recipe
+	(*GetRecipeRequest)(nil),               // 14: frontendapi.GetRecipeRequest
+	(*GetRecipeResponse)(nil),              // 15: frontendapi.GetRecipeResponse
+	(*Pagination)(nil),                     // 16: frontendapi.Pagination
+	(*RecipeSnippet)(nil),                  // 17: frontendapi.RecipeSnippet
+	(*ListRecipesRequest)(nil),             // 18: frontendapi.ListRecipesRequest
+	(*ListRecipesResponse)(nil),            // 19: frontendapi.ListRecipesResponse
+	(*StartChatRequest)(nil),               // 20: frontendapi.StartChatRequest
+	(*StartChatResponse)(nil),              // 21: frontendapi.StartChatResponse
+	(*AddRecipeRequest)(nil),               // 22: frontendapi.AddRecipeRequest
+	(*AddRecipeResponse)(nil),              // 23: frontendapi.AddRecipeResponse
+	(*GenerateRecipeRequest)(nil),          // 24: frontendapi.GenerateRecipeRequest
+	(*GenerateRecipeResponse)(nil),         // 25: frontendapi.GenerateRecipeResponse
+	(*GeneratePlanRequest)(nil),            // 26: frontendapi.GeneratePlanRequest
+	(*GeneratePlanResponse)(nil),           // 27: frontendapi.GeneratePlanResponse
+	(*StepGroup)(nil),                      // 28: frontendapi.StepGroup
+	(*PlanSnippet)(nil),                    // 29: frontendapi.PlanSnippet
+	(*GetPlansRequest)(nil),                // 30: frontendapi.GetPlansRequest
+	(*GetPlansResponse)(nil),               // 31: frontendapi.GetPlansResponse
+	(*Plan)(nil),                           // 32: frontendapi.Plan
+	(*GetPlanRequest)(nil),                 // 33: frontendapi.GetPlanRequest
+	(*GetPlanResponse)(nil),                // 34: frontendapi.GetPlanResponse
+	(*UpdatePlanRequest)(nil),              // 35: frontendapi.UpdatePlanRequest
+	(*UpdatePlanResponse)(nil),             // 36: frontendapi.UpdatePlanResponse
+	(*AddBookmarkRequest)(nil),             // 37: frontendapi.AddBookmarkRequest
+	(*AddBookmarkResponse)(nil),            // 38: frontendapi.AddBookmarkResponse
+	(*RemoveBookmarkRequest)(nil),          // 39: frontendapi.RemoveBookmarkRequest
+	(*RemoveBookmarkResponse)(nil),         // 40: frontendapi.RemoveBookmarkResponse
+	(*ChatMessage)(nil),                    // 41: frontendapi.ChatMessage
+	(*ChatPlanRequest)(nil),                // 42: frontendapi.ChatPlanRequest
+	(*ChatPlanResponse)(nil),               // 43: frontendapi.ChatPlanResponse
+	(*GetChatMessagesRequest)(nil),         // 44: frontendapi.GetChatMessagesRequest
+	(*GetChatMessagesResponse)(nil),        // 45: frontendapi.GetChatMessagesResponse
+	(*AddRecipeRequest_AddRecipeStep)(nil), // 46: frontendapi.AddRecipeRequest.AddRecipeStep
+	(*timestamppb.Timestamp)(nil),          // 47: google.protobuf.Timestamp
 }
 var file_frontendapi_frontend_proto_depIdxs = []int32{
-	5,  // 0: frontendapi.ChatRequest.content:type_name -> frontendapi.ChatContent
-	5,  // 1: frontendapi.ChatResponse.content:type_name -> frontendapi.ChatContent
-	8,  // 2: frontendapi.IngredientSection.ingredients:type_name -> frontendapi.RecipeIngredient
+	7,  // 0: frontendapi.ChatRequest.content:type_name -> frontendapi.ChatContent
+	7,  // 1: frontendapi.ChatResponse.content:type_name -> frontendapi.ChatContent
+	10, // 2: frontendapi.IngredientSection.ingredients:type_name -> frontendapi.RecipeIngredient
 	2,  // 3: frontendapi.Recipe.source:type_name -> frontendapi.RecipeSource
-	8,  // 4: frontendapi.Recipe.ingredients:type_name -> frontendapi.RecipeIngredient
-	10, // 5: frontendapi.Recipe.additional_ingredients:type_name -> frontendapi.IngredientSection
-	9,  // 6: frontendapi.Recipe.steps:type_name -> frontendapi.RecipeStep
-	0,  // 7: frontendapi.Recipe.language:type_name -> frontendapi.Language
-	11, // 8: frontendapi.GetRecipeResponse.recipe:type_name -> frontendapi.Recipe
-	14, // 9: frontendapi.ListRecipesRequest.pagination:type_name -> frontendapi.Pagination
-	15, // 10: frontendapi.ListRecipesResponse.recipes:type_name -> frontendapi.RecipeSnippet
-	14, // 11: frontendapi.ListRecipesResponse.pagination:type_name -> frontendapi.Pagination
-	45, // 12: frontendapi.StartChatRequest.plan_id:type_name -> google.protobuf.Timestamp
-	3,  // 13: frontendapi.StartChatRequest.model_provider:type_name -> frontendapi.StartChatRequest.ModelProvider
-	8,  // 14: frontendapi.AddRecipeRequest.ingredients:type_name -> frontendapi.RecipeIngredient
-	10, // 15: frontendapi.AddRecipeRequest.additional_ingredients:type_name -> frontendapi.IngredientSection
-	44, // 16: frontendapi.AddRecipeRequest.steps:type_name -> frontendapi.AddRecipeRequest.AddRecipeStep
-	0,  // 17: frontendapi.AddRecipeRequest.language:type_name -> frontendapi.Language
-	20, // 18: frontendapi.GenerateRecipeResponse.add_recipe_request:type_name -> frontendapi.AddRecipeRequest
-	1,  // 19: frontendapi.GeneratePlanRequest.genres:type_name -> frontendapi.RecipeGenre
-	9,  // 20: frontendapi.StepGroup.steps:type_name -> frontendapi.RecipeStep
-	15, // 21: frontendapi.PlanSnippet.recipes:type_name -> frontendapi.RecipeSnippet
-	27, // 22: frontendapi.GetPlansResponse.plans:type_name -> frontendapi.PlanSnippet
-	15, // 23: frontendapi.Plan.recipes:type_name -> frontendapi.RecipeSnippet
-	26, // 24: frontendapi.Plan.step_groups:type_name -> frontendapi.StepGroup
-	10, // 25: frontendapi.Plan.ingredients:type_name -> frontendapi.IngredientSection
-	30, // 26: frontendapi.GetPlanResponse.plan:type_name -> frontendapi.Plan
-	30, // 27: frontendapi.UpdatePlanResponse.plan:type_name -> frontendapi.Plan
-	4,  // 28: frontendapi.ChatMessage.role:type_name -> frontendapi.ChatMessage.Role
-	39, // 29: frontendapi.ChatPlanResponse.messages:type_name -> frontendapi.ChatMessage
-	39, // 30: frontendapi.GetChatMessagesResponse.messages:type_name -> frontendapi.ChatMessage
-	6,  // 31: frontendapi.ChatService.Chat:input_type -> frontendapi.ChatRequest
-	12, // 32: frontendapi.FrontendService.GetRecipe:input_type -> frontendapi.GetRecipeRequest
-	16, // 33: frontendapi.FrontendService.ListRecipes:input_type -> frontendapi.ListRecipesRequest
-	18, // 34: frontendapi.FrontendService.StartChat:input_type -> frontendapi.StartChatRequest
-	20, // 35: frontendapi.FrontendService.AddRecipe:input_type -> frontendapi.AddRecipeRequest
-	22, // 36: frontendapi.FrontendService.GenerateRecipe:input_type -> frontendapi.GenerateRecipeRequest
-	24, // 37: frontendapi.FrontendService.GeneratePlan:input_type -> frontendapi.GeneratePlanRequest
-	40, // 38: frontendapi.FrontendService.ChatPlan:input_type -> frontendapi.ChatPlanRequest
-	42, // 39: frontendapi.FrontendService.GetChatMessages:input_type -> frontendapi.GetChatMessagesRequest
-	28, // 40: frontendapi.FrontendService.GetPlans:input_type -> frontendapi.GetPlansRequest
-	31, // 41: frontendapi.FrontendService.GetPlan:input_type -> frontendapi.GetPlanRequest
-	33, // 42: frontendapi.FrontendService.UpdatePlan:input_type -> frontendapi.UpdatePlanRequest
-	35, // 43: frontendapi.FrontendService.AddBookmark:input_type -> frontendapi.AddBookmarkRequest
-	37, // 44: frontendapi.FrontendService.RemoveBookmark:input_type -> frontendapi.RemoveBookmarkRequest
-	7,  // 45: frontendapi.ChatService.Chat:output_type -> frontendapi.ChatResponse
-	13, // 46: frontendapi.FrontendService.GetRecipe:output_type -> frontendapi.GetRecipeResponse
-	17, // 47: frontendapi.FrontendService.ListRecipes:output_type -> frontendapi.ListRecipesResponse
-	19, // 48: frontendapi.FrontendService.StartChat:output_type -> frontendapi.StartChatResponse
-	21, // 49: frontendapi.FrontendService.AddRecipe:output_type -> frontendapi.AddRecipeResponse
-	23, // 50: frontendapi.FrontendService.GenerateRecipe:output_type -> frontendapi.GenerateRecipeResponse
-	25, // 51: frontendapi.FrontendService.GeneratePlan:output_type -> frontendapi.GeneratePlanResponse
-	41, // 52: frontendapi.FrontendService.ChatPlan:output_type -> frontendapi.ChatPlanResponse
-	43, // 53: frontendapi.FrontendService.GetChatMessages:output_type -> frontendapi.GetChatMessagesResponse
-	29, // 54: frontendapi.FrontendService.GetPlans:output_type -> frontendapi.GetPlansResponse
-	32, // 55: frontendapi.FrontendService.GetPlan:output_type -> frontendapi.GetPlanResponse
-	34, // 56: frontendapi.FrontendService.UpdatePlan:output_type -> frontendapi.UpdatePlanResponse
-	36, // 57: frontendapi.FrontendService.AddBookmark:output_type -> frontendapi.AddBookmarkResponse
-	38, // 58: frontendapi.FrontendService.RemoveBookmark:output_type -> frontendapi.RemoveBookmarkResponse
-	45, // [45:59] is the sub-list for method output_type
-	31, // [31:45] is the sub-list for method input_type
-	31, // [31:31] is the sub-list for extension type_name
-	31, // [31:31] is the sub-list for extension extendee
-	0,  // [0:31] is the sub-list for field type_name
+	3,  // 4: frontendapi.Recipe.status:type_name -> frontendapi.RecipeStatus
+	10, // 5: frontendapi.Recipe.ingredients:type_name -> frontendapi.RecipeIngredient
+	12, // 6: frontendapi.Recipe.additional_ingredients:type_name -> frontendapi.IngredientSection
+	11, // 7: frontendapi.Recipe.steps:type_name -> frontendapi.RecipeStep
+	0,  // 8: frontendapi.Recipe.language:type_name -> frontendapi.Language
+	13, // 9: frontendapi.GetRecipeResponse.recipe:type_name -> frontendapi.Recipe
+	16, // 10: frontendapi.ListRecipesRequest.pagination:type_name -> frontendapi.Pagination
+	17, // 11: frontendapi.ListRecipesResponse.recipes:type_name -> frontendapi.RecipeSnippet
+	16, // 12: frontendapi.ListRecipesResponse.pagination:type_name -> frontendapi.Pagination
+	47, // 13: frontendapi.StartChatRequest.plan_id:type_name -> google.protobuf.Timestamp
+	5,  // 14: frontendapi.StartChatRequest.model_provider:type_name -> frontendapi.StartChatRequest.ModelProvider
+	10, // 15: frontendapi.AddRecipeRequest.ingredients:type_name -> frontendapi.RecipeIngredient
+	12, // 16: frontendapi.AddRecipeRequest.additional_ingredients:type_name -> frontendapi.IngredientSection
+	46, // 17: frontendapi.AddRecipeRequest.steps:type_name -> frontendapi.AddRecipeRequest.AddRecipeStep
+	0,  // 18: frontendapi.AddRecipeRequest.language:type_name -> frontendapi.Language
+	22, // 19: frontendapi.GenerateRecipeResponse.add_recipe_request:type_name -> frontendapi.AddRecipeRequest
+	1,  // 20: frontendapi.GeneratePlanRequest.genres:type_name -> frontendapi.RecipeGenre
+	11, // 21: frontendapi.StepGroup.steps:type_name -> frontendapi.RecipeStep
+	17, // 22: frontendapi.PlanSnippet.recipes:type_name -> frontendapi.RecipeSnippet
+	29, // 23: frontendapi.GetPlansResponse.plans:type_name -> frontendapi.PlanSnippet
+	4,  // 24: frontendapi.Plan.status:type_name -> frontendapi.PlanStatus
+	17, // 25: frontendapi.Plan.recipes:type_name -> frontendapi.RecipeSnippet
+	28, // 26: frontendapi.Plan.step_groups:type_name -> frontendapi.StepGroup
+	12, // 27: frontendapi.Plan.ingredients:type_name -> frontendapi.IngredientSection
+	32, // 28: frontendapi.GetPlanResponse.plan:type_name -> frontendapi.Plan
+	32, // 29: frontendapi.UpdatePlanResponse.plan:type_name -> frontendapi.Plan
+	6,  // 30: frontendapi.ChatMessage.role:type_name -> frontendapi.ChatMessage.Role
+	41, // 31: frontendapi.ChatPlanResponse.messages:type_name -> frontendapi.ChatMessage
+	41, // 32: frontendapi.GetChatMessagesResponse.messages:type_name -> frontendapi.ChatMessage
+	8,  // 33: frontendapi.ChatService.Chat:input_type -> frontendapi.ChatRequest
+	14, // 34: frontendapi.FrontendService.GetRecipe:input_type -> frontendapi.GetRecipeRequest
+	18, // 35: frontendapi.FrontendService.ListRecipes:input_type -> frontendapi.ListRecipesRequest
+	20, // 36: frontendapi.FrontendService.StartChat:input_type -> frontendapi.StartChatRequest
+	22, // 37: frontendapi.FrontendService.AddRecipe:input_type -> frontendapi.AddRecipeRequest
+	24, // 38: frontendapi.FrontendService.GenerateRecipe:input_type -> frontendapi.GenerateRecipeRequest
+	26, // 39: frontendapi.FrontendService.GeneratePlan:input_type -> frontendapi.GeneratePlanRequest
+	42, // 40: frontendapi.FrontendService.ChatPlan:input_type -> frontendapi.ChatPlanRequest
+	44, // 41: frontendapi.FrontendService.GetChatMessages:input_type -> frontendapi.GetChatMessagesRequest
+	30, // 42: frontendapi.FrontendService.GetPlans:input_type -> frontendapi.GetPlansRequest
+	33, // 43: frontendapi.FrontendService.GetPlan:input_type -> frontendapi.GetPlanRequest
+	35, // 44: frontendapi.FrontendService.UpdatePlan:input_type -> frontendapi.UpdatePlanRequest
+	37, // 45: frontendapi.FrontendService.AddBookmark:input_type -> frontendapi.AddBookmarkRequest
+	39, // 46: frontendapi.FrontendService.RemoveBookmark:input_type -> frontendapi.RemoveBookmarkRequest
+	9,  // 47: frontendapi.ChatService.Chat:output_type -> frontendapi.ChatResponse
+	15, // 48: frontendapi.FrontendService.GetRecipe:output_type -> frontendapi.GetRecipeResponse
+	19, // 49: frontendapi.FrontendService.ListRecipes:output_type -> frontendapi.ListRecipesResponse
+	21, // 50: frontendapi.FrontendService.StartChat:output_type -> frontendapi.StartChatResponse
+	23, // 51: frontendapi.FrontendService.AddRecipe:output_type -> frontendapi.AddRecipeResponse
+	25, // 52: frontendapi.FrontendService.GenerateRecipe:output_type -> frontendapi.GenerateRecipeResponse
+	27, // 53: frontendapi.FrontendService.GeneratePlan:output_type -> frontendapi.GeneratePlanResponse
+	43, // 54: frontendapi.FrontendService.ChatPlan:output_type -> frontendapi.ChatPlanResponse
+	45, // 55: frontendapi.FrontendService.GetChatMessages:output_type -> frontendapi.GetChatMessagesResponse
+	31, // 56: frontendapi.FrontendService.GetPlans:output_type -> frontendapi.GetPlansResponse
+	34, // 57: frontendapi.FrontendService.GetPlan:output_type -> frontendapi.GetPlanResponse
+	36, // 58: frontendapi.FrontendService.UpdatePlan:output_type -> frontendapi.UpdatePlanResponse
+	38, // 59: frontendapi.FrontendService.AddBookmark:output_type -> frontendapi.AddBookmarkResponse
+	40, // 60: frontendapi.FrontendService.RemoveBookmark:output_type -> frontendapi.RemoveBookmarkResponse
+	47, // [47:61] is the sub-list for method output_type
+	33, // [33:47] is the sub-list for method input_type
+	33, // [33:33] is the sub-list for extension type_name
+	33, // [33:33] is the sub-list for extension extendee
+	0,  // [0:33] is the sub-list for field type_name
 }
 
 func init() { file_frontendapi_frontend_proto_init() }
@@ -3088,7 +3226,7 @@ func file_frontendapi_frontend_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_frontendapi_frontend_proto_rawDesc), len(file_frontendapi_frontend_proto_rawDesc)),
-			NumEnums:      5,
+			NumEnums:      7,
 			NumMessages:   40,
 			NumExtensions: 0,
 			NumServices:   2,

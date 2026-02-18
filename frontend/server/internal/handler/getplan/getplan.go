@@ -72,6 +72,12 @@ func (h *Handler) GetPlan(ctx context.Context, req *frontendapi.GetPlanRequest) 
 		ServingSizes: make([]string, len(recipes)),
 		StepGroups:   make([]*frontendapi.StepGroup, len(dbPlan.StepGroups)),
 	}
+	switch dbPlan.Status {
+	case cookchatdb.PlanStatusProcessing:
+		plan.Status = frontendapi.PlanStatus_PLAN_STATUS_PROCESSING
+	case cookchatdb.PlanStatusActive:
+		plan.Status = frontendapi.PlanStatus_PLAN_STATUS_ACTIVE
+	}
 	for i, recipe := range recipes {
 		cnt := recipe.LocalizedContent[language]
 		if cnt == nil {

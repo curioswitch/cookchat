@@ -4,6 +4,7 @@ import {
   addBookmark,
   type RecipeIngredient,
   RecipeSnippetSchema,
+  RecipeStatus,
   removeBookmark,
 } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
@@ -12,7 +13,7 @@ import { Textarea } from "@heroui/input";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FaBookmark, FaRegBookmark } from "react-icons/fa";
+import { FaBookmark, FaLightbulb, FaRegBookmark } from "react-icons/fa";
 import { FiUsers } from "react-icons/fi";
 import { HiAdjustments, HiShoppingCart } from "react-icons/hi";
 import { navigate } from "vike/client/router";
@@ -233,6 +234,14 @@ export default function Page() {
         </button>
       </div>
       <div className="px-4 py-2">
+        {recipe.status === RecipeStatus.PROCESSING && (
+          <div className="p-4 bg-[#ffedd5] border-1 border-[#ffedd5] rounded-2xl flex gap-2 items-center mb-2">
+            <FaLightbulb className="text-primary size-6" />
+            <div>
+              {t("This recipe is being processed. It should be ready soon!")}
+            </div>
+          </div>
+        )}
         <div className="px-2">
           <div className="flex items-center justify-between">
             <h2 className="">{recipe.title}</h2>
