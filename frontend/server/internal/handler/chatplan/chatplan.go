@@ -26,7 +26,6 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
-	"github.com/curioswitch/cookchat/common/recipegen"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
 	"github.com/curioswitch/cookchat/frontend/server/internal/config"
 	"github.com/curioswitch/cookchat/frontend/server/internal/i18n"
@@ -34,12 +33,11 @@ import (
 	tasksapi "github.com/curioswitch/cookchat/tasks/api/go"
 )
 
-func NewHandler(genAI *genai.Client, store *firestore.Client, search *discoveryengine.SearchClient, processor *recipegen.PostProcessor, tasks *cloudtasks.Client, tasksConfig config.Tasks) *Handler {
+func NewHandler(genAI *genai.Client, store *firestore.Client, search *discoveryengine.SearchClient, tasks *cloudtasks.Client, tasksConfig config.Tasks) *Handler {
 	return &Handler{
 		genAI:       genAI,
 		store:       store,
 		search:      search,
-		processor:   processor,
 		tasks:       tasks,
 		tasksConfig: tasksConfig,
 	}
@@ -49,7 +47,6 @@ type Handler struct {
 	genAI       *genai.Client
 	store       *firestore.Client
 	search      *discoveryengine.SearchClient
-	processor   *recipegen.PostProcessor
 	tasks       *cloudtasks.Client
 	tasksConfig config.Tasks
 }

@@ -24,9 +24,6 @@ import (
 	"github.com/openai/openai-go/v3"
 	"google.golang.org/genai"
 
-	"github.com/curioswitch/cookchat/common/file"
-	"github.com/curioswitch/cookchat/common/image"
-	"github.com/curioswitch/cookchat/common/recipegen"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
 	"github.com/curioswitch/cookchat/frontend/api/go/frontendapiconnect"
 	"github.com/curioswitch/cookchat/frontend/server/internal/config"
@@ -116,9 +113,6 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		}
 	}()
 
-	io := file.NewIO(storage, publicBucket)
-	processor := recipegen.NewPostProcessor(genAI, firestore, image.NewWriter(io))
-
 	oai := openai.NewClient()
 
 	authorizedEmails := strings.Split(conf.Authorization.EmailsCSV, ",")
@@ -200,7 +194,7 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 
 	server.HandleConnectUnary(s,
 		frontendapiconnect.FrontendServiceGeneratePlanProcedure,
-		generateplan.NewHandler(genAI, firestore, search).GeneratePlan,
+		generateplan.NewHandler(genAI, firestore, search, tasks, conf.Tasks).GeneratePlan,
 		[]*frontendapi.GeneratePlanRequest{
 			{
 				NumDays:     3,
@@ -222,7 +216,7 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 
 	server.HandleConnectUnary(s,
 		frontendapiconnect.FrontendServiceChatPlanProcedure,
-		chatplan.NewHandler(genAI, firestore, search, processor, tasks, conf.Tasks).ChatPlan,
+		chatplan.NewHandler(genAI, firestore, search, tasks, conf.Tasks).ChatPlan,
 		[]*frontendapi.ChatPlanRequest{
 			{
 				Message: "Hello.",

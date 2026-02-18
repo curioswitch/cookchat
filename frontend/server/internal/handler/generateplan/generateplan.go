@@ -8,33 +8,42 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
 
+	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
+	taskspb "cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb"
 	discoveryengine "cloud.google.com/go/discoveryengine/apiv1"
 	"cloud.google.com/go/firestore"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
-	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genai"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
+	"github.com/curioswitch/cookchat/frontend/server/internal/config"
 	"github.com/curioswitch/cookchat/frontend/server/internal/llm"
+	tasksapi "github.com/curioswitch/cookchat/tasks/api/go"
 )
 
-func NewHandler(genAI *genai.Client, store *firestore.Client, search *discoveryengine.SearchClient) *Handler {
+func NewHandler(genAI *genai.Client, store *firestore.Client, search *discoveryengine.SearchClient, tasks *cloudtasks.Client, tasksConfig config.Tasks) *Handler {
 	return &Handler{
-		genAI:  genAI,
-		store:  store,
-		search: search,
+		genAI:       genAI,
+		store:       store,
+		search:      search,
+		tasks:       tasks,
+		tasksConfig: tasksConfig,
 	}
 }
 
 type Handler struct {
-	genAI  *genai.Client
-	store  *firestore.Client
-	search *discoveryengine.SearchClient
+	genAI       *genai.Client
+	store       *firestore.Client
+	search      *discoveryengine.SearchClient
+	tasks       *cloudtasks.Client
+	tasksConfig config.Tasks
 }
 
 func (h *Handler) GeneratePlan(ctx context.Context, req *frontendapi.GeneratePlanRequest) (*frontendapi.GeneratePlanResponse, error) {
@@ -98,22 +107,10 @@ func (h *Handler) GeneratePlan(ctx context.Context, req *frontendapi.GeneratePla
 		return nil, fmt.Errorf("generateplan: unexpected number of days in plan: got %d, want %d", len(plans), req.GetNumDays())
 	}
 
-	var grp errgroup.Group
-	for i, plan := range plans {
+	for _, plan := range plans {
 		if len(plan.Recipes) > 3 {
 			plan.Recipes = plan.Recipes[:3]
 		}
-		grp.Go(func() error {
-			filled, err := h.fillPlan(ctx, plan)
-			if err != nil {
-				return fmt.Errorf("generateplan: filling plan for day %d: %w", i, err)
-			}
-			plans[i] = filled
-			return nil
-		})
-	}
-	if err := grp.Wait(); err != nil {
-		return nil, fmt.Errorf("generateplan: filling plans: %w", err)
 	}
 
 	userID := firebaseauth.TokenFromContext(ctx).UID
@@ -127,6 +124,41 @@ func (h *Handler) GeneratePlan(ctx context.Context, req *frontendapi.GeneratePla
 			if err := t.Set(planDoc, plan); err != nil {
 				return fmt.Errorf("generateplan: failed to set plan document: %w", err)
 			}
+
+			fillPlanReq, err := proto.Marshal(&tasksapi.FillPlanRequest{
+				PlanId: plan.ID,
+			})
+			if err != nil {
+				return fmt.Errorf("generateplan: marshaling fill plan request: %w", err)
+			}
+
+			fbTok := firebaseauth.RawTokenFromContext(ctx)
+
+			task := &taskspb.CreateTaskRequest{
+				Parent: h.tasksConfig.Queue,
+				Task: &taskspb.Task{
+					MessageType: &taskspb.Task_HttpRequest{
+						HttpRequest: &taskspb.HttpRequest{
+							HttpMethod: taskspb.HttpMethod_POST,
+							Url:        h.tasksConfig.URL + "/tasksapi.TasksService/FillPlan",
+							Headers: map[string]string{
+								"Content-Type":             "application/proto",
+								"Content-Length":           strconv.Itoa(len(fillPlanReq)),
+								"X-Original-Authorization": "Bearer " + fbTok,
+							},
+							Body: fillPlanReq,
+							AuthorizationHeader: &taskspb.HttpRequest_OidcToken{
+								OidcToken: &taskspb.OidcToken{
+									ServiceAccountEmail: h.tasksConfig.Invoker,
+								},
+							},
+						},
+					},
+				},
+			}
+			if _, err := h.tasks.CreateTask(ctx, task); err != nil {
+				return fmt.Errorf("generateplan: creating task: %w", err)
+			}
 		}
 		return nil
 	}); err != nil {
@@ -134,94 +166,4 @@ func (h *Handler) GeneratePlan(ctx context.Context, req *frontendapi.GeneratePla
 	}
 
 	return &frontendapi.GeneratePlanResponse{}, nil
-}
-
-func (h *Handler) fillPlan(ctx context.Context, plan cookchatdb.Plan) (cookchatdb.Plan, error) {
-	recipeDocs, err := h.store.Collection("recipes").Query.WhereEntity(firestore.PropertyFilter{
-		Path: "id", Operator: "in", Value: plan.Recipes,
-	}).Documents(ctx).GetAll()
-	if err != nil {
-		return plan, fmt.Errorf("generateplan: fetching recipes for plan: %w", err)
-	}
-
-	content := make([]*genai.Content, len(recipeDocs))
-	for i, doc := range recipeDocs {
-		recipeJSON, err := json.Marshal(doc.Data())
-		if err != nil {
-			return plan, fmt.Errorf("generateplan: marshalling recipe document to JSON: %w", err)
-		}
-		content[i] = genai.NewContentFromText(string(recipeJSON), genai.RoleUser)
-	}
-
-	res, err := h.genAI.Models.GenerateContent(ctx, "gemini-2.5-flash", content, &genai.GenerateContentConfig{
-		SystemInstruction: genai.NewContentFromText(llm.GenerateExecutionPlanPrompt(), genai.RoleModel),
-		ResponseMIMEType:  "application/json",
-		ResponseSchema: &genai.Schema{
-			Type:        "object",
-			Description: "The recipes of a day in the meal plan.",
-			Properties: map[string]*genai.Schema{
-				"recipes": {
-					Type:        "array",
-					Description: "The recipe IDs for the day.",
-					Items: &genai.Schema{
-						Type: "string",
-					},
-				},
-				"stepGroups": {
-					Type:        "array",
-					Description: "The groups of recipe steps to make the plan.",
-					Items: &genai.Schema{
-						Type: "object",
-						Properties: map[string]*genai.Schema{
-							"label": {
-								Type:        "string",
-								Description: "The label of the step group, e.g. 準備, 調理, 仕上げ.",
-							},
-							"steps": {
-								Type:        "array",
-								Description: "The steps in the step group.",
-								Items: &genai.Schema{
-									Type: "object",
-									Properties: map[string]*genai.Schema{
-										"description": {
-											Type:        "string",
-											Description: "The description of the step.",
-										},
-										"imageUrl": {
-											Type:        "string",
-											Description: "The image URL for the step.",
-										},
-									},
-									Required: []string{"description"},
-								},
-							},
-							"note": {
-								Type:        "string",
-								Description: "Any note that can help when doing the steps in the group, such as what to do while waiting for one",
-							},
-						},
-						Required: []string{"label", "steps"},
-					},
-				},
-				"notes": {
-					Type:        "array",
-					Description: "Any useful notes for preparing the plan",
-					Items: &genai.Schema{
-						Type: "string",
-					},
-				},
-			},
-			Required: []string{"recipes", "stepGroups"},
-		},
-	})
-	if err != nil {
-		return plan, fmt.Errorf("generateplan: calling GenerateContent for execution plan: %w", err)
-	}
-	if len(res.Candidates) != 1 || len(res.Candidates[0].Content.Parts) != 1 || res.Candidates[0].Content.Parts[0].Text == "" {
-		return plan, fmt.Errorf("generateplan: unexpected response from generate ai for execution plan: %v", res)
-	}
-	if err := json.Unmarshal([]byte(res.Candidates[0].Content.Parts[0].Text), &plan); err != nil {
-		return plan, fmt.Errorf("generateplan: failed to unmarshal received plan: %w", err)
-	}
-	return plan, nil
 }
