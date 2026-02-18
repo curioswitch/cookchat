@@ -18,6 +18,16 @@ type Search struct {
 	Engine string `koanf:"engine"`
 }
 
+// Tasks contains the configuration for Cloud Tasks.
+type Tasks struct {
+	// Invoker is the service account email to use as the identity of the task when it is executed.
+	Invoker string `koanf:"invoker"`
+	// Queue is the name of the Cloud Tasks queue to use.
+	Queue string `koanf:"queue"`
+	// URL is the URL to send the task to.
+	URL string `koanf:"url"`
+}
+
 type Config struct {
 	config.Common
 
@@ -26,4 +36,7 @@ type Config struct {
 
 	// Search is the configuration for search.
 	Search Search `koanf:"search"`
+
+	// Tasks is the configuration for Cloud Tasks.
+	Tasks Tasks `koanf:"tasks"`
 }

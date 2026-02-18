@@ -82,6 +82,12 @@ func recipeToProto(recipe *cookchatdb.Recipe, cnt *cookchatdb.RecipeContent) *fr
 		ImageUrl: recipe.ImageURL,
 		Language: languageCodeToProto(recipe.LanguageCode),
 	}
+	switch recipe.Status {
+	case cookchatdb.RecipeStatusProcessing:
+		res.Status = frontendapi.RecipeStatus_RECIPE_STATUS_PROCESSING
+	case cookchatdb.RecipeStatusActive:
+		res.Status = frontendapi.RecipeStatus_RECIPE_STATUS_ACTIVE
+	}
 
 	res.Title = cnt.Title
 	res.Description = cnt.Description

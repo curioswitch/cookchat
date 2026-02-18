@@ -76,6 +76,16 @@ enum RecipeSource {
   RECIPE_SOURCE_DELISH_KITCHEN = 3;
 }
 
+// The status of a recipe.
+enum RecipeStatus {
+  // Unknown status.
+  RECIPE_STATUS_UNSPECIFIED = 0;
+  // The recipe is being processed by the system, and is not yet ready to be used in chats or plans.
+  RECIPE_STATUS_PROCESSING = 1;
+  // The recipe is active and can be used in chats and plans.
+  RECIPE_STATUS_ACTIVE = 2;
+}
+
 // An ingredient in a recipe.
 message RecipeIngredient {
   // The name of the ingredient.
@@ -108,32 +118,35 @@ message Recipe {
   // The source of the recipe.
   RecipeSource source = 2;
 
+  // The status of the recipe.
+  RecipeStatus status = 3;
+
   // The title of the recipe.
-  string title = 3;
+  string title = 4;
 
   // The URL for the main image of the recipe.
-  string image_url = 4;
+  string image_url = 5;
 
   // The description of the recipe.
-  string description = 5;
+  string description = 6;
 
   // The main ingredients of the recipe.
-  repeated RecipeIngredient ingredients = 6;
+  repeated RecipeIngredient ingredients = 7;
 
   // Additional ingredients grouped into sections.
-  repeated IngredientSection additional_ingredients = 7;
+  repeated IngredientSection additional_ingredients = 8;
 
   // The steps to prepare the recipe.
-  repeated RecipeStep steps = 8;
+  repeated RecipeStep steps = 9;
 
   // Additional notes or comments about the recipe.
-  string notes = 9;
+  string notes = 10;
 
   // The serving size of the recipe as free-form text.
-  string serving_size = 10;
+  string serving_size = 11;
 
   // The language of the recipe.
-  Language language = 11;
+  Language language = 12;
 }
 
 // A request for FrontendService.GetRecipe.
@@ -345,23 +358,37 @@ message GetPlansResponse {
   repeated PlanSnippet plans = 1;
 }
 
+enum PlanStatus {
+  // Unknown status.
+  PLAN_STATUS_UNSPECIFIED = 0;
+
+  // The plan is being processed, and is not yet ready to be viewed or cooked.
+  PLAN_STATUS_PROCESSING = 1;
+
+  // The plan is active and can be viewed and cooked.
+  PLAN_STATUS_ACTIVE = 2;
+}
+
 // A cooking plan.
 message Plan {
   // The ID of the plan.
   string id = 1;
 
+  // The status of the plan.
+  PlanStatus status = 2;
+
   // The recipes for the plan.
-  repeated RecipeSnippet recipes = 2;
+  repeated RecipeSnippet recipes = 3;
 
   // The step groups for the plan.
-  repeated StepGroup step_groups = 3;
+  repeated StepGroup step_groups = 4;
 
   // A list of notes to help cook the plan.
-  repeated string notes = 4;
+  repeated string notes = 5;
 
-  repeated IngredientSection ingredients = 5;
+  repeated IngredientSection ingredients = 6;
 
-  repeated string serving_sizes = 6;
+  repeated string serving_sizes = 7;
 }
 
 // A request for FrontendService.GetPlan.

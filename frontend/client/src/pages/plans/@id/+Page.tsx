@@ -5,6 +5,7 @@ import {
   GetPlanResponseSchema,
   getPlan,
   type IngredientSection,
+  PlanStatus,
   RecipeSchema,
   type StepGroup as StepGroupProto,
 } from "@cookchat/frontend-api";
@@ -221,6 +222,14 @@ export default function Page() {
   return (
     <>
       <div className="px-4 py-2 border-y-1 border-primary-400 bg-white">
+        {plan.status === PlanStatus.PROCESSING && (
+          <div className="p-4 bg-[#ffedd5] border-1 border-[#ffedd5] rounded-2xl flex gap-2 items-center mb-2">
+            <FaLightbulb className="text-primary size-6" />
+            <div>
+              {t("Your plan is being processed. It should be ready soon!")}
+            </div>
+          </div>
+        )}
         <h2 className="text-gray-600 text-xl mb-2">{t("Today's Plan")}</h2>
         <div className="flex gap-4 justify-between">
           {plan.recipes.map((recipe) => (

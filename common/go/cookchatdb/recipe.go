@@ -111,6 +111,13 @@ type RecipeContent struct {
 	Version int `firestore:"version" json:"version"`
 }
 
+type RecipeStatus string
+
+const (
+	RecipeStatusProcessing RecipeStatus = "processing"
+	RecipeStatusActive     RecipeStatus = "active"
+)
+
 // Recipe represents a recipe stored in Firestore.
 type Recipe struct {
 	// ID is the unique identifier of the recipe within cookchat.
@@ -118,6 +125,9 @@ type Recipe struct {
 
 	// Source is the source of the recipe.
 	Source RecipeSource `firestore:"source"`
+
+	// Status of the recipe.
+	Status RecipeStatus `firestore:"status"`
 
 	// SourceID is the ID of the recipe in the source.
 	SourceID string `firestore:"sourceId"`
