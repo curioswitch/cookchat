@@ -4,11 +4,13 @@ on:
     branches:
       - main
     paths:
+      - common/go/**
       - frontend/server/**
       - frontend/api/go/**
       - .github/workflows/ci-frontend-server.yaml
   pull_request:
     paths:
+      - common/go/**
       - frontend/server/**
       - frontend/api/go/**
       - .github/workflows/ci-frontend-server.yaml
