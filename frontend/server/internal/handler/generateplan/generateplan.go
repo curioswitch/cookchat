@@ -8,33 +8,42 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
 
+	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
+	taskspb "cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb"
 	discoveryengine "cloud.google.com/go/discoveryengine/apiv1"
 	"cloud.google.com/go/firestore"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
-	"golang.org/x/sync/errgroup"
+	"github.com/golang/protobuf/proto"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genai"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
+	"github.com/curioswitch/cookchat/frontend/server/internal/config"
 	"github.com/curioswitch/cookchat/frontend/server/internal/llm"
+	tasksapi "github.com/curioswitch/cookchat/tasks/api/go"
 )
 
-func NewHandler(genAI *genai.Client, store *firestore.Client, search *discoveryengine.SearchClient) *Handler {
+func NewHandler(genAI *genai.Client, store *firestore.Client, search *discoveryengine.SearchClient, tasks *cloudtasks.Client, tasksConfig config.Tasks) *Handler {
 	return &Handler{
-		genAI:  genAI,
-		store:  store,
-		search: search,
+		genAI:       genAI,
+		store:       store,
+		search:      search,
+		tasks:       tasks,
+		tasksConfig: tasksConfig,
 	}
 }
 
 type Handler struct {
-	genAI  *genai.Client
-	store  *firestore.Client
-	search *discoveryengine.SearchClient
+	genAI       *genai.Client
+	store       *firestore.Client
+	search      *discoveryengine.SearchClient
+	tasks       *cloudtasks.Client
+	tasksConfig config.Tasks
 }
 
 func (h *Handler) GeneratePlan(ctx context.Context, req *frontendapi.GeneratePlanRequest) (*frontendapi.GeneratePlanResponse, error) {
@@ -98,22 +107,10 @@ func (h *Handler) GeneratePlan(ctx context.Context, req *frontendapi.GeneratePla
 		return nil, fmt.Errorf("generateplan: unexpected number of days in plan: got %d, want %d", len(plans), req.GetNumDays())
 	}
 
-	var grp errgroup.Group
-	for i, plan := range plans {
+	for _, plan := range plans {
 		if len(plan.Recipes) > 3 {
 			plan.Recipes = plan.Recipes[:3]
 		}
-		grp.Go(func() error {
-			filled, err := h.fillPlan(ctx, plan)
-			if err != nil {
-				return fmt.Errorf("generateplan: filling plan for day %d: %w", i, err)
-			}
-			plans[i] = filled
-			return nil
-		})
-	}
-	if err := grp.Wait(); err != nil {
-		return nil, fmt.Errorf("generateplan: filling plans: %w", err)
 	}
 
 	userID := firebaseauth.TokenFromContext(ctx).UID
@@ -126,6 +123,41 @@ func (h *Handler) GeneratePlan(ctx context.Context, req *frontendapi.GeneratePla
 			plan.CreatedAt = time.Now()
 			if err := t.Set(planDoc, plan); err != nil {
 				return fmt.Errorf("generateplan: failed to set plan document: %w", err)
+			}
+
+			fillPlanReq, err := proto.Marshal(&tasksapi.FillPlanRequest{
+				PlanId: plan.ID,
+			})
+			if err != nil {
+				return fmt.Errorf("generateplan: marshaling fill plan request: %w", err)
+			}
+
+			fbTok := firebaseauth.RawTokenFromContext(ctx)
+
+			task := &taskspb.CreateTaskRequest{
+				Parent: h.tasksConfig.Queue,
+				Task: &taskspb.Task{
+					MessageType: &taskspb.Task_HttpRequest{
+						HttpRequest: &taskspb.HttpRequest{
+							HttpMethod: taskspb.HttpMethod_POST,
+							Url:        h.tasksConfig.URL + "/tasksapi.TasksService/FillPlan",
+							Headers: map[string]string{
+								"Content-Type":             "application/proto",
+								"Content-Length":           strconv.Itoa(len(fillPlanReq)),
+								"X-Original-Authorization": "Bearer " + fbTok,
+							},
+							Body: fillPlanReq,
+							AuthorizationHeader: &taskspb.HttpRequest_OidcToken{
+								OidcToken: &taskspb.OidcToken{
+									ServiceAccountEmail: h.tasksConfig.Invoker,
+								},
+							},
+						},
+					},
+				},
+			}
+			if _, err := h.tasks.CreateTask(ctx, task); err != nil {
+				return fmt.Errorf("generateplan: creating task: %w", err)
 			}
 		}
 		return nil
