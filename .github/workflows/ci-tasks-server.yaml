@@ -26,5 +26,4 @@ jobs:
     with:
       project_dir: tasks/server
       service: tasks-server
-      deploy_dev: false
     secrets: inherit
