@@ -6,19 +6,14 @@ require (
 	cloud.google.com/go/discoveryengine v1.22.0
 	cloud.google.com/go/firestore v1.21.0
 	cloud.google.com/go/storage v1.59.2
-	connectrpc.com/connect v1.19.1
 	firebase.google.com/go/v4 v4.19.0
-	github.com/cenkalti/backoff/v5 v5.0.3
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
-	github.com/curioswitch/cookchat/frontend/api v0.0.0-00010101000000-000000000000
+	github.com/curioswitch/cookchat/tasks/api v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/go-curiostack v0.0.0-20260128051004-075609c7945e
 	github.com/curioswitch/go-usegcp v0.0.0-20251112061520-c500c3a65003
 	github.com/go-chi/chi/v5 v5.2.4
-	github.com/openai/openai-go/v3 v3.17.0
 	golang.org/x/sync v0.19.0
-	google.golang.org/api v0.264.0
 	google.golang.org/genai v1.44.0
-	google.golang.org/protobuf v1.36.11
 )
 
 require (
@@ -31,12 +26,14 @@ require (
 	cloud.google.com/go/iam v1.5.3 // indirect
 	cloud.google.com/go/longrunning v0.7.0 // indirect
 	cloud.google.com/go/monitoring v1.24.3 // indirect
+	connectrpc.com/connect v1.19.1 // indirect
 	connectrpc.com/otelconnect v0.9.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.30.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.54.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.54.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator v0.55.0 // indirect
 	github.com/MicahParks/keyfunc v1.9.0 // indirect
+	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cncf/xds/go v0.0.0-20251022180443-0feb69152e9f // indirect
 	github.com/curioswitch/go-docs-handler v0.1.5 // indirect
@@ -67,10 +64,6 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
 	github.com/spiffe/go-spiffe/v2 v2.6.0 // indirect
-	github.com/tidwall/gjson v1.18.0 // indirect
-	github.com/tidwall/match v1.2.0 // indirect
-	github.com/tidwall/pretty v1.2.1 // indirect
-	github.com/tidwall/sjson v1.2.5 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/detectors/gcp v1.39.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.63.0 // indirect
@@ -93,11 +86,13 @@ require (
 	golang.org/x/sys v0.40.0 // indirect
 	golang.org/x/text v0.33.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
+	google.golang.org/api v0.264.0 // indirect
 	google.golang.org/appengine/v2 v2.0.6 // indirect
 	google.golang.org/genproto v0.0.0-20251202230838-ff82c1b0f217 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20251202230838-ff82c1b0f217 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260122232226-8e98ce8d340d // indirect
 	google.golang.org/grpc v1.78.0 // indirect
+	google.golang.org/protobuf v1.36.11 // indirect
 )
 
 replace (
