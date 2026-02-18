@@ -85,5 +85,4 @@ that represents the recipe. The image will be used for example in list views, se
 - The image must be in a realistic photographic style, with good lighting and composition
 - The image must not include any text
 - The image should be appetizing and relevant to the dish being prepared
-- If you cannot generate an appropriate image, respond with "NO_IMAGE". Do not respond with an image in this case.
 `

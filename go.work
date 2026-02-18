@@ -12,4 +12,8 @@ use (
 	./frontend/api/build
 	./frontend/server
 	./frontend/server/build
+	./tasks/api
+	./tasks/api/build
+	./tasks/server
+	./tasks/server/build
 )

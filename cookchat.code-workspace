@@ -15,6 +15,10 @@
     {
       "name": "frontend/server",
       "path": "./frontend/server"
+    },
+    {
+      "name": "tasks/server",
+      "path": "./tasks/server"
     }
   ],
   "launch": {
