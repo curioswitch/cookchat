@@ -1,6 +1,6 @@
 search:
   engine: projects/408496405753/locations/global/collections/default_collection/engines/cookchat-recipes
 tasks:
-  invoker: task-invoker@cookchat-dev.iam.gserviceaccount.com 
+  invoker: task-invoker@cookchat-dev.iam.gserviceaccount.com
   queue: projects/cookchat-dev/locations/asia-northeast1/queues/tasks-queue
   url: https://tasks-server-ch7rhjpm5q-an.a.run.app
