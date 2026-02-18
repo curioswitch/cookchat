@@ -24,7 +24,7 @@ permissions:
 
 jobs:
   ci:
-    uses: curioswitch/go-curiostack/.github/workflows/export-go-server-ci.yaml@075609c7945ee4889b49b5d7ed32f332922461a3
+    uses: curioswitch/go-curiostack/.github/workflows/export-go-server-ci.yaml@971b5477300c700c5b0fa12f8e44d10fcb2c6aa9
     with:
       project_dir: crawler/server
       service: crawler-server
