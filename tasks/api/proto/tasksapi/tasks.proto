@@ -2,9 +2,6 @@ syntax = "proto3";
 
 package tasksapi;
 
-import "buf/validate/validate.proto";
-import "google/protobuf/timestamp.proto";
-
 option go_package = "github.com/curioswitch/cookchat/tasks/api/go;tasksapi";
 
 message FillPlanRequest {

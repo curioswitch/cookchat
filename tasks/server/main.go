@@ -93,6 +93,14 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 	io := file.NewIO(storage, publicBucket)
 	processor := recipegen.NewPostProcessor(genAI, firestore, image.NewWriter(io))
 
+	mux.Use(func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if orig := r.Header.Get("X-Original-Authorization"); orig != "" {
+				r.Header.Set("Authorization", orig)
+			}
+		})
+	})
+
 	fbMW := firebaseauth.NewMiddleware(fbAuth)
 
 	mux.Use(middleware.Maybe(func(h http.Handler) http.Handler {
