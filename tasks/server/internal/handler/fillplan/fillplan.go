@@ -156,13 +156,11 @@ func (h *Handler) FillPlan(ctx context.Context, req *tasksapi.FillPlanRequest) (
 		return nil, fmt.Errorf("fillplan: unexpected generation result: %v", res)
 	}
 
-	var filledPlan cookchatdb.Plan
-	if err := json.Unmarshal([]byte(res.Candidates[0].Content.Parts[0].Text), &filledPlan); err != nil {
+	if err := json.Unmarshal([]byte(res.Candidates[0].Content.Parts[0].Text), &plan); err != nil {
 		return nil, fmt.Errorf("fillplan: parsing generation result: %w", err)
 	}
-	filledPlan.ID = plan.ID
-	filledPlan.Status = cookchatdb.PlanStatusActive
-	if _, err := planDoc.Ref.Set(ctx, filledPlan); err != nil {
+	plan.Status = cookchatdb.PlanStatusActive
+	if _, err := planDoc.Ref.Set(ctx, plan); err != nil {
 		return nil, fmt.Errorf("fillplan: updating plan doc: %w", err)
 	}
 
