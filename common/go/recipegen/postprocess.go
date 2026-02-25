@@ -66,12 +66,21 @@ func (p *PostProcessor) PostProcessRecipe(ctx context.Context, recipe *cookchatd
 	}
 	for _, lang := range cookchatdb.AllLanguageCodes {
 		langAI := string(lang) + "-ai"
-		cnt := recipe.LocalizedContent[langAI]
-		if cnt != nil && cnt.Version == prompts.VerRewriteRecipe {
+		if cnt := recipe.LocalizedContent[langAI]; cnt != nil && cnt.Version == prompts.VerRewriteRecipe {
 			continue
 		}
+		var langContentJSON string
+		if cnt := recipe.LocalizedContent[string(lang)]; cnt != nil {
+			cj, err := json.Marshal(cnt)
+			if err != nil {
+				return fmt.Errorf("recipegen: marshalling recipe content for rewrite: %w", err)
+			}
+			langContentJSON = string(cj)
+		} else {
+			langContentJSON = contentJSON
+		}
 		grp.Go(func() error {
-			cnt, err := p.rewriteRecipe(ctx, recipe.ID, contentJSON)
+			cnt, err := p.rewriteRecipe(ctx, recipe.ID, langContentJSON)
 			if err != nil {
 				return err
 			}

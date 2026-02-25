@@ -64,6 +64,7 @@ func (h *Handler) FillPlan(ctx context.Context, req *tasksapi.FillPlanRequest) (
 			if err := h.processor.PostProcessRecipe(ctx, &recipe); err != nil {
 				return fmt.Errorf("fillplan: post processing recipe: %w", err)
 			}
+			recipe.Status = cookchatdb.RecipeStatusActive
 			if _, err := recipeDoc.Ref.Set(ctx, recipe); err != nil {
 				return fmt.Errorf("fillplan: updating recipe doc: %w", err)
 			}
@@ -160,6 +161,7 @@ func (h *Handler) FillPlan(ctx context.Context, req *tasksapi.FillPlanRequest) (
 		return nil, fmt.Errorf("fillplan: parsing generation result: %w", err)
 	}
 	filledPlan.ID = plan.ID
+	filledPlan.Status = cookchatdb.PlanStatusActive
 	if _, err := planDoc.Ref.Set(ctx, filledPlan); err != nil {
 		return nil, fmt.Errorf("fillplan: updating plan doc: %w", err)
 	}
