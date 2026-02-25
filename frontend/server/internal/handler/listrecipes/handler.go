@@ -75,7 +75,7 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 		recipeDocs = append(recipeDocs, nonUserDocs...)
 	} else {
 		q := h.store.Collection("recipes").Query
-		q = q.Where("source", "!=", cookchatdb.RecipeSourceUser)
+		q = q.Where("source", "not-in", []any{cookchatdb.RecipeSourceAI, cookchatdb.RecipeSourceUser})
 		if lid := req.GetPagination().GetLastId(); lid != "" {
 			q = q.Where("id", ">", lid)
 		}
