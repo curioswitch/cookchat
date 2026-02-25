@@ -66,12 +66,8 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 		if err := recipeDoc.DataTo(&recipe); err != nil {
 			return nil, fmt.Errorf("chat: unmarshalling recipe: %w", err)
 		}
-		var recipeJSON []byte
-		if rlc := recipe.LocalizedContent[language]; rlc != nil {
-			recipeJSON, err = json.Marshal(rlc)
-		} else {
-			recipeJSON, err = json.Marshal(recipe)
-		}
+		recipeContent := getVoiceContent(&recipe, language)
+		recipeJSON, err := json.Marshal(recipeContent)
 		if err != nil {
 			return nil, fmt.Errorf("chat: marshalling recipe to JSON: %w", err)
 		}
@@ -100,7 +96,7 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 		}).Documents(ctx)
 		defer iter.Stop()
 
-		recipes := make([]cookchatdb.Recipe, 0, len(plan.Recipes))
+		recipes := make([]cookchatdb.RecipeContent, 0, len(plan.Recipes))
 		for {
 			doc, err := iter.Next()
 			if errors.Is(err, iterator.Done) {
@@ -113,7 +109,8 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 			if err := doc.DataTo(&recipe); err != nil {
 				return nil, fmt.Errorf("startchat: decoding recipe: %w", err)
 			}
-			recipes = append(recipes, recipe)
+			recipeContent := getVoiceContent(&recipe, language)
+			recipes = append(recipes, *recipeContent)
 		}
 		recipesJSON, err := json.Marshal(recipes)
 		if err != nil {
@@ -298,4 +295,13 @@ func (h *Handler) startChatOpenAI(ctx context.Context, req *frontendapi.StartCha
 		ChatModel:        model,
 		ChatInstructions: prompt,
 	}, nil
+}
+
+func getVoiceContent(recipe *cookchatdb.Recipe, language string) *cookchatdb.RecipeContent {
+	if rlc := recipe.LocalizedContent[language+"-ai"]; rlc != nil {
+		return rlc
+	} else if rlc := recipe.LocalizedContent[language]; rlc != nil {
+		return rlc
+	}
+	return &recipe.Content
 }
