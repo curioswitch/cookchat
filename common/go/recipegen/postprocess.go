@@ -67,7 +67,7 @@ func (p *PostProcessor) PostProcessRecipe(ctx context.Context, recipe *cookchatd
 	for _, lang := range cookchatdb.AllLanguageCodes {
 		langAI := string(lang) + "-ai"
 		if cnt := recipe.LocalizedContent[langAI]; cnt != nil && cnt.Version == prompts.VerRewriteRecipe {
-			// continue
+			continue
 		}
 		var langContentJSON string
 		if cnt := recipe.LocalizedContent[string(lang)]; cnt != nil {
