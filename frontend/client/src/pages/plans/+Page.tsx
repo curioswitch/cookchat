@@ -1,3 +1,4 @@
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { createValidator } from "@bufbuild/protovalidate";
 import { useQuery } from "@connectrpc/connect-query";
 import {
@@ -6,9 +7,11 @@ import {
   type PlanSnippetValid,
 } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
+import { Temporal } from "@js-temporal/polyfill";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { FaEdit } from "react-icons/fa";
+import { twMerge } from "tailwind-merge";
 import { navigate } from "vike/client/router";
 
 import kitchenSVG from "../../assets/kitchen.svg";
@@ -80,6 +83,84 @@ function PlanSnippet({ plan }: { plan: PlanSnippetValid }) {
   );
 }
 
+interface DatePlans {
+  date: Temporal.PlainDate;
+  plans: PlanSnippetValid[];
+}
+
+function DateSelect({ plans }: { plans: PlanSnippetValid[] }) {
+  const { t, i18n } = useTranslation();
+  const today = Temporal.Now.plainDateISO();
+
+  const dates: DatePlans[] = [
+    { date: today.subtract({ days: 3 }), plans: [] },
+    { date: today.subtract({ days: 2 }), plans: [] },
+    { date: today.subtract({ days: 1 }), plans: [] },
+    { date: today, plans: [] },
+    { date: today.add({ days: 1 }), plans: [] },
+    { date: today.add({ days: 2 }), plans: [] },
+    { date: today.add({ days: 3 }), plans: [] },
+  ];
+
+  for (const plan of plans) {
+    const date = Temporal.Instant.fromEpochMilliseconds(
+      timestampDate(plan.date).getTime(),
+    )
+      .toZonedDateTimeISO(Temporal.Now.timeZoneId())
+      .toPlainDate();
+    const datePlan = dates.find((d) => d.date.equals(date));
+    if (datePlan) {
+      datePlan.plans.push(plan);
+    }
+  }
+
+  const month = today.toLocaleString(i18n.language, { month: "long" });
+
+  return (
+    <div>
+      <h2 className="text-gray-600 text-large mb-4">
+        {t("This Month's Plans", { month })}
+      </h2>
+      <div className="flex flex-row justify-between">
+        {dates.map(({ date, plans }) => (
+          <div
+            key={date.toString()}
+            className="flex flex-col gap-2 items-center"
+          >
+            <div className="text-gray-400">
+              {date.toLocaleString(i18n.language, { weekday: "short" })}
+            </div>
+            <div
+              className={twMerge(
+                "p-1 md:p-10",
+                plans.length > 0 && "border-3 rounded-xl border-orange-400",
+              )}
+            >
+              <div className="flex flex-col items-center">
+                <div
+                  className={twMerge(
+                    "bg-orange-500 text-white! px-1 py-1 text-tiny rounded",
+                    plans.length === 0 && "invisible",
+                  )}
+                >
+                  {t("Plan")}
+                </div>
+                <div
+                  className={twMerge(
+                    date === today ? "text-orange-500" : "text-gray-600",
+                  )}
+                >
+                  {date.day}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Page() {
   const { t } = useTranslation();
 
@@ -115,6 +196,7 @@ export default function Page() {
         <Button as="a" href="/plans/add" className="bg-primary-400 text-white">
           {t("Add Plan")}
         </Button>
+        <DateSelect plans={plans} />
         {plans.map((plan) => (
           <PlanSnippet key={plan.id} plan={plan} />
         ))}
