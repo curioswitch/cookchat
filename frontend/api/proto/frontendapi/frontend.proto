@@ -223,7 +223,7 @@ message StartChatRequest {
     string recipe_id = 3;
 
     // The ID of a cookchat plan.
-    google.protobuf.Timestamp plan_id = 6;
+    string plan_id = 6;
   }
 
   enum ModelProvider {

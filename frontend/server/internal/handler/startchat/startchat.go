@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"time"
 
 	"cloud.google.com/go/firestore"
 	"connectrpc.com/connect"
@@ -73,9 +72,9 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 		}
 		prompt = llm.RecipeChatPrompt(ctx, string(recipeJSON))
 		recipePrompt = "The recipe in structured JSON format is as follows:\n" + string(recipeJSON)
-	} else if pid := req.GetPlanId(); pid != nil {
+	} else if pid := req.GetPlanId(); pid != "" {
 		col := h.store.Collection("users").Doc(userID).Collection("plans")
-		doc, err := col.Doc(pid.AsTime().Format(time.DateOnly)).Get(ctx)
+		doc, err := col.Doc(pid).Get(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("startchat: fetching plan: %w", err)
 		}
@@ -129,7 +128,7 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 	var err error
 	switch req.GetModelProvider() {
 	case frontendapi.StartChatRequest_MODEL_PROVIDER_UNSPECIFIED, frontendapi.StartChatRequest_MODEL_PROVIDER_GOOGLE_GENAI:
-		res, err = h.startChatGemini(ctx, prompt, req.GetPlanId().IsValid())
+		res, err = h.startChatGemini(ctx, prompt, req.GetPlanId() != "")
 	case frontendapi.StartChatRequest_MODEL_PROVIDER_OPENAI:
 		res, err = h.startChatOpenAI(ctx, req, prompt)
 	}
