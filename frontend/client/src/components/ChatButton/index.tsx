@@ -1,4 +1,3 @@
-import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { StartChatRequest_ModelProvider } from "@cookchat/frontend-api";
 import { RealtimeAgent, RealtimeSession } from "@openai/agents-realtime";
 import { useQueryClient } from "@tanstack/react-query";
@@ -216,7 +215,7 @@ export function ChatButton({
             }
           : {
               case: "planId",
-              value: timestampFromDate(new Date(planId)),
+              value: planId,
             },
         modelProvider,
         llmPrompt: prompt,
