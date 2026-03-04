@@ -65,6 +65,8 @@
   "Your plan is being processed. It should be ready soon!": "あなたの献立は処理中です。まもなく準備が整います！",
   "This recipe is being processed. It should be ready soon!": "このレシピは処理中です。まもなく準備が整います！",
 
+  "This Month's Plans": "{{month}}の献立",
+
   "genre.japanese": "和食",
   "genre.chinese": "中華料理",
   "genre.western": "洋食",

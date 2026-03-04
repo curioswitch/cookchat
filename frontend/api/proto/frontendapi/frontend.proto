@@ -347,8 +347,11 @@ message PlanSnippet {
   // The ID of the plan.
   string id = 1;
 
+  // The date of the plan.
+  google.protobuf.Timestamp date = 2 [(buf.validate.field).required = true];
+
   // The recipes for the plan.
-  repeated RecipeSnippet recipes = 2;
+  repeated RecipeSnippet recipes = 3;
 }
 
 message GetPlansRequest {}

@@ -57,6 +57,8 @@
   "Your plan is being processed. It should be ready soon!": "Your plan is being processed. It should be ready soon!",
   "This recipe is being processed. It should be ready soon!": "This recipe is being processed. It should be ready soon!",
 
+  "This Month's Plans": "{{month}}'s Plans",
+
   "genre.japanese": "Japanese",
   "genre.chinese": "Chinese",
   "genre.western": "Western",

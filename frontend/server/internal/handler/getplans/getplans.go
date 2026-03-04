@@ -12,6 +12,7 @@ import (
 	"cloud.google.com/go/firestore"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
 	"google.golang.org/api/iterator"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
@@ -89,7 +90,8 @@ func (h *Handler) GetPlans(ctx context.Context, _ *frontendapi.GetPlansRequest) 
 	plans := make([]*frontendapi.PlanSnippet, len(dbPlans))
 	for i, dbPlan := range dbPlans {
 		plan := &frontendapi.PlanSnippet{
-			Id: dbPlan.ID,
+			Id:   dbPlan.ID,
+			Date: timestamppb.New(dbPlan.CreatedAt),
 		}
 		for _, recipeID := range dbPlan.Recipes {
 			if recipe, ok := recipes[recipeID]; ok {

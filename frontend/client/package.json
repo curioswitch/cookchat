@@ -33,6 +33,7 @@
     "@heroui/table": "^2.2.31",
     "@heroui/tabs": "^2.2.28",
     "@heroui/theme": "^2.4.26",
+    "@js-temporal/polyfill": "^0.5.1",
     "@openai/agents-realtime": "^0.5.3",
     "@react-aria/visually-hidden": "^3.8.30",
     "@tanstack/react-pacer": "^0.20.0",
