@@ -19,7 +19,7 @@ require (
 	github.com/openai/openai-go/v3 v3.24.0
 	golang.org/x/sync v0.19.0
 	google.golang.org/api v0.269.0
-	google.golang.org/genai v1.47.0
+	google.golang.org/genai v1.48.0
 	google.golang.org/protobuf v1.36.11
 )
 

@@ -13,7 +13,7 @@ require (
 	github.com/curioswitch/go-usegcp v0.0.0-20251112061520-c500c3a65003
 	github.com/go-chi/chi/v5 v5.2.5
 	golang.org/x/sync v0.19.0
-	google.golang.org/genai v1.47.0
+	google.golang.org/genai v1.48.0
 )
 
 require (
