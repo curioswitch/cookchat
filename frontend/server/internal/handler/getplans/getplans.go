@@ -52,7 +52,7 @@ func (h *Handler) GetPlans(ctx context.Context, _ *frontendapi.GetPlansRequest) 
 				Value:    end,
 			},
 		},
-	}).Documents(ctx)
+	}).OrderBy("createdAt", firestore.Desc).Documents(ctx)
 	defer iter.Stop()
 
 	var dbPlans []cookchatdb.Plan
