@@ -8,13 +8,12 @@ import {
 } from "@cookchat/frontend-api";
 import { Button } from "@heroui/button";
 import { Temporal } from "@js-temporal/polyfill";
-import { useCallback } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaEdit } from "react-icons/fa";
 import { twMerge } from "tailwind-merge";
 import { navigate } from "vike/client/router";
 
-import kitchenSVG from "../../assets/kitchen.svg";
 import { enableEditPlan } from "../../stores";
 
 const validator = createValidator();
@@ -39,7 +38,7 @@ function PlanSnippet({ plan }: { plan: PlanSnippetValid }) {
         <div className="flex gap-4 justify-between items-center mb-2">
           <h3 className="mt-0 font-light">
             {t("global.dateOnly", {
-              val: new Date(),
+              val: timestampDate(plan.date),
             })}
           </h3>
           <FaEdit
@@ -90,71 +89,100 @@ interface DatePlans {
 
 function DateSelect({ plans }: { plans: PlanSnippetValid[] }) {
   const { t, i18n } = useTranslation();
-  const today = Temporal.Now.plainDateISO();
 
-  const dates: DatePlans[] = [
-    { date: today.subtract({ days: 3 }), plans: [] },
-    { date: today.subtract({ days: 2 }), plans: [] },
-    { date: today.subtract({ days: 1 }), plans: [] },
-    { date: today, plans: [] },
-    { date: today.add({ days: 1 }), plans: [] },
-    { date: today.add({ days: 2 }), plans: [] },
-    { date: today.add({ days: 3 }), plans: [] },
-  ];
+  const today = useMemo(() => Temporal.Now.plainDateISO(), []);
 
-  for (const plan of plans) {
-    const date = Temporal.Instant.fromEpochMilliseconds(
-      timestampDate(plan.date).getTime(),
-    )
-      .toZonedDateTimeISO(Temporal.Now.timeZoneId())
-      .toPlainDate();
-    const datePlan = dates.find((d) => d.date.equals(date));
-    if (datePlan) {
-      datePlan.plans.push(plan);
+  const [selectedDate, setSelectedDate] = useState<Temporal.PlainDate>(today);
+
+  const onDateClick = useCallback((event: React.MouseEvent) => {
+    const dateStr = (event.currentTarget as HTMLDivElement).dataset.date;
+    if (dateStr) {
+      setSelectedDate(Temporal.PlainDate.from(dateStr));
     }
-  }
+  }, []);
 
+  const dates: DatePlans[] = useMemo(() => {
+    const dates: DatePlans[] = [
+      { date: today.subtract({ days: 3 }), plans: [] },
+      { date: today.subtract({ days: 2 }), plans: [] },
+      { date: today.subtract({ days: 1 }), plans: [] },
+      { date: today, plans: [] },
+      { date: today.add({ days: 1 }), plans: [] },
+      { date: today.add({ days: 2 }), plans: [] },
+      { date: today.add({ days: 3 }), plans: [] },
+    ];
+
+    for (const plan of plans) {
+      const date = Temporal.Instant.fromEpochMilliseconds(
+        timestampDate(plan.date).getTime(),
+      )
+        .toZonedDateTimeISO(Temporal.Now.timeZoneId())
+        .toPlainDate();
+      const datePlan = dates.find((d) => d.date.equals(date));
+      if (datePlan) {
+        datePlan.plans.push(plan);
+      }
+    }
+    return dates;
+  }, [today, plans]);
+
+  const selectedPlans = useMemo(
+    () => dates.find((d) => d.date.equals(selectedDate))?.plans ?? [],
+    [dates, selectedDate],
+  );
   const month = today.toLocaleString(i18n.language, { month: "long" });
 
   return (
     <div>
-      <h2 className="text-gray-600 text-large mb-4">
-        {t("This Month's Plans", { month })}
-      </h2>
-      <div className="flex flex-row justify-between">
-        {dates.map(({ date, plans }) => (
-          <div
-            key={date.toString()}
-            className="flex flex-col gap-2 items-center"
-          >
-            <div className="text-gray-400">
-              {date.toLocaleString(i18n.language, { weekday: "short" })}
-            </div>
+      <div className="p-4 bg-white">
+        <h2 className="text-gray-600 text-large mb-4">
+          {t("This Month's Plans", { month })}
+        </h2>
+        <div className="flex flex-row justify-between">
+          {dates.map(({ date, plans }) => (
             <div
-              className={twMerge(
-                "p-1 md:p-10",
-                plans.length > 0 && "border-3 rounded-xl border-orange-400",
-              )}
+              key={date.toString()}
+              className="flex flex-col gap-2 items-center"
             >
-              <div className="flex flex-col items-center">
-                <div
-                  className={twMerge(
-                    "bg-orange-500 text-white! px-1 py-1 text-tiny rounded",
-                    plans.length === 0 && "invisible",
-                  )}
-                >
-                  {t("Plan")}
-                </div>
-                <div
-                  className={twMerge(
-                    date === today ? "text-orange-500" : "text-gray-600",
-                  )}
-                >
-                  {date.day}
-                </div>
+              <div className="text-gray-400">
+                {date.toLocaleString(i18n.language, { weekday: "short" })}
               </div>
+              <button
+                type="button"
+                className={twMerge(
+                  "p-1 md:p-10 cursor-pointer",
+                  plans.length > 0 && "border-3 rounded-xl border-orange-400",
+                )}
+                data-date={date.toString()}
+                onClick={onDateClick}
+              >
+                <div className="flex flex-col items-center">
+                  <div
+                    className={twMerge(
+                      "bg-orange-500 text-white! px-1 py-1 text-tiny rounded",
+                      plans.length === 0 && "invisible",
+                    )}
+                  >
+                    {t("Plan")}
+                  </div>
+                  <div
+                    className={twMerge(
+                      date.equals(selectedDate)
+                        ? "text-orange-500"
+                        : "text-gray-600",
+                    )}
+                  >
+                    {date.day}
+                  </div>
+                </div>
+              </button>
             </div>
-          </div>
+          ))}
+        </div>
+      </div>
+      <div className="flex flex-col gap-2 p-4">
+        {selectedPlans.map((plan) => (
+          <PlanSnippet key={plan.id} plan={plan} />
         ))}
       </div>
     </div>
@@ -180,27 +208,18 @@ export default function Page() {
     .map((r) => r.message);
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="p-8 flex flex-col gap-4">
-        <div className="flex flex-col items-center gap-3 bg-white text-center">
-          <div>
-            <p className="m-0 text-sm font-semibold text-gray-700">
-              {t("Plan a meal with AI!")}
-            </p>
-            <p className="mt-1 mb-0 text-xs text-gray-500">
-              {t("Let's find a perfect plan for you.")}
-            </p>
-          </div>
-          <img src={kitchenSVG} alt="" aria-hidden="true" className="size-24" />
-        </div>
-        <Button as="a" href="/plans/add" className="bg-primary-400 text-white">
+    <>
+      <DateSelect plans={plans} />
+      <div className="flex justify-center">
+        <Button
+          as="a"
+          href="/plans/add"
+          color="primary"
+          className="text-white fixed bottom-30"
+        >
           {t("Add Plan")}
         </Button>
-        <DateSelect plans={plans} />
-        {plans.map((plan) => (
-          <PlanSnippet key={plan.id} plan={plan} />
-        ))}
       </div>
-    </div>
+    </>
   );
 }

@@ -47,7 +47,12 @@ type Handler struct {
 }
 
 func (h *Handler) GeneratePlan(ctx context.Context, req *frontendapi.GeneratePlanRequest) (*frontendapi.GeneratePlanResponse, error) {
-	recipeDocs := h.store.Collection("recipes").Query.Select("id", "title", "description", "ingredients", "additionalIngredients", "notes").Documents(ctx)
+	recipeDocs := h.store.Collection("recipes").Query.Select("id", "title", "description", "ingredients", "additionalIngredients", "notes").
+		WhereEntity(firestore.PropertyFilter{
+			Path:     "source",
+			Operator: "not-in",
+			Value:    []string{string(cookchatdb.RecipeSourceAI)},
+		}).Documents(ctx)
 
 	var content []*genai.Content
 
@@ -107,12 +112,6 @@ func (h *Handler) GeneratePlan(ctx context.Context, req *frontendapi.GeneratePla
 		return nil, fmt.Errorf("generateplan: unexpected number of days in plan: got %d, want %d", len(plans), req.GetNumDays())
 	}
 
-	for _, plan := range plans {
-		if len(plan.Recipes) > 3 {
-			plan.Recipes = plan.Recipes[:3]
-		}
-	}
-
 	userID := firebaseauth.TokenFromContext(ctx).UID
 
 	if err := h.store.RunTransaction(ctx, func(_ context.Context, t *firestore.Transaction) error {
@@ -120,6 +119,10 @@ func (h *Handler) GeneratePlan(ctx context.Context, req *frontendapi.GeneratePla
 		for _, plan := range plans {
 			planDoc := plansCol.NewDoc()
 			plan.ID = planDoc.ID
+			plan.Status = cookchatdb.PlanStatusProcessing
+			if len(plan.Recipes) > 3 {
+				plan.Recipes = plan.Recipes[:3]
+			}
 			plan.CreatedAt = time.Now()
 			if err := t.Set(planDoc, plan); err != nil {
 				return fmt.Errorf("generateplan: failed to set plan document: %w", err)
