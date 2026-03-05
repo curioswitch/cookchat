@@ -30,16 +30,29 @@ type Handler struct {
 
 func (h *Handler) GetPlans(ctx context.Context, _ *frontendapi.GetPlansRequest) (*frontendapi.GetPlansResponse, error) {
 	now := time.Now()
+	// We fetch a week of plans. We will filter with the browser's timezone in the frontend, so get an extra day on
+	// each side to accomodate for timezone differences.
 	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+	start := today.Add(-4 * 24 * time.Hour)
+	end := today.Add(4 * 24 * time.Hour)
 
 	userID := firebaseauth.TokenFromContext(ctx).UID
 
 	plansCol := h.store.Collection("users").Doc(userID).Collection("plans")
-	iter := plansCol.Query.WhereEntity(firestore.PropertyFilter{
-		Path:     "createdAt",
-		Operator: ">=",
-		Value:    today,
-	}).Limit(5).Documents(ctx)
+	iter := plansCol.Query.WhereEntity(firestore.AndFilter{
+		Filters: []firestore.EntityFilter{
+			firestore.PropertyFilter{
+				Path:     "createdAt",
+				Operator: ">=",
+				Value:    start,
+			},
+			firestore.PropertyFilter{
+				Path:     "createdAt",
+				Operator: "<=",
+				Value:    end,
+			},
+		},
+	}).Documents(ctx)
 	defer iter.Stop()
 
 	var dbPlans []cookchatdb.Plan
