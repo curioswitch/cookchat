@@ -75,12 +75,17 @@ func (h *Handler) GetPlans(ctx context.Context, _ *frontendapi.GetPlansRequest) 
 	}
 	recipes := map[string]cookchatdb.Recipe{}
 
-	if len(recipeIDs) > 0 {
+	for len(recipeIDs) > 0 {
+		batch := recipeIDs
+		if len(batch) > 30 {
+			batch = batch[:30]
+		}
+		recipeIDs = recipeIDs[len(batch):]
 		recipesCol := h.store.Collection("recipes")
 		iter = recipesCol.Query.WhereEntity(firestore.PropertyFilter{
 			Path:     "id",
 			Operator: "in",
-			Value:    recipeIDs,
+			Value:    batch,
 		}).Documents(ctx)
 		defer iter.Stop()
 
