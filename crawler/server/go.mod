@@ -12,9 +12,9 @@ require (
 	github.com/curioswitch/go-curiostack v0.0.0-20260128051004-075609c7945e
 	github.com/gocolly/colly/v2 v2.3.0
 	github.com/wandb/parallel v0.2.3
-	golang.org/x/sync v0.19.0
-	google.golang.org/genai v1.48.0
-	google.golang.org/grpc v1.79.1
+	golang.org/x/sync v0.20.0
+	google.golang.org/genai v1.49.0
+	google.golang.org/grpc v1.79.2
 )
 
 require (
