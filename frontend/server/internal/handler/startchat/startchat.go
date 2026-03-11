@@ -134,7 +134,7 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 	var err error
 	switch req.GetModelProvider() {
 	case frontendapi.StartChatRequest_MODEL_PROVIDER_UNSPECIFIED, frontendapi.StartChatRequest_MODEL_PROVIDER_GOOGLE_GENAI:
-		res, err = h.startChatGemini(ctx, prompt, req.GetPlanId() != "")
+		res, err = h.startChatGemini(ctx, prompt)
 	case frontendapi.StartChatRequest_MODEL_PROVIDER_OPENAI:
 		res, err = h.startChatOpenAI(ctx, req, prompt)
 	}
@@ -153,7 +153,7 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 	return res, nil
 }
 
-func (h *Handler) startChatGemini(ctx context.Context, prompt string, isPlan bool) (*frontendapi.StartChatResponse, error) {
+func (h *Handler) startChatGemini(ctx context.Context, prompt string) (*frontendapi.StartChatResponse, error) {
 	languageCode := "ja-JP"
 	if i18n.UserLanguage(ctx) == "en" {
 		languageCode = "en-US"
