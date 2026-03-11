@@ -253,7 +253,7 @@ export function ChatButton({
               console.log(input);
               const req = JSON.parse(input);
               navigateToStep(req.step - 1);
-              return `Navigated to recipe step ${req.step}. Read only that step.`;
+              return `Navigated to step ${req.step}. Read only that step.`;
             },
           },
           {
