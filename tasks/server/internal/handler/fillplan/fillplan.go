@@ -79,8 +79,9 @@ func (h *Handler) FillPlan(ctx context.Context, req *tasksapi.FillPlanRequest) (
 	content := make([]*genai.Content, len(recipes))
 	for i, recipe := range recipes {
 		recipeJSON, err := json.Marshal(contentWithID{
-			RecipeID: recipe.ID,
-			Content:  recipe.Content,
+			RecipeID:      recipe.ID,
+			Content:       recipe.Content,
+			StepImageURLs: recipe.StepImageURLs,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("fillplan: marshaling recipe content: %w", err)
@@ -168,6 +169,7 @@ func (h *Handler) FillPlan(ctx context.Context, req *tasksapi.FillPlanRequest) (
 }
 
 type contentWithID struct {
-	RecipeID string                   `json:"recipeId"`
-	Content  cookchatdb.RecipeContent `json:"content"`
+	RecipeID      string                   `json:"recipeId"`
+	Content       cookchatdb.RecipeContent `json:"content"`
+	StepImageURLs []string                 `json:"stepImageUrls"`
 }
