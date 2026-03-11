@@ -225,13 +225,16 @@ export function ChatButton({
     });
 
     if (modelProvider === StartChatRequest_ModelProvider.OPENAI) {
+      const navigateToStepDescription = planId
+        ? "Call this immediately before reading a plan step aloud. Use zero-based indexes. `group` is the 1-based group index and `step` is the 1-based index within that group."
+        : "Call this immediately before reading any recipe step aloud. Use 1-based indexes: the first step is 1, the second step is 2, and if the user asks for step 5 you must pass 5.";
       const agent = new RealtimeAgent({
         name: "CookChat",
         instructions: res.chatInstructions,
         tools: [
           {
             name: "navigate_to_step",
-            description: "Navigate the UI to a specific step in the recipe.",
+            description: navigateToStepDescription,
             type: "function",
             parameters: {
               type: "object",
@@ -239,14 +242,14 @@ export function ChatButton({
                 step: {
                   type: "integer",
                   description: planId
-                    ? "The index of the step within the group to navigate to, starting from 0."
-                    : "The index of the step to navigate to, starting from 0.",
+                    ? "The index of the step within the group to navigate to, starting from 1."
+                    : "The index of the step to navigate to, starting from 1.",
                 },
                 group: planId
                   ? {
                       type: "integer",
                       description:
-                        "The index of the group containing the step to navigate to, starting from 0.",
+                        "The index of the group containing the step to navigate to, starting from 1.",
                     }
                   : undefined,
               },
@@ -254,16 +257,22 @@ export function ChatButton({
               required: planId ? ["step", "group"] : ["step"],
             },
             strict: false,
+            isEnabled: async () => true,
             needsApproval: async () => false,
             invoke: async (_, input) => {
+              console.log(input);
               const req = JSON.parse(input);
-              navigateToStep(req.step, req.group);
-              return "Done";
+              navigateToStep(req.step - 1, req.group ? req.group - 1 : 0);
+              if (planId) {
+                return `Navigated to plan group ${req.group}, step ${req.step}. Read only that step.`;
+              }
+              return `Navigated to recipe step ${req.step}. Read only that step.`;
             },
           },
           {
             name: "navigate_to_ingredients",
-            description: "Navigate the UI to the ingredients section.",
+            description:
+              "Call this immediately before reading the ingredients aloud.",
             type: "function",
             parameters: {
               type: "object",
@@ -272,10 +281,12 @@ export function ChatButton({
               required: [],
             },
             strict: false,
+            isEnabled: async () => true,
             needsApproval: async () => false,
             invoke: async () => {
+              console.log("Navigating to ingredients");
               navigateToIngredients();
-              return "Done";
+              return "Navigated to ingredients.";
             },
           },
         ],
