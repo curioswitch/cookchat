@@ -86,3 +86,23 @@ that represents the recipe. The image will be used for example in list views, se
 - The image must not include any text
 - The image should be appetizing and relevant to the dish being prepared
 `
+
+func RecipeStepImages(step int) string {
+	return fmt.Sprintf(recipeStepsImages, step)
+}
+
+const recipeStepsImages = `
+# Role & Objective
+
+You support users generating recipes they will cook. Given the details of a recipe as JSON, generate an appropriate image
+for step #%d in the recipe, with the first step being step 0. The steps are in the JSON field "steps". 
+The image will be rendered along with the step as the user cooks the recipe. When generating images for a step except for
+step 0, it is generally necessary to understand the steps before it to know what the state of cooking should look like for
+that step. Return the same number of images as steps, one image per step.
+
+# Instructions / Rules
+
+- The image must be in a realistic photographic style, with good lighting and composition
+- The image must not include any text
+- The image should represent the ingredients and tools used in the step and possibly the action described in the step.
+`
