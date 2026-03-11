@@ -141,11 +141,19 @@ export default function Page() {
     [],
   );
 
-  const navigateToStep = useCallback((stepIdx: number, groupIdx: number) => {
-    stepRefs.current[groupIdx]?.[stepIdx]?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+  const navigateToStep = useCallback((stepIdx: number) => {
+    let i = 0;
+    for (const group of stepRefs.current) {
+      for (const step of group) {
+        if (i === stepIdx) {
+          step?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+        i++;
+      }
+    }
   }, []);
 
   const navigateToIngredients = useCallback(() => {

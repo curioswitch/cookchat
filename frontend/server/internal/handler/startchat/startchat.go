@@ -83,7 +83,13 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 		if err := doc.DataTo(&plan); err != nil {
 			return nil, fmt.Errorf("startchat: decoding plan: %w", err)
 		}
-		stepsJSON, err := json.Marshal(plan.StepGroups)
+		var steps []string
+		for _, g := range plan.StepGroups {
+			for _, s := range g.Steps {
+				steps = append(steps, s.Description)
+			}
+		}
+		stepsJSON, err := json.Marshal(steps)
 		if err != nil {
 			return nil, fmt.Errorf("startchat: marshalling plan: %w", err)
 		}
@@ -128,7 +134,7 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 	var err error
 	switch req.GetModelProvider() {
 	case frontendapi.StartChatRequest_MODEL_PROVIDER_UNSPECIFIED, frontendapi.StartChatRequest_MODEL_PROVIDER_GOOGLE_GENAI:
-		res, err = h.startChatGemini(ctx, prompt, req.GetPlanId() != "")
+		res, err = h.startChatGemini(ctx, prompt)
 	case frontendapi.StartChatRequest_MODEL_PROVIDER_OPENAI:
 		res, err = h.startChatOpenAI(ctx, req, prompt)
 	}
@@ -147,7 +153,7 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 	return res, nil
 }
 
-func (h *Handler) startChatGemini(ctx context.Context, prompt string, isPlan bool) (*frontendapi.StartChatResponse, error) {
+func (h *Handler) startChatGemini(ctx context.Context, prompt string) (*frontendapi.StartChatResponse, error) {
 	languageCode := "ja-JP"
 	if i18n.UserLanguage(ctx) == "en" {
 		languageCode = "en-US"
@@ -167,14 +173,6 @@ func (h *Handler) startChatGemini(ctx context.Context, prompt string, isPlan boo
 			},
 			Required: []string{"step"},
 		},
-	}
-	if isPlan {
-		navigateToStep.Parameters.Properties["group"] = &genai.Schema{
-			Type:        "integer",
-			Description: "The index of the group containing the step to navigate to, starting from 0.",
-		}
-		navigateToStep.Parameters.Required = append(navigateToStep.Parameters.Required, "group")
-		navigateToStep.Parameters.Properties["step"].Description = "The index of the step within the group to navigate to, starting from 0."
 	}
 
 	// Until genai Go SDK supports token creation, issue request manually.

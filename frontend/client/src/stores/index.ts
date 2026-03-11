@@ -177,7 +177,7 @@ export type Chat = {
   currentPlanId: string;
   currentRecipeId: string;
   prompt: string;
-  navigateToStep: ((idx: number, idx2: number) => void) | undefined;
+  navigateToStep: ((idx: number) => void) | undefined;
   navigateToIngredients: (() => void) | undefined;
 };
 
@@ -207,7 +207,7 @@ export const setCurrentRecipe = (
 
 export const setCurrentPlan = (
   planId: string,
-  navigateToStep: (idx: number, idx2: number) => void,
+  navigateToStep: (idx: number) => void,
   navigateToIngredients: () => void,
 ) => {
   useChatStore.setState({
