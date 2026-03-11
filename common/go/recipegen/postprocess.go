@@ -99,6 +99,20 @@ func (p *PostProcessor) PostProcessRecipe(ctx context.Context, recipe *cookchatd
 		})
 	}
 
+	if len(recipe.StepImageURLs) == 0 {
+		recipe.StepImageURLs = make([]string, len(recipe.Content.Steps))
+		for i := range recipe.Content.Steps {
+			grp.Go(func() error {
+				url, err := p.generateStepImage(ctx, recipe.ID, i, contentJSON)
+				if err != nil {
+					return err
+				}
+				recipe.StepImageURLs[i] = url
+				return nil
+			})
+		}
+	}
+
 	if err := grp.Wait(); err != nil {
 		return err
 	}
@@ -180,6 +194,36 @@ func (p *PostProcessor) generateRecipeImage(ctx context.Context, rID string, con
 	url, err := p.images.WriteGenAIImage(ctx, path, blob)
 	if err != nil {
 		return "", fmt.Errorf("recipegen: writing recipe image for recipe %s: %w", rID, err)
+	}
+	return url, nil
+}
+
+func (p *PostProcessor) generateStepImage(ctx context.Context, rID string, step int, contentJSON string) (string, error) {
+	res, err := p.genAI.Models.GenerateContent(ctx, "gemini-3-pro-image-preview", genai.Text(contentJSON), &genai.GenerateContentConfig{
+		SystemInstruction: genai.NewContentFromText(prompts.RecipeStepImages(step), genai.RoleModel),
+	})
+	if err != nil {
+		return "", fmt.Errorf("recipegen: generating recipe step image for recipe %s: %w", rID, err)
+	}
+	if len(res.Candidates) != 1 || len(res.Candidates[0].Content.Parts) == 0 {
+		return "", fmt.Errorf("recipegen: unexpected response from genai for recipe step image generation request: %v", res)
+	}
+	var blob *genai.Blob
+	for _, part := range res.Candidates[0].Content.Parts {
+		b := part.InlineData
+		if b.MIMEType == "image/jpeg" || b.MIMEType == "image/png" {
+			blob = b
+			break
+		}
+	}
+	if blob == nil {
+		return "", nil
+	}
+
+	path := fmt.Sprintf("recipes/%s/%s", rID, fmt.Sprintf("step-%02d.jpg", step))
+	url, err := p.images.WriteGenAIImage(ctx, path, blob)
+	if err != nil {
+		return "", fmt.Errorf("recipegen: writing recipe step image for recipe %s: %w", rID, err)
 	}
 	return url, nil
 }

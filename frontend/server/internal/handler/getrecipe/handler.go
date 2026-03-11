@@ -95,7 +95,9 @@ func recipeToProto(recipe *cookchatdb.Recipe, cnt *cookchatdb.RecipeContent) *fr
 	res.AdditionalIngredients = ingredientSectionsToProto(cnt.AdditionalIngredients)
 	steps := stepsToProto(cnt.Steps)
 	for i, step := range steps {
-		step.ImageUrl = steps[i].GetImageUrl()
+		if i < len(recipe.StepImageURLs) {
+			step.ImageUrl = recipe.StepImageURLs[i]
+		}
 	}
 	res.Steps = steps
 	res.Notes = cnt.Notes
