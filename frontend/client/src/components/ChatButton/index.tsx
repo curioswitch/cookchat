@@ -173,7 +173,7 @@ export function ChatButton({
   className?: string;
   recipeId: string;
   planId: string;
-  navigateToStep?: (idx: number, idx2: number) => void;
+  navigateToStep?: (idx: number) => void;
   navigateToIngredients?: () => void;
   prompt?: string;
 }) {
@@ -225,36 +225,26 @@ export function ChatButton({
     });
 
     if (modelProvider === StartChatRequest_ModelProvider.OPENAI) {
-      const navigateToStepDescription = planId
-        ? "Call this immediately before reading a plan step aloud. Use zero-based indexes. `group` is the 1-based group index and `step` is the 1-based index within that group."
-        : "Call this immediately before reading any recipe step aloud. Use 1-based indexes: the first step is 1, the second step is 2, and if the user asks for step 5 you must pass 5.";
       const agent = new RealtimeAgent({
         name: "CookChat",
         instructions: res.chatInstructions,
         tools: [
           {
             name: "navigate_to_step",
-            description: navigateToStepDescription,
+            description:
+              "Call this immediately before reading any step aloud. Use 1-based indexes: the first step is 1, the second step is 2, and if the user asks for step 5 you must pass 5.",
             type: "function",
             parameters: {
               type: "object",
               properties: {
                 step: {
                   type: "integer",
-                  description: planId
-                    ? "The index of the step within the group to navigate to, starting from 1."
-                    : "The index of the step to navigate to, starting from 1.",
+                  description:
+                    "The index of the step to navigate to, starting from 1.",
                 },
-                group: planId
-                  ? {
-                      type: "integer",
-                      description:
-                        "The index of the group containing the step to navigate to, starting from 1.",
-                    }
-                  : undefined,
               },
               additionalProperties: false,
-              required: planId ? ["step", "group"] : ["step"],
+              required: ["step"],
             },
             strict: false,
             isEnabled: async () => true,
@@ -262,10 +252,7 @@ export function ChatButton({
             invoke: async (_, input) => {
               console.log(input);
               const req = JSON.parse(input);
-              navigateToStep(req.step - 1, req.group ? req.group - 1 : 0);
-              if (planId) {
-                return `Navigated to plan group ${req.group}, step ${req.step}. Read only that step.`;
-              }
+              navigateToStep(req.step - 1);
               return `Navigated to recipe step ${req.step}. Read only that step.`;
             },
           },
@@ -365,7 +352,7 @@ export function ChatButton({
         type="button"
         onClick={onClick}
         className={twMerge(
-          "rounded-2xl py-1 px-2 bg-primary-400 font-light text-white !text-tiny",
+          "rounded-2xl py-1 px-2 bg-primary-400 font-light text-white text-tiny!",
           playing && "invisible",
         )}
       >
