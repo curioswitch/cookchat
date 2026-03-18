@@ -116,14 +116,16 @@ func (h *Handler) GeneratePlan(ctx context.Context, req *frontendapi.GeneratePla
 
 	if err := h.store.RunTransaction(ctx, func(_ context.Context, t *firestore.Transaction) error {
 		plansCol := h.store.Collection("users").Doc(userID).Collection("plans")
-		for _, plan := range plans {
+		now := time.Now()
+		for i, plan := range plans {
 			planDoc := plansCol.NewDoc()
 			plan.ID = planDoc.ID
 			plan.Status = cookchatdb.PlanStatusProcessing
 			if len(plan.Recipes) > 3 {
 				plan.Recipes = plan.Recipes[:3]
 			}
-			plan.CreatedAt = time.Now()
+			plan.ScheduledAt = now.Add(time.Duration(i) * 24 * time.Hour)
+			plan.CreatedAt = now
 			if err := t.Set(planDoc, plan); err != nil {
 				return fmt.Errorf("generateplan: failed to set plan document: %w", err)
 			}

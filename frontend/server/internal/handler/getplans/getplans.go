@@ -109,7 +109,7 @@ func (h *Handler) GetPlans(ctx context.Context, _ *frontendapi.GetPlansRequest) 
 	for i, dbPlan := range dbPlans {
 		plan := &frontendapi.PlanSnippet{
 			Id:   dbPlan.ID,
-			Date: timestamppb.New(dbPlan.CreatedAt),
+			Date: timestamppb.New(dbPlan.ScheduledAt),
 		}
 		for _, recipeID := range dbPlan.Recipes {
 			if recipe, ok := recipes[recipeID]; ok {
