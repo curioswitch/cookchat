@@ -137,54 +137,59 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 		if err := json.Unmarshal([]byte(resJSON), &plans); err != nil {
 			return nil, fmt.Errorf("chatplan: error deserializing LLM JSON response: %w", err)
 		}
-		plan, err := h.savePlan(ctx, plans[0])
-		if err != nil {
-			return nil, err
-		}
-		planID := plan.ID
+		now := time.Now()
+		for i, planContent := range plans {
+			plan, err := h.savePlan(ctx, planContent, now, i)
+			if err != nil {
+				return nil, err
+			}
+			planID := plan.ID
 
-		fillPlanReq, err := proto.Marshal(&tasksapi.FillPlanRequest{
-			PlanId: planID,
-		})
-		if err != nil {
-			return nil, fmt.Errorf("chatplan: marshaling fill plan request: %w", err)
-		}
+			fillPlanReq, err := proto.Marshal(&tasksapi.FillPlanRequest{
+				PlanId: planID,
+			})
+			if err != nil {
+				return nil, fmt.Errorf("chatplan: marshaling fill plan request: %w", err)
+			}
 
-		fbTok := firebaseauth.RawTokenFromContext(ctx)
+			fbTok := firebaseauth.RawTokenFromContext(ctx)
 
-		task := &taskspb.CreateTaskRequest{
-			Parent: h.tasksConfig.Queue,
-			Task: &taskspb.Task{
-				MessageType: &taskspb.Task_HttpRequest{
-					HttpRequest: &taskspb.HttpRequest{
-						HttpMethod: taskspb.HttpMethod_POST,
-						Url:        h.tasksConfig.URL + "/tasksapi.TasksService/FillPlan",
-						Headers: map[string]string{
-							"Content-Type":             "application/proto",
-							"Content-Length":           strconv.Itoa(len(fillPlanReq)),
-							"X-Original-Authorization": "Bearer " + fbTok,
-						},
-						Body: fillPlanReq,
-						AuthorizationHeader: &taskspb.HttpRequest_OidcToken{
-							OidcToken: &taskspb.OidcToken{
-								ServiceAccountEmail: h.tasksConfig.Invoker,
+			task := &taskspb.CreateTaskRequest{
+				Parent: h.tasksConfig.Queue,
+				Task: &taskspb.Task{
+					MessageType: &taskspb.Task_HttpRequest{
+						HttpRequest: &taskspb.HttpRequest{
+							HttpMethod: taskspb.HttpMethod_POST,
+							Url:        h.tasksConfig.URL + "/tasksapi.TasksService/FillPlan",
+							Headers: map[string]string{
+								"Content-Type":             "application/proto",
+								"Content-Length":           strconv.Itoa(len(fillPlanReq)),
+								"X-Original-Authorization": "Bearer " + fbTok,
+							},
+							Body: fillPlanReq,
+							AuthorizationHeader: &taskspb.HttpRequest_OidcToken{
+								OidcToken: &taskspb.OidcToken{
+									ServiceAccountEmail: h.tasksConfig.Invoker,
+								},
 							},
 						},
 					},
 				},
-			},
-		}
-		if _, err := h.tasks.CreateTask(ctx, task); err != nil {
-			return nil, fmt.Errorf("chatplan: creating task: %w", err)
-		}
+			}
+			if _, err := h.tasks.CreateTask(ctx, task); err != nil {
+				return nil, fmt.Errorf("chatplan: creating task: %w", err)
+			}
 
-		chat.PlanID = planID
-		if _, err := chats.Doc(chat.ID).Set(ctx, chat); err != nil {
-			return nil, fmt.Errorf("chatplan: saving chat plan ID: %w", err)
+			if chat.PlanID == "" {
+				chat.PlanID = planID
+			}
+			if _, err := chats.Doc(chat.ID).Set(ctx, chat); err != nil {
+				return nil, fmt.Errorf("chatplan: saving chat plan ID: %w", err)
+			}
 		}
 		return &frontendapi.ChatPlanResponse{
 			ChatId: chat.ID,
-			PlanId: planID,
+			PlanId: chat.PlanID,
 		}, nil
 	}
 
@@ -234,7 +239,7 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 	}, nil
 }
 
-func (h *Handler) savePlan(ctx context.Context, recipeContents []cookchatdb.RecipeContent) (cookchatdb.Plan, error) {
+func (h *Handler) savePlan(ctx context.Context, recipeContents []cookchatdb.RecipeContent, now time.Time, index int) (cookchatdb.Plan, error) {
 	recipes := make([]cookchatdb.Recipe, len(recipeContents))
 
 	language := i18n.UserLanguage(ctx)
@@ -272,8 +277,7 @@ func (h *Handler) savePlan(ctx context.Context, recipeContents []cookchatdb.Reci
 	plansCol := h.store.Collection("users").Doc(userID).Collection("plans")
 	planDoc := plansCol.NewDoc()
 	plan.ID = planDoc.ID
-	now := time.Now()
-	plan.ScheduledAt = now
+	plan.ScheduledAt = now.Add(time.Duration(index) * 24 * time.Hour)
 	plan.CreatedAt = now
 	plan.Status = cookchatdb.PlanStatusProcessing
 	if _, err := planDoc.Set(ctx, plan); err != nil {

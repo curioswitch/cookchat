@@ -75,7 +75,7 @@ func (h *Handler) GeneratePlan(ctx context.Context, req *frontendapi.GeneratePla
 		content = append(content, genai.NewContentFromText(string(recipeJSON), genai.RoleUser))
 	}
 
-	res, err := h.genAI.Models.GenerateContent(ctx, "gemini-2.5-flash", content, &genai.GenerateContentConfig{
+	res, err := h.genAI.Models.GenerateContent(ctx, "gemini-3-flash-preview", content, &genai.GenerateContentConfig{
 		SystemInstruction: genai.NewContentFromText(llm.GeneratePlanPrompt(), genai.RoleModel),
 		ResponseMIMEType:  "application/json",
 		ResponseSchema: &genai.Schema{

@@ -42,17 +42,17 @@ func (h *Handler) GetPlans(ctx context.Context, _ *frontendapi.GetPlansRequest) 
 	iter := plansCol.Query.WhereEntity(firestore.AndFilter{
 		Filters: []firestore.EntityFilter{
 			firestore.PropertyFilter{
-				Path:     "createdAt",
+				Path:     "scheduledAt",
 				Operator: ">=",
 				Value:    start,
 			},
 			firestore.PropertyFilter{
-				Path:     "createdAt",
+				Path:     "scheduledAt",
 				Operator: "<=",
 				Value:    end,
 			},
 		},
-	}).OrderBy("createdAt", firestore.Desc).Documents(ctx)
+	}).OrderBy("scheduledAt", firestore.Desc).Documents(ctx)
 	defer iter.Stop()
 
 	var dbPlans []cookchatdb.Plan
