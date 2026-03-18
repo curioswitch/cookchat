@@ -272,7 +272,9 @@ func (h *Handler) savePlan(ctx context.Context, recipeContents []cookchatdb.Reci
 	plansCol := h.store.Collection("users").Doc(userID).Collection("plans")
 	planDoc := plansCol.NewDoc()
 	plan.ID = planDoc.ID
-	plan.CreatedAt = time.Now()
+	now := time.Now()
+	plan.ScheduledAt = now
+	plan.CreatedAt = now
 	plan.Status = cookchatdb.PlanStatusProcessing
 	if _, err := planDoc.Set(ctx, plan); err != nil {
 		return plan, fmt.Errorf("chatplan: failed to set plan document: %w", err)

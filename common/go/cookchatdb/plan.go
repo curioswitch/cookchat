@@ -39,6 +39,9 @@ type Plan struct {
 	// Any notes about the plan.
 	Notes []string `firestore:"notes"`
 
+	// The time the plan was scheduled.
+	ScheduledAt time.Time `firestore:"scheduledAt"`
+
 	// The time the plan was created.
 	CreatedAt time.Time `firestore:"createdAt"`
 
