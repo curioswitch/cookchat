@@ -4,11 +4,13 @@ on:
     branches:
       - main
     paths:
+      - common/go/**
       - tasks/server/**
       - tasks/api/go/**
       - .github/workflows/ci-tasks-server.yaml
   pull_request:
     paths:
+      - common/go/**
       - tasks/server/**
       - tasks/api/go/**
       - .github/workflows/ci-tasks-server.yaml
