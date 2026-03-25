@@ -82,6 +82,13 @@ export const getPlan = FrontendService.method.getPlan;
 export const updatePlan = FrontendService.method.updatePlan;
 
 /**
+ * Delete a plan.
+ *
+ * @generated from rpc frontendapi.FrontendService.DeletePlan
+ */
+export const deletePlan = FrontendService.method.deletePlan;
+
+/**
  * Add a bookmark for a recipe.
  *
  * @generated from rpc frontendapi.FrontendService.AddBookmark

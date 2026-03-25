@@ -15,6 +15,7 @@ import { createConnectTransport } from "@connectrpc/connect-web";
 import {
   type GetRecipeRequestSchema,
   getChatMessages,
+  getPlans,
   getRecipe,
   listRecipes,
   PaginationSchema,
@@ -76,6 +77,12 @@ class FrontendQueries {
   getChatMessages() {
     return queryOptions(
       createQueryOptions(getChatMessages, {}, { transport: this.transport }),
+    );
+  }
+
+  getPlans() {
+    return queryOptions(
+      createQueryOptions(getPlans, {}, { transport: this.transport }),
     );
   }
 
