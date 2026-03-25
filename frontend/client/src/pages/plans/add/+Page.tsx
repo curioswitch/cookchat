@@ -1,4 +1,4 @@
-import { Tab, Tabs } from "@heroui/tabs";
+import { Tabs } from "@heroui/react";
 import { useTranslation } from "react-i18next";
 
 import { ChatPlan } from "./ChatPlan";
@@ -9,25 +9,27 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-white p-4">
-      <Tabs
-        fullWidth
-        color="primary"
-        classNames={{
-          tabList: "bg-white p-1 rounded-2xl",
-          tab: "data-[selected=true]:bg-primary-400 data-[selected=true]:text-white",
-          cursor: "bg-primary-400",
-        }}
-      >
-        <Tab title={t("Simple Plan")}>
-          <div className="bg-primary-400/10 rounded-2xl p-4">
+      <Tabs>
+        <Tabs.ListContainer>
+          <Tabs.List className="bg-white">
+            <Tabs.Tab id="simple">
+              {t("Simple Plan")}
+              <Tabs.Indicator className="bg-yellow-400" />
+            </Tabs.Tab>
+            <Tabs.Tab id="deep-research">
+              {t("Deep Research")}
+              <Tabs.Indicator className="bg-yellow-400" />
+            </Tabs.Tab>
+          </Tabs.List>
+        </Tabs.ListContainer>
+        <div className="bg-yellow-400/10 rounded-2xl p-4">
+          <Tabs.Panel id="simple">
             <SimplePlan />
-          </div>
-        </Tab>
-        <Tab title={t("Deep Research")}>
-          <div className="bg-primary-400/10 rounded-2xl p-4">
+          </Tabs.Panel>
+          <Tabs.Panel id="deep-research">
             <ChatPlan />
-          </div>
-        </Tab>
+          </Tabs.Panel>
+        </div>
       </Tabs>
     </div>
   );

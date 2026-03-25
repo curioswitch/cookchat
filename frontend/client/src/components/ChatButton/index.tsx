@@ -324,7 +324,7 @@ export function ChatButton({
   return (
     <div
       className={twMerge(
-        "flex flex-col items-center gap-2 text-primary font-semibold",
+        "flex flex-col items-center gap-2 text-yellow font-semibold",
         className,
       )}
     >
@@ -335,7 +335,7 @@ export function ChatButton({
           type="button"
           onClick={onClick}
           className={twMerge(
-            playing && speaking ? "bg-gray-400" : "bg-primary-400",
+            playing && speaking ? "bg-gray-400" : "bg-yellow-400",
             "z-10 rounded-full size-18 md:size-50 flex items-center justify-center cursor-pointer",
           )}
         >
@@ -352,7 +352,7 @@ export function ChatButton({
         type="button"
         onClick={onClick}
         className={twMerge(
-          "rounded-2xl py-1 px-2 bg-primary-400 font-light text-white text-tiny!",
+          "rounded-2xl py-1 px-2 bg-yellow-400 font-light text-white text-xs",
           playing && "invisible",
         )}
       >

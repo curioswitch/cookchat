@@ -12,9 +12,7 @@ import {
   type RecipeIngredient,
   RecipeIngredientSchema,
 } from "@cookchat/frontend-api";
-import { Button } from "@heroui/button";
-import { Form } from "@heroui/form";
-import { Input, Textarea } from "@heroui/input";
+import { Button, Form, Input, Label, TextArea, TextField } from "@heroui/react";
 import {
   type Dispatch,
   type SetStateAction,
@@ -114,18 +112,14 @@ function IngredientInput({
 
   return (
     <div className="flex items-center gap-2">
-      <Input
-        label={t("Ingredient")}
-        labelPlacement="outside"
-        value={ingredient.name}
-        onValueChange={onNameChange}
-      />
-      <Input
-        label={t("Quantity")}
-        labelPlacement="outside"
-        value={ingredient.quantity}
-        onValueChange={onQuantityChange}
-      />
+      <TextField value={ingredient.name} onChange={onNameChange}>
+        <Label>{t("Ingredient")}</Label>
+        <Input />
+      </TextField>
+      <TextField value={ingredient.quantity} onChange={onQuantityChange}>
+        <Label>{t("Quantity")}</Label>
+        <Input />
+      </TextField>
       <Button onPress={onRemoveClick}>
         <HiTrash className="size-14" />
       </Button>
@@ -178,12 +172,10 @@ function IngredientSectionInput({
 
   return (
     <div className="border-1 w-full">
-      <Input
-        label={t("Section Name")}
-        labelPlacement="outside"
-        value={section.title}
-        onValueChange={setTitle}
-      />
+      <TextField value={section.title} onChange={setTitle}>
+        <Label>{t("Section Name")}</Label>
+        <Input />
+      </TextField>
       {section.ingredients.map((ingredient, i) => (
         <IngredientInput
           // biome-ignore lint/suspicious/noArrayIndexKey: input form
@@ -299,12 +291,10 @@ function Step({
 
   return (
     <div className="border-1 w-full">
-      <Textarea
-        label={t("Step Description")}
-        labelPlacement="outside"
-        value={step.description}
-        onValueChange={setDescription}
-      />
+      <TextField value={step.description} onChange={setDescription}>
+        <Label>{t("Step Description")}</Label>
+        <Input />
+      </TextField>
       <label htmlFor="step-image">{t("Step Image")}</label>
       <div className="flex gap-4 items-center">
         <div className="mt-2 p-4 rounded-xl bg-gray-100" {...getRootProps()}>
@@ -423,39 +413,38 @@ export default function Page() {
 
   return (
     <div className="p-4">
-      <Textarea
-        label="Generate Recipe Prompt"
+      <Label>Generate Recipe Prompt</Label>
+      <TextArea
         value={prompt}
-        onValueChange={setPrompt}
+        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+          setPrompt(e.currentTarget.value)
+        }
       />
       <Button
         className="mt-2"
         onPress={onGenerateClick}
-        disabled={doGenerateRecipe.isPending}
+        isDisabled={doGenerateRecipe.isPending}
       >
         Generate Recipe
       </Button>
       {doGenerateRecipe.isPending && <div>Generating recipe...</div>}
       <hr />
       <Form onSubmit={onSubmit}>
-        <Input
-          label="Title"
-          labelPlacement="outside-top"
-          value={request.title}
-          onValueChange={setTitle}
-        />
-        <Textarea
-          label="Description"
-          labelPlacement="outside"
+        <TextField value={request.title} onChange={setTitle}>
+          <Label>Title</Label>
+          <Input />
+        </TextField>
+        <Label>Description</Label>
+        <TextArea
           value={request.description}
-          onValueChange={setDescription}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            setDescription(e.currentTarget.value)
+          }
         />
-        <Input
-          label="Serving Size"
-          labelPlacement="outside-top"
-          value={request.servingSize}
-          onValueChange={setServingSize}
-        />
+        <TextField value={request.servingSize} onChange={setServingSize}>
+          <Label>Serving Size</Label>
+          <Input />
+        </TextField>
         <div className="flex gap-4 items-center">
           <div className="mt-2 p-4 rounded-xl bg-gray-100" {...getRootProps()}>
             <input {...getInputProps()} />
@@ -491,7 +480,11 @@ export default function Page() {
         <Button className="mt-4" onPress={addStep}>
           Add Step
         </Button>
-        <Button type="submit" className="mt-4" disabled={doAddRecipe.isPending}>
+        <Button
+          type="submit"
+          className="mt-4"
+          isDisabled={doAddRecipe.isPending}
+        >
           Submit Recipe
         </Button>
       </Form>

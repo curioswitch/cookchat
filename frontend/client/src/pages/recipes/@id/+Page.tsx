@@ -7,9 +7,7 @@ import {
   RecipeStatus,
   removeBookmark,
 } from "@cookchat/frontend-api";
-import { Button } from "@heroui/button";
-import { Image } from "@heroui/image";
-import { Textarea } from "@heroui/input";
+import { Button, TextArea } from "@heroui/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -136,9 +134,12 @@ export default function Page() {
     setEditPrompt((prev) => !prev);
   }, []);
 
-  const onPromptChange = useCallback((prompt: string) => {
-    setPrompt(prompt);
-  }, []);
+  const onPromptChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setPrompt(e.target.value);
+    },
+    [],
+  );
 
   const onCreatePlan = useCallback(() => {
     const recipe = recipeRes?.recipe;
@@ -206,16 +207,12 @@ export default function Page() {
   return (
     <>
       <div className="relative">
-        <Image
-          radius="none"
-          src={recipe.imageUrl}
-          classNames={{ wrapper: "w-full", img: "w-full" }}
-        />
+        <img src={recipe.imageUrl} alt="Recipe" className="w-full" />
         {!editingPlan && (
           <Button
             onPress={onCreatePlan}
             size="sm"
-            className="absolute left-3 bottom-3 z-10 bg-primary-400 text-white"
+            className="absolute left-3 bottom-3 z-10 bg-yellow-400 text-white rounded-xl"
           >
             {t("Create Plan")}
           </Button>
@@ -227,16 +224,16 @@ export default function Page() {
           aria-label={t("Bookmarks")}
         >
           {recipeRes.isBookmarked ? (
-            <FaBookmark className="size-6 fill-primary-400" />
+            <FaBookmark className="size-6 fill-yellow-400" />
           ) : (
-            <FaRegBookmark className="size-6 fill-primary-400" />
+            <FaRegBookmark className="size-6 fill-yellow-400" />
           )}
         </button>
       </div>
       <div className="px-4 py-2">
         {recipe.status === RecipeStatus.PROCESSING && (
-          <div className="p-4 bg-[#ffedd5] border-1 border-[#ffedd5] rounded-2xl flex gap-2 items-center mb-2">
-            <FaLightbulb className="text-primary size-6" />
+          <div className="p-4 bg-[#ffedd5] border border-[#ffedd5] rounded-2xl flex gap-2 items-center mb-2">
+            <FaLightbulb className="text-yellow size-6" />
             <div>
               {t("This recipe is being processed. It should be ready soon!")}
             </div>
@@ -248,7 +245,7 @@ export default function Page() {
           </div>
           <div className="flex items-center justify-between pt-2">
             <div className="flex items-center gap-2">
-              <FiUsers className="size-5 text-primary-400" />
+              <FiUsers className="size-5 text-yellow-400" />
               <span className="text-gray-500 md:text-2xl mt-0.5">
                 {recipe.servingSize}
               </span>
@@ -256,9 +253,8 @@ export default function Page() {
             {editingPlan ? (
               <Button
                 onPress={onAddToPlan}
-                color="primary"
                 size="sm"
-                className="text-white"
+                className="text-white bg-orange-200"
               >
                 {t("Add to plan")}
               </Button>
@@ -266,10 +262,10 @@ export default function Page() {
           </div>
         </div>
         {editPrompt && (
-          <Textarea
+          <TextArea
             className="mt-0"
             value={chatStore.prompt}
-            onValueChange={onPromptChange}
+            onChange={onPromptChange}
           />
         )}
         <div className="flex flex-col gap-4 mt-2">
@@ -277,11 +273,11 @@ export default function Page() {
             ref={(node) => {
               ingredientsRef.current = node;
             }}
-            className="p-4 bg-white rounded-xl border-1 border-primary-200"
+            className="p-4 bg-white rounded-xl border-1 border-yellow-200"
           >
             <Button
               fullWidth
-              className="mb-4 text-primary-400 py-4 px-6 bg-primary-400/20 md:py-8 md:text-large"
+              className="mb-4 text-yellow-400 py-4 px-6 bg-orange-100 md:py-8 md:text-large rounded-lg"
               onPress={onCartToggle}
             >
               <HiShoppingCart className="size-5 md:size-8" />
@@ -308,10 +304,10 @@ export default function Page() {
               ref={(node) => {
                 stepRefs.current[i] = node;
               }}
-              className="p-4 bg-white rounded-xl border-1 border-primary-200"
+              className="p-4 bg-white rounded-xl border border-yellow-200"
             >
               <div className="flex gap-2">
-                <div className="flex-none bg-primary-400/20 text-primary-400 size-8 md:size-10 text-base md:text-lg rounded-full flex justify-center items-center">
+                <div className="flex-none bg-orange-200/20 text-yellow-400 size-8 md:size-10 text-base md:text-lg rounded-full flex justify-center items-center">
                   {i + 1}
                 </div>
                 <p className="text-md md:text-2xl font-light prose">
@@ -319,11 +315,10 @@ export default function Page() {
                 </p>
               </div>
               {step.imageUrl && (
-                <Image
-                  radius="sm"
-                  className="mt-2 mb-0"
-                  width="100%"
+                <img
                   src={step.imageUrl}
+                  alt={`Step ${i + 1}`}
+                  className="mt-2 mb-0 w-full rounded-sm"
                 />
               )}
             </div>

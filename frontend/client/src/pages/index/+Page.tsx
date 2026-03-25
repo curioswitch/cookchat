@@ -1,5 +1,4 @@
-import { Image } from "@heroui/image";
-import { Input } from "@heroui/input";
+import { Input } from "@heroui/react";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useRef, useState } from "react";
@@ -16,6 +15,12 @@ export default function Page() {
   const [query] = useDebouncedValue(rawQuery, {
     wait: 500,
   });
+  const onQueryChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setRawQuery(e.target.value);
+    },
+    [],
+  );
 
   const queries = useFrontendQueries();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
@@ -56,22 +61,17 @@ export default function Page() {
   return (
     <div className="p-4">
       <div className="flex items-center justify-between mt-2 mb-4">
-        <Image radius="none" src={logoSVG} alt={t("CookChat Logo")} />
+        <img src={logoSVG} alt={t("CookChat Logo")} />
         <a href="/settings">
-          <FaRegUserCircle className="size-6 text-primary-400" />
+          <FaRegUserCircle className="size-6 text-yellow-400" />
         </a>
       </div>
       <Input
         fullWidth
         placeholder={t("What do you want to cook?")}
-        size="lg"
-        className="border-1 rounded-xl border-primary-400"
-        classNames={{
-          innerWrapper: "bg-white",
-          inputWrapper: "bg-white",
-        }}
+        className="border rounded-xl border-yellow-400 h-12 shadow-none"
         value={rawQuery}
-        onValueChange={setRawQuery}
+        onChange={onQueryChange}
       />
 
       {isPending && <div className="mt-4">{t("Loading...")}</div>}
@@ -90,10 +90,10 @@ export default function Page() {
                   key={recipe.id}
                   className="block"
                 >
-                  <Image
-                    className="w-full aspect-square object-cover rounded-2xl"
+                  <img
                     src={recipe.imageUrl}
                     alt={recipe.title}
+                    className="w-full aspect-square object-cover rounded-2xl"
                   />
                   <h3 className="mt-2 mb-0 text-sm font-semibold line-clamp-2">
                     {recipe.title}
@@ -112,16 +112,13 @@ export default function Page() {
                   href={`/recipes/${recipe.id}`}
                   color="foreground"
                   key={recipe.id}
-                  className="flex border-1 rounded-2xl border-primary-100 items-center gap-4 not-prose h-32"
+                  className="flex border rounded-2xl border-primary-100 items-center gap-4 not-prose h-32"
                   ref={i === popularRecipes.length - 1 ? handleLastItem : null}
                 >
-                  <Image
-                    className="flex-1/4 rounded-none rounded-l-large object-cover h-32 w-full"
-                    classNames={{
-                      wrapper: "flex-1/4",
-                    }}
+                  <img
                     src={recipe.imageUrl}
                     alt={recipe.title}
+                    className="flex-1/4 rounded-none rounded-l-large object-cover h-32 w-full"
                   />
                   <div className="flex-3/4 pr-4">
                     <h3 className="mt-0 mb-1 text-[0.95rem]">{recipe.title}</h3>

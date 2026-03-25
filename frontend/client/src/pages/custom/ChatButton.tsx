@@ -3,7 +3,7 @@ import {
   type LiveServerMessage,
   type Session,
 } from "@google/genai";
-import { Button } from "@heroui/button";
+import { Button } from "@heroui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 

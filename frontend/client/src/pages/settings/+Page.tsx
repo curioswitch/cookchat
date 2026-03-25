@@ -1,6 +1,4 @@
-import { Checkbox } from "@heroui/checkbox";
-import { Select, SelectItem } from "@heroui/select";
-import type { SharedSelection } from "@heroui/system";
+import { Checkbox, type Key, Label, ListBox, Select } from "@heroui/react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -21,19 +19,21 @@ export default function Page() {
 
   const settings = useSettingsStore();
 
-  const onLanguageChange = useCallback(async (e: SharedSelection) => {
-    await i18n.changeLanguage(e.currentKey);
-  }, []);
-
-  const onSpeakerChange = useCallback(async (e: SharedSelection) => {
-    if (e.currentKey) {
-      setSpeakerDeviceId(e.currentKey);
+  const onLanguageChange = useCallback(async (lang: Key | null) => {
+    if (lang) {
+      await i18n.changeLanguage(String(lang));
     }
   }, []);
 
-  const onMicrophoneChange = useCallback(async (e: SharedSelection) => {
-    if (e.currentKey) {
-      setMicrophoneDeviceId(e.currentKey);
+  const onSpeakerChange = useCallback(async (speaker: Key | null) => {
+    if (speaker) {
+      setSpeakerDeviceId(String(speaker));
+    }
+  }, []);
+
+  const onMicrophoneChange = useCallback(async (microphone: Key | null) => {
+    if (microphone) {
+      setMicrophoneDeviceId(String(microphone));
     }
   }, []);
 
@@ -49,60 +49,90 @@ export default function Page() {
 
   return (
     <div className="p-4">
-      <Select
-        label={t("Language")}
-        labelPlacement="outside-left"
-        selectedKeys={[i18n.language]}
-        onSelectionChange={onLanguageChange}
-      >
-        <SelectItem key="ja">{t("Japanese")}</SelectItem>
-        <SelectItem key="en">{t("English")}</SelectItem>
+      <Select value={i18n.language} onChange={onLanguageChange}>
+        <Label>{t("Language")}</Label>
+        <Select.Trigger>
+          <Select.Value />
+          <Select.Indicator />
+        </Select.Trigger>
+        <Select.Popover>
+          <ListBox>
+            <ListBox.Item id="ja">{t("Japanese")}</ListBox.Item>
+            <ListBox.Item id="en">{t("English")}</ListBox.Item>
+          </ListBox>
+        </Select.Popover>
       </Select>
       <Select
-        label={t("Speaker")}
-        labelPlacement="outside-left"
-        selectedKeys={[settings.speakerDeviceId]}
-        onSelectionChange={onSpeakerChange}
+        value={settings.speakerDeviceId}
+        onChange={onSpeakerChange}
         className="mt-4"
       >
-        {speakers.map((speaker) => (
-          <SelectItem key={speaker.deviceId}>
-            {speaker.label || t("Unknown Speaker")}
-          </SelectItem>
-        ))}
+        <Label>{t("Speaker")}</Label>
+        <Select.Trigger>
+          <Select.Value />
+          <Select.Indicator />
+        </Select.Trigger>
+        <Select.Popover>
+          <ListBox>
+            {speakers.map((speaker) => (
+              <ListBox.Item key={speaker.deviceId} id={speaker.deviceId}>
+                {speaker.label || t("Unknown Speaker")}
+              </ListBox.Item>
+            ))}
+          </ListBox>
+        </Select.Popover>
       </Select>
       <Select
-        label={t("Microphone")}
-        labelPlacement="outside-left"
-        selectedKeys={[settings.microphoneDeviceId]}
-        onSelectionChange={onMicrophoneChange}
+        value={settings.microphoneDeviceId}
+        onChange={onMicrophoneChange}
         className="mt-4"
       >
-        {microphones.map((mic) => (
-          <SelectItem key={mic.deviceId}>
-            {mic.label || t("Unknown Microphone")}
-          </SelectItem>
-        ))}
+        <Label>{t("Microphone")}</Label>
+        <Select.Trigger>
+          <Select.Value />
+          <Select.Indicator />
+        </Select.Trigger>
+        <Select.Popover>
+          <ListBox>
+            {microphones.map((mic) => (
+              <ListBox.Item key={mic.deviceId} id={mic.deviceId}>
+                {mic.label || t("Unknown Microphone")}
+              </ListBox.Item>
+            ))}
+          </ListBox>
+        </Select.Popover>
       </Select>
       <Checkbox
         className="mt-4"
         isSelected={settings.useOpenAI}
-        onValueChange={setUseOpenAI}
+        onChange={setUseOpenAI}
       >
+        <Checkbox.Control>
+          <Checkbox.Indicator />
+        </Checkbox.Control>
         Use OpenAI
       </Checkbox>
       {settings.useOpenAI && (
         <Select
-          label={t("Model")}
-          labelPlacement="outside-left"
-          selectedKeys={[settings.model]}
-          onSelectionChange={(e: SharedSelection) => {
-            setModel(e.currentKey ?? "");
+          value={settings.model}
+          onChange={(model: Key | null) => {
+            setModel(String(model ?? ""));
           }}
           className="mt-4"
         >
-          <SelectItem key="gpt-realtime-mini">gpt-realtime-mini</SelectItem>
-          <SelectItem key="gpt-realtime">gpt-realtime</SelectItem>
+          <Label>{t("Model")}</Label>
+          <Select.Trigger>
+            <Select.Value />
+            <Select.Indicator />
+          </Select.Trigger>
+          <Select.Popover>
+            <ListBox>
+              <ListBox.Item id="gpt-realtime-mini">
+                gpt-realtime-mini
+              </ListBox.Item>
+              <ListBox.Item id="gpt-realtime">gpt-realtime</ListBox.Item>
+            </ListBox>
+          </Select.Popover>
         </Select>
       )}
     </div>

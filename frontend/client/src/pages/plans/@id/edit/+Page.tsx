@@ -1,8 +1,6 @@
 import { useMutation } from "@connectrpc/connect-query";
 import { type RecipeSnippet, updatePlan } from "@cookchat/frontend-api";
-import { Button } from "@heroui/button";
-import { Image } from "@heroui/image";
-import { Spinner } from "@heroui/spinner";
+import { Button, Spinner } from "@heroui/react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { FaTrash } from "react-icons/fa";
@@ -17,13 +15,17 @@ function RecipeSlot({ recipe }: { recipe: RecipeSnippet }) {
   }, [recipe.id]);
   return (
     <div key={recipe.id} className="flex flex-col gap-2 items-center relative">
-      <Image src={recipe.imageUrl} alt={recipe.title} className="h-20" />
-      <div className="max-w-20 truncate text-tiny text-gray-600">
+      <img
+        src={recipe.imageUrl}
+        alt={recipe.title}
+        className="h-20 rounded-xl"
+      />
+      <div className="max-w-20 truncate text-xs text-gray-600">
         {recipe.title}
       </div>
       <FaTrash
         onClick={onDeleteClick}
-        className="cursor-pointer absolute -right-2 fill-primary-400 z-50"
+        className="cursor-pointer absolute -right-2 fill-yellow-400 z-50"
       />
     </div>
   );
@@ -56,7 +58,7 @@ export default function Page() {
   }
 
   return (
-    <div className="px-4 py-2 border-y-1 border-primary-400 bg-white">
+    <div className="px-4 py-2 border-y-1 border-yellow-400 bg-white">
       <div className="flex gap-4 items-center justify-between">
         {recipes.map((recipe, i) =>
           recipe ? (
@@ -71,10 +73,9 @@ export default function Page() {
       </div>
       <Button
         onPress={onSaveClick}
-        disabled={doUpdatePlan.isPending}
-        color="primary"
+        isDisabled={doUpdatePlan.isPending}
         fullWidth
-        className="mt-4"
+        className="mt-4 bg-orange-400"
       >
         {t("Save")}
       </Button>

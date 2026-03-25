@@ -6,7 +6,7 @@ import {
   PlanSnippetSchema,
   type PlanSnippetValid,
 } from "@cookchat/frontend-api";
-import { Button } from "@heroui/button";
+import { Button, Link } from "@heroui/react";
 import { Temporal } from "@js-temporal/polyfill";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -34,7 +34,7 @@ function PlanSnippet({ plan }: { plan: PlanSnippetValid }) {
 
   return (
     <a href={`/plans/${plan.id}`}>
-      <div className="p-4 border-1 bg-white border-primary-400 text-black rounded-2xl">
+      <div className="p-4 border-1 bg-white border-yellow-400 text-black rounded-2xl">
         <div className="flex gap-4 justify-between items-center mb-2">
           <h3 className="mt-0 font-light">
             {t("global.dateOnly", {
@@ -42,7 +42,7 @@ function PlanSnippet({ plan }: { plan: PlanSnippetValid }) {
             })}
           </h3>
           <FaEdit
-            className="fill-primary-400 cursor-pointer"
+            className="fill-yellow-400 cursor-pointer"
             onClick={onEditClick}
           />
         </div>
@@ -211,14 +211,11 @@ export default function Page() {
     <>
       <DateSelect plans={plans} />
       <div className="flex justify-center">
-        <Button
-          as="a"
-          href="/plans/add"
-          color="primary"
-          className="text-white fixed bottom-30"
-        >
-          {t("Add Plan")}
-        </Button>
+        <Link href="/plans/add">
+          <Button className="text-white fixed bottom-30 bg-orange-400">
+            {t("Add Plan")}
+          </Button>
+        </Link>
       </div>
     </>
   );

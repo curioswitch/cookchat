@@ -1,18 +1,20 @@
 import { useMutation } from "@connectrpc/connect-query";
 import { generatePlan, RecipeGenre } from "@cookchat/frontend-api";
-import { Button } from "@heroui/button";
-import { CheckboxGroup, useCheckbox } from "@heroui/checkbox";
-import { Chip } from "@heroui/chip";
-import { Image } from "@heroui/image";
-import { Input } from "@heroui/input";
-import { NumberInput } from "@heroui/number-input";
-import { Spinner } from "@heroui/spinner";
-import { Switch } from "@heroui/switch";
-import { cn, tv } from "@heroui/theme";
-import { VisuallyHidden } from "@react-aria/visually-hidden";
+import {
+  Button,
+  Checkbox,
+  CheckboxGroup,
+  Input,
+  Label,
+  NumberField,
+  Spinner,
+  Switch,
+  TextField,
+} from "@heroui/react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { FaMagic } from "react-icons/fa";
+import { twMerge } from "tailwind-merge";
 import { navigate } from "vike/client/router";
 
 import {
@@ -23,68 +25,14 @@ import {
   usePlanStore,
 } from "../../../stores";
 
-function Option(props: { value: string; children: React.ReactNode }) {
-  const checkbox = tv({
-    slots: {
-      base: "border-1 border-primary-400 bg-white p-4",
-      content: "text-black text-sm",
-    },
-    variants: {
-      isSelected: {
-        true: {
-          base: "border-primary bg-primary hover:bg-primary-500 hover:border-primary-500",
-          content: "text-white pl-1",
-        },
-      },
-      isFocusVisible: {
-        true: {
-          base: "outline-solid outline-transparent ring-2 ring-focus ring-offset-2 ring-offset-background",
-        },
-      },
-    },
-  });
-
-  const {
-    children,
-    isSelected,
-    isFocusVisible,
-    getBaseProps,
-    getLabelProps,
-    getInputProps,
-  } = useCheckbox({
-    ...props,
-  });
-
-  const styles = checkbox({ isSelected, isFocusVisible });
-
-  return (
-    <label {...getBaseProps()}>
-      <VisuallyHidden>
-        <input {...getInputProps()} />
-      </VisuallyHidden>
-      <Chip
-        classNames={{
-          base: styles.base(),
-          content: styles.content(),
-        }}
-        color="primary"
-        variant="faded"
-        {...getLabelProps()}
-      >
-        {children ? children : isSelected ? "Enabled" : "Disabled"}
-      </Chip>
-    </label>
-  );
-}
-
 function MainDishPlaceholder() {
   const { t } = useTranslation();
   return (
     <a
       href="/"
-      className="flex items-center gap-2 p-4 bg-white rounded-2xl border-1 border-primary-400"
+      className="flex items-center gap-2 p-4 bg-white rounded-2xl border border-yellow-400"
     >
-      <FaMagic className="text-primary-400" />
+      <FaMagic className="text-yellow-400" />
       <div className="text-gray-600">
         {t("Generating with AI. Click to select instead.")}
       </div>
@@ -96,14 +44,15 @@ function MainDish({ recipe }: { recipe: PlanRecipe }) {
   const { t } = useTranslation();
   return (
     <div className="mb-4">
-      <div className="flex gap-4 bg-white p-4 items-center rounded-2xl border-1 border-primary-400">
-        <Image
-          classNames={{
-            wrapper: "flex-1/5",
-          }}
-          src={recipe.imageUrl}
-        />
-        <div className="flex-4/5">
+      <div className="flex gap-4 bg-white p-4 items-center rounded-2xl border border-yellow-400">
+        <div className="w-1/5 shrink-0 overflow-hidden rounded-xl">
+          <img
+            className="block h-auto w-full object-cover"
+            alt={recipe.title}
+            src={recipe.imageUrl}
+          />
+        </div>
+        <div className="min-w-0 flex-1">
           <div>{recipe.title}</div>
           <div className="text-gray-600">{t("Main Dish")}</div>
         </div>
@@ -153,45 +102,55 @@ export function SimplePlan() {
         <h3 className="text-lg mb-2">{t("Conditions")}</h3>
         <div className="flex flex-col gap-3">
           <div>
-            <NumberInput
-              label={t("Number of days")}
+            <NumberField
+              className="bg-white border border-yellow-400 rounded-lg p-2"
               value={numDays}
-              onValueChange={setPlanDays}
-              classNames={{
-                inputWrapper: "bg-white border-1 border-primary-400 h-16 pb-2",
-              }}
-            />
+              onChange={setPlanDays}
+            >
+              <Label className="text-xs text-gray-400">
+                {t("Number of days")}
+              </Label>
+              <NumberField.Group>
+                <NumberField.DecrementButton />
+                <NumberField.Input />
+                <NumberField.IncrementButton />
+              </NumberField.Group>
+            </NumberField>
           </div>
-          <div className="p-4 bg-white border-1 border-primary-400 rounded-xl">
+          <div className="p-4 bg-white border border-yellow-400 rounded-xl">
             <h4>{t("Ingredients to include")}</h4>
-            <Input
-              placeholder={t("Ingredients in your fridge...")}
-              description={t("Ingredients for sides")}
+            <TextField
               value={ingredients}
-              onValueChange={setPlanIngredients}
-              classNames={{
-                mainWrapper: "mt-2",
-                inputWrapper: "bg-white border-1 border-primary-400",
-                helperWrapper: "mt-2 text-gray-600",
-              }}
-            />
+              onChange={setPlanIngredients}
+              className="mt-2"
+            >
+              <Input
+                placeholder={t("Ingredients in your fridge...")}
+                className="bg-white border border-yellow-400"
+              />
+              <Label className="mt-2 text-gray-400">
+                {t("Ingredients for sides")}
+              </Label>
+            </TextField>
           </div>
           <div>
-            <Switch
-              classNames={{
-                base: cn(
-                  "inline-flex flex-row-reverse w-full max-w-md bg-content1 hover:bg-content2 items-center",
-                  "justify-between cursor-pointer rounded-lg gap-2 px-2 py-4 border-1",
-                  "border-primary-400",
-                ),
-              }}
-            >
-              <div className="flex flex-col not-prose">
-                <p className="text-medium">{t("Add dessert")}</p>
-                <p className="text-tiny text-default-400 mt-2">
-                  {t("Seasonal fruit or yogurt")}
-                </p>
-              </div>
+            <Switch className="border border-yellow-400 rounded-lg px-4 py-4 w-full max-w-md justify-between bg-white">
+              {({ isSelected }) => (
+                <>
+                  {" "}
+                  <Switch.Content>
+                    <div className="flex flex-col not-prose">
+                      <p className="text-medium">{t("Add dessert")}</p>
+                      <p className="text-xs text-gray-400 mt-2">
+                        {t("Seasonal fruit or yogurt")}
+                      </p>
+                    </div>
+                  </Switch.Content>
+                  <Switch.Control className={isSelected ? "bg-orange-400" : ""}>
+                    <Switch.Thumb />
+                  </Switch.Control>
+                </>
+              )}
             </Switch>
           </div>
         </div>
@@ -199,44 +158,92 @@ export function SimplePlan() {
       <div className="flex flex-col gap-4">
         <h3 className="text-lg">{t("Meal Preferences")}</h3>
         <div className="flex flex-col gap-1 w-full">
-          <CheckboxGroup
-            className="gap-1"
-            classNames={{
-              label: "text-gray-600",
-            }}
-            label={t("Genre")}
-            orientation="horizontal"
-            value={genres}
-            onValueChange={setPlanGenres}
-          >
-            <Option value={RecipeGenre.JAPANESE.toString()}>
-              {t("genre.japanese")}
-            </Option>
-            <Option value={RecipeGenre.CHINESE.toString()}>
-              {t("genre.chinese")}
-            </Option>
-            <Option value={RecipeGenre.WESTERN.toString()}>
-              {t("genre.western")}
-            </Option>
-            <Option value={RecipeGenre.KOREAN.toString()}>
-              {t("genre.korean")}
-            </Option>
-            <Option value={RecipeGenre.ITALIAN.toString()}>
-              {t("genre.italian")}
-            </Option>
-            <Option value={RecipeGenre.ETHNIC.toString()}>
-              {t("genre.ethnic")}
-            </Option>
+          <CheckboxGroup value={genres} onChange={setPlanGenres}>
+            <Label className="text-gray-400">{t("Genre")}</Label>
+            <div className="flex flex-wrap gap-1">
+              <Checkbox value={RecipeGenre.JAPANESE.toString()}>
+                {({ isSelected }) => (
+                  <Checkbox.Content
+                    className={twMerge(
+                      "border border-yellow-400 rounded-4xl py-2 px-4 w-fit text-sm",
+                      isSelected && "bg-orange-400 text-white",
+                    )}
+                  >
+                    {t("genre.japanese")}
+                  </Checkbox.Content>
+                )}
+              </Checkbox>
+              <Checkbox value={RecipeGenre.CHINESE.toString()}>
+                {({ isSelected }) => (
+                  <Checkbox.Content
+                    className={twMerge(
+                      "border border-yellow-400 rounded-4xl py-2 px-4 w-fit text-sm",
+                      isSelected && "bg-orange-400 text-white",
+                    )}
+                  >
+                    {t("genre.chinese")}
+                  </Checkbox.Content>
+                )}
+              </Checkbox>
+              <Checkbox value={RecipeGenre.WESTERN.toString()}>
+                {({ isSelected }) => (
+                  <Checkbox.Content
+                    className={twMerge(
+                      "border border-yellow-400 rounded-4xl py-2 px-4 w-fit text-sm",
+                      isSelected && "bg-orange-400 text-white",
+                    )}
+                  >
+                    {t("genre.western")}
+                  </Checkbox.Content>
+                )}
+              </Checkbox>
+              <Checkbox value={RecipeGenre.KOREAN.toString()}>
+                {({ isSelected }) => (
+                  <Checkbox.Content
+                    className={twMerge(
+                      "border border-yellow-400 rounded-4xl py-2 px-4 w-fit text-sm",
+                      isSelected && "bg-orange-400 text-white",
+                    )}
+                  >
+                    {t("genre.korean")}
+                  </Checkbox.Content>
+                )}
+              </Checkbox>
+              <Checkbox value={RecipeGenre.ITALIAN.toString()}>
+                {({ isSelected }) => (
+                  <Checkbox.Content
+                    className={twMerge(
+                      "border border-yellow-400 rounded-4xl py-2 px-4 w-fit text-sm",
+                      isSelected && "bg-orange-400 text-white",
+                    )}
+                  >
+                    {t("genre.italian")}
+                  </Checkbox.Content>
+                )}
+              </Checkbox>
+              <Checkbox value={RecipeGenre.ETHNIC.toString()}>
+                {({ isSelected }) => (
+                  <Checkbox.Content
+                    className={twMerge(
+                      "border border-yellow-400 rounded-4xl py-2 px-4 w-fit text-sm",
+                      isSelected && "bg-orange-400 text-white",
+                    )}
+                  >
+                    {t("genre.ethnic")}
+                  </Checkbox.Content>
+                )}
+              </Checkbox>
+            </div>
           </CheckboxGroup>
         </div>
         <div>
           <Button
-            className="mt-4 h-12 bg-primary-400 text-white hover:bg-primary-500"
+            className="mt-4 h-12 rounded-lg bg-yellow-400 text-white hover:bg-yellow-500"
             fullWidth
             onPress={onGenerateClick}
-            disabled={doGeneratePlan.isPending}
-            startContent={<FaMagic />}
+            isDisabled={doGeneratePlan.isPending}
           >
+            <FaMagic />
             {t("Generate Plan")}
           </Button>
           <div className="text-center text-gray-600 text-sm mt-2">
