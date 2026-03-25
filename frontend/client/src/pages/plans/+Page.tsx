@@ -1,25 +1,48 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { createValidator } from "@bufbuild/protovalidate";
-import { useQuery } from "@connectrpc/connect-query";
+import { useMutation } from "@connectrpc/connect-query";
 import {
-  getPlans,
+  deletePlan,
   PlanSnippetSchema,
   type PlanSnippetValid,
 } from "@cookchat/frontend-api";
 import { Button, Link } from "@heroui/react";
 import { Temporal } from "@js-temporal/polyfill";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import { twMerge } from "tailwind-merge";
 import { navigate } from "vike/client/router";
 
+import { useFrontendQueries } from "../../hooks/rpc";
 import { enableEditPlan } from "../../stores";
 
 const validator = createValidator();
 
-function PlanSnippet({ plan }: { plan: PlanSnippetValid }) {
+function PlanSnippet({
+  plan,
+  invalidatePlans,
+}: {
+  plan: PlanSnippetValid;
+  invalidatePlans: () => void;
+}) {
   const { t } = useTranslation();
+
+  const doDeletePlan = useMutation(deletePlan, {
+    onSuccess: () => {
+      invalidatePlans();
+    },
+  });
+
+  const onDeleteClick = useCallback(
+    (e: React.MouseEvent) => {
+      doDeletePlan.mutate({ planId: plan.id });
+      e.preventDefault();
+      e.stopPropagation();
+    },
+    [doDeletePlan, plan.id],
+  );
 
   const onEditClick = useCallback(
     (e: React.MouseEvent) => {
@@ -41,10 +64,16 @@ function PlanSnippet({ plan }: { plan: PlanSnippetValid }) {
               val: timestampDate(plan.date),
             })}
           </h3>
-          <FaEdit
-            className="fill-yellow-400 cursor-pointer"
-            onClick={onEditClick}
-          />
+          <div className="flex gap-4">
+            <FaEdit
+              className="fill-yellow-400 cursor-pointer"
+              onClick={onEditClick}
+            />
+            <FaTrash
+              className="fill-yellow-400 cursor-pointer"
+              onClick={onDeleteClick}
+            />
+          </div>
         </div>
         <div className="flex flex-col gap-4">
           {plan.recipes[0] && (
@@ -87,7 +116,13 @@ interface DatePlans {
   plans: PlanSnippetValid[];
 }
 
-function DateSelect({ plans }: { plans: PlanSnippetValid[] }) {
+function DateSelect({
+  plans,
+  invalidatePlans,
+}: {
+  plans: PlanSnippetValid[];
+  invalidatePlans: () => void;
+}) {
   const { t, i18n } = useTranslation();
 
   const today = useMemo(() => Temporal.Now.plainDateISO(), []);
@@ -182,7 +217,11 @@ function DateSelect({ plans }: { plans: PlanSnippetValid[] }) {
       </div>
       <div className="flex flex-col gap-2 p-4">
         {selectedPlans.map((plan) => (
-          <PlanSnippet key={plan.id} plan={plan} />
+          <PlanSnippet
+            key={plan.id}
+            plan={plan}
+            invalidatePlans={invalidatePlans}
+          />
         ))}
       </div>
     </div>
@@ -192,7 +231,19 @@ function DateSelect({ plans }: { plans: PlanSnippetValid[] }) {
 export default function Page() {
   const { t } = useTranslation();
 
-  const { data: plansRes, isPending } = useQuery(getPlans);
+  const queryClient = useQueryClient();
+  const queries = useFrontendQueries();
+  const getPlansQuery = queries.getPlans();
+
+  const invalidatePlans = useCallback(() => {
+    console.log("invalidating plans");
+    console.log(getPlansQuery.queryKey);
+    queryClient.invalidateQueries({
+      queryKey: getPlansQuery.queryKey,
+    });
+  }, [queryClient, getPlansQuery]);
+
+  const { data: plansRes, isPending } = useQuery(getPlansQuery);
 
   if (isPending) {
     return <div>{t("Loading...")}</div>;
@@ -209,12 +260,10 @@ export default function Page() {
 
   return (
     <>
-      <DateSelect plans={plans} />
+      <DateSelect plans={plans} invalidatePlans={invalidatePlans} />
       <div className="flex justify-center">
-        <Link href="/plans/add">
-          <Button className="text-white fixed bottom-30 bg-orange-400">
-            {t("Add Plan")}
-          </Button>
+        <Link href="/plans/add" className="block fixed bottom-30">
+          <Button className="text-white bg-orange-400">{t("Add Plan")}</Button>
         </Link>
       </div>
     </>

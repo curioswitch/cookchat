@@ -422,6 +422,15 @@ message UpdatePlanResponse {
   Plan plan = 1 [(buf.validate.field).required = true];
 }
 
+// A request for FrontendService.DeletePlan.
+message DeletePlanRequest {
+  // The ID of the plan to delete.
+  string plan_id = 1;
+}
+
+// A response for FrontendService.DeletePlan.
+message DeletePlanResponse {}
+
 // A request for FrontendService.AddBookmark.
 message AddBookmarkRequest {
   // The ID of the recipe to add a bookmark for.
@@ -527,6 +536,9 @@ service FrontendService {
 
   // Update the recipes in a plan.
   rpc UpdatePlan(UpdatePlanRequest) returns (UpdatePlanResponse);
+
+  // Delete a plan.
+  rpc DeletePlan(DeletePlanRequest) returns (DeletePlanResponse);
 
   // Add a bookmark for a recipe.
   rpc AddBookmark(AddBookmarkRequest) returns (AddBookmarkResponse);

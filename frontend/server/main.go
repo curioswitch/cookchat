@@ -30,6 +30,7 @@ import (
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/addbookmark"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/addrecipe"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/chatplan"
+	"github.com/curioswitch/cookchat/frontend/server/internal/handler/deleteplan"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/generateplan"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/generaterecipe"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getchatmessages"
@@ -232,6 +233,13 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		frontendapiconnect.FrontendServiceUpdatePlanProcedure,
 		updateplan.NewHandler(genAI, firestore).UpdatePlan,
 		[]*frontendapi.UpdatePlanRequest{
+			{},
+		})
+
+	server.HandleConnectUnary(s,
+		frontendapiconnect.FrontendServiceDeletePlanProcedure,
+		deleteplan.NewHandler(genAI, firestore).DeletePlan,
+		[]*frontendapi.DeletePlanRequest{
 			{},
 		})
 
