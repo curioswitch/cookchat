@@ -12,8 +12,7 @@ import {
   type RecipeIngredient,
   RecipeIngredientSchema,
 } from "@cookchat/frontend-api";
-import { Button } from "@heroui/button";
-import { Form, Input, Label, TextArea, TextField } from "@heroui/react";
+import { Button, Form, Input, Label, TextArea, TextField } from "@heroui/react";
 import {
   type Dispatch,
   type SetStateAction,
@@ -424,7 +423,7 @@ export default function Page() {
       <Button
         className="mt-2"
         onPress={onGenerateClick}
-        disabled={doGenerateRecipe.isPending}
+        isDisabled={doGenerateRecipe.isPending}
       >
         Generate Recipe
       </Button>
@@ -481,7 +480,11 @@ export default function Page() {
         <Button className="mt-4" onPress={addStep}>
           Add Step
         </Button>
-        <Button type="submit" className="mt-4" disabled={doAddRecipe.isPending}>
+        <Button
+          type="submit"
+          className="mt-4"
+          isDisabled={doAddRecipe.isPending}
+        >
           Submit Recipe
         </Button>
       </Form>
