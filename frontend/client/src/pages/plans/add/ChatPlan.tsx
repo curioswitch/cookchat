@@ -7,9 +7,7 @@ import {
   chatPlan,
   GetChatMessagesResponseSchema,
 } from "@cookchat/frontend-api";
-import { Button } from "@heroui/button";
-import { Input } from "@heroui/input";
-import { Link } from "@heroui/link";
+import { Button, Input, Link, TextField } from "@heroui/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { forwardRef, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -46,7 +44,7 @@ const ChatBubble = forwardRef<HTMLDivElement, { message: ChatMessage }>(
           className={twMerge(
             "max-w-2xl rounded-3xl py-3 px-4 md:px-7 h-fit whitespace-pre-line speech-bubble mt-4 leading-7 md:text-xl md:font-medium md:leading-8 flex items-center",
             isUser
-              ? "right text-right bg-primary-400 text-white"
+              ? "right text-right bg-yellow-400 text-white"
               : "left bg-white",
           )}
         >
@@ -56,8 +54,14 @@ const ChatBubble = forwardRef<HTMLDivElement, { message: ChatMessage }>(
               <>
                 <br />
                 {message.urls.map((url) => (
-                  <Link href={url} key={url} isExternal showAnchorIcon>
+                  <Link
+                    href={url}
+                    key={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     {t("Original Recipe")}
+                    <Link.Icon />
                   </Link>
                 ))}
               </>
@@ -157,16 +161,19 @@ export function ChatPlan() {
         <ChatBubble key={i} message={msg} />
       ))}
       {doChatPlan.isPending && <ChatBubble message={loadingMessage} />}
-      <div className="p-6 bg-white border-1 border-gray-200 rounded-2xl flex gap-4">
-        <Input
-          placeholder={t("Enter message...")}
+      <div className="flex w-full min-w-0 gap-4 rounded-2xl border border-gray-200 bg-white p-6">
+        <TextField
           value={inputText}
-          onValueChange={setInputText}
-        />
+          onChange={setInputText}
+          className="min-w-0 flex-1"
+        >
+          <Input fullWidth placeholder={t("Enter message...")} />
+        </TextField>
         <Button
-          className="bg-primary-400 text-white hover:bg-primary-500"
+          isIconOnly
+          className="shrink-0 bg-yellow-400 text-white hover:bg-yellow-500"
           onPress={onSendClick}
-          disabled={doChatPlan.isPending}
+          isDisabled={doChatPlan.isPending}
         >
           <FiSend />
         </Button>

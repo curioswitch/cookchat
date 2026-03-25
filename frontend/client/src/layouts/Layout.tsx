@@ -1,5 +1,4 @@
-import { Badge } from "@heroui/badge";
-import { Divider } from "@heroui/divider";
+import { Badge, Separator } from "@heroui/react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -66,7 +65,7 @@ ${cart.extraItems.join("\n")}
         <div className="p-2 flex flex-col flex-1">
           {!isHome && (
             <div className="flex justify-between items-center pb-4">
-              <BackButton className="flex-1/10 text-primary-400" />
+              <BackButton className="flex-1/10 text-yellow-400" />
               <h1 className="mt-0 mb-0 flex-8/10 text-center">{title}</h1>
               <div className="flex-1/10 w-full flex justify-end">
                 {isCart && (
@@ -93,14 +92,14 @@ ${cart.extraItems.join("\n")}
         </div>
       </div>
       <div className="fixed bottom-0 w-full h-24 md:h-24 bg-white z-50">
-        <Divider className="bg-yellow-300" />
+        <Separator className="bg-yellow-300" />
         <div className="px-6 md:px-8 flex items-center justify-between h-full w-full">
           <a
             href="/"
             className={twMerge(
               "flex flex-col gap-1 items-center",
               path === "/" || path.startsWith("/recipes/")
-                ? "text-primary-400"
+                ? "text-yellow-400"
                 : "text-gray-400",
             )}
           >
@@ -111,7 +110,7 @@ ${cart.extraItems.join("\n")}
             href="/plans"
             className={twMerge(
               "flex flex-col gap-1 items-center",
-              path.startsWith("/plans") ? "text-primary-400" : "text-gray-400",
+              path.startsWith("/plans") ? "text-yellow-400" : "text-gray-400",
             )}
           >
             <FiCalendar className="size-7 md:size-10" />
@@ -131,7 +130,7 @@ ${cart.extraItems.join("\n")}
             href="/bookmarks"
             className={twMerge(
               "flex flex-col gap-1 items-center",
-              path === "/bookmarks" ? "text-primary-400" : "text-gray-400",
+              path === "/bookmarks" ? "text-yellow-400" : "text-gray-400",
             )}
           >
             <FiBookmark className="size-7 md:size-10" />
@@ -141,15 +140,17 @@ ${cart.extraItems.join("\n")}
             href="/cart"
             className={twMerge(
               "flex flex-col gap-1 items-center",
-              path === "/cart" ? "text-primary-400" : "text-gray-400",
+              path === "/cart" ? "text-yellow-400" : "text-gray-400",
             )}
           >
-            <Badge
-              content={cart.recipes.length}
-              isInvisible={cart.recipes.length === 0}
-            >
+            <Badge.Anchor>
               <FiShoppingCart className="size-7 md:size-10" />
-            </Badge>
+              {cart.recipes.length > 0 && (
+                <Badge size="sm" className="border-2 border-white">
+                  {cart.recipes.length}
+                </Badge>
+              )}
+            </Badge.Anchor>
             <div className="text-xs md:text-sm">{t("Cart")}</div>
           </a>
         </div>

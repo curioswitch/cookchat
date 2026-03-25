@@ -1,4 +1,4 @@
-import { Button } from "@heroui/button";
+import { Button } from "@heroui/react";
 import { getApp } from "firebase/app";
 import {
   GoogleAuthProvider,
@@ -33,7 +33,10 @@ export default function Page() {
   }, []);
 
   return (
-    <Button className="mx-4 mt-4" onPress={onLoginClick} color="primary">
+    <Button
+      className="mx-4 mt-4 bg-yellow-400 text-white roundex-lg"
+      onPress={onLoginClick}
+    >
       Login with Google
     </Button>
   );

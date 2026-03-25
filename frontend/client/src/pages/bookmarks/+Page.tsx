@@ -1,4 +1,3 @@
-import { Image } from "@heroui/image";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -47,16 +46,13 @@ export default function Page() {
               href={`/recipes/${recipe.id}`}
               color="foreground"
               key={recipe.id}
-              className="flex bg-white border-1 rounded-2xl items-center border-primary-100 gap-4 h-28 overflow-hidden"
+              className="flex bg-white border rounded-2xl items-center border-yellow-100 gap-4 h-28 overflow-hidden"
               ref={i === recipes.length - 1 ? handleLastItem : null}
             >
-              <Image
-                className="flex-1/5 rounded-none rounded-l-large object-cover h-full"
-                classNames={{
-                  wrapper: "flex-1/4 h-full",
-                }}
+              <img
                 src={recipe.imageUrl}
                 alt={recipe.title}
+                className="flex-1/5 rounded-none rounded-l-large object-cover h-full w-24"
               />
               <div className="flex-3/5 pr-4 py-2">
                 <h3>{recipe.title}</h3>
@@ -65,7 +61,7 @@ export default function Page() {
                 </p>
               </div>
               <div className="flex-1/10 flex items-center justify-start -ml-1">
-                <FaBookmark className="size-5 fill-primary-400 cursor-pointer" />
+                <FaBookmark className="size-5 fill-yellow-400 cursor-pointer" />
               </div>
             </a>
           ))}

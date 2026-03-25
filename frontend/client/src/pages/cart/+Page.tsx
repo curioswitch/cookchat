@@ -1,6 +1,5 @@
-import { Button } from "@heroui/button";
-import { Checkbox } from "@heroui/checkbox";
 import { Input } from "@heroui/input";
+import { Button, Checkbox } from "@heroui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { HiCheck, HiTrash } from "react-icons/hi";
@@ -31,21 +30,21 @@ function IngredientSelect({
   return (
     <Checkbox
       value={ingredient.name}
-      lineThrough
-      className="mt-2 w-full max-w-full"
-      classNames={{
-        base: "w-full",
-        label: "w-full",
-      }}
+      className="mt-2 py-1"
       isSelected={ingredient.selected}
-      onValueChange={onValueChange}
+      onChange={onValueChange}
     >
-      <div className="flex justify-between w-full">
-        <div>
-          {ingredient.name} ({ingredient.quantity})
+      <Checkbox.Control className="line-through">
+        <Checkbox.Indicator />
+      </Checkbox.Control>
+      <Checkbox.Content className="w-full">
+        <div className="w-full flex justify-between">
+          <div>
+            {ingredient.name} ({ingredient.quantity})
+          </div>
+          <div>{ingredient.selected ? t("Purchased") : t("Needed")}</div>
         </div>
-        <div>{ingredient.selected ? t("Purchased") : t("Needed")}</div>
-      </div>
+      </Checkbox.Content>
     </Checkbox>
   );
 }
@@ -224,7 +223,7 @@ export default function Page() {
           <Input
             ref={itemInput}
             placeholder={t("Item name")}
-            className="mt-2"
+            className="mt-2 bg-white rounded-lg p-2"
             value={extraItem}
             onValueChange={setExtraItem}
           />
@@ -234,8 +233,8 @@ export default function Page() {
         <Button
           onPress={onAddItemClick}
           fullWidth
-          className="text-white mt-2"
-          color="primary"
+          className="text-white mt-2 bg-orange-400"
+          variant="primary"
         >
           {t("Add item")}
         </Button>
