@@ -1,5 +1,4 @@
-import { Input } from "@heroui/input";
-import { Button, Checkbox } from "@heroui/react";
+import { Button, Checkbox, Input, TextField } from "@heroui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { HiCheck, HiTrash } from "react-icons/hi";
@@ -220,13 +219,13 @@ export default function Page() {
       )}
       {addingItem ? (
         <div className="flex items-center justify-center gap-2">
-          <Input
-            ref={itemInput}
-            placeholder={t("Item name")}
-            className="mt-2 bg-white rounded-lg p-2"
-            value={extraItem}
-            onValueChange={setExtraItem}
-          />
+          <TextField value={extraItem} onChange={setExtraItem} fullWidth>
+            <Input
+              ref={itemInput}
+              placeholder={t("Item name")}
+              className="mt-2 bg-white rounded-lg p-2"
+            />
+          </TextField>
           <HiCheck onClick={onAddItemSubmit} className="h-8 w-8" />
         </div>
       ) : (
