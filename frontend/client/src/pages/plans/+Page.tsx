@@ -194,7 +194,7 @@ function DateSelect({
                 <div className="flex flex-col items-center">
                   <div
                     className={twMerge(
-                      "bg-orange-500 text-white! px-1 py-1 text-tiny rounded",
+                      "bg-orange-500 text-white! px-1 py-1 text-xs rounded",
                       plans.length === 0 && "invisible",
                     )}
                   >
