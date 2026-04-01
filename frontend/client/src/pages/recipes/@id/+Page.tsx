@@ -75,8 +75,7 @@ export default function Page() {
 
   const onBookmarkClick = useCallback(() => {
     if (
-      !recipeRes ||
-      !recipeRes.recipe ||
+      !recipeRes?.recipe ||
       doAddBookmark.isPending ||
       doRemoveBookmark.isPending
     ) {
