@@ -1,9 +1,4 @@
-/// <reference types="./AudioWorklet.d.ts" />
-
-class MicWorklet
-  extends AudioWorkletProcessor
-  implements AudioWorkletProcessorImpl
-{
+class MicWorklet extends AudioWorkletProcessor {
   process(inputs: Float32Array[][]): boolean {
     if (inputs[0].length > 0) {
       const channel0 = inputs[0][0];

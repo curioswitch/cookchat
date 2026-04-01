@@ -33,6 +33,7 @@
     "react-dropzone": "^14.4.1",
     "react-i18next": "^16.5.4",
     "react-icons": "^5.5.0",
+    "ringbuf.js": "^0.4.0",
     "tailwind-merge": "^3.5.0",
     "zustand": "^5.0.11"
   },
@@ -40,6 +41,7 @@
     "@biomejs/biome": "^2.4.4",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.2.1",
+    "@types/audioworklet": "^0.0.97",
     "@types/node": "^25.3.3",
     "@types/react": "^19.2.14",
     "@vitejs/plugin-react": "^5.1.4",

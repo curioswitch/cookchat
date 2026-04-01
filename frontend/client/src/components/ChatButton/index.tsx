@@ -3,6 +3,7 @@ import { RealtimeAgent, RealtimeSession } from "@openai/agents-realtime";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { HiMicrophone, HiStop } from "react-icons/hi2";
+import { RingBuffer } from "ringbuf.js";
 import { twMerge } from "tailwind-merge";
 
 import type { ChatEvent } from "../../events";
@@ -11,17 +12,16 @@ import { useSettingsStore } from "../../stores";
 import ChatWorker from "../../workers/ChatWorker?worker";
 import MicWorker from "../../workers/MicWorker?worker";
 import MicWorkletURL from "../../workers/MicWorklet?worker&url";
-import SpeakerWorker from "../../workers/SpeakerWorker?worker";
 import SpeakerWorkletURL from "../../workers/SpeakerWorklet?worker&url";
 
 class ChatStream implements ChatSession {
-  private readonly audioContext: AudioContext;
+  private readonly micAudioContext: AudioContext;
+  private readonly speakerAudioContext: AudioContext;
 
   private micSource: MediaStreamAudioSourceNode | undefined;
   private micWorklet: AudioWorkletNode | undefined;
   private micWorker: Worker | undefined;
   private chatWorker: Worker | undefined;
-  private speakerWorker: Worker | undefined;
   private speakerWorklet: AudioWorkletNode | undefined;
 
   private stopped?: boolean;
@@ -37,7 +37,8 @@ class ChatStream implements ChatSession {
     private readonly setWaiting: (waiting: boolean) => void,
     private readonly microphoneDeviceId?: string,
   ) {
-    this.audioContext = new AudioContext();
+    this.micAudioContext = new AudioContext();
+    this.speakerAudioContext = new AudioContext({ sampleRate: 24_000 });
   }
 
   async start() {
@@ -55,11 +56,10 @@ class ChatStream implements ChatSession {
           : undefined,
       },
     });
-    const audioContext = this.audioContext;
-    this.micSource = audioContext.createMediaStreamSource(micStream);
-    await audioContext.audioWorklet.addModule(MicWorkletURL);
-    await audioContext.audioWorklet.addModule(SpeakerWorkletURL);
-    this.micWorklet = new AudioWorkletNode(audioContext, "mic-worklet");
+    const micAudioContext = this.micAudioContext;
+    this.micSource = micAudioContext.createMediaStreamSource(micStream);
+    await micAudioContext.audioWorklet.addModule(MicWorkletURL);
+    this.micWorklet = new AudioWorkletNode(micAudioContext, "mic-worklet");
     this.micSource.connect(this.micWorklet);
 
     const micWorkerChannel = new MessageChannel();
@@ -67,16 +67,30 @@ class ChatStream implements ChatSession {
     this.micWorker.postMessage(
       {
         type: "init",
-        sampleRate: audioContext.sampleRate,
+        sampleRate: micAudioContext.sampleRate,
         micPort: this.micWorklet.port,
         chatPort: micWorkerChannel.port1,
       },
       [micWorkerChannel.port1, this.micWorklet.port],
     );
 
-    const speakerWorkerChannel = new MessageChannel();
-    this.speakerWorklet = new AudioWorkletNode(audioContext, "speaker-worklet");
-    this.speakerWorklet.connect(audioContext.destination);
+    const speakerAudioContext = this.speakerAudioContext;
+    await speakerAudioContext.audioWorklet.addModule(SpeakerWorkletURL);
+    const outputBuffer = RingBuffer.getStorageForCapacity(
+      speakerAudioContext.sampleRate * 60, // 60 seconds
+      Float32Array,
+    );
+
+    this.speakerWorklet = new AudioWorkletNode(
+      speakerAudioContext,
+      "speaker-worklet",
+      {
+        processorOptions: {
+          outputBuffer,
+        },
+      },
+    );
+    this.speakerWorklet.connect(speakerAudioContext.destination);
 
     this.chatWorker = new ChatWorker();
     this.chatWorker.postMessage(
@@ -86,9 +100,9 @@ class ChatStream implements ChatSession {
         model: this.model,
         startMessage: this.startMessage,
         micPort: micWorkerChannel.port2,
-        speakerPort: speakerWorkerChannel.port1,
+        outputBuffer,
       },
-      [micWorkerChannel.port2, speakerWorkerChannel.port1],
+      [micWorkerChannel.port2],
     );
     this.chatWorker.onmessage = (event: MessageEvent<ChatEvent>) => {
       switch (event.data.type) {
@@ -100,7 +114,6 @@ class ChatStream implements ChatSession {
           const call = event.data.call;
           if (call.name === "navigate_to_step" && call.args) {
             const step = call.args.step as number;
-            const group = call.args.group as number;
             this.navigateToStep(step - 1);
           } else if (call.name === "navigate_to_ingredients") {
             this.navigateToIngredients();
@@ -113,17 +126,6 @@ class ChatStream implements ChatSession {
           break;
       }
     };
-
-    this.speakerWorker = new SpeakerWorker();
-    this.speakerWorker.postMessage(
-      {
-        type: "init",
-        sampleRate: audioContext.sampleRate,
-        chatPort: speakerWorkerChannel.port2,
-        speakerPort: this.speakerWorklet.port,
-      },
-      [this.speakerWorklet.port, speakerWorkerChannel.port2],
-    );
   }
 
   async stop() {
@@ -140,13 +142,11 @@ class ChatStream implements ChatSession {
     if (this.chatWorker) {
       this.chatWorker.terminate();
     }
-    if (this.speakerWorker) {
-      this.speakerWorker.terminate();
-    }
     if (this.speakerWorklet) {
       this.speakerWorklet.disconnect();
     }
-    await this.audioContext.close();
+    await this.micAudioContext.close();
+    await this.speakerAudioContext.close();
   }
 }
 

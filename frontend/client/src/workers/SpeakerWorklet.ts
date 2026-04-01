@@ -1,46 +1,36 @@
-class SpeakerWorklet
-  extends AudioWorkletProcessor
-  implements AudioWorkletProcessorImpl
-{
-  buffer: Float32Array[];
+import { AudioReader, RingBuffer } from "ringbuf.js";
 
-  constructor() {
+class SpeakerWorklet extends AudioWorkletProcessor {
+  private readonly buffer: AudioReader;
+  private readonly minBufferFrames: number;
+
+  private isPlaying = false;
+
+  constructor(options: AudioWorkletNodeOptions) {
     super();
 
-    this.buffer = [];
-
-    this.port.onmessage = (event: MessageEvent<ArrayBuffer>) => {
-      this.buffer.push(new Float32Array(event.data));
-    };
+    this.minBufferFrames = Math.floor((sampleRate * 50) / 1000); // 50ms
+    this.buffer = new AudioReader(
+      new RingBuffer(options.processorOptions.outputBuffer, Float32Array),
+    );
   }
 
   process(_inputs: Float32Array[][], outputs: Float32Array[][]) {
     const outputChannel = outputs[0][0];
     const bufferSize = outputChannel.length;
-
-    let framesWritten = 0;
-
-    while (this.buffer.length > 0 && framesWritten < bufferSize) {
-      const audioChunk = this.buffer[0];
-      const framesToCopy = Math.min(
-        audioChunk.length,
-        bufferSize - framesWritten,
-      );
-
-      outputChannel.set(audioChunk.subarray(0, framesToCopy), framesWritten);
-
-      if (framesToCopy === audioChunk.length) {
-        this.buffer.shift();
-      } else {
-        this.buffer[0] = audioChunk.subarray(framesToCopy);
+    const available = this.buffer.availableRead();
+    if (!this.isPlaying) {
+      if (available >= this.minBufferFrames) {
+        this.isPlaying = true;
       }
-
-      framesWritten += framesToCopy;
+    } else {
+      if (available < bufferSize) {
+        this.isPlaying = false;
+      }
     }
 
-    // If the buffer ran dry, fill the rest with silence
-    if (framesWritten < bufferSize) {
-      outputChannel.fill(0, framesWritten, bufferSize);
+    if (this.isPlaying) {
+      this.buffer.dequeue(outputChannel);
     }
 
     return true;
