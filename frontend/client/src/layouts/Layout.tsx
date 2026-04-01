@@ -15,18 +15,17 @@ import { ChatButton } from "../components/ChatButton";
 import { m } from "../paraglide/messages";
 import { useCartStore, useChatStore } from "../stores";
 
-function getPageTitle(path: string) {
-  if (path === "/bookmarks") return m.page_bookmarks_title();
-  if (path === "/cart") return m.page_cart_title();
-  if (path === "/plans") return m.page_plans_title();
-  if (path === "/plans/add") return m.page_plan_create_title();
-  if (/^\/plans\/[^/]+\/edit$/.test(path)) return m.page_plan_edit_title();
-  if (/^\/plans\/[^/]+$/.test(path)) return m.page_plan_detail_title();
-  if (path === "/recipes/add") return m.page_recipe_add_title();
-  if (/^\/recipes\/[^/]+$/.test(path)) return m.page_recipe_detail_title();
-  if (path === "/settings") return m.page_settings_title();
-  return "";
-}
+const pageTitleByI18nKey = {
+  "pages.bookmarks": m.page_bookmarks_title,
+  "pages.cart": m.page_cart_title,
+  "pages.plans": m.page_plans_title,
+  "pages.plans.@id": m.page_plan_detail_title,
+  "pages.plans.@id.edit": m.page_plan_edit_title,
+  "pages.plans.add": m.page_plan_create_title,
+  "pages.recipes.@id": m.page_recipe_detail_title,
+  "pages.recipes.add": m.page_recipe_add_title,
+  "pages.settings": m.page_settings_title,
+} as const;
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pageContext = usePageContext();
@@ -37,7 +36,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const cart = useCartStore();
   const chatStore = useChatStore();
-  const title = getPageTitle(path);
+  const pageI18nKey = (pageContext.pageId || "/src/index")
+    .slice("/src/".length)
+    .replaceAll("/", ".");
+  const title =
+    pageTitleByI18nKey[pageI18nKey as keyof typeof pageTitleByI18nKey]?.();
 
   const onShareClick = useCallback(() => {
     const texts = [];
