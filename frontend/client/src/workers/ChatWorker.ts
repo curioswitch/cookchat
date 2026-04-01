@@ -11,10 +11,6 @@ import type {
   TurnCompleteEvent,
 } from "../events";
 
-type MicEvent = {
-  data: string;
-};
-
 class ChatStream {
   private readonly speakerWriter: AudioWriter;
 
@@ -43,14 +39,14 @@ class ChatStream {
             this.session.sendRealtimeInput({
               text: this.startMessage,
             });
-            this.micPort.onmessage = (e: MessageEvent<MicEvent>) => {
+            this.micPort.onmessage = (e: MessageEvent<Float32Array>) => {
               if (receivingAudio || isInitialTurn) {
                 return;
               }
               this.session.sendRealtimeInput({
                 audio: {
                   mimeType: "audio/pcm",
-                  data: e.data.data,
+                  data: b64Encode(float32ToPcm16(e.data)),
                 },
               });
             };
@@ -86,7 +82,7 @@ class ChatStream {
                   receivingAudio = true;
                 }
                 const pcmData = base64Decode(inlineData.data);
-                const float32Data = convertPCM16ToFloat32(pcmData);
+                const float32Data = pcm16ToFloat32(pcmData);
                 this.speakerWriter.enqueue(float32Data);
               }
             }
@@ -160,6 +156,29 @@ self.onmessage = (event: MessageEvent<InitEvent | CloseWorkerEvent>) => {
   processMessage(event);
 };
 
+function pcm16ToFloat32(pcm: Uint8Array): Float32Array {
+  const length = pcm.length / 2; // 16-bit audio, so 2 bytes per sample
+  const float32AudioData = new Float32Array(length);
+  const view = new DataView(pcm.buffer);
+
+  for (let i = 0; i < length; i++) {
+    const s = view.getInt16(i * 2, true); // little-endian
+    float32AudioData[i] = s < 0 ? s / 0x8000 : s / 0x7fff;
+  }
+  return float32AudioData;
+}
+
+function float32ToPcm16(float32AudioData: Float32Array): Uint8Array {
+  const pcm16 = new Int16Array(float32AudioData.length);
+
+  for (let i = 0; i < float32AudioData.length; i++) {
+    const s = Math.max(-1, Math.min(1, float32AudioData[i]));
+    pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+  }
+
+  return new Uint8Array(pcm16.buffer);
+}
+
 function base64Decode(base64: string): Uint8Array {
   if (Uint8Array.fromBase64) {
     return Uint8Array.fromBase64(base64);
@@ -174,14 +193,9 @@ function base64Decode(base64: string): Uint8Array {
   return bytes;
 }
 
-function convertPCM16ToFloat32(pcm: Uint8Array): Float32Array {
-  const length = pcm.length / 2; // 16-bit audio, so 2 bytes per sample
-  const float32AudioData = new Float32Array(length);
-  const view = new DataView(pcm.buffer);
-
-  for (let i = 0; i < length; i++) {
-    const sample = view.getInt16(i * 2, true); // little-endian
-    float32AudioData[i] = sample / 32768;
+function b64Encode(data: Uint8Array): string {
+  if (data.toBase64) {
+    return data.toBase64();
   }
-  return float32AudioData;
+  return btoa(String.fromCharCode(...data));
 }
