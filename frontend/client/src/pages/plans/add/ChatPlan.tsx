@@ -10,12 +10,12 @@ import {
 import { Button, Input, Link, TextField } from "@heroui/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { forwardRef, useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { FiSend } from "react-icons/fi";
 import { twMerge } from "tailwind-merge";
 import { navigate } from "vike/client/router";
 
 import { useFrontendQueries } from "../../../hooks/rpc";
+import { m } from "../../../paraglide/messages";
 
 function ChatBubbleLoading() {
   return (
@@ -29,7 +29,6 @@ function ChatBubbleLoading() {
 
 const ChatBubble = forwardRef<HTMLDivElement, { message: ChatMessage }>(
   function ChatBubble({ message }, ref) {
-    const { t } = useTranslation();
     const isUser = message.role === ChatMessage_Role.USER;
 
     return (
@@ -60,7 +59,7 @@ const ChatBubble = forwardRef<HTMLDivElement, { message: ChatMessage }>(
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {t("Original Recipe")}
+                    {m.chat_original_recipe_title()}
                     <Link.Icon />
                   </Link>
                 ))}
@@ -78,8 +77,6 @@ const loadingMessage = create(ChatMessageSchema, {
 });
 
 export function ChatPlan() {
-  const { t } = useTranslation();
-
   const queries = useFrontendQueries();
   const getChatMessagesQuery = queries.getChatMessages();
   const queryClient = useQueryClient();
@@ -124,10 +121,10 @@ export function ChatPlan() {
     if (getChatMessagesRes.messages.length === 0) {
       doChatPlan.mutate({
         chatId: getChatMessagesRes?.chatId,
-        message: t("Hello"),
+        message: m.chat_greeting(),
       });
     }
-  }, [doChatPlan, getChatMessagesRes, loaded, t]);
+  }, [doChatPlan, getChatMessagesRes, loaded]);
 
   const onSendClick = useCallback(() => {
     const message = inputText;
@@ -145,7 +142,7 @@ export function ChatPlan() {
   }, [getChatMessagesRes, doChatPlan.isPending]);
 
   if (isPending) {
-    return <div>{t("Loading...")}</div>;
+    return <div>{m.common_loading()}</div>;
   }
 
   if (!getChatMessagesRes) {
@@ -167,7 +164,7 @@ export function ChatPlan() {
           onChange={setInputText}
           className="min-w-0 flex-1"
         >
-          <Input fullWidth placeholder={t("Enter message...")} />
+          <Input fullWidth placeholder={m.chat_input_placeholder()} />
         </TextField>
         <Button
           isIconOnly

@@ -32,7 +32,7 @@ import {
 import type { User as FirebaseUser } from "firebase/auth";
 import { useMemo } from "react";
 
-import i18n from "../../layouts/i18n";
+import { getLocale } from "../../paraglide/runtime";
 import { useFirebase } from "../firebase";
 
 function createFirebaseAuthInterceptor(user: FirebaseUser): Interceptor {
@@ -45,7 +45,7 @@ function createFirebaseAuthInterceptor(user: FirebaseUser): Interceptor {
 
 function createLanguageInterceptor(): Interceptor {
   return (next) => async (request) => {
-    request.header.set("accept-language", i18n.language);
+    request.header.set("accept-language", getLocale());
     return next(request);
   };
 }

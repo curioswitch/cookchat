@@ -34,12 +34,13 @@
   "extensions": {
     "recommendations": [
       "biomejs.biome",
+      "bradlc.vscode-tailwindcss",
       "bufbuild.vscode-buf",
       "esbenp.prettier-vscode",
       "foxundermoon.shell-format",
       "github.vscode-github-actions",
       "golang.go",
-      "bradlc.vscode-tailwindcss"
+      "inlang.vs-code-extension"
     ]
   },
   "settings": {

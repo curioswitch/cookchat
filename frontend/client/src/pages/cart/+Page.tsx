@@ -1,8 +1,8 @@
 import { Button, Checkbox, Input, TextField } from "@heroui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { HiCheck, HiTrash } from "react-icons/hi";
 
+import { m } from "../../paraglide/messages";
 import {
   addExtraItemToCart,
   type CartIngredient,
@@ -21,7 +21,6 @@ function IngredientSelect({
   recipeId: string;
   ingredientIndex: number;
 }) {
-  const { t } = useTranslation();
   const onValueChange = useCallback(() => {
     toggleCartIngredientSelection(recipeId, ingredientIndex);
   }, [recipeId, ingredientIndex]);
@@ -41,7 +40,11 @@ function IngredientSelect({
           <div>
             {ingredient.name} ({ingredient.quantity})
           </div>
-          <div>{ingredient.selected ? t("Purchased") : t("Needed")}</div>
+          <div>
+            {ingredient.selected
+              ? m.cart_status_purchased()
+              : m.cart_status_needed()}
+          </div>
         </div>
       </Checkbox.Content>
     </Checkbox>
@@ -163,8 +166,6 @@ function SwipeableRecipeCard({
 }
 
 export default function Page() {
-  const { t } = useTranslation();
-
   const cart = useCartStore();
 
   const [addingItem, setAddingItem] = useState(false);
@@ -197,7 +198,7 @@ export default function Page() {
   return (
     <div className="p-4">
       {cart.recipes.length === 0 && (
-        <div className="p-4">{t("Cart is empty")}</div>
+        <div className="p-4">{m.cart_empty_state()}</div>
       )}
       {cart.recipes.map((recipe) => (
         <div key={recipe.id} className="mt-4">
@@ -206,7 +207,7 @@ export default function Page() {
       ))}
       {cart.extraItems && (
         <div className="mt-4">
-          <h4 className="text-gray-600">{t("Extra Items")}</h4>
+          <h4 className="text-gray-600">{m.cart_extra_items_title()}</h4>
           {cart.extraItems.map((ingredient, i) => (
             <ExtraItem
               // biome-ignore lint/suspicious/noArrayIndexKey: free form array so index is the key
@@ -222,7 +223,7 @@ export default function Page() {
           <TextField value={extraItem} onChange={setExtraItem} fullWidth>
             <Input
               ref={itemInput}
-              placeholder={t("Item name")}
+              placeholder={m.cart_item_name_placeholder()}
               className="mt-2 bg-white rounded-lg p-2"
             />
           </TextField>
@@ -235,7 +236,7 @@ export default function Page() {
           className="text-white mt-2 bg-orange-400"
           variant="primary"
         >
-          {t("Add item")}
+          {m.cart_add_item_button()}
         </Button>
       )}
     </div>

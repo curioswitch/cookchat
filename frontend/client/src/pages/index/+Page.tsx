@@ -2,15 +2,13 @@ import { Input } from "@heroui/react";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { FaRegUserCircle } from "react-icons/fa";
 
 import logoSVG from "../../assets/logo.svg";
 import { useFrontendQueries } from "../../hooks/rpc";
+import { m } from "../../paraglide/messages";
 
 export default function Page() {
-  const { t } = useTranslation();
-
   const [rawQuery, setRawQuery] = useState("");
   const [query] = useDebouncedValue(rawQuery, {
     wait: 500,
@@ -61,26 +59,26 @@ export default function Page() {
   return (
     <div className="p-4">
       <div className="flex items-center justify-between mt-2 mb-4">
-        <img src={logoSVG} alt={t("CookChat Logo")} />
+        <img src={logoSVG} alt={m.app_logo_alt()} />
         <a href="/settings">
           <FaRegUserCircle className="size-6 text-yellow-400" />
         </a>
       </div>
       <Input
         fullWidth
-        placeholder={t("What do you want to cook?")}
+        placeholder={m.home_search_placeholder()}
         className="border rounded-xl border-yellow-400 h-12 shadow-none"
         value={rawQuery}
         onChange={onQueryChange}
       />
 
-      {isPending && <div className="mt-4">{t("Loading...")}</div>}
+      {isPending && <div className="mt-4">{m.common_loading()}</div>}
 
       {!isPending && recipes && recipes.length > 0 && (
         <>
           <div className="mt-6">
             <h2 className="text-lg font-bold mb-4">
-              {t("Recommended Recipes")}
+              {m.home_recommended_recipes()}
             </h2>
             <div className="grid grid-cols-2 gap-4">
               {recommendedRecipes.map((recipe) => (
@@ -104,7 +102,7 @@ export default function Page() {
           </div>
           <div className="mt-6">
             <h2 className="text-lg font-bold mb-4 pr-[3px]">
-              {t("Popular Recipes")}
+              {m.home_popular_recipes()}
             </h2>
             <div className="flex flex-col gap-2">
               {popularRecipes.map((recipe, i) => (

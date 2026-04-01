@@ -1,6 +1,5 @@
 import { Badge, Separator } from "@heroui/react";
 import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import {
   FiBookmark,
   FiBookOpen,
@@ -13,11 +12,22 @@ import { usePageContext } from "vike-react/usePageContext";
 
 import { BackButton } from "../components/BackButton";
 import { ChatButton } from "../components/ChatButton";
+import { m } from "../paraglide/messages";
 import { useCartStore, useChatStore } from "../stores";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-  const { t } = useTranslation();
+const pageTitleByI18nKey = {
+  "pages.bookmarks": m.page_bookmarks_title,
+  "pages.cart": m.page_cart_title,
+  "pages.plans": m.page_plans_title,
+  "pages.plans.@id": m.page_plan_detail_title,
+  "pages.plans.@id.edit": m.page_plan_edit_title,
+  "pages.plans.add": m.page_plan_create_title,
+  "pages.recipes.@id": m.page_recipe_detail_title,
+  "pages.recipes.add": m.page_recipe_add_title,
+  "pages.settings": m.page_settings_title,
+} as const;
 
+export default function Layout({ children }: { children: React.ReactNode }) {
   const pageContext = usePageContext();
   const path = pageContext.urlPathname;
   const isHome = path === "/";
@@ -26,11 +36,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const cart = useCartStore();
   const chatStore = useChatStore();
-
   const pageI18nKey = (pageContext.pageId || "/src/index")
     .slice("/src/".length)
     .replaceAll("/", ".");
-  const title = t(`${pageI18nKey}.title`);
+  const title =
+    pageTitleByI18nKey[pageI18nKey as keyof typeof pageTitleByI18nKey]?.();
 
   const onShareClick = useCallback(() => {
     const texts = [];
@@ -50,7 +60,7 @@ ${recipe.ingredients
     if (cart.extraItems) {
       texts.push(
         `
-追加の買い物:
+${m.cart_extra_items_title()}:
 
 ${cart.extraItems.join("\n")}
       `.trim(),
@@ -104,7 +114,7 @@ ${cart.extraItems.join("\n")}
             )}
           >
             <FiBookOpen className="size-7 md:size-10" />
-            <div className="text-xs md:text-sm">{t("Recipe")}</div>
+            <div className="text-xs md:text-sm">{m.nav_recipe()}</div>
           </a>
           <a
             href="/plans"
@@ -114,7 +124,7 @@ ${cart.extraItems.join("\n")}
             )}
           >
             <FiCalendar className="size-7 md:size-10" />
-            <div className="text-xs md:text-sm">{t("Plan")}</div>
+            <div className="text-xs md:text-sm">{m.nav_plan()}</div>
           </a>
           {(chatStore.currentRecipeId || chatStore.currentPlanId) && (
             <ChatButton
@@ -134,7 +144,7 @@ ${cart.extraItems.join("\n")}
             )}
           >
             <FiBookmark className="size-7 md:size-10" />
-            <div className="text-xs md:text-sm">{t("Bookmarks")}</div>
+            <div className="text-xs md:text-sm">{m.nav_bookmarks()}</div>
           </a>
           <a
             href="/cart"
@@ -151,7 +161,7 @@ ${cart.extraItems.join("\n")}
                 </Badge>
               )}
             </Badge.Anchor>
-            <div className="text-xs md:text-sm">{t("Cart")}</div>
+            <div className="text-xs md:text-sm">{m.nav_cart()}</div>
           </a>
         </div>
       </div>
