@@ -11,10 +11,6 @@ import type {
   TurnCompleteEvent,
 } from "../events";
 
-type MicEvent = {
-  data: Float32Array;
-};
-
 class ChatStream {
   private readonly speakerWriter: AudioWriter;
 
