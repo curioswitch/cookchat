@@ -10,7 +10,6 @@ import type { ChatEvent } from "../../events";
 import { useFrontendQueries } from "../../hooks/rpc";
 import { useSettingsStore } from "../../stores";
 import ChatWorker from "../../workers/ChatWorker?worker";
-import MicWorker from "../../workers/MicWorker?worker";
 import MicWorkletURL from "../../workers/MicWorklet?worker&url";
 import SpeakerWorkletURL from "../../workers/SpeakerWorklet?worker&url";
 
@@ -37,18 +36,11 @@ class ChatStream implements ChatSession {
     private readonly setWaiting: (waiting: boolean) => void,
     private readonly microphoneDeviceId?: string,
   ) {
-    this.micAudioContext = new AudioContext();
+    this.micAudioContext = new AudioContext({ sampleRate: 16_000 });
     this.speakerAudioContext = new AudioContext({ sampleRate: 24_000 });
   }
 
   async start() {
-    // We start 5 threads to process audio, two realtime threads for mic input and speaker output,
-    // two workers for processing mic audio and speaker audio, and one worker for I/O with the
-    // websocket. The two workers are notably separated to ensure realtime threads don't get busy
-    // and mic and speaker processing have as little effect on each other as possible. Ideally,
-    // the I/O itself could be separated, but not since it's a single websocket, so we try to
-    // simulate that by leaving out as much processing as we can.
-
     const micStream = await navigator.mediaDevices.getUserMedia({
       audio: {
         deviceId: this.microphoneDeviceId
@@ -61,18 +53,6 @@ class ChatStream implements ChatSession {
     await micAudioContext.audioWorklet.addModule(MicWorkletURL);
     this.micWorklet = new AudioWorkletNode(micAudioContext, "mic-worklet");
     this.micSource.connect(this.micWorklet);
-
-    const micWorkerChannel = new MessageChannel();
-    this.micWorker = new MicWorker();
-    this.micWorker.postMessage(
-      {
-        type: "init",
-        sampleRate: micAudioContext.sampleRate,
-        micPort: this.micWorklet.port,
-        chatPort: micWorkerChannel.port1,
-      },
-      [micWorkerChannel.port1, this.micWorklet.port],
-    );
 
     const speakerAudioContext = this.speakerAudioContext;
     await speakerAudioContext.audioWorklet.addModule(SpeakerWorkletURL);
@@ -99,10 +79,10 @@ class ChatStream implements ChatSession {
         apiKey: this.apiKey,
         model: this.model,
         startMessage: this.startMessage,
-        micPort: micWorkerChannel.port2,
+        micPort: this.micWorklet.port,
         outputBuffer,
       },
-      [micWorkerChannel.port2],
+      [this.micWorklet.port],
     );
     this.chatWorker.onmessage = (event: MessageEvent<ChatEvent>) => {
       switch (event.data.type) {
