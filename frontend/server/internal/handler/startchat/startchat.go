@@ -162,13 +162,13 @@ func (h *Handler) startChatGemini(ctx context.Context, prompt string) (*frontend
 	navigateToStep := &genai.FunctionDeclaration{
 		Name:        "navigate_to_step",
 		Description: "Navigate the UI to a specific step in the recipe.",
-		Behavior:    genai.BehaviorNonBlocking,
+		Behavior:    genai.BehaviorBlocking,
 		Parameters: &genai.Schema{
 			Type: "object",
 			Properties: map[string]*genai.Schema{
 				"step": {
 					Type:        "integer",
-					Description: "The index of the step to navigate to, starting from 0.",
+					Description: "The index of the step to navigate to, starting from 1.",
 				},
 			},
 			Required: []string{"step"},
@@ -176,7 +176,7 @@ func (h *Handler) startChatGemini(ctx context.Context, prompt string) (*frontend
 	}
 
 	// Until genai Go SDK supports token creation, issue request manually.
-	model := "gemini-2.5-flash-native-audio-preview-12-2025"
+	model := "gemini-3.1-flash-live-preview"
 	cfg := tokenConfig{
 		Uses: 1,
 		BidiGenerateContentSetup: &bidiGenerateContentSetup{
@@ -196,7 +196,7 @@ func (h *Handler) startChatGemini(ctx context.Context, prompt string) (*frontend
 						{
 							Name:        "navigate_to_ingredients",
 							Description: "Navigate the UI to the ingredients list.",
-							Behavior:    genai.BehaviorNonBlocking,
+							Behavior:    genai.BehaviorBlocking,
 						},
 					},
 				},
