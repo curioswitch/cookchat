@@ -354,7 +354,14 @@ message PlanSnippet {
   repeated RecipeSnippet recipes = 3;
 }
 
-message GetPlansRequest {}
+// A request for FrontendService.GetPlans.
+message GetPlansRequest {
+  // The start date for the plans to get.
+  google.protobuf.Timestamp start_date = 1 [(buf.validate.field).required = true];
+
+  // The number of days from the start to fetch.
+  uint32 num_days = 2 [(buf.validate.field).required = true];
+}
 
 message GetPlansResponse {
   // The users current plans.

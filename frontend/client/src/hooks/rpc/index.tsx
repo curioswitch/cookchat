@@ -1,4 +1,5 @@
 import { create, type MessageInitShape } from "@bufbuild/protobuf";
+import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import {
   Code,
   ConnectError,
@@ -80,9 +81,16 @@ class FrontendQueries {
     );
   }
 
-  getPlans() {
+  getPlans({ startDate, numDays }: { startDate: Date; numDays: number }) {
     return queryOptions(
-      createQueryOptions(getPlans, {}, { transport: this.transport }),
+      createQueryOptions(
+        getPlans,
+        {
+          startDate: timestampFromDate(startDate),
+          numDays,
+        },
+        { transport: this.transport },
+      ),
     );
   }
 
