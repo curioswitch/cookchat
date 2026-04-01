@@ -3,6 +3,7 @@ import {
   type LiveServerMessage,
   type Session,
 } from "@google/genai";
+import { AudioWriter, RingBuffer } from "ringbuf.js";
 
 import type {
   AudioStartEvent,
@@ -15,6 +16,8 @@ type MicEvent = {
 };
 
 class ChatStream {
+  private readonly speakerWriter: AudioWriter;
+
   private session!: Session;
 
   constructor(
@@ -22,11 +25,16 @@ class ChatStream {
     private model: string,
     private startMessage: string,
     private micPort: MessagePort,
-    private speakerPort: MessagePort,
-  ) {}
+    outputBuffer: SharedArrayBuffer,
+  ) {
+    this.speakerWriter = new AudioWriter(
+      new RingBuffer(outputBuffer, Float32Array),
+    );
+  }
 
   async start() {
     let receivingAudio = false;
+    let isInitialTurn = true;
     this.session = await this.genAI.live.connect({
       model: this.model,
       callbacks: {
@@ -36,7 +44,7 @@ class ChatStream {
               text: this.startMessage,
             });
             this.micPort.onmessage = (e: MessageEvent<MicEvent>) => {
-              if (receivingAudio) {
+              if (receivingAudio || isInitialTurn) {
                 return;
               }
               this.session.sendRealtimeInput({
@@ -65,16 +73,23 @@ class ChatStream {
             } satisfies ToolCallEvent);
           }
 
-          const inlineData = e.serverContent?.modelTurn?.parts?.[0]?.inlineData;
-          const mimeType = inlineData?.mimeType;
-          if (inlineData?.data && mimeType?.startsWith("audio/pcm")) {
-            if (!receivingAudio) {
-              self.postMessage({
-                type: "audioStart",
-              } satisfies AudioStartEvent);
-              receivingAudio = true;
+          const parts = e.serverContent?.modelTurn?.parts;
+          if (parts) {
+            for (const part of parts) {
+              const inlineData = part.inlineData;
+              const mimeType = inlineData?.mimeType;
+              if (inlineData?.data && mimeType?.startsWith("audio/pcm")) {
+                if (!receivingAudio) {
+                  self.postMessage({
+                    type: "audioStart",
+                  } satisfies AudioStartEvent);
+                  receivingAudio = true;
+                }
+                const pcmData = base64Decode(inlineData.data);
+                const float32Data = convertPCM16ToFloat32(pcmData);
+                this.speakerWriter.enqueue(float32Data);
+              }
             }
-            this.speakerPort.postMessage(inlineData.data);
           }
 
           if (e.serverContent?.turnComplete) {
@@ -82,6 +97,7 @@ class ChatStream {
               type: "turnComplete",
             } satisfies TurnCompleteEvent);
             receivingAudio = false;
+            isInitialTurn = false;
           }
         },
 
@@ -105,7 +121,7 @@ type InitEvent = {
   model: string;
   startMessage: string;
   micPort: MessagePort;
-  speakerPort: MessagePort;
+  outputBuffer: SharedArrayBuffer;
 };
 
 type CloseWorkerEvent = {
@@ -124,7 +140,7 @@ async function init(request: InitEvent) {
     request.model,
     request.startMessage,
     request.micPort,
-    request.speakerPort,
+    request.outputBuffer,
   );
   await stream.start();
 }
@@ -143,3 +159,29 @@ async function processMessage(
 self.onmessage = (event: MessageEvent<InitEvent | CloseWorkerEvent>) => {
   processMessage(event);
 };
+
+function base64Decode(base64: string): Uint8Array {
+  if (Uint8Array.fromBase64) {
+    return Uint8Array.fromBase64(base64);
+  }
+
+  const binaryString = atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+}
+
+function convertPCM16ToFloat32(pcm: Uint8Array): Float32Array {
+  const length = pcm.length / 2; // 16-bit audio, so 2 bytes per sample
+  const float32AudioData = new Float32Array(length);
+  const view = new DataView(pcm.buffer);
+
+  for (let i = 0; i < length; i++) {
+    const sample = view.getInt16(i * 2, true); // little-endian
+    float32AudioData[i] = sample / 32768;
+  }
+  return float32AudioData;
+}

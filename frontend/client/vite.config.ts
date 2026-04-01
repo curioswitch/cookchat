@@ -7,6 +7,10 @@ export default defineConfig({
   plugins: [vike(), react({}), tailwindcss()],
   server: {
     port: process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 8080,
+    headers: {
+      "Cross-Origin-Opener-Policy": "same-origin",
+      "Cross-Origin-Embedder-Policy": "credentialless",
+    },
     proxy: {
       "/frontendapi.FrontendService": {
         target:
