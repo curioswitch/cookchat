@@ -1,9 +1,9 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useRef } from "react";
-import { useTranslation } from "react-i18next";
 import { FaBookmark } from "react-icons/fa";
 
 import { useFrontendQueries } from "../../hooks/rpc";
+import { m } from "../../paraglide/messages";
 
 export default function Page() {
   const queries = useFrontendQueries();
@@ -34,12 +34,9 @@ export default function Page() {
     () => data?.pages.flatMap((page) => page.recipes),
     [data],
   );
-
-  const { t } = useTranslation();
-
   return (
     <div className="p-4">
-      {(isPending && <div>{t("Loading...")}</div>) || (
+      {(isPending && <div>{m.common_loading()}</div>) || (
         <div className="flex flex-col gap-2">
           {recipes?.map((recipe, i) => (
             <a

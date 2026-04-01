@@ -20,9 +20,10 @@ import {
   useState,
 } from "react";
 import { useDropzone } from "react-dropzone";
-import { useTranslation } from "react-i18next";
 import { HiTrash } from "react-icons/hi";
 import { navigate } from "vike/client/router";
+
+import { m } from "../../../paraglide/messages";
 
 function IngredientInput({
   idx,
@@ -35,7 +36,6 @@ function IngredientInput({
   ingredient: RecipeIngredient;
   setRequest: Dispatch<SetStateAction<AddRecipeRequest>>;
 }) {
-  const { t } = useTranslation();
   const onNameChange = useCallback(
     (value: string) =>
       setRequest((prev) => {
@@ -113,11 +113,11 @@ function IngredientInput({
   return (
     <div className="flex items-center gap-2">
       <TextField value={ingredient.name} onChange={onNameChange}>
-        <Label>{t("Ingredient")}</Label>
+        <Label>{m.common_ingredient()}</Label>
         <Input />
       </TextField>
       <TextField value={ingredient.quantity} onChange={onQuantityChange}>
-        <Label>{t("Quantity")}</Label>
+        <Label>{m.common_quantity()}</Label>
         <Input />
       </TextField>
       <Button onPress={onRemoveClick}>
@@ -136,7 +136,6 @@ function IngredientSectionInput({
   section: IngredientSection;
   setRequest: Dispatch<SetStateAction<AddRecipeRequest>>;
 }) {
-  const { t } = useTranslation();
   const setTitle = useCallback(
     (name: string) =>
       setRequest((prev) => {
@@ -173,7 +172,7 @@ function IngredientSectionInput({
   return (
     <div className="border-1 w-full">
       <TextField value={section.title} onChange={setTitle}>
-        <Label>{t("Section Name")}</Label>
+        <Label>{m.recipe_section_name_label()}</Label>
         <Input />
       </TextField>
       {section.ingredients.map((ingredient, i) => (
@@ -188,12 +187,12 @@ function IngredientSectionInput({
       ))}
       <div>
         <Button className="mt-4" onPress={addIngredient}>
-          {t("Add Ingredient")}
+          {m.recipe_add_ingredient_button()}
         </Button>
       </div>
       <div>
         <Button className="mt-4" onPress={removeSection}>
-          {t("Remove Section")}
+          {m.recipe_remove_section_button()}
         </Button>
       </div>
     </div>
@@ -207,7 +206,6 @@ function MainIngredientsInput({
   ingredients: RecipeIngredient[];
   setRequest: Dispatch<SetStateAction<AddRecipeRequest>>;
 }) {
-  const { t } = useTranslation();
   const addIngredient = useCallback(() => {
     setRequest((prev) => {
       const ingredients = [...(prev.ingredients ?? [])];
@@ -217,7 +215,7 @@ function MainIngredientsInput({
   }, [setRequest]);
   return (
     <div className="border-1 w-full">
-      <h3>{t("Main Ingredients")}</h3>
+      <h3>{m.recipe_main_ingredients_title()}</h3>
       {ingredients.map((ingredient, i) => (
         <IngredientInput
           // biome-ignore lint/suspicious/noArrayIndexKey: input form
@@ -228,7 +226,7 @@ function MainIngredientsInput({
         />
       ))}
       <Button className="mt-4" onPress={addIngredient}>
-        {t("Add Ingredient")}
+        {m.recipe_add_ingredient_button()}
       </Button>
     </div>
   );
@@ -243,8 +241,6 @@ function Step({
   step: AddRecipeRequest_AddRecipeStep;
   setRequest: Dispatch<SetStateAction<AddRecipeRequest>>;
 }) {
-  const { t } = useTranslation();
-
   const setDescription = useCallback(
     (description: string) =>
       setRequest((prev) => {
@@ -292,10 +288,10 @@ function Step({
   return (
     <div className="border-1 w-full">
       <TextField value={step.description} onChange={setDescription}>
-        <Label>{t("Step Description")}</Label>
+        <Label>{m.recipe_step_description_label()}</Label>
         <Input />
       </TextField>
-      <label htmlFor="step-image">{t("Step Image")}</label>
+      <label htmlFor="step-image">{m.recipe_step_image_label()}</label>
       <div className="flex gap-4 items-center">
         <div className="mt-2 p-4 rounded-xl bg-gray-100" {...getRootProps()}>
           <input {...getInputProps()} />
@@ -307,7 +303,7 @@ function Step({
           src={step.imageDataUrl}
         />
       </div>
-      <Button onPress={removeStep}>{t("Remove Step")}</Button>
+      <Button onPress={removeStep}>{m.recipe_remove_step_button()}</Button>
     </div>
   );
 }

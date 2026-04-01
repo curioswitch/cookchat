@@ -1,9 +1,8 @@
 import { Checkbox, type Key, Label, ListBox, Select } from "@heroui/react";
 import { useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 
-import i18n from "../../layouts/i18n";
-import { setLocale } from "../../paraglide/runtime";
+import { m } from "../../paraglide/messages";
+import { getLocale, setLocale } from "../../paraglide/runtime";
 import {
   setMicrophoneDeviceId,
   setModel,
@@ -13,17 +12,15 @@ import {
 } from "../../stores";
 
 export default function Page() {
-  const { t } = useTranslation();
-
   const [speakers, setSpeakers] = useState<MediaDeviceInfo[]>([]);
   const [microphones, setMicrophones] = useState<MediaDeviceInfo[]>([]);
 
   const settings = useSettingsStore();
+  const locale = getLocale();
 
-  const onLanguageChange = useCallback(async (lang: Key | null) => {
+  const onLanguageChange = useCallback((lang: Key | null) => {
     if (lang) {
       setLocale(String(lang) as "en" | "ja");
-      await i18n.changeLanguage(String(lang));
     }
   }, []);
 
@@ -51,16 +48,16 @@ export default function Page() {
 
   return (
     <div className="p-4">
-      <Select value={i18n.language} onChange={onLanguageChange}>
-        <Label>{t("Language")}</Label>
+      <Select value={locale} onChange={onLanguageChange}>
+        <Label>{m.settings_language_label()}</Label>
         <Select.Trigger>
           <Select.Value />
           <Select.Indicator />
         </Select.Trigger>
         <Select.Popover>
           <ListBox>
-            <ListBox.Item id="ja">{t("Japanese")}</ListBox.Item>
-            <ListBox.Item id="en">{t("English")}</ListBox.Item>
+            <ListBox.Item id="ja">{m.language_name_japanese()}</ListBox.Item>
+            <ListBox.Item id="en">{m.language_name_english()}</ListBox.Item>
           </ListBox>
         </Select.Popover>
       </Select>
@@ -69,7 +66,7 @@ export default function Page() {
         onChange={onSpeakerChange}
         className="mt-4"
       >
-        <Label>{t("Speaker")}</Label>
+        <Label>{m.settings_speaker_label()}</Label>
         <Select.Trigger>
           <Select.Value />
           <Select.Indicator />
@@ -78,7 +75,7 @@ export default function Page() {
           <ListBox>
             {speakers.map((speaker) => (
               <ListBox.Item key={speaker.deviceId} id={speaker.deviceId}>
-                {speaker.label || t("Unknown Speaker")}
+                {speaker.label || m.settings_unknown_speaker()}
               </ListBox.Item>
             ))}
           </ListBox>
@@ -89,7 +86,7 @@ export default function Page() {
         onChange={onMicrophoneChange}
         className="mt-4"
       >
-        <Label>{t("Microphone")}</Label>
+        <Label>{m.settings_microphone_label()}</Label>
         <Select.Trigger>
           <Select.Value />
           <Select.Indicator />
@@ -98,7 +95,7 @@ export default function Page() {
           <ListBox>
             {microphones.map((mic) => (
               <ListBox.Item key={mic.deviceId} id={mic.deviceId}>
-                {mic.label || t("Unknown Microphone")}
+                {mic.label || m.settings_unknown_microphone()}
               </ListBox.Item>
             ))}
           </ListBox>
@@ -122,7 +119,7 @@ export default function Page() {
           }}
           className="mt-4"
         >
-          <Label>{t("Model")}</Label>
+          <Label>{m.settings_model_label()}</Label>
           <Select.Trigger>
             <Select.Value />
             <Select.Indicator />

@@ -1,23 +1,22 @@
 import { Tabs } from "@heroui/react";
-import { useTranslation } from "react-i18next";
+
+import { m } from "../../../paraglide/messages";
 
 import { ChatPlan } from "./ChatPlan";
 import { SimplePlan } from "./SimplePlan";
 
 export default function Page() {
-  const { t } = useTranslation();
-
   return (
     <div className="min-h-screen bg-white p-4">
       <Tabs>
         <Tabs.ListContainer>
           <Tabs.List className="bg-white">
             <Tabs.Tab id="simple">
-              {t("Simple Plan")}
+              {m.plan_simple_mode()}
               <Tabs.Indicator className="bg-yellow-400" />
             </Tabs.Tab>
             <Tabs.Tab id="deep-research">
-              {t("Deep Research")}
+              {m.plan_chat_mode()}
               <Tabs.Indicator className="bg-yellow-400" />
             </Tabs.Tab>
           </Tabs.List>

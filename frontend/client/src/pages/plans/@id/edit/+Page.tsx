@@ -2,11 +2,11 @@ import { useMutation } from "@connectrpc/connect-query";
 import { type RecipeSnippet, updatePlan } from "@cookchat/frontend-api";
 import { Button, Spinner } from "@heroui/react";
 import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { FaTrash } from "react-icons/fa";
 import { navigate } from "vike/client/router";
 import { usePageContext } from "vike-react/usePageContext";
 
+import { m } from "../../../../paraglide/messages";
 import { removeRecipeFromEditPlan, useEditPlanStore } from "../../../../stores";
 
 function RecipeSlot({ recipe }: { recipe: RecipeSnippet }) {
@@ -32,8 +32,6 @@ function RecipeSlot({ recipe }: { recipe: RecipeSnippet }) {
 }
 
 export default function Page() {
-  const { t } = useTranslation();
-
   const pageContext = usePageContext();
   const planId = pageContext.routeParams.id;
 
@@ -66,7 +64,7 @@ export default function Page() {
           ) : (
             // biome-ignore lint/suspicious/noArrayIndexKey: fine
             <div key={i} className="text-gray-600">
-              <a href="/">{t("Click to select")}</a>
+              <a href="/">{m.plan_click_to_select()}</a>
             </div>
           ),
         )}
@@ -77,7 +75,7 @@ export default function Page() {
         fullWidth
         className="mt-4 bg-orange-400"
       >
-        {t("Save")}
+        {m.common_save()}
       </Button>
       {doUpdatePlan.isPending && <Spinner />}
     </div>

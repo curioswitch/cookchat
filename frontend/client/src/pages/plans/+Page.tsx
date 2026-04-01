@@ -10,12 +10,13 @@ import { Button, Link } from "@heroui/react";
 import { Temporal } from "@js-temporal/polyfill";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { FaArrowLeft, FaArrowRight, FaEdit, FaTrash } from "react-icons/fa";
 import { twMerge } from "tailwind-merge";
 import { navigate } from "vike/client/router";
 
 import { useFrontendQueries } from "../../hooks/rpc";
+import { m } from "../../paraglide/messages";
+import { getLocale } from "../../paraglide/runtime";
 import { enableEditPlan } from "../../stores";
 
 const validator = createValidator();
@@ -27,8 +28,6 @@ function PlanSnippet({
   plan: PlanSnippetValid;
   invalidatePlans: () => void;
 }) {
-  const { t } = useTranslation();
-
   const doDeletePlan = useMutation(deletePlan, {
     onSuccess: () => {
       invalidatePlans();
@@ -60,7 +59,7 @@ function PlanSnippet({
       <div className="p-4 border bg-white border-yellow-400 text-black rounded-2xl">
         <div className="flex gap-4 justify-between items-center mb-2">
           <h3 className="mt-0 font-light">
-            {t("global.dateOnly", {
+            {m.global_date_only({
               val: timestampDate(plan.date),
             })}
           </h3>
@@ -127,9 +126,8 @@ function DateSelect({
   setStartDate: React.Dispatch<React.SetStateAction<Temporal.PlainDate>>;
   invalidatePlans: () => void;
 }) {
-  const { t, i18n } = useTranslation();
-
   const [selectedOffset, setSelectedOffset] = useState(3);
+  const locale = getLocale();
 
   const selectedDate = useMemo(
     () => startDate.add({ days: selectedOffset }),
@@ -183,13 +181,13 @@ function DateSelect({
     setSelectedOffset(3);
   }, [setStartDate]);
 
-  const month = selectedDate.toLocaleString(i18n.language, { month: "long" });
+  const month = selectedDate.toLocaleString(locale, { month: "long" });
 
   return (
     <div>
       <div className="p-4 bg-white">
         <h2 className="text-gray-600 text-large mb-4">
-          {t("This Month's Plans", { month })}
+          {m.plans_month_title({ month })}
         </h2>
         <div className="flex flex-row justify-between items-center">
           <Button
@@ -205,7 +203,7 @@ function DateSelect({
               className="flex flex-col gap-2 items-center"
             >
               <div className="text-gray-400">
-                {date.toLocaleString(i18n.language, { weekday: "short" })}
+                {date.toLocaleString(locale, { weekday: "short" })}
               </div>
               <button
                 type="button"
@@ -224,7 +222,7 @@ function DateSelect({
                       plans.length === 0 && "invisible",
                     )}
                   >
-                    {t("Plan")}
+                    {m.plan_title()}
                   </div>
                   <div
                     className={twMerge(
@@ -262,8 +260,6 @@ function DateSelect({
 }
 
 export default function Page() {
-  const { t } = useTranslation();
-
   const queryClient = useQueryClient();
   const queries = useFrontendQueries();
 
@@ -287,11 +283,11 @@ export default function Page() {
   const { data: plansRes, isPending } = useQuery(getPlansQuery);
 
   if (isPending) {
-    return <div>{t("Loading...")}</div>;
+    return <div>{m.common_loading()}</div>;
   }
 
   if (!plansRes) {
-    return <div>{t("No plans found")}</div>;
+    return <div>{m.plans_empty_state()}</div>;
   }
 
   const plans = plansRes.plans
@@ -309,7 +305,9 @@ export default function Page() {
       />
       <div className="flex justify-center">
         <Link href="/plans/add" className="block fixed bottom-30">
-          <Button className="text-white bg-orange-400">{t("Add Plan")}</Button>
+          <Button className="text-white bg-orange-400">
+            {m.plans_add_button()}
+          </Button>
         </Link>
       </div>
     </>

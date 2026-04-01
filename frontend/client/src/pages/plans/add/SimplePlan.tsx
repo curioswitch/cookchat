@@ -12,11 +12,11 @@ import {
   TextField,
 } from "@heroui/react";
 import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { FaMagic } from "react-icons/fa";
 import { twMerge } from "tailwind-merge";
 import { navigate } from "vike/client/router";
 
+import { m } from "../../../paraglide/messages";
 import {
   type PlanRecipe,
   setPlanDays,
@@ -26,7 +26,6 @@ import {
 } from "../../../stores";
 
 function MainDishPlaceholder() {
-  const { t } = useTranslation();
   return (
     <a
       href="/"
@@ -34,14 +33,13 @@ function MainDishPlaceholder() {
     >
       <FaMagic className="text-yellow-400" />
       <div className="text-gray-600">
-        {t("Generating with AI. Click to select instead.")}
+        {m.plan_generating_select_instead_hint()}
       </div>
     </a>
   );
 }
 
 function MainDish({ recipe }: { recipe: PlanRecipe }) {
-  const { t } = useTranslation();
   return (
     <div className="mb-4">
       <div className="flex gap-4 bg-white p-4 items-center rounded-2xl border border-yellow-400">
@@ -54,7 +52,7 @@ function MainDish({ recipe }: { recipe: PlanRecipe }) {
         </div>
         <div className="min-w-0 flex-1">
           <div>{recipe.title}</div>
-          <div className="text-gray-600">{t("Main Dish")}</div>
+          <div className="text-gray-600">{m.plan_main_dish_label()}</div>
         </div>
       </div>
     </div>
@@ -62,8 +60,6 @@ function MainDish({ recipe }: { recipe: PlanRecipe }) {
 }
 
 export function SimplePlan() {
-  const { t } = useTranslation();
-
   const planStore = usePlanStore();
   const numDays = planStore.numDays;
   const ingredients = planStore.ingredients;
@@ -87,7 +83,7 @@ export function SimplePlan() {
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <h3 className="mb-2">メイン</h3>
+        <h3 className="mb-2">{m.plan_main_dish_label()}</h3>
         <div className="flex flex-col gap-2">
           {[...Array(numDays).keys()].map((day) =>
             planStore.recipes[day] ? (
@@ -99,7 +95,7 @@ export function SimplePlan() {
         </div>
       </div>
       <div>
-        <h3 className="text-lg mb-2">{t("Conditions")}</h3>
+        <h3 className="text-lg mb-2">{m.plan_conditions_title()}</h3>
         <div className="flex flex-col gap-3">
           <div>
             <NumberField
@@ -108,7 +104,7 @@ export function SimplePlan() {
               onChange={setPlanDays}
             >
               <Label className="text-xs text-gray-400">
-                {t("Number of days")}
+                {m.plan_number_of_days_label()}
               </Label>
               <NumberField.Group>
                 <NumberField.DecrementButton />
@@ -118,18 +114,18 @@ export function SimplePlan() {
             </NumberField>
           </div>
           <div className="p-4 bg-white border border-yellow-400 rounded-xl">
-            <h4>{t("Ingredients to include")}</h4>
+            <h4>{m.plan_ingredients_to_include_title()}</h4>
             <TextField
               value={ingredients}
               onChange={setPlanIngredients}
               className="mt-2"
             >
               <Input
-                placeholder={t("Ingredients in your fridge...")}
+                placeholder={m.plan_ingredients_in_fridge_placeholder()}
                 className="bg-white border border-yellow-400"
               />
               <Label className="mt-2 text-gray-400">
-                {t("Ingredients for sides")}
+                {m.plan_side_ingredients_hint()}
               </Label>
             </TextField>
           </div>
@@ -140,9 +136,11 @@ export function SimplePlan() {
                   {" "}
                   <Switch.Content>
                     <div className="flex flex-col not-prose">
-                      <p className="text-medium">{t("Add dessert")}</p>
+                      <p className="text-medium">
+                        {m.plan_add_dessert_label()}
+                      </p>
                       <p className="text-xs text-gray-400 mt-2">
-                        {t("Seasonal fruit or yogurt")}
+                        {m.plan_dessert_hint()}
                       </p>
                     </div>
                   </Switch.Content>
@@ -156,10 +154,10 @@ export function SimplePlan() {
         </div>
       </div>
       <div className="flex flex-col gap-4">
-        <h3 className="text-lg">{t("Meal Preferences")}</h3>
+        <h3 className="text-lg">{m.plan_meal_preferences_title()}</h3>
         <div className="flex flex-col gap-1 w-full">
           <CheckboxGroup value={genres} onChange={setPlanGenres}>
-            <Label className="text-gray-400">{t("Genre")}</Label>
+            <Label className="text-gray-400">{m.plan_genre_label()}</Label>
             <div className="flex flex-wrap gap-1">
               <Checkbox value={RecipeGenre.JAPANESE.toString()}>
                 {({ isSelected }) => (
@@ -169,7 +167,7 @@ export function SimplePlan() {
                       isSelected && "bg-orange-400 text-white",
                     )}
                   >
-                    {t("genre.japanese")}
+                    {m.genre_japanese()}
                   </Checkbox.Content>
                 )}
               </Checkbox>
@@ -181,7 +179,7 @@ export function SimplePlan() {
                       isSelected && "bg-orange-400 text-white",
                     )}
                   >
-                    {t("genre.chinese")}
+                    {m.genre_chinese()}
                   </Checkbox.Content>
                 )}
               </Checkbox>
@@ -193,7 +191,7 @@ export function SimplePlan() {
                       isSelected && "bg-orange-400 text-white",
                     )}
                   >
-                    {t("genre.western")}
+                    {m.genre_western()}
                   </Checkbox.Content>
                 )}
               </Checkbox>
@@ -205,7 +203,7 @@ export function SimplePlan() {
                       isSelected && "bg-orange-400 text-white",
                     )}
                   >
-                    {t("genre.korean")}
+                    {m.genre_korean()}
                   </Checkbox.Content>
                 )}
               </Checkbox>
@@ -217,7 +215,7 @@ export function SimplePlan() {
                       isSelected && "bg-orange-400 text-white",
                     )}
                   >
-                    {t("genre.italian")}
+                    {m.genre_italian()}
                   </Checkbox.Content>
                 )}
               </Checkbox>
@@ -229,7 +227,7 @@ export function SimplePlan() {
                       isSelected && "bg-orange-400 text-white",
                     )}
                   >
-                    {t("genre.ethnic")}
+                    {m.genre_ethnic()}
                   </Checkbox.Content>
                 )}
               </Checkbox>
@@ -244,10 +242,10 @@ export function SimplePlan() {
             isDisabled={doGeneratePlan.isPending}
           >
             <FaMagic />
-            {t("Generate Plan")}
+            {m.plan_generate_button()}
           </Button>
           <div className="text-center text-gray-600 text-sm mt-2">
-            {t("AI will generate an appropriate plan")}
+            {m.plan_generate_help()}
           </div>
         </div>
         {doGeneratePlan.isPending && <Spinner />}

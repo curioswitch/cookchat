@@ -10,7 +10,6 @@ import {
 import { Button, TextArea } from "@heroui/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { FaBookmark, FaLightbulb, FaRegBookmark } from "react-icons/fa";
 import { FiUsers } from "react-icons/fi";
 import { HiAdjustments, HiShoppingCart } from "react-icons/hi";
@@ -18,6 +17,7 @@ import { navigate } from "vike/client/router";
 import { usePageContext } from "vike-react/usePageContext";
 
 import { useFrontendQueries } from "../../../hooks/rpc";
+import { m } from "../../../paraglide/messages";
 import {
   addPlanRecipe,
   addRecipeToCart,
@@ -48,8 +48,6 @@ function Ingredients({ ingredients }: { ingredients: RecipeIngredient[] }) {
 }
 
 export default function Page() {
-  const { t } = useTranslation();
-
   const pageContext = usePageContext();
   const recipeId = pageContext.routeParams.id;
 
@@ -192,36 +190,36 @@ export default function Page() {
   }, [recipeRes, inCart]);
 
   if (isPending) {
-    return <div>{t("Loading...")}</div>;
+    return <div>{m.common_loading()}</div>;
   }
 
   if (!recipeRes) {
-    throw new Error(t("Failed to load recipe"));
+    throw new Error(m.recipe_load_failed());
   }
 
   const recipe = recipeRes.recipe;
   if (!recipe) {
-    throw new Error(t("Recipe not received"));
+    throw new Error(m.recipe_not_received());
   }
 
   return (
     <>
       <div className="relative">
-        <img src={recipe.imageUrl} alt="Recipe" className="w-full" />
+        <img src={recipe.imageUrl} alt={recipe.title} className="w-full" />
         {!editingPlan && (
           <Button
             onPress={onCreatePlan}
             size="sm"
             className="absolute left-3 bottom-3 z-10 bg-yellow-400 text-white rounded-xl"
           >
-            {t("Create Plan")}
+            {m.plan_create_button()}
           </Button>
         )}
         <button
           type="button"
           onClick={onBookmarkClick}
           className="absolute right-3 bottom-3 z-10 rounded-full bg-white p-3 shadow-sm"
-          aria-label={t("Bookmarks")}
+          aria-label={m.nav_bookmarks()}
         >
           {recipeRes.isBookmarked ? (
             <FaBookmark className="size-6 fill-yellow-400" />
@@ -234,9 +232,7 @@ export default function Page() {
         {recipe.status === RecipeStatus.PROCESSING && (
           <div className="p-4 bg-[#ffedd5] border border-[#ffedd5] rounded-2xl flex gap-2 items-center mb-2">
             <FaLightbulb className="text-yellow size-6" />
-            <div>
-              {t("This recipe is being processed. It should be ready soon!")}
-            </div>
+            <div>{m.recipe_processing_notice()}</div>
           </div>
         )}
         <div className="px-2">
@@ -256,7 +252,7 @@ export default function Page() {
                 size="sm"
                 className="text-white bg-orange-200"
               >
-                {t("Add to plan")}
+                {m.plan_add_to_plan_button()}
               </Button>
             ) : null}
           </div>
@@ -282,11 +278,11 @@ export default function Page() {
             >
               <HiShoppingCart className="size-5 md:size-8" />
               {inCart
-                ? t("Remove from shopping list")
-                : t("Add to shopping list")}
+                ? m.shopping_list_remove_button()
+                : m.shopping_list_add_button()}
             </Button>
             <h3 className="flex items-center justify-between mt-0 prose">
-              {t("Ingredients")}
+              {m.common_ingredients()}
               <HiAdjustments className="size-6" onClick={onEditPromptClick} />
             </h3>
             <Ingredients ingredients={recipe.ingredients} />

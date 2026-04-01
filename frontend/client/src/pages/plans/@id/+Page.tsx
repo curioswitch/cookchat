@@ -11,12 +11,12 @@ import {
 } from "@cookchat/frontend-api";
 import { TextArea } from "@heroui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { FaCheck, FaLightbulb, FaStar } from "react-icons/fa";
 import { HiAdjustments, HiShoppingCart } from "react-icons/hi";
 import { twMerge } from "tailwind-merge";
 import { usePageContext } from "vike-react/usePageContext";
 
+import { m } from "../../../paraglide/messages";
 import {
   addRecipeToCart,
   resetChat,
@@ -115,8 +115,6 @@ function Ingredients({
 }
 
 export default function Page() {
-  const { t } = useTranslation();
-
   const pageContext = usePageContext();
   const planId = pageContext.routeParams.id;
 
@@ -215,16 +213,16 @@ export default function Page() {
   }, [planRes]);
 
   if (isPending) {
-    return <div>{t("Loading...")}</div>;
+    return <div>{m.common_loading()}</div>;
   }
 
   if (!planRes) {
-    return <div>{t("No plan found")}</div>;
+    return <div>{m.plan_not_found()}</div>;
   }
 
   const res = validator.validate(GetPlanResponseSchema, planRes);
   if (res.kind !== "valid") {
-    return <div>{t("Invalid plan data")}</div>;
+    return <div>{m.plan_invalid_data()}</div>;
   }
 
   const plan = res.message.plan;
@@ -235,12 +233,10 @@ export default function Page() {
         {plan.status === PlanStatus.PROCESSING && (
           <div className="p-4 bg-[#ffedd5] border-1 border-[#ffedd5] rounded-2xl flex gap-2 items-center mb-2">
             <FaLightbulb className="text-orange-400 size-6" />
-            <div>
-              {t("Your plan is being processed. It should be ready soon!")}
-            </div>
+            <div>{m.plan_processing_notice()}</div>
           </div>
         )}
-        <h2 className="text-gray-600 text-xl mb-2">{t("Today's Plan")}</h2>
+        <h2 className="text-gray-600 text-xl mb-2">{m.plan_today_title()}</h2>
         <div className="flex gap-4 justify-between">
           {plan.recipes.map((recipe) => (
             <a
@@ -267,14 +263,14 @@ export default function Page() {
           }}
           className="flex justify-between mb-4"
         >
-          <h2 className="text-gray-600 text-xl">{t("Ingredients")}</h2>
+          <h2 className="text-gray-600 text-xl">{m.common_ingredients()}</h2>
           <button
             type="button"
             className="flex gap-2 items-center text-orange-400 cursor-pointer"
             onClick={addToCart}
           >
             <HiShoppingCart className="size-5 md:size-8" />{" "}
-            {t("Add to shopping list")}
+            {m.shopping_list_add_button()}
           </button>
         </div>
         <div className="flex flex-col gap-4">
@@ -312,7 +308,7 @@ export default function Page() {
           <div className="p-4 border-1 border-yellow-400 rounded-2xl bg-linear-to-r from-[#ffedd5] to-[#fed7aa]">
             <div className="flex gap-2 items-center">
               <FaStar className="text-orange-400" />
-              <div className="text-large">{t("Plan Notes")}</div>
+              <div className="text-large">{m.plan_notes_title()}</div>
             </div>
             <ol className="flex flex-col gap-2 mt-2">
               {plan.notes.map((note, i) => (
