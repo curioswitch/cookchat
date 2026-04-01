@@ -7,7 +7,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"cloud.google.com/go/firestore"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
@@ -28,13 +27,9 @@ type Handler struct {
 	store *firestore.Client
 }
 
-func (h *Handler) GetPlans(ctx context.Context, _ *frontendapi.GetPlansRequest) (*frontendapi.GetPlansResponse, error) {
-	now := time.Now()
-	// We fetch a week of plans. We will filter with the browser's timezone in the frontend, so get an extra day on
-	// each side to accomodate for timezone differences.
-	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
-	start := today.Add(-4 * 24 * time.Hour)
-	end := today.Add(4 * 24 * time.Hour)
+func (h *Handler) GetPlans(ctx context.Context, req *frontendapi.GetPlansRequest) (*frontendapi.GetPlansResponse, error) {
+	start := req.GetStartDate().AsTime()
+	end := start.AddDate(0, 0, int(req.GetNumDays()))
 
 	userID := firebaseauth.TokenFromContext(ctx).UID
 

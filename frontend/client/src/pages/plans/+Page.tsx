@@ -11,7 +11,7 @@ import { Temporal } from "@js-temporal/polyfill";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaEdit, FaTrash } from "react-icons/fa";
 import { twMerge } from "tailwind-merge";
 import { navigate } from "vike/client/router";
 
@@ -57,7 +57,7 @@ function PlanSnippet({
 
   return (
     <a href={`/plans/${plan.id}`}>
-      <div className="p-4 border-1 bg-white border-yellow-400 text-black rounded-2xl">
+      <div className="p-4 border bg-white border-yellow-400 text-black rounded-2xl">
         <div className="flex gap-4 justify-between items-center mb-2">
           <h3 className="mt-0 font-light">
             {t("global.dateOnly", {
@@ -77,7 +77,7 @@ function PlanSnippet({
         </div>
         <div className="flex flex-col gap-4">
           {plan.recipes[0] && (
-            <div className="block text-center p-2 border-1 border-gray-200 bg-gray-100 rounded-xl">
+            <div className="block text-center p-2 border border-gray-200 bg-gray-100 rounded-xl">
               <img
                 className="mt-0 mb-2 rounded-lg w-full h-40 object-cover"
                 src={plan.recipes[0].imageUrl}
@@ -93,7 +93,7 @@ function PlanSnippet({
               {plan.recipes.slice(1).map((recipe) => (
                 <div
                   key={recipe.id}
-                  className="block text-center p-2 border-1 border-gray-200 bg-gray-100 rounded-xl"
+                  className="block text-center p-2 border border-gray-200 bg-gray-100 rounded-xl"
                 >
                   <img
                     className="mt-0 mb-2 rounded-lg w-full h-28 object-cover"
@@ -118,33 +118,40 @@ interface DatePlans {
 
 function DateSelect({
   plans,
+  startDate,
+  setStartDate,
   invalidatePlans,
 }: {
   plans: PlanSnippetValid[];
+  startDate: Temporal.PlainDate;
+  setStartDate: React.Dispatch<React.SetStateAction<Temporal.PlainDate>>;
   invalidatePlans: () => void;
 }) {
   const { t, i18n } = useTranslation();
 
-  const today = useMemo(() => Temporal.Now.plainDateISO(), []);
+  const [selectedOffset, setSelectedOffset] = useState(3);
 
-  const [selectedDate, setSelectedDate] = useState<Temporal.PlainDate>(today);
+  const selectedDate = useMemo(
+    () => startDate.add({ days: selectedOffset }),
+    [startDate, selectedOffset],
+  );
 
   const onDateClick = useCallback((event: React.MouseEvent) => {
-    const dateStr = (event.currentTarget as HTMLDivElement).dataset.date;
-    if (dateStr) {
-      setSelectedDate(Temporal.PlainDate.from(dateStr));
+    const offset = (event.currentTarget as HTMLDivElement).dataset.offset;
+    if (offset) {
+      setSelectedOffset(Number(offset));
     }
   }, []);
 
   const dates: DatePlans[] = useMemo(() => {
     const dates: DatePlans[] = [
-      { date: today.subtract({ days: 3 }), plans: [] },
-      { date: today.subtract({ days: 2 }), plans: [] },
-      { date: today.subtract({ days: 1 }), plans: [] },
-      { date: today, plans: [] },
-      { date: today.add({ days: 1 }), plans: [] },
-      { date: today.add({ days: 2 }), plans: [] },
-      { date: today.add({ days: 3 }), plans: [] },
+      { date: startDate, plans: [] },
+      { date: startDate.add({ days: 1 }), plans: [] },
+      { date: startDate.add({ days: 2 }), plans: [] },
+      { date: startDate.add({ days: 3 }), plans: [] },
+      { date: startDate.add({ days: 4 }), plans: [] },
+      { date: startDate.add({ days: 5 }), plans: [] },
+      { date: startDate.add({ days: 6 }), plans: [] },
     ];
 
     for (const plan of plans) {
@@ -159,13 +166,24 @@ function DateSelect({
       }
     }
     return dates;
-  }, [today, plans]);
+  }, [startDate, plans]);
 
   const selectedPlans = useMemo(
     () => dates.find((d) => d.date.equals(selectedDate))?.plans ?? [],
     [dates, selectedDate],
   );
-  const month = today.toLocaleString(i18n.language, { month: "long" });
+
+  const onLeftClick = useCallback(() => {
+    setStartDate((d) => d.subtract({ days: 7 }));
+    setSelectedOffset(3);
+  }, [setStartDate]);
+
+  const onRightClick = useCallback(() => {
+    setStartDate((d) => d.add({ days: 7 }));
+    setSelectedOffset(3);
+  }, [setStartDate]);
+
+  const month = selectedDate.toLocaleString(i18n.language, { month: "long" });
 
   return (
     <div>
@@ -173,8 +191,15 @@ function DateSelect({
         <h2 className="text-gray-600 text-large mb-4">
           {t("This Month's Plans", { month })}
         </h2>
-        <div className="flex flex-row justify-between">
-          {dates.map(({ date, plans }) => (
+        <div className="flex flex-row justify-between items-center">
+          <Button
+            isIconOnly
+            className="bg-orange-400 size-3"
+            onClick={onLeftClick}
+          >
+            <FaArrowLeft className="text-white size-2" />
+          </Button>
+          {dates.map(({ date, plans }, i) => (
             <div
               key={date.toString()}
               className="flex flex-col gap-2 items-center"
@@ -188,6 +213,7 @@ function DateSelect({
                   "p-1 md:p-10 cursor-pointer",
                   plans.length > 0 && "border-3 rounded-xl border-orange-400",
                 )}
+                data-offset={i}
                 data-date={date.toString()}
                 onClick={onDateClick}
               >
@@ -213,6 +239,13 @@ function DateSelect({
               </button>
             </div>
           ))}
+          <Button
+            isIconOnly
+            className="bg-orange-400 size-3"
+            onClick={onRightClick}
+          >
+            <FaArrowRight className="text-white size-2" />
+          </Button>
         </div>
       </div>
       <div className="flex flex-col gap-2 p-4">
@@ -233,11 +266,19 @@ export default function Page() {
 
   const queryClient = useQueryClient();
   const queries = useFrontendQueries();
-  const getPlansQuery = queries.getPlans();
+
+  const today = useMemo(() => Temporal.Now.plainDateISO(), []);
+  const [startDate, setStartDate] = useState(today.subtract({ days: 3 }));
+
+  const getPlansQuery = queries.getPlans({
+    startDate: new Date(
+      startDate.toZonedDateTime(Temporal.Now.timeZoneId()).toInstant()
+        .epochMilliseconds,
+    ),
+    numDays: 7,
+  });
 
   const invalidatePlans = useCallback(() => {
-    console.log("invalidating plans");
-    console.log(getPlansQuery.queryKey);
     queryClient.invalidateQueries({
       queryKey: getPlansQuery.queryKey,
     });
@@ -260,7 +301,12 @@ export default function Page() {
 
   return (
     <>
-      <DateSelect plans={plans} invalidatePlans={invalidatePlans} />
+      <DateSelect
+        plans={plans}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        invalidatePlans={invalidatePlans}
+      />
       <div className="flex justify-center">
         <Link href="/plans/add" className="block fixed bottom-30">
           <Button className="text-white bg-orange-400">{t("Add Plan")}</Button>
