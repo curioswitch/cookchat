@@ -30,7 +30,6 @@
     ],
     "headers": [
       {
-        "source": "/**/!(*.*)",
         "headers": [
           {
             "key": "Cache-Control",
@@ -43,6 +42,15 @@
           {
             "key": "Cross-Origin-Embedder-Policy",
             "value": "credentialless"
+          }
+        ]
+      },
+      {
+        "source": "/**/!(*.*)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
           }
         ]
       },
