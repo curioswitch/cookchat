@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import i18n from "../../layouts/i18n";
+import { setLocale } from "../../paraglide/runtime";
 import {
   setMicrophoneDeviceId,
   setModel,
@@ -21,6 +22,7 @@ export default function Page() {
 
   const onLanguageChange = useCallback(async (lang: Key | null) => {
     if (lang) {
+      setLocale(String(lang) as "en" | "ja");
       await i18n.changeLanguage(String(lang));
     }
   }, []);

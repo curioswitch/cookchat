@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.4",
+    "@inlang/paraglide-js": "^2.15.1",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.2.1",
     "@types/audioworklet": "^0.0.97",

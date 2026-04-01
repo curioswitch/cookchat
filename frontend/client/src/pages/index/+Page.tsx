@@ -7,6 +7,7 @@ import { FaRegUserCircle } from "react-icons/fa";
 
 import logoSVG from "../../assets/logo.svg";
 import { useFrontendQueries } from "../../hooks/rpc";
+import { m } from "../../paraglide/messages";
 
 export default function Page() {
   const { t } = useTranslation();
@@ -80,7 +81,7 @@ export default function Page() {
         <>
           <div className="mt-6">
             <h2 className="text-lg font-bold mb-4">
-              {t("Recommended Recipes")}
+              {m.home_recommended_recipes()}
             </h2>
             <div className="grid grid-cols-2 gap-4">
               {recommendedRecipes.map((recipe) => (
