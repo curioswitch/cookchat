@@ -32,18 +32,8 @@ class ChatStream {
       callbacks: {
         onmessage: (e: LiveServerMessage) => {
           if (e.setupComplete) {
-            this.session.sendClientContent({
-              turns: [
-                {
-                  role: "user",
-                  parts: [
-                    {
-                      text: this.startMessage,
-                    },
-                  ],
-                },
-              ],
-              turnComplete: true,
+            this.session.sendRealtimeInput({
+              text: this.startMessage,
             });
             this.micPort.onmessage = (e: MessageEvent<MicEvent>) => {
               if (receivingAudio) {
@@ -60,6 +50,15 @@ class ChatStream {
 
           const toolCall = e.toolCall?.functionCalls?.[0];
           if (toolCall) {
+            this.session.sendToolResponse({
+              functionResponses: {
+                id: toolCall.id,
+                name: toolCall.name,
+                response: {
+                  status: "Done",
+                },
+              },
+            });
             self.postMessage({
               type: "toolCall",
               call: toolCall,

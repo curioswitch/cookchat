@@ -31,7 +31,7 @@ class ChatStream implements ChatSession {
     private readonly model: string,
     private readonly startMessage: string,
 
-    private readonly navigateToStep: (idx: number, idx2: number) => void,
+    private readonly navigateToStep: (idx: number) => void,
     private readonly navigateToIngredients: () => void,
     private readonly setSpeaking: (speaking: boolean) => void,
     private readonly setWaiting: (waiting: boolean) => void,
@@ -101,7 +101,7 @@ class ChatStream implements ChatSession {
           if (call.name === "navigate_to_step" && call.args) {
             const step = call.args.step as number;
             const group = call.args.group as number;
-            this.navigateToStep(step, group);
+            this.navigateToStep(step - 1);
           } else if (call.name === "navigate_to_ingredients") {
             this.navigateToIngredients();
           }
