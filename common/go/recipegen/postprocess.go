@@ -169,7 +169,7 @@ func (p *PostProcessor) rewriteRecipe(ctx context.Context, rID string, contentJS
 }
 
 func (p *PostProcessor) generateRecipeImage(ctx context.Context, rID string, contentJSON string) (string, error) {
-	res, err := p.genAI.Models.GenerateContent(ctx, "gemini-3-pro-image-preview", genai.Text(contentJSON), &genai.GenerateContentConfig{
+	res, err := p.genAI.Models.GenerateContent(ctx, "gemini-3.1-flash-image-preview", genai.Text(contentJSON), &genai.GenerateContentConfig{
 		SystemInstruction: genai.NewContentFromText(prompts.RecipeImage(), genai.RoleModel),
 	})
 	if err != nil {
@@ -199,7 +199,7 @@ func (p *PostProcessor) generateRecipeImage(ctx context.Context, rID string, con
 }
 
 func (p *PostProcessor) generateStepImage(ctx context.Context, rID string, step int, contentJSON string) (string, error) {
-	res, err := p.genAI.Models.GenerateContent(ctx, "gemini-3-pro-image-preview", genai.Text(contentJSON), &genai.GenerateContentConfig{
+	res, err := p.genAI.Models.GenerateContent(ctx, "gemini-3.1-flash-image-preview", genai.Text(contentJSON), &genai.GenerateContentConfig{
 		SystemInstruction: genai.NewContentFromText(prompts.RecipeStepImages(step), genai.RoleModel),
 	})
 	if err != nil {
