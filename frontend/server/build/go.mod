@@ -1,6 +1,6 @@
 module github.com/curioswitch/cookchat/frontend/server/build
 
-go 1.26.1
+go 1.26.2
 
 require (
 	github.com/curioswitch/go-build v0.7.2
