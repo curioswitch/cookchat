@@ -11,6 +11,7 @@ import { Temporal } from "@js-temporal/polyfill";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 import { FaArrowLeft, FaArrowRight, FaEdit, FaTrash } from "react-icons/fa";
+import { useSwipeable } from "react-swipeable";
 import { twMerge } from "tailwind-merge";
 import { navigate } from "vike/client/router";
 
@@ -45,7 +46,6 @@ function PlanSnippet({
 
   const onEditClick = useCallback(
     (e: React.MouseEvent) => {
-      console.log("foo");
       enableEditPlan(plan.id, plan.recipes);
       navigate(`/plans/${plan.id}/edit`);
       e.preventDefault();
@@ -121,7 +121,7 @@ function DateSelect({
   setStartDate,
   invalidatePlans,
 }: {
-  plans: PlanSnippetValid[];
+  plans: PlanSnippetValid[] | undefined;
   startDate: Temporal.PlainDate;
   setStartDate: React.Dispatch<React.SetStateAction<Temporal.PlainDate>>;
   invalidatePlans: () => void;
@@ -152,7 +152,7 @@ function DateSelect({
       { date: startDate.add({ days: 6 }), plans: [] },
     ];
 
-    for (const plan of plans) {
+    for (const plan of plans ?? []) {
       const date = Temporal.Instant.fromEpochMilliseconds(
         timestampDate(plan.date).getTime(),
       )
@@ -171,15 +171,33 @@ function DateSelect({
     [dates, selectedDate],
   );
 
-  const onLeftClick = useCallback(() => {
+  const onLeft = useCallback(() => {
     setStartDate((d) => d.subtract({ days: 7 }));
     setSelectedOffset(3);
   }, [setStartDate]);
 
-  const onRightClick = useCallback(() => {
+  const onRight = useCallback(() => {
     setStartDate((d) => d.add({ days: 7 }));
     setSelectedOffset(3);
   }, [setStartDate]);
+
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [swiping, setSwiping] = useState(false);
+
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: onRight,
+    onSwipedRight: onLeft,
+    onSwiping: (e) => {
+      setSwipeOffset(Math.max(Math.min(e.deltaX, 40), -40));
+      setSwiping(true);
+    },
+    onSwiped: () => {
+      setSwipeOffset(0);
+      setSwiping(false);
+    },
+    trackMouse: true,
+    preventScrollOnSwipe: true,
+  });
 
   const month = selectedDate.toLocaleString(locale, { month: "long" });
 
@@ -189,64 +207,63 @@ function DateSelect({
         <h2 className="text-gray-600 text-large mb-4">
           {m.plans_month_title({ month })}
         </h2>
-        <div className="flex flex-row justify-between items-center">
-          <Button
-            isIconOnly
-            className="bg-orange-400 size-3"
-            onClick={onLeftClick}
-          >
+        <div className="flex justify-between items-center">
+          <Button isIconOnly className="bg-orange-400 size-3" onClick={onLeft}>
             <FaArrowLeft className="text-white size-2" />
           </Button>
-          {dates.map(({ date, plans }, i) => (
-            <div
-              key={date.toString()}
-              className="flex flex-col gap-2 items-center"
-            >
-              <div className="text-gray-400">
-                {date.toLocaleString(locale, { weekday: "short" })}
-              </div>
-              <button
-                type="button"
-                className={twMerge(
-                  "p-1 md:p-10 cursor-pointer",
-                  plans.length > 0 && "border-3 rounded-xl border-orange-400",
-                )}
-                data-offset={i}
-                data-date={date.toString()}
-                onClick={onDateClick}
-              >
-                <div className="flex flex-col items-center">
-                  <div
-                    className={twMerge(
-                      "bg-orange-500 text-white! px-1 py-1 text-xs rounded",
-                      plans.length === 0 && "invisible",
-                    )}
-                  >
-                    {m.plan_title()}
-                  </div>
-                  <div
-                    className={twMerge(
-                      date.equals(selectedDate)
-                        ? "text-orange-500"
-                        : "text-gray-600",
-                    )}
-                  >
-                    {date.day}
-                  </div>
-                </div>
-              </button>
-            </div>
-          ))}
-          <Button
-            isIconOnly
-            className="bg-orange-400 size-3"
-            onClick={onRightClick}
+          <div
+            className={twMerge("flex", !swiping && "transition-transform")}
+            style={{ transform: `translateX(${swipeOffset}px)` }}
+            {...swipeHandlers}
           >
+            {dates.map(({ date, plans }, i) => (
+              <div
+                key={date.toString()}
+                className="flex flex-col gap-2 items-center"
+              >
+                <div className="text-gray-400">
+                  {date.toLocaleString(locale, { weekday: "short" })}
+                </div>
+                <button
+                  type="button"
+                  className={twMerge(
+                    "p-1 md:p-10 cursor-pointer",
+                    plans.length > 0 && "border-3 rounded-xl border-orange-400",
+                  )}
+                  data-offset={i}
+                  data-date={date.toString()}
+                  onClick={onDateClick}
+                >
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={twMerge(
+                        "bg-orange-500 text-white! px-1 py-1 text-xs rounded",
+                        plans.length === 0 && "invisible",
+                      )}
+                    >
+                      {m.plan_title()}
+                    </div>
+                    <div
+                      className={twMerge(
+                        date.equals(selectedDate)
+                          ? "text-orange-500"
+                          : "text-gray-600",
+                      )}
+                    >
+                      {date.day}
+                    </div>
+                  </div>
+                </button>
+              </div>
+            ))}
+          </div>
+          <Button isIconOnly className="bg-orange-400 size-3" onClick={onRight}>
             <FaArrowRight className="text-white size-2" />
           </Button>
         </div>
       </div>
       <div className="flex flex-col gap-2 p-4">
+        {plans === undefined && <div>{m.common_loading()}</div>}
         {selectedPlans.map((plan) => (
           <PlanSnippet
             key={plan.id}
@@ -280,17 +297,9 @@ export default function Page() {
     });
   }, [queryClient, getPlansQuery]);
 
-  const { data: plansRes, isPending } = useQuery(getPlansQuery);
+  const { data: plansRes } = useQuery(getPlansQuery);
 
-  if (isPending) {
-    return <div>{m.common_loading()}</div>;
-  }
-
-  if (!plansRes) {
-    return <div>{m.plans_empty_state()}</div>;
-  }
-
-  const plans = plansRes.plans
+  const plans = plansRes?.plans
     .map((p) => validator.validate(PlanSnippetSchema, p))
     .filter((r) => r.kind === "valid")
     .map((r) => r.message);
