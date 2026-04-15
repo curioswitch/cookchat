@@ -2,7 +2,7 @@ export function getFirebaseConfig() {
   // Note, switch statement does not seem to allow optimizing away the unused
   // config so we use if statements.
 
-  if (import.meta.env.PUBLIC_ENV__FIREBASE_APP === "cookchat-dev") {
+  if (import.meta.env.VITE_FIREBASE_APP === "cookchat-dev") {
     return {
       apiKey: "AIzaSyAtNbka56GMp9Hoa62EdUIeOjHgqwqZYCw",
       authDomain: "alpha.coopii.app",
@@ -13,9 +13,9 @@ export function getFirebaseConfig() {
     };
   }
 
-  if (import.meta.env.PUBLIC_ENV__FIREBASE_APP === "cookchat-prod") {
+  if (import.meta.env.VITE_FIREBASE_APP === "cookchat-prod") {
     throw new Error("cookchat-prod not provisioned yet");
   }
 
-  throw new Error("PUBLIC_ENV__FIREBASE_APP must be configured");
+  throw new Error("VITE_FIREBASE_APP must be configured");
 }

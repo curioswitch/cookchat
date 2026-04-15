@@ -1,4 +1,5 @@
 import { Badge, Separator } from "@heroui/react";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { useCallback } from "react";
 import {
   FiBookmark,
@@ -8,39 +9,54 @@ import {
 } from "react-icons/fi";
 import { HiShare } from "react-icons/hi";
 import { twMerge } from "tailwind-merge";
-import { usePageContext } from "vike-react/usePageContext";
 
 import { BackButton } from "../components/BackButton";
 import { ChatButton } from "../components/ChatButton";
 import { m } from "../paraglide/messages";
 import { useCartStore, useChatStore } from "../stores";
 
-const pageTitleByI18nKey = {
-  "pages.bookmarks": m.page_bookmarks_title,
-  "pages.cart": m.page_cart_title,
-  "pages.plans": m.page_plans_title,
-  "pages.plans.@id": m.page_plan_detail_title,
-  "pages.plans.@id.edit": m.page_plan_edit_title,
-  "pages.plans.add": m.page_plan_create_title,
-  "pages.recipes.@id": m.page_recipe_detail_title,
-  "pages.recipes.add": m.page_recipe_add_title,
-  "pages.settings": m.page_settings_title,
-} as const;
+function getPageTitle(path: string) {
+  if (path === "/bookmarks") {
+    return m.page_bookmarks_title();
+  }
+  if (path === "/cart") {
+    return m.page_cart_title();
+  }
+  if (path === "/plans") {
+    return m.page_plans_title();
+  }
+  if (path === "/plans/add") {
+    return m.page_plan_create_title();
+  }
+  if (/^\/plans\/[^/]+\/edit$/.test(path)) {
+    return m.page_plan_edit_title();
+  }
+  if (/^\/plans\/[^/]+$/.test(path)) {
+    return m.page_plan_detail_title();
+  }
+  if (path === "/recipes/add") {
+    return m.page_recipe_add_title();
+  }
+  if (/^\/recipes\/[^/]+$/.test(path)) {
+    return m.page_recipe_detail_title();
+  }
+  if (path === "/settings") {
+    return m.page_settings_title();
+  }
+  return undefined;
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const pageContext = usePageContext();
-  const path = pageContext.urlPathname;
+  const path = useRouterState({
+    select: (state) => state.location.pathname,
+  });
   const isHome = path === "/";
   const isCart = path === "/cart";
   const isBookmarks = path === "/bookmarks";
 
   const cart = useCartStore();
   const chatStore = useChatStore();
-  const pageI18nKey = (pageContext.pageId || "/src/index")
-    .slice("/src/".length)
-    .replaceAll("/", ".");
-  const title =
-    pageTitleByI18nKey[pageI18nKey as keyof typeof pageTitleByI18nKey]?.();
+  const title = getPageTitle(path);
 
   const onShareClick = useCallback(() => {
     const texts = [];
@@ -104,8 +120,8 @@ ${cart.extraItems.join("\n")}
       <div className="fixed bottom-0 w-full h-24 md:h-24 bg-white z-50">
         <Separator className="bg-yellow-300" />
         <div className="px-6 md:px-8 flex items-center justify-between h-full w-full">
-          <a
-            href="/"
+          <Link
+            to="/"
             className={twMerge(
               "flex flex-col gap-1 items-center",
               path === "/" || path.startsWith("/recipes/")
@@ -115,9 +131,9 @@ ${cart.extraItems.join("\n")}
           >
             <FiBookOpen className="size-7 md:size-10" />
             <div className="text-xs md:text-sm">{m.nav_recipe()}</div>
-          </a>
-          <a
-            href="/plans"
+          </Link>
+          <Link
+            to="/plans"
             className={twMerge(
               "flex flex-col gap-1 items-center",
               path.startsWith("/plans") ? "text-yellow-400" : "text-gray-400",
@@ -125,7 +141,7 @@ ${cart.extraItems.join("\n")}
           >
             <FiCalendar className="size-7 md:size-10" />
             <div className="text-xs md:text-sm">{m.nav_plan()}</div>
-          </a>
+          </Link>
           {(chatStore.currentRecipeId || chatStore.currentPlanId) && (
             <ChatButton
               className={"fixed bottom-32 right-8"}
@@ -136,8 +152,8 @@ ${cart.extraItems.join("\n")}
               prompt={chatStore.prompt}
             />
           )}
-          <a
-            href="/bookmarks"
+          <Link
+            to="/bookmarks"
             className={twMerge(
               "flex flex-col gap-1 items-center",
               path === "/bookmarks" ? "text-yellow-400" : "text-gray-400",
@@ -145,9 +161,9 @@ ${cart.extraItems.join("\n")}
           >
             <FiBookmark className="size-7 md:size-10" />
             <div className="text-xs md:text-sm">{m.nav_bookmarks()}</div>
-          </a>
-          <a
-            href="/cart"
+          </Link>
+          <Link
+            to="/cart"
             className={twMerge(
               "flex flex-col gap-1 items-center",
               path === "/cart" ? "text-yellow-400" : "text-gray-400",
@@ -162,7 +178,7 @@ ${cart.extraItems.join("\n")}
               )}
             </Badge.Anchor>
             <div className="text-xs md:text-sm">{m.nav_cart()}</div>
-          </a>
+          </Link>
         </div>
       </div>
     </div>
