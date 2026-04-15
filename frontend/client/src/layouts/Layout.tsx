@@ -64,7 +64,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       texts.push(
         `
 ${recipe.title}
-${import.meta.env.PUBLIC_ENV__URL_BASE}recipes/${recipe.id}
+${import.meta.env.VITE_URL_BASE}recipes/${recipe.id}
 
 ${recipe.ingredients
   .filter((ingredient) => !ingredient.selected)
