@@ -8,11 +8,11 @@ import {
   type GetChatMessagesResponse,
   GetChatMessagesResponseSchema,
 } from "@cookchat/frontend-api";
-import { Button, Input, Link, TextField } from "@heroui/react";
+import { Button, Input, TextField } from "@heroui/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link as RouterLink, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { forwardRef, useCallback, useEffect, useState } from "react";
-import { FiSend } from "react-icons/fi";
+import { FiExternalLink, FiSend } from "react-icons/fi";
 import { twMerge } from "tailwind-merge";
 
 import { useFrontendQueries } from "../../../hooks/rpc";
@@ -54,15 +54,16 @@ const ChatBubble = forwardRef<HTMLDivElement, { message: ChatMessage }>(
               <>
                 <br />
                 {message.urls.map((url) => (
-                  <Link
-                    href={url}
+                  <a
                     key={url}
+                    href={url}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 underline"
                   >
                     {m.chat_original_recipe_title()}
-                    <Link.Icon />
-                  </Link>
+                    <FiExternalLink aria-hidden className="size-4" />
+                  </a>
                 ))}
               </>
             )}
@@ -199,13 +200,13 @@ export function ChatPlan() {
           {m.add_plan_new_chat()}
         </Button>
         {getChatMessagesRes.planId && (
-          <RouterLink
+          <Link
             to="/plans/$id"
             params={{ id: getChatMessagesRes.planId }}
             className="decoration-0"
           >
             <Button className="bg-yellow-400">{m.add_plan_view_plan()}</Button>
-          </RouterLink>
+          </Link>
         )}
       </div>
       <div className="flex w-full min-w-0 gap-4 rounded-2xl border border-gray-200 bg-white p-6">
