@@ -1,6 +1,6 @@
 module github.com/curioswitch/cookchat/frontend/server
 
-go 1.26.1
+go 1.26.2
 
 require (
 	cloud.google.com/go/cloudtasks v1.13.7
