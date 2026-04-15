@@ -75,7 +75,11 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 		recipeDocs = append(recipeDocs, nonUserDocs...)
 	} else {
 		q := h.store.Collection("recipes").Query
-		q = q.Where("source", "not-in", []any{cookchatdb.RecipeSourceAI, cookchatdb.RecipeSourceUser})
+		q = q.WhereEntity(firestore.PropertyFilter{
+			Path:     "source",
+			Operator: "not-in",
+			Value:    []any{cookchatdb.RecipeSourceAI, cookchatdb.RecipeSourceUser},
+		})
 		if lid := req.GetPagination().GetLastId(); lid != "" {
 			q = q.Where("id", ">", lid)
 		}
@@ -93,11 +97,15 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 
 	lng := i18n.UserLanguage(ctx)
 
-	snippets := make([]*frontendapi.RecipeSnippet, len(recipeDocs))
-	for i, doc := range recipeDocs {
+	snippets := make([]*frontendapi.RecipeSnippet, 0, len(recipeDocs))
+	for _, doc := range recipeDocs {
 		var recipe cookchatdb.Recipe
 		if err := doc.DataTo(&recipe); err != nil {
 			return nil, fmt.Errorf("listrecipes: unmarshalling recipe: %w", err)
+		}
+
+		if recipe.Status == cookchatdb.RecipeStatusProcessing {
+			continue
 		}
 
 		cnt := recipe.LocalizedContent[lng]
@@ -118,12 +126,12 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 			summary = summary[:len(summary)-len("・")]
 		}
 
-		snippets[i] = &frontendapi.RecipeSnippet{
+		snippets = append(snippets, &frontendapi.RecipeSnippet{
 			Id:       recipe.ID,
 			Title:    title,
 			Summary:  summary,
 			ImageUrl: recipe.ImageURL,
-		}
+		})
 	}
 
 	token := &frontendapi.Pagination{}

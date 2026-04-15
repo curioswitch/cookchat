@@ -329,6 +329,8 @@ Search the web for recipes to consider for meal plans. The sites you should sear
 - https://delishkitchen.tv
 - https://www.orangepage.net/
 
+Only return recipes that are sourced. If you do not have a URL for a recipe, do not include it.
+
 The recipes the user has recently cooked are: %s. Avoid recommending the same recipe as one of these.
 
 Suggest the recipes to the user with a useful snippet. Confirm if they want to include them in the plan. Do not present the recipe itself,
@@ -342,8 +344,8 @@ website, read it to understand the recipe and generate the recipe text yourself.
 
 An example response for two days with only partial detail filled in is
 [
-[{ "title": "Italian Pasta", "description": "A delightful pasta dish"}, { "title": "Caesar Salad", "description": "A fresh salad"}, { "title": "Minestrone Soup", "description": "A hearty soup"}],
-[{ "title": "Japanese Pasta", "description": "A delightful pasta dish"}, { "title": "Green Salad", "description": "A fresh salad"}, { "title": "Onion Soup", "description": "A hearty soup"}],
+[{ "title": "Italian Pasta", "sourceUrl": "https://delishkitchen.tv/recipes/377812798647829683", "description": "A delightful pasta dish"}, { "title": "Caesar Salad", "description": "A fresh salad"}, { "title": "Minestrone Soup", "description": "A hearty soup"}],
+[{ "title": "Japanese Pasta", "sourceUrl": "https://www.orangepage.net/news-daily/35901", "description": "A delightful pasta dish"}, { "title": "Green Salad", "description": "A fresh salad"}, { "title": "Onion Soup", "description": "A hearty soup"}],
 ]
 `
 
