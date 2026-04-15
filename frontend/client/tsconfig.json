@@ -3,6 +3,7 @@
     "strict": true,
     "allowJs": true,
     "checkJs": true,
+    "allowImportingTsExtensions": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
@@ -13,9 +14,9 @@
     "moduleResolution": "Bundler",
     "target": "ES2022",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "types": ["@types/audioworklet", "vite/client", "vike-react"],
-    "jsx": "preserve",
-    "jsxImportSource": "react"
+    "types": ["@types/audioworklet", "vite/client"],
+    "jsx": "react-jsx",
+    "verbatimModuleSyntax": true
   },
   "exclude": ["dist"]
 }

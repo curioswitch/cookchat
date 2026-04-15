@@ -1,39 +1,42 @@
-import "./styles.css";
-
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { navigate } from "vike/client/router";
-import { usePageContext } from "vike-react/usePageContext";
 
 import { FirebaseProvider, useFirebase } from "../hooks/firebase";
 import { FrontendServiceProvider } from "../hooks/rpc";
 
 function Authorizer({ children }: { children: React.ReactNode }) {
   const firebase = useFirebase();
-  const pageCtx = usePageContext();
+  const navigate = useNavigate();
+  const location = useRouterState({
+    select: (state) => state.location,
+  });
 
   useEffect(() => {
-    if (!firebase) {
+    if (!firebase?.userResolved) {
       return;
     }
 
-    if (pageCtx.urlPathname === "/login") {
+    if (location.pathname === "/login") {
       if (firebase.user) {
-        const next = pageCtx.urlParsed.search.next;
+        const next = new URLSearchParams(location.searchStr).get("next");
         if (next) {
           const nextDecoded = decodeURIComponent(next);
           if (nextDecoded.startsWith("/")) {
-            navigate(nextDecoded);
+            void navigate({ href: nextDecoded, replace: true });
             return;
           }
         }
-        navigate("/");
+        void navigate({ to: "/", replace: true });
         return;
       }
     } else if (!firebase.user) {
-      navigate(`/login?next=${encodeURIComponent(pageCtx.urlPathname)}`);
+      void navigate({
+        href: `/login?next=${encodeURIComponent(location.pathname)}`,
+        replace: true,
+      });
       return;
     }
-  }, [firebase, pageCtx]);
+  }, [firebase, location.pathname, location.searchStr, navigate]);
 
   return <div>{children}</div>;
 }

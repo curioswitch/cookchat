@@ -1,25 +1,40 @@
 import { paraglideVitePlugin } from "@inlang/paraglide-js";
 import tailwindcss from "@tailwindcss/vite";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import react from "@vitejs/plugin-react";
-import vike from "vike/plugin";
 import { defineConfig } from "vite";
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [
     paraglideVitePlugin({
       project: "./project.inlang",
       outdir: "./src/paraglide",
     }),
-    vike(),
+    tanstackStart({
+      prerender: {
+        enabled: true,
+        crawlLinks: true,
+      },
+      router:
+        command === "serve"
+          ? {
+              codeSplittingOptions: {
+                defaultBehavior: [],
+              },
+            }
+          : undefined,
+      spa: {
+        maskPath: "/_shell",
+        prerender: {
+          enabled: true,
+        },
+      },
+    }),
     react({}),
     tailwindcss(),
   ],
   server: {
     port: process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 8080,
-    headers: {
-      "Cross-Origin-Opener-Policy": "same-origin",
-      "Cross-Origin-Embedder-Policy": "credentialless",
-    },
     proxy: {
       "/frontendapi.FrontendService": {
         target:
@@ -29,4 +44,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

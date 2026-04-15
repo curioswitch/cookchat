@@ -1,0 +1,331 @@
+import { create } from "@bufbuild/protobuf";
+import { useMutation } from "@connectrpc/connect-query";
+import {
+  addBookmark,
+  type RecipeIngredient,
+  RecipeSnippetSchema,
+  RecipeStatus,
+  removeBookmark,
+} from "@cookchat/frontend-api";
+import { Button, TextArea } from "@heroui/react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { FaBookmark, FaLightbulb, FaRegBookmark } from "react-icons/fa";
+import { FiUsers } from "react-icons/fi";
+import { HiAdjustments, HiShoppingCart } from "react-icons/hi";
+
+import { useFrontendQueries } from "../../../hooks/rpc";
+import { m } from "../../../paraglide/messages";
+import {
+  addPlanRecipe,
+  addRecipeToCart,
+  addRecipeToEditPlan,
+  removeRecipeFromCart,
+  resetChat,
+  setCurrentRecipe,
+  setPrompt,
+  useCartStore,
+  useChatStore,
+  useEditPlanStore,
+} from "../../../stores";
+
+function Ingredients({ ingredients }: { ingredients: RecipeIngredient[] }) {
+  return (
+    <div>
+      {ingredients.map((ingredient) => (
+        <div
+          className="flex justify-between py-2 md:py-4 not-last:border-b-1 border-gray-100 text-sm prose"
+          key={ingredient.name}
+        >
+          <div className="">{ingredient.name}</div>
+          <div>{ingredient.quantity}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export const Route = createFileRoute("/recipes/$id/")({
+  component: Page,
+});
+
+function Page() {
+  const navigate = useNavigate();
+  const { id: recipeId } = Route.useParams();
+
+  const queries = useFrontendQueries();
+  const getRecipeQuery = queries.getRecipe({ recipeId });
+
+  const { data: recipeRes, isPending } = useQuery(getRecipeQuery);
+
+  const queryClient = useQueryClient();
+
+  const doAddBookmark = useMutation(addBookmark, {
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getRecipeQuery.queryKey,
+      });
+    },
+  });
+  const doRemoveBookmark = useMutation(removeBookmark, {
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getRecipeQuery.queryKey,
+      });
+    },
+  });
+
+  const onBookmarkClick = useCallback(() => {
+    if (
+      !recipeRes?.recipe ||
+      doAddBookmark.isPending ||
+      doRemoveBookmark.isPending
+    ) {
+      return;
+    }
+
+    if (recipeRes.isBookmarked) {
+      doRemoveBookmark.mutate({ recipeId: recipeRes.recipe.id });
+    } else {
+      doAddBookmark.mutate({ recipeId: recipeRes.recipe.id });
+    }
+  }, [recipeRes, doRemoveBookmark, doAddBookmark]);
+
+  const { editing: editingPlan, planId } = useEditPlanStore();
+
+  const cart = useCartStore();
+  const inCart = cart.recipes.some((recipe) => recipe.id === recipeId);
+
+  const stepRefs = useRef<Array<HTMLElement | null>>([]);
+  const ingredientsRef = useRef<HTMLDivElement | null>(null);
+
+  const navigateToStep = useCallback((idx: number) => {
+    stepRefs.current[idx]?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, []);
+  const navigateToIngredients = useCallback(() => {
+    ingredientsRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, []);
+
+  const chatStore = useChatStore();
+
+  useEffect(() => {
+    if (recipeRes?.recipe) {
+      setCurrentRecipe(
+        recipeRes.recipe.id,
+        navigateToStep,
+        navigateToIngredients,
+      );
+      return () => {
+        resetChat();
+      };
+    }
+  }, [recipeRes, navigateToStep, navigateToIngredients]);
+
+  const [editPrompt, setEditPrompt] = useState(false);
+
+  const onEditPromptClick = useCallback(() => {
+    setEditPrompt((prev) => !prev);
+  }, []);
+
+  const onPromptChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setPrompt(e.target.value);
+    },
+    [],
+  );
+
+  const onCreatePlan = useCallback(() => {
+    const recipe = recipeRes?.recipe;
+    if (!recipe) {
+      return;
+    }
+
+    addPlanRecipe(recipe);
+    void navigate({ to: "/plans/add" });
+  }, [navigate, recipeRes]);
+
+  const onAddToPlan = useCallback(() => {
+    const recipe = recipeRes?.recipe;
+    if (!recipe || !planId) {
+      return;
+    }
+
+    addRecipeToEditPlan(
+      create(RecipeSnippetSchema, {
+        id: recipe.id,
+        title: recipe.title,
+        imageUrl: recipe.imageUrl,
+      }),
+    );
+    void navigate({
+      to: "/plans/$id/edit",
+      params: { id: planId },
+    });
+  }, [navigate, recipeRes, planId]);
+
+  useEffect(() => {
+    if (!editPrompt) {
+      setPrompt("");
+    } else {
+      setPrompt(recipeRes?.llmPrompt ?? "");
+    }
+  }, [editPrompt, recipeRes]);
+
+  const onCartToggle = useCallback(() => {
+    if (!recipeRes) {
+      return;
+    }
+    const recipe = recipeRes.recipe;
+    if (!recipe) {
+      return;
+    }
+
+    if (inCart) {
+      removeRecipeFromCart(recipe.id);
+    } else {
+      addRecipeToCart(recipe);
+    }
+  }, [recipeRes, inCart]);
+
+  if (isPending) {
+    return <div>{m.common_loading()}</div>;
+  }
+
+  if (!recipeRes) {
+    throw new Error(m.recipe_load_failed());
+  }
+
+  const recipe = recipeRes.recipe;
+  if (!recipe) {
+    throw new Error(m.recipe_not_received());
+  }
+
+  return (
+    <>
+      <div className="relative">
+        <img src={recipe.imageUrl} alt={recipe.title} className="w-full" />
+        {!editingPlan && (
+          <Button
+            onPress={onCreatePlan}
+            size="sm"
+            className="absolute left-3 bottom-3 z-10 bg-yellow-400 text-white rounded-xl"
+          >
+            {m.plan_create_button()}
+          </Button>
+        )}
+        <button
+          type="button"
+          onClick={onBookmarkClick}
+          className="absolute right-3 bottom-3 z-10 rounded-full bg-white p-3 shadow-sm"
+          aria-label={m.nav_bookmarks()}
+        >
+          {recipeRes.isBookmarked ? (
+            <FaBookmark className="size-6 fill-yellow-400" />
+          ) : (
+            <FaRegBookmark className="size-6 fill-yellow-400" />
+          )}
+        </button>
+      </div>
+      <div className="px-4 py-2">
+        {recipe.status === RecipeStatus.PROCESSING && (
+          <div className="p-4 bg-[#ffedd5] border border-[#ffedd5] rounded-2xl flex gap-2 items-center mb-2">
+            <FaLightbulb className="text-yellow size-6" />
+            <div>{m.recipe_processing_notice()}</div>
+          </div>
+        )}
+        <div className="px-2">
+          <div className="flex items-center justify-between">
+            <h2 className="">{recipe.title}</h2>
+          </div>
+          <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center gap-2">
+              <FiUsers className="size-5 text-yellow-400" />
+              <span className="text-gray-500 md:text-2xl mt-0.5">
+                {recipe.servingSize}
+              </span>
+            </div>
+            {editingPlan ? (
+              <Button
+                onPress={onAddToPlan}
+                size="sm"
+                className="text-white bg-orange-200"
+              >
+                {m.plan_add_to_plan_button()}
+              </Button>
+            ) : null}
+          </div>
+        </div>
+        {editPrompt && (
+          <TextArea
+            className="mt-0"
+            value={chatStore.prompt}
+            onChange={onPromptChange}
+          />
+        )}
+        <div className="flex flex-col gap-4 mt-2">
+          <div
+            ref={(node) => {
+              ingredientsRef.current = node;
+            }}
+            className="p-4 bg-white rounded-xl border-1 border-yellow-200"
+          >
+            <Button
+              fullWidth
+              className="mb-4 text-yellow-400 py-4 px-6 bg-orange-100 md:py-8 md:text-large rounded-lg"
+              onPress={onCartToggle}
+            >
+              <HiShoppingCart className="size-5 md:size-8" />
+              {inCart
+                ? m.shopping_list_remove_button()
+                : m.shopping_list_add_button()}
+            </Button>
+            <h3 className="flex items-center justify-between mt-0 prose">
+              {m.common_ingredients()}
+              <HiAdjustments className="size-6" onClick={onEditPromptClick} />
+            </h3>
+            <Ingredients ingredients={recipe.ingredients} />
+            {recipe.additionalIngredients.map((section) => (
+              <div key={section.title} className="mt-4">
+                <h3 className="prose">{section.title}</h3>
+                <Ingredients ingredients={section.ingredients} />
+              </div>
+            ))}
+          </div>
+          {recipe.steps.map((step, i) => (
+            <div
+              // biome-ignore lint/suspicious/noArrayIndexKey: steps are unique
+              key={i}
+              ref={(node) => {
+                stepRefs.current[i] = node;
+              }}
+              className="p-4 bg-white rounded-xl border border-yellow-200"
+            >
+              <div className="flex gap-2">
+                <div className="flex-none bg-orange-200/20 text-yellow-400 size-8 md:size-10 text-base md:text-lg rounded-full flex justify-center items-center">
+                  {i + 1}
+                </div>
+                <p className="text-md md:text-2xl font-light prose">
+                  {step.description}
+                </p>
+              </div>
+              {step.imageUrl && (
+                <img
+                  src={step.imageUrl}
+                  alt={`Step ${i + 1}`}
+                  className="mt-2 mb-0 w-full rounded-sm"
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
