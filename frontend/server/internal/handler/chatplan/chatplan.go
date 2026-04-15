@@ -23,6 +23,8 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genai"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
@@ -259,16 +261,15 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 }
 
 func (h *Handler) savePlan(ctx context.Context, recipeContents []cookchatdb.RecipeContent, now time.Time, index int) (cookchatdb.Plan, error) {
-	recipes := make([]cookchatdb.Recipe, len(recipeContents))
-
 	language := i18n.UserLanguage(ctx)
 	var grp errgroup.Group
 	plan := cookchatdb.Plan{
-		Recipes: make([]string, len(recipeContents)),
+		Recipes: make([]string, 0, len(recipeContents)),
 	}
-	for i, content := range recipeContents {
+	for _, content := range recipeContents {
 		grp.Go(func() error {
 			recipeID := h.store.Collection("recipes").NewDoc().ID
+			docID := "chatplan-" + recipeID
 			recipe := cookchatdb.Recipe{
 				ID:           recipeID,
 				Source:       cookchatdb.RecipeSourceAI,
@@ -276,13 +277,36 @@ func (h *Handler) savePlan(ctx context.Context, recipeContents []cookchatdb.Reci
 				Content:      content,
 				LanguageCode: language,
 			}
-			recipes[i] = recipe
-			plan.Recipes[i] = recipeID
 
-			rDoc := h.store.Collection("recipes").Doc("chatplan-" + recipe.ID)
+			if url := content.SourceURL; url != "" {
+				switch {
+				case strings.HasPrefix(url, "https://delishkitchen.tv/recipes/"):
+					recipe.Source = cookchatdb.RecipeSourceDelishKitchen
+					recipe.SourceID = url[len("https://delishkitchen.tv/recipes/"):]
+					docID = "delishkitchen-" + recipe.SourceID
+				case strings.HasPrefix(url, "https://www.orangepage.net/news-daily/"):
+					recipe.Source = cookchatdb.RecipeSourceOrangePage
+					recipe.SourceID = url[len("https://www.orangepage.net/news-daily/"):]
+					docID = "orangepage-" + recipe.SourceID
+				case strings.HasPrefix(url, "https://cookpad.com/recipe/"):
+					recipe.Source = cookchatdb.RecipeSourceCookpad
+					recipe.SourceID = url[len("https://cookpad.com/recipe/"):]
+					docID = "cookpad-" + recipe.SourceID
+				}
+			}
+
+			if existing, err := h.store.Collection("recipes").Doc(docID).Get(ctx); status.Code(err) != codes.NotFound {
+				idAny, _ := existing.DataAt("id")
+				if idStr, ok := idAny.(string); ok {
+					plan.Recipes = append(plan.Recipes, idStr)
+					return nil
+				}
+			}
+			rDoc := h.store.Collection("recipes").Doc(docID)
 			if _, err := rDoc.Create(ctx, recipe); err != nil {
 				return fmt.Errorf("chatplan: saving recipe %q: %w", recipe.ID, err)
 			}
+			plan.Recipes = append(plan.Recipes, recipeID)
 
 			return nil
 		})
