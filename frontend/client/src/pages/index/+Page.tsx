@@ -110,15 +110,17 @@ export default function Page() {
                   href={`/recipes/${recipe.id}`}
                   color="foreground"
                   key={recipe.id}
-                  className="flex border rounded-2xl border-primary-100 items-center gap-4 not-prose h-32"
+                  className="flex border rounded-2xl border-primary-100 items-center gap-4 h-32 overflow-hidden"
                   ref={i === popularRecipes.length - 1 ? handleLastItem : null}
                 >
-                  <img
-                    src={recipe.imageUrl}
-                    alt={recipe.title}
-                    className="flex-1/4 rounded-none rounded-l-large object-cover h-32 w-full"
-                  />
-                  <div className="flex-3/4 pr-4">
+                  <div className="w-1/4 h-full flex-none">
+                    <img
+                      src={recipe.imageUrl}
+                      alt={recipe.title}
+                      className="rounded-tl-2xl rounded-bl-2xl object-cover h-full w-full"
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1 pr-4">
                     <h3 className="mt-0 mb-1 text-[0.95rem]">{recipe.title}</h3>
                     <p className="mb-2 text-small font-thin text-gray-400 line-clamp-1">
                       {recipe.summary}
