@@ -3,7 +3,7 @@ module github.com/curioswitch/cookchat/common/build
 go 1.26.2
 
 require (
-	github.com/curioswitch/go-build v0.7.2
+	github.com/curioswitch/go-build v0.7.3
 	github.com/goyek/x v0.4.0
 )
 
