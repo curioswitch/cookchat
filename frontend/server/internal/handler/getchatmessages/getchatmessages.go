@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"cloud.google.com/go/firestore"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
@@ -40,8 +41,12 @@ func (h *Handler) GetChatMessages(ctx context.Context, _ *frontendapi.GetChatMes
 			return nil, fmt.Errorf("chatplan: decoding last chat document: %w", err)
 		}
 	}
-	if chat.PlanID != "" {
-		return &frontendapi.GetChatMessagesResponse{}, nil
+	if len(chat.Messages) > 0 && chat.Messages[len(chat.Messages)-1].Role == cookchatdb.ChatRoleAssistant {
+		lastMessage := chat.Messages[len(chat.Messages)-1]
+		if lastMessage.Content == "" && lastMessage.CreatedAt.Add(5*time.Minute).Before(time.Now()) {
+			// Assume chat failed if it's been 5 minutes pending on the assistant.
+			return &frontendapi.GetChatMessagesResponse{}, nil
+		}
 	}
 
 	messages := make([]*frontendapi.ChatMessage, len(chat.Messages))
@@ -58,5 +63,6 @@ func (h *Handler) GetChatMessages(ctx context.Context, _ *frontendapi.GetChatMes
 	return &frontendapi.GetChatMessagesResponse{
 		ChatId:   chat.ID,
 		Messages: messages,
+		PlanId:   chat.PlanID,
 	}, nil
 }

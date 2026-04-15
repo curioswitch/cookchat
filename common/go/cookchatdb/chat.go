@@ -21,6 +21,9 @@ type ChatMessage struct {
 
 	// Content is the text content of the message.
 	Content string `firestore:"content"`
+
+	// CreatedAt is the timestamp when the message was created.
+	CreatedAt time.Time `firestore:"createdAt"`
 }
 
 type Chat struct {

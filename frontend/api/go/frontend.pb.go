@@ -2863,7 +2863,9 @@ type GetChatMessagesResponse struct {
 	// The ID of the chat.
 	ChatId string `protobuf:"bytes,1,opt,name=chat_id,json=chatId,proto3" json:"chat_id,omitempty"`
 	// The messages in the chat.
-	Messages      []*ChatMessage `protobuf:"bytes,2,rep,name=messages,proto3" json:"messages,omitempty"`
+	Messages []*ChatMessage `protobuf:"bytes,2,rep,name=messages,proto3" json:"messages,omitempty"`
+	// The plan ID if the chat is already completed.
+	PlanId        string `protobuf:"bytes,3,opt,name=plan_id,json=planId,proto3" json:"plan_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2910,6 +2912,13 @@ func (x *GetChatMessagesResponse) GetMessages() []*ChatMessage {
 		return x.Messages
 	}
 	return nil
+}
+
+func (x *GetChatMessagesResponse) GetPlanId() string {
+	if x != nil {
+		return x.PlanId
+	}
+	return ""
 }
 
 type AddRecipeRequest_AddRecipeStep struct {
@@ -3140,10 +3149,11 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\achat_id\x18\x01 \x01(\tR\x06chatId\x124\n" +
 	"\bmessages\x18\x02 \x03(\v2\x18.frontendapi.ChatMessageR\bmessages\x12\x17\n" +
 	"\aplan_id\x18\x03 \x01(\tR\x06planId\"\x18\n" +
-	"\x16GetChatMessagesRequest\"h\n" +
+	"\x16GetChatMessagesRequest\"\x81\x01\n" +
 	"\x17GetChatMessagesResponse\x12\x17\n" +
 	"\achat_id\x18\x01 \x01(\tR\x06chatId\x124\n" +
-	"\bmessages\x18\x02 \x03(\v2\x18.frontendapi.ChatMessageR\bmessages*Q\n" +
+	"\bmessages\x18\x02 \x03(\v2\x18.frontendapi.ChatMessageR\bmessages\x12\x17\n" +
+	"\aplan_id\x18\x03 \x01(\tR\x06planId*Q\n" +
 	"\bLanguage\x12\x18\n" +
 	"\x14LANGUAGE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10LANGUAGE_ENGLISH\x10\x01\x12\x15\n" +

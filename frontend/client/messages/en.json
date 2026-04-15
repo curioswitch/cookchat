@@ -12,6 +12,9 @@
   "nav_plan": "Plan",
   "nav_bookmarks": "Bookmarks",
   "nav_cart": "Cart",
+
+  "add_plan_new_chat": "New Chat",
+  "add_plan_view_plan": "View Plan",
   "home_search_placeholder": "What do you want to cook?",
   "home_recommended_recipes": "Recommended Recipes",
   "home_popular_recipes": "Popular Recipes",
@@ -98,6 +101,7 @@
         "input val",
         "local formattedDate = val: datetime weekday=short month=short day=numeric"
       ],
+      "selectors": ["val"],
       "match": {
         "val=*": "{formattedDate}"
       }
