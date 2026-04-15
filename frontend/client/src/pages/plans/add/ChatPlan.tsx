@@ -5,6 +5,7 @@ import {
   ChatMessage_Role,
   ChatMessageSchema,
   chatPlan,
+  type GetChatMessagesResponse,
   GetChatMessagesResponseSchema,
 } from "@cookchat/frontend-api";
 import { Button, Input, Link, TextField } from "@heroui/react";
@@ -72,29 +73,46 @@ const ChatBubble = forwardRef<HTMLDivElement, { message: ChatMessage }>(
   },
 );
 
-const loadingMessage = create(ChatMessageSchema, {
-  role: ChatMessage_Role.ASSISTANT,
-});
-
 export function ChatPlan() {
   const queries = useFrontendQueries();
   const getChatMessagesQuery = queries.getChatMessages();
   const queryClient = useQueryClient();
 
-  const { data: getChatMessagesRes, isPending } =
-    useQuery(getChatMessagesQuery);
+  const { data: getChatMessagesRes, isPending } = useQuery({
+    ...getChatMessagesQuery,
+    refetchInterval: (query) => {
+      const messages = query.state.data?.messages ?? [];
+      const last = messages[messages.length - 1];
+
+      return last?.role === ChatMessage_Role.ASSISTANT && !last?.content
+        ? 3000
+        : false;
+    },
+    refetchIntervalInBackground: true,
+  });
 
   const [loaded, setLoaded] = useState<boolean>(false);
   const [inputText, setInputText] = useState<string>("");
 
   const doChatPlan = useMutation(chatPlan, {
     onMutate: (req) => {
-      const messages = getChatMessagesRes?.messages ?? [];
-      messages.push(
-        create(ChatMessageSchema, {
-          role: ChatMessage_Role.USER,
-          content: req.message,
-        }),
+      queryClient.setQueryData<GetChatMessagesResponse>(
+        getChatMessagesQuery.queryKey,
+        (prev) =>
+          create(GetChatMessagesResponseSchema, {
+            chatId: req.newChat ? "" : (prev?.chatId ?? ""),
+            planId: "",
+            messages: [
+              ...(req.newChat ? [] : (prev?.messages ?? [])),
+              create(ChatMessageSchema, {
+                role: ChatMessage_Role.USER,
+                content: req.message,
+              }),
+              create(ChatMessageSchema, {
+                role: ChatMessage_Role.ASSISTANT,
+              }),
+            ],
+          }),
       );
     },
     onSuccess: (resp) => {
@@ -112,6 +130,13 @@ export function ChatPlan() {
     },
   });
 
+  const startNewChat = useCallback(() => {
+    doChatPlan.mutate({
+      newChat: true,
+      message: m.chat_greeting(),
+    });
+  }, [doChatPlan]);
+
   useEffect(() => {
     if (loaded || !getChatMessagesRes) {
       return;
@@ -119,12 +144,13 @@ export function ChatPlan() {
     setLoaded(true);
 
     if (getChatMessagesRes.messages.length === 0) {
-      doChatPlan.mutate({
-        chatId: getChatMessagesRes?.chatId,
-        message: m.chat_greeting(),
-      });
+      startNewChat();
     }
-  }, [doChatPlan, getChatMessagesRes, loaded]);
+  }, [startNewChat, getChatMessagesRes, loaded]);
+
+  const onNewChatClick = useCallback(() => {
+    startNewChat();
+  }, [startNewChat]);
 
   const onSendClick = useCallback(() => {
     const message = inputText;
@@ -150,6 +176,9 @@ export function ChatPlan() {
   }
 
   const messages = getChatMessagesRes.messages;
+  const assistantPending =
+    messages[messages.length - 1]?.role === ChatMessage_Role.ASSISTANT &&
+    !messages[messages.length - 1]?.content;
 
   return (
     <div>
@@ -157,7 +186,23 @@ export function ChatPlan() {
         // biome-ignore lint/suspicious/noArrayIndexKey: ordered list of items
         <ChatBubble key={i} message={msg} />
       ))}
-      {doChatPlan.isPending && <ChatBubble message={loadingMessage} />}
+      <div className="p-4 flex gap-4">
+        <Button
+          className="bg-yellow-400"
+          onPress={onNewChatClick}
+          isDisabled={doChatPlan.isPending || assistantPending}
+        >
+          {m.add_plan_new_chat()}
+        </Button>
+        {getChatMessagesRes.planId && (
+          <Link
+            href={`/plans/${getChatMessagesRes.planId}`}
+            className="decoration-0"
+          >
+            <Button className="bg-yellow-400">{m.add_plan_view_plan()}</Button>
+          </Link>
+        )}
+      </div>
       <div className="flex w-full min-w-0 gap-4 rounded-2xl border border-gray-200 bg-white p-6">
         <TextField
           value={inputText}
@@ -170,7 +215,9 @@ export function ChatPlan() {
           isIconOnly
           className="shrink-0 bg-yellow-400 text-white hover:bg-yellow-500"
           onPress={onSendClick}
-          isDisabled={doChatPlan.isPending}
+          isDisabled={
+            doChatPlan.isPending || assistantPending || inputText.trim() === ""
+          }
         >
           <FiSend />
         </Button>

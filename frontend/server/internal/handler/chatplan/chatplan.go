@@ -110,6 +110,16 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 		content[i] = genai.NewContentFromText(message.Content, role)
 	}
 
+	// Save so if user refreshes during the slow chat call we can continue in a pending state.
+	chat.Messages = append(chat.Messages, cookchatdb.ChatMessage{
+		Role:      cookchatdb.ChatRoleAssistant,
+		CreatedAt: time.Now(),
+	})
+	if _, err := chats.Doc(chat.ID).Set(ctx, chat); err != nil {
+		return nil, fmt.Errorf("chatplan: saving chat document: %w", err)
+	}
+	ctx = context.WithoutCancel(ctx)
+
 	res, err := backoff.Retry(ctx, func() (*genai.GenerateContentResponse, error) {
 		res, err := h.genAI.Models.GenerateContent(ctx, "gemini-3-flash-preview", content, &genai.GenerateContentConfig{
 			SystemInstruction: genai.NewContentFromText(llm.ChatPlanPrompt(strings.Join(recentRecipes, ", ")), genai.RoleModel),
@@ -128,6 +138,11 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 		return res, nil
 	})
 	if err != nil {
+		// Back out with best-effort
+		chat.Messages = chat.Messages[:len(chat.Messages)-2]
+		if _, err := chats.Doc(chat.ID).Set(ctx, chat); err != nil {
+			return nil, fmt.Errorf("chatplan: saving chat document: %w", err)
+		}
 		return nil, err
 	}
 
@@ -183,6 +198,13 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 			if chat.PlanID == "" {
 				chat.PlanID = planID
 			}
+			// TODO: Do something better
+			switch i18n.UserLanguage(ctx) {
+			case "ja":
+				chat.Messages[len(chat.Messages)-1].Content = "あなたの献立を作成しました。"
+			default:
+				chat.Messages[len(chat.Messages)-1].Content = "Created your meal plan."
+			}
 			if _, err := chats.Doc(chat.ID).Set(ctx, chat); err != nil {
 				return nil, fmt.Errorf("chatplan: saving chat plan ID: %w", err)
 			}
@@ -193,10 +215,7 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 		}, nil
 	}
 
-	chat.Messages = append(chat.Messages, cookchatdb.ChatMessage{
-		Role:    cookchatdb.ChatRoleAssistant,
-		Content: resText,
-	})
+	chat.Messages[len(chat.Messages)-1].Content = resText
 
 	if _, err := chats.Doc(chat.ID).Set(ctx, chat); err != nil {
 		return nil, fmt.Errorf("chatplan: saving chat document: %w", err)

@@ -508,6 +508,9 @@ message GetChatMessagesResponse {
 
   // The messages in the chat.
   repeated ChatMessage messages = 2;
+
+  // The plan ID if the chat is already completed.
+  string plan_id = 3;
 }
 
 service FrontendService {
