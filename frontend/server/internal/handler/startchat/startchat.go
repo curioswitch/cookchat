@@ -278,7 +278,7 @@ func (h *Handler) startChatOpenAI(ctx context.Context, req *frontendapi.StartCha
 				Audio: realtime.RealtimeAudioConfigParam{
 					Output: realtime.RealtimeAudioConfigOutputParam{
 						Voice: realtime.RealtimeAudioConfigOutputVoiceUnionParam{
-							OfString: openai.String(string(realtime.RealtimeAudioConfigOutputVoiceString2Marin)),
+							OfString: openai.String("marin"),
 						},
 					},
 				},
