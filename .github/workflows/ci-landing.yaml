@@ -1,4 +1,4 @@
-name: Frontend Client CI
+name: Landing Page CI
 on:
   push:
     branches:
