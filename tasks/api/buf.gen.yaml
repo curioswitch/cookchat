@@ -11,6 +11,6 @@ plugins:
       - go
       - run
       # renovate: connectrpc.com/connect
-      - connectrpc.com/connect/cmd/protoc-gen-connect-go@v1.19.1
+      - connectrpc.com/connect/cmd/protoc-gen-connect-go@v1.19.2
     out: .
     opt: module=github.com/curioswitch/cookchat/tasks/api
