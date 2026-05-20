@@ -1,0 +1,11 @@
+.envrc
+.env.local
+.env.*.local
+.idea
+
+node_modules
+.content-collections
+dist
+.tanstack
+.firebase
+routeTree.gen.ts

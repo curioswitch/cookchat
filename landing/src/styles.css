@@ -1,0 +1,67 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Urbanist:wght@700;800&display=swap");
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource/lato/400.css";
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-sans:
+    "Inter Variable", Inter, "ヒラギノ角ゴ W5 JIS2004", "Hiragino Sans W5",
+    "Hiragino Sans", system-ui, sans-serif;
+  --font-paragraph:
+    "Lato", "ヒラギノ角ゴ W3 JIS2004", "Hiragino Sans W3", "Hiragino Sans",
+    system-ui, sans-serif;
+}
+
+:root {
+  --page-gutter: 1.5rem;
+  --page-gutter-wide: 1.5rem;
+  --coopii-ink: #090c22;
+  --coopii-white: #ffffff;
+  --coopii-blue: #bae3f9;
+  --coopii-green: #d4e7bd;
+  --coopii-yellow: #eeed80;
+  --coopii-orange: #ffda5e;
+  --coopii-mist: #9a9bad;
+  --font-coopii-display: "Urbanist", Inter, system-ui, sans-serif;
+  --font-coopii-jp:
+    "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", system-ui,
+    sans-serif;
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --page-gutter: 5rem;
+    --page-gutter-wide: 5rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --page-gutter-wide: 8rem;
+  }
+}
+
+body {
+  font-feature-settings: "palt";
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+p {
+  font-family: var(--font-paragraph);
+}
+
+.coopii-page p {
+  font-family: var(--font-coopii-jp);
+}
+
+.page-gutter {
+  padding-inline: var(--page-gutter);
+}
+
+.page-gutter-wide {
+  padding-inline: var(--page-gutter-wide);
+}
