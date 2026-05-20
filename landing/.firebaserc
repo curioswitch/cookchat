@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "cookchat-dev"
+  },
+  "targets": {
+    "cookchat-dev": {
+      "hosting": {
+        "landing": ["cookchat-dev-landing"]
+      }
+    },
+    "cookchat-prod": {
+      "hosting": {
+        "landing": ["cookchat-prod-landing"]
+      }
+    }
+  },
+  "etags": {}
+}

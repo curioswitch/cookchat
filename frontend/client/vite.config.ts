@@ -37,9 +37,7 @@ export default defineConfig(({ command }) => ({
     port: process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 8080,
     proxy: {
       "/frontendapi.FrontendService": {
-        target:
-          process.env.SERVICE_FRONTEND ??
-          "https://alpha.cookchat.curioswitch.org",
+        target: process.env.SERVICE_FRONTEND ?? "https://alpha.coopii.app",
         changeOrigin: true,
       },
     },

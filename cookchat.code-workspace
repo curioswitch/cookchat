@@ -17,6 +17,10 @@
       "path": "./frontend/server"
     },
     {
+      "name": "landing",
+      "path": "./landing"
+    },
+    {
       "name": "tasks/server",
       "path": "./tasks/server"
     }
