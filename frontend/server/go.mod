@@ -6,8 +6,8 @@ require (
 	cloud.google.com/go/cloudtasks v1.18.0
 	cloud.google.com/go/discoveryengine v1.29.0
 	cloud.google.com/go/firestore v1.22.0
-	cloud.google.com/go/storage v1.62.1
-	connectrpc.com/connect v1.19.2
+	cloud.google.com/go/storage v1.62.2
+	connectrpc.com/connect v1.20.0
 	firebase.google.com/go/v4 v4.20.0
 	github.com/cenkalti/backoff/v5 v5.0.3
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
@@ -15,11 +15,11 @@ require (
 	github.com/curioswitch/cookchat/tasks/api v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/go-curiostack v0.0.0-20260128051004-075609c7945e
 	github.com/curioswitch/go-usegcp v0.0.0-20251112061520-c500c3a65003
-	github.com/go-chi/chi/v5 v5.2.5
-	github.com/openai/openai-go/v3 v3.36.0
+	github.com/go-chi/chi/v5 v5.3.0
+	github.com/openai/openai-go/v3 v3.37.0
 	golang.org/x/sync v0.20.0
-	google.golang.org/api v0.279.0
-	google.golang.org/genai v1.57.0
+	google.golang.org/api v0.280.0
+	google.golang.org/genai v1.58.0
 	google.golang.org/grpc v1.81.1
 	google.golang.org/protobuf v1.36.11
 )
