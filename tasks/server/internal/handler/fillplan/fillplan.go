@@ -89,7 +89,7 @@ func (h *Handler) FillPlan(ctx context.Context, req *tasksapi.FillPlanRequest) (
 		content[i] = genai.NewContentFromText(string(recipeJSON), genai.RoleUser)
 	}
 
-	res, err := h.genAI.Models.GenerateContent(ctx, "gemini-3-flash-preview", content, &genai.GenerateContentConfig{
+	res, err := h.genAI.Models.GenerateContent(ctx, "gemini-3.5-flash", content, &genai.GenerateContentConfig{
 		SystemInstruction: genai.NewContentFromText(llm.GenerateExecutionPlanPrompt(), genai.RoleModel),
 		ResponseMIMEType:  "application/json",
 		ResponseSchema: &genai.Schema{

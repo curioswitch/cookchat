@@ -134,7 +134,7 @@ function Page() {
               <ListBox.Item id="gpt-realtime-mini">
                 gpt-realtime-mini
               </ListBox.Item>
-              <ListBox.Item id="gpt-realtime">gpt-realtime</ListBox.Item>
+              <ListBox.Item id="gpt-realtime">gpt-realtime-2</ListBox.Item>
             </ListBox>
           </Select.Popover>
         </Select>

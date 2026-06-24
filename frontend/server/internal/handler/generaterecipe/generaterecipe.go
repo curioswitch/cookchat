@@ -34,7 +34,7 @@ type Handler struct {
 }
 
 func (h *Handler) GenerateRecipe(ctx context.Context, req *frontendapi.GenerateRecipeRequest) (*frontendapi.GenerateRecipeResponse, error) {
-	res, err := h.genAI.Models.GenerateContent(ctx, "gemini-2.5-pro", []*genai.Content{
+	res, err := h.genAI.Models.GenerateContent(ctx, "gemini-3.5-flash", []*genai.Content{
 		genai.NewContentFromText(req.GetPrompt(), genai.RoleUser),
 	}, &genai.GenerateContentConfig{
 		SystemInstruction: genai.NewContentFromText(llm.GenerateRecipePrompt(), genai.RoleModel),

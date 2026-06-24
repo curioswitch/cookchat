@@ -215,7 +215,7 @@ func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Reci
 		return fmt.Errorf("recipe: failed to marshal recipe content: %w", err)
 	}
 
-	res, err := h.genAI.Models.GenerateContent(ctx, "gemini-2.5-flash", []*genai.Content{
+	res, err := h.genAI.Models.GenerateContent(ctx, "gemini-3.5-flash", []*genai.Content{
 		{
 			Role: "user",
 			Parts: []*genai.Part{
@@ -282,7 +282,7 @@ func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Reci
 					content = recipe.Content.Steps[i-1].Description
 				}
 
-				res, err := h.genAI.Models.GenerateContent(ctx, "gemini-2.5-flash-image", []*genai.Content{
+				res, err := h.genAI.Models.GenerateContent(ctx, "gemini-3.1-flash-image", []*genai.Content{
 					{
 						Role: "user",
 						Parts: []*genai.Part{
@@ -368,7 +368,7 @@ func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Reci
 			},
 		}
 
-		res, err := h.genAI.Models.GenerateContent(ctx, "gemini-2.5-flash", []*genai.Content{
+		res, err := h.genAI.Models.GenerateContent(ctx, "gemini-3.5-flash", []*genai.Content{
 			{
 				Role: "user",
 				Parts: []*genai.Part{
@@ -461,7 +461,7 @@ func (h *Handler) postProcessRecipe(ctx context.Context, recipe *cookchatdb.Reci
 	}
 
 	if recipe.Type == "" || recipe.Genre == "" {
-		res, err := h.genAI.Models.GenerateContent(ctx, "gemini-2.5-flash", []*genai.Content{
+		res, err := h.genAI.Models.GenerateContent(ctx, "gemini-3.5-flash", []*genai.Content{
 			{
 				Role: "user",
 				Parts: []*genai.Part{
