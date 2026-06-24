@@ -123,8 +123,11 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 	ctx = context.WithoutCancel(ctx)
 
 	res, err := backoff.Retry(ctx, func() (*genai.GenerateContentResponse, error) {
-		res, err := h.genAI.Models.GenerateContent(ctx, "gemini-3-flash-preview", content, &genai.GenerateContentConfig{
+		res, err := h.genAI.Models.GenerateContent(ctx, "gemini-3.5-flash", content, &genai.GenerateContentConfig{
 			SystemInstruction: genai.NewContentFromText(llm.ChatPlanPrompt(strings.Join(recentRecipes, ", ")), genai.RoleModel),
+			ThinkingConfig: &genai.ThinkingConfig{
+				ThinkingLevel: genai.ThinkingLevelMinimal,
+			},
 			Tools: []*genai.Tool{
 				{
 					GoogleSearch: &genai.GoogleSearch{},
