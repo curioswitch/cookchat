@@ -1,18 +1,18 @@
 # Setup
 
-- Install Bun if not installed
+*   Install Bun if not installed
 
 ```bash
 brew install oven-sh/bun/bun
 ```
 
-- Install dependencies
+*   Install dependencies
 
 ```bash
 bun install
 ```
 
-- Open the workspace in VSCode
+*   Open the workspace in VSCode
 
 `File -> Open Workspace from File -> cookchat.code-workspace`
 
