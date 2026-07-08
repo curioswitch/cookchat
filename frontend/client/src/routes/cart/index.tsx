@@ -22,26 +22,31 @@ function IngredientSelect({
   recipeId: string;
   ingredientIndex: number;
 }) {
-  const onValueChange = useCallback(() => {
-    toggleCartIngredientSelection(recipeId, ingredientIndex);
-  }, [recipeId, ingredientIndex]);
+  const onValueChange = useCallback(
+    (selected: boolean) => {
+      if (selected !== ingredient.selected) {
+        toggleCartIngredientSelection(recipeId, ingredientIndex);
+      }
+    },
+    [ingredient.selected, recipeId, ingredientIndex],
+  );
 
   return (
     <Checkbox
       value={ingredient.name}
-      className="mt-2 py-1"
+      className="mt-2 w-full py-1"
       isSelected={ingredient.selected}
       onChange={onValueChange}
     >
-      <Checkbox.Control className="line-through">
-        <Checkbox.Indicator />
-      </Checkbox.Control>
       <Checkbox.Content className="w-full">
-        <div className="w-full flex justify-between">
-          <div>
+        <Checkbox.Control>
+          <Checkbox.Indicator />
+        </Checkbox.Control>
+        <div className="flex w-full min-w-0 justify-between gap-2">
+          <div className={ingredient.selected ? "line-through" : undefined}>
             {ingredient.name} ({ingredient.quantity})
           </div>
-          <div>
+          <div className="shrink-0 text-gray-400">
             {ingredient.selected
               ? m.cart_status_purchased()
               : m.cart_status_needed()}
