@@ -4,7 +4,7 @@ go 1.26.5
 
 require (
 	cloud.google.com/go/firestore v1.24.0
-	cloud.google.com/go/storage v1.63.1
+	cloud.google.com/go/storage v1.64.0
 	connectrpc.com/connect v1.20.0
 	firebase.google.com/go/v4 v4.21.0
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
@@ -13,7 +13,7 @@ require (
 	github.com/gocolly/colly/v2 v2.3.0
 	github.com/wandb/parallel v0.2.3
 	golang.org/x/sync v0.22.0
-	google.golang.org/genai v1.64.0
+	google.golang.org/genai v1.65.0
 	google.golang.org/grpc v1.82.1
 )
 
@@ -99,7 +99,7 @@ require (
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/text v0.40.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
-	google.golang.org/api v0.289.0 // indirect
+	google.golang.org/api v0.290.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/appengine/v2 v2.0.6 // indirect
 	google.golang.org/genproto v0.0.0-20260519071638-aa98bba5eb94 // indirect

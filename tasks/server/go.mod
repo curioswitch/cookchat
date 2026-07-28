@@ -3,9 +3,9 @@ module github.com/curioswitch/cookchat/tasks/server
 go 1.26.5
 
 require (
-	cloud.google.com/go/discoveryengine v1.31.0
+	cloud.google.com/go/discoveryengine v1.32.0
 	cloud.google.com/go/firestore v1.24.0
-	cloud.google.com/go/storage v1.63.1
+	cloud.google.com/go/storage v1.64.0
 	firebase.google.com/go/v4 v4.21.0
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/tasks/api v0.0.0-00010101000000-000000000000
@@ -13,7 +13,7 @@ require (
 	github.com/curioswitch/go-usegcp v0.0.0-20251112061520-c500c3a65003
 	github.com/go-chi/chi/v5 v5.3.1
 	golang.org/x/sync v0.22.0
-	google.golang.org/genai v1.64.0
+	google.golang.org/genai v1.65.0
 )
 
 require (
@@ -86,7 +86,7 @@ require (
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/text v0.40.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
-	google.golang.org/api v0.289.0 // indirect
+	google.golang.org/api v0.290.0 // indirect
 	google.golang.org/appengine/v2 v2.0.6 // indirect
 	google.golang.org/genproto v0.0.0-20260519071638-aa98bba5eb94 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260630182238-925bb5da69e7 // indirect

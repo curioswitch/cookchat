@@ -3,10 +3,10 @@ module github.com/curioswitch/cookchat/frontend/server
 go 1.26.5
 
 require (
-	cloud.google.com/go/cloudtasks v1.18.0
-	cloud.google.com/go/discoveryengine v1.31.0
+	cloud.google.com/go/cloudtasks v1.19.0
+	cloud.google.com/go/discoveryengine v1.32.0
 	cloud.google.com/go/firestore v1.24.0
-	cloud.google.com/go/storage v1.63.1
+	cloud.google.com/go/storage v1.64.0
 	connectrpc.com/connect v1.20.0
 	firebase.google.com/go/v4 v4.21.0
 	github.com/cenkalti/backoff/v5 v5.0.3
@@ -16,10 +16,10 @@ require (
 	github.com/curioswitch/go-curiostack v0.0.0-20260128051004-075609c7945e
 	github.com/curioswitch/go-usegcp v0.0.0-20251112061520-c500c3a65003
 	github.com/go-chi/chi/v5 v5.3.1
-	github.com/openai/openai-go/v3 v3.44.0
+	github.com/openai/openai-go/v3 v3.46.0
 	golang.org/x/sync v0.22.0
-	google.golang.org/api v0.289.0
-	google.golang.org/genai v1.64.0
+	google.golang.org/api v0.290.0
+	google.golang.org/genai v1.65.0
 	google.golang.org/grpc v1.82.1
 	google.golang.org/protobuf v1.36.11
 )
@@ -70,7 +70,7 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
 	github.com/spiffe/go-spiffe/v2 v2.6.0 // indirect
-	github.com/tidwall/gjson v1.18.0 // indirect
+	github.com/tidwall/gjson v1.19.0 // indirect
 	github.com/tidwall/match v1.2.0 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect
