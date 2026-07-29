@@ -108,7 +108,7 @@ linters:
     wrapcheck:
       extra-ignore-sigs:
         - (*golang.org/x/sync/errgroup.Group).Wait()
-        - github.com/cenkalti/backoff/v5.Retry
+        - github.com/cenkalti/backoff/v7.Retry
   exclusions:
     presets:
       - comments
