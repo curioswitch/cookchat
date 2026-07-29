@@ -132,9 +132,9 @@ function Page() {
           <Select.Popover>
             <ListBox>
               <ListBox.Item id="gpt-realtime-mini">
-                gpt-realtime-mini
+                gpt-realtime-2.1-mini
               </ListBox.Item>
-              <ListBox.Item id="gpt-realtime">gpt-realtime-2</ListBox.Item>
+              <ListBox.Item id="gpt-realtime">gpt-realtime-2.1</ListBox.Item>
             </ListBox>
           </Select.Popover>
         </Select>
