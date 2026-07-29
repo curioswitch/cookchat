@@ -11,12 +11,95 @@ import {
 import { Button, Input, TextField } from "@heroui/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { forwardRef, useCallback, useEffect, useState } from "react";
-import { FiExternalLink, FiSend } from "react-icons/fi";
+import { getApp } from "firebase/app";
+import {
+  getDownloadURL,
+  getStorage,
+  ref as storageRef,
+  uploadBytes,
+} from "firebase/storage";
+import {
+  type ChangeEvent,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { FiCamera, FiExternalLink, FiSend, FiX } from "react-icons/fi";
 import { twMerge } from "tailwind-merge";
 
+import { useFirebaseUser } from "../../../hooks/firebase";
+import { getFirebaseConfig } from "../../../hooks/firebase/config";
 import { useFrontendQueries } from "../../../hooks/rpc";
 import { m } from "../../../paraglide/messages";
+
+const maxImageBytes = 5 * 1024 * 1024;
+const maxImageDimension = 2048;
+
+function canvasToJPEG(canvas: HTMLCanvasElement, quality: number) {
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error("Failed to encode image"));
+        }
+      },
+      "image/jpeg",
+      quality,
+    );
+  });
+}
+
+async function resizeImage(file: File) {
+  const bitmap = await createImageBitmap(file, {
+    imageOrientation: "from-image",
+  });
+  try {
+    const initialScale = Math.min(
+      1,
+      maxImageDimension / Math.max(bitmap.width, bitmap.height),
+    );
+    let width = Math.max(1, Math.round(bitmap.width * initialScale));
+    let height = Math.max(1, Math.round(bitmap.height * initialScale));
+    let quality = 0.85;
+
+    for (let attempt = 0; attempt < 10; attempt++) {
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext("2d");
+      if (!context) {
+        throw new Error("Failed to create image context");
+      }
+      context.fillStyle = "#fff";
+      context.fillRect(0, 0, width, height);
+      context.drawImage(bitmap, 0, 0, width, height);
+
+      const blob = await canvasToJPEG(canvas, quality);
+      if (blob.size <= maxImageBytes) {
+        const basename = file.name.replace(/\.[^.]*$/, "") || "photo";
+        return new File([blob], `${basename}.jpg`, {
+          type: blob.type,
+          lastModified: file.lastModified,
+        });
+      }
+
+      if (quality > 0.55) {
+        quality -= 0.1;
+      } else {
+        width = Math.max(1, Math.round(width * 0.8));
+        height = Math.max(1, Math.round(height * 0.8));
+        quality = 0.85;
+      }
+    }
+    throw new Error("Failed to resize image below size limit");
+  } finally {
+    bitmap.close();
+  }
+}
 
 function ChatBubbleLoading() {
   return (
@@ -28,9 +111,40 @@ function ChatBubbleLoading() {
   );
 }
 
+function ChatImage({ imageURL }: { imageURL: string }) {
+  const [src, setSrc] = useState<string>();
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const parsed = new URL(imageURL);
+        const storage = getStorage(getApp(), `gs://${parsed.host}`);
+        const downloadURL = await getDownloadURL(storageRef(storage, imageURL));
+        setSrc(downloadURL);
+      } catch {
+        // The message remains usable if its attachment can no longer be loaded.
+      }
+    })();
+  }, [imageURL]);
+
+  if (!src) {
+    return null;
+  }
+
+  return (
+    <img
+      src={src}
+      alt=""
+      className="max-h-72 max-w-full rounded-2xl object-contain"
+    />
+  );
+}
+
 const ChatBubble = forwardRef<HTMLDivElement, { message: ChatMessage }>(
   function ChatBubble({ message }, ref) {
     const isUser = message.role === ChatMessage_Role.USER;
+    const showBubble =
+      message.content !== "" || message.urls.length > 0 || !isUser;
 
     return (
       <div
@@ -42,32 +156,44 @@ const ChatBubble = forwardRef<HTMLDivElement, { message: ChatMessage }>(
       >
         <div
           className={twMerge(
-            "max-w-2xl rounded-3xl py-3 px-4 md:px-7 h-fit whitespace-pre-line speech-bubble mt-4 leading-7 md:text-xl md:font-medium md:leading-8 flex items-center",
-            isUser
-              ? "right text-right bg-yellow-400 text-white"
-              : "left bg-white",
+            "flex max-w-2xl flex-col gap-2",
+            isUser ? "items-end" : "items-start",
           )}
         >
-          <div>
-            {message.content || <ChatBubbleLoading />}
-            {message.urls && (
-              <>
-                <br />
-                {message.urls.map((url) => (
-                  <a
-                    key={url}
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 underline"
-                  >
-                    {m.chat_original_recipe_title()}
-                    <FiExternalLink aria-hidden className="size-4" />
-                  </a>
-                ))}
-              </>
-            )}
-          </div>
+          {message.imageUrls.map((imageURL) => (
+            <ChatImage key={imageURL} imageURL={imageURL} />
+          ))}
+          {showBubble && (
+            <div
+              className={twMerge(
+                "rounded-3xl py-3 px-4 md:px-7 h-fit whitespace-pre-line speech-bubble mt-2 leading-7 md:text-xl md:font-medium md:leading-8 flex items-center",
+                isUser
+                  ? "right text-right bg-yellow-400 text-white"
+                  : "left bg-white",
+              )}
+            >
+              <div>
+                {message.content || <ChatBubbleLoading />}
+                {message.urls && (
+                  <>
+                    <br />
+                    {message.urls.map((url) => (
+                      <a
+                        key={url}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 underline"
+                      >
+                        {m.chat_original_recipe_title()}
+                        <FiExternalLink aria-hidden className="size-4" />
+                      </a>
+                    ))}
+                  </>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -76,6 +202,7 @@ const ChatBubble = forwardRef<HTMLDivElement, { message: ChatMessage }>(
 
 export function ChatPlan() {
   const navigate = useNavigate();
+  const firebaseUser = useFirebaseUser();
   const queries = useFrontendQueries();
   const getChatMessagesQuery = queries.getChatMessages();
   const queryClient = useQueryClient();
@@ -95,6 +222,13 @@ export function ChatPlan() {
 
   const [loaded, setLoaded] = useState<boolean>(false);
   const [inputText, setInputText] = useState<string>("");
+  const [selectedImage, setSelectedImage] = useState<
+    { file: File; previewURL: string } | undefined
+  >();
+  const [isResizing, setIsResizing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string>();
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const doChatPlan = useMutation(chatPlan, {
     onMutate: (req) => {
@@ -109,6 +243,7 @@ export function ChatPlan() {
               create(ChatMessageSchema, {
                 role: ChatMessage_Role.USER,
                 content: req.message,
+                imageUrls: req.imageUrls,
               }),
               create(ChatMessageSchema, {
                 role: ChatMessage_Role.ASSISTANT,
@@ -157,14 +292,88 @@ export function ChatPlan() {
     startNewChat();
   }, [startNewChat]);
 
-  const onSendClick = useCallback(() => {
+  const onSendClick = useCallback(async () => {
+    if (!firebaseUser) {
+      return;
+    }
+
     const message = inputText;
-    setInputText("");
+    let imageURLs: string[] = [];
+    setUploadError(undefined);
+
+    if (selectedImage) {
+      setIsUploading(true);
+      try {
+        const config = getFirebaseConfig();
+        const storage = getStorage(getApp(), `gs://${config.projectId}-files`);
+        const extension = selectedImage.file.name
+          .split(".")
+          .pop()
+          ?.replace(/[^a-zA-Z0-9]/g, "");
+        const objectName = `${crypto.randomUUID()}${extension ? `.${extension}` : ""}`;
+        const imageRef = storageRef(
+          storage,
+          `${firebaseUser.uid}/chatplan/${objectName}`,
+        );
+        const snapshot = await uploadBytes(imageRef, selectedImage.file, {
+          contentType: selectedImage.file.type,
+        });
+        imageURLs = [snapshot.ref.toString()];
+      } catch {
+        setUploadError(m.chat_photo_upload_error());
+        return;
+      } finally {
+        setIsUploading(false);
+      }
+    }
+
     doChatPlan.mutate({
       chatId: getChatMessagesRes?.chatId,
       message: message,
+      imageUrls: imageURLs,
     });
-  }, [getChatMessagesRes, inputText, doChatPlan]);
+    setInputText("");
+    setSelectedImage(undefined);
+  }, [firebaseUser, getChatMessagesRes, inputText, selectedImage, doChatPlan]);
+
+  const onImageChange = useCallback(
+    async (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      event.target.value = "";
+      if (!file) {
+        return;
+      }
+
+      setIsResizing(true);
+      setUploadError(undefined);
+      try {
+        const resized = await resizeImage(file);
+        setSelectedImage({
+          file: resized,
+          previewURL: URL.createObjectURL(resized),
+        });
+      } catch {
+        setUploadError(m.chat_photo_processing_error());
+      } finally {
+        setIsResizing(false);
+      }
+    },
+    [],
+  );
+
+  const onRemoveImage = useCallback(() => {
+    setSelectedImage(undefined);
+    setUploadError(undefined);
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (selectedImage) {
+        URL.revokeObjectURL(selectedImage.previewURL);
+      }
+    },
+    [selectedImage],
+  );
 
   useEffect(() => {
     const _ = getChatMessagesRes;
@@ -209,24 +418,74 @@ export function ChatPlan() {
           </Link>
         )}
       </div>
-      <div className="flex w-full min-w-0 gap-4 rounded-2xl border border-gray-200 bg-white p-6">
-        <TextField
-          value={inputText}
-          onChange={setInputText}
-          className="min-w-0 flex-1"
-        >
-          <Input fullWidth placeholder={m.chat_input_placeholder()} />
-        </TextField>
-        <Button
-          isIconOnly
-          className="shrink-0 bg-yellow-400 text-white hover:bg-yellow-500"
-          onPress={onSendClick}
-          isDisabled={
-            doChatPlan.isPending || assistantPending || inputText.trim() === ""
-          }
-        >
-          <FiSend />
-        </Button>
+      <div className="w-full min-w-0 rounded-2xl border border-gray-200 bg-white p-4 md:p-6">
+        {selectedImage && (
+          <div className="relative mb-4 w-fit">
+            <img
+              src={selectedImage.previewURL}
+              alt=""
+              className="max-h-48 max-w-full rounded-xl object-contain"
+            />
+            <Button
+              isIconOnly
+              size="sm"
+              aria-label={m.chat_remove_photo()}
+              className="absolute -right-2 -top-2 min-w-0 bg-gray-900 text-white"
+              onPress={onRemoveImage}
+            >
+              <FiX />
+            </Button>
+          </div>
+        )}
+        <div className="flex min-w-0 gap-3">
+          <input
+            ref={imageInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={onImageChange}
+          />
+          <Button
+            isIconOnly
+            aria-label={m.chat_add_photo()}
+            className="shrink-0 bg-gray-100 text-gray-700"
+            onPress={() => imageInputRef.current?.click()}
+            isDisabled={
+              doChatPlan.isPending ||
+              assistantPending ||
+              isResizing ||
+              isUploading
+            }
+          >
+            <FiCamera />
+          </Button>
+          <TextField
+            value={inputText}
+            onChange={setInputText}
+            className="min-w-0 flex-1"
+          >
+            <Input fullWidth placeholder={m.chat_input_placeholder()} />
+          </TextField>
+          <Button
+            isIconOnly
+            className="shrink-0 bg-yellow-400 text-white hover:bg-yellow-500"
+            onPress={onSendClick}
+            isDisabled={
+              doChatPlan.isPending ||
+              assistantPending ||
+              isResizing ||
+              isUploading ||
+              (inputText.trim() === "" && !selectedImage)
+            }
+          >
+            <FiSend />
+          </Button>
+        </div>
+        {uploadError && (
+          <p className="mt-2 text-sm text-red-600" role="alert">
+            {uploadError}
+          </p>
+        )}
       </div>
     </div>
   );

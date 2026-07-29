@@ -56,8 +56,9 @@ func (h *Handler) GetChatMessages(ctx context.Context, _ *frontendapi.GetChatMes
 			role = frontendapi.ChatMessage_ROLE_ASSISTANT
 		}
 		messages[i] = &frontendapi.ChatMessage{
-			Role:    role,
-			Content: msg.Content,
+			Role:      role,
+			Content:   msg.Content,
+			ImageUrls: msg.ImageURLs,
 		}
 	}
 	return &frontendapi.GetChatMessagesResponse{
