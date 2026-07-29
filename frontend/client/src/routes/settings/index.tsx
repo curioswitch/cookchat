@@ -111,10 +111,12 @@ function Page() {
         isSelected={settings.useOpenAI}
         onChange={setUseOpenAI}
       >
-        <Checkbox.Control>
-          <Checkbox.Indicator />
-        </Checkbox.Control>
-        Use OpenAI
+        <Checkbox.Content>
+          <Checkbox.Control>
+            <Checkbox.Indicator />
+          </Checkbox.Control>
+          Use OpenAI
+        </Checkbox.Content>
       </Checkbox>
       {settings.useOpenAI && (
         <Select
