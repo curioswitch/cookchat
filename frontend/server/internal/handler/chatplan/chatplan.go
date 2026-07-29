@@ -4,11 +4,15 @@
 package chatplan
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"maps"
+	"net/http"
+	"net/url"
 	"slices"
 	"strconv"
 	"strings"
@@ -35,13 +39,14 @@ import (
 	tasksapi "github.com/curioswitch/cookchat/tasks/api/go"
 )
 
-func NewHandler(genAI *genai.Client, store *firestore.Client, search *discoveryengine.SearchClient, tasks *cloudtasks.Client, tasksConfig config.Tasks) *Handler {
+func NewHandler(genAI *genai.Client, store *firestore.Client, search *discoveryengine.SearchClient, tasks *cloudtasks.Client, tasksConfig config.Tasks, filesBucket string) *Handler {
 	return &Handler{
 		genAI:       genAI,
 		store:       store,
 		search:      search,
 		tasks:       tasks,
 		tasksConfig: tasksConfig,
+		filesBucket: filesBucket,
 	}
 }
 
@@ -51,10 +56,30 @@ type Handler struct {
 	search      *discoveryengine.SearchClient
 	tasks       *cloudtasks.Client
 	tasksConfig config.Tasks
+	filesBucket string
 }
 
 func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest) (*frontendapi.ChatPlanResponse, error) {
 	userID := firebaseauth.TokenFromContext(ctx).UID
+
+	var uploadedImage *genai.File
+	if imageURLs := req.GetImageUrls(); len(imageURLs) == 1 {
+		imageBytes, mimeType, err := downloadFirebaseImage(
+			ctx,
+			imageURLs[0],
+			h.filesBucket,
+			userID,
+		)
+		if err != nil {
+			return nil, err
+		}
+		uploadedImage, err = h.genAI.Files.Upload(ctx, bytes.NewReader(imageBytes), &genai.UploadFileConfig{
+			MIMEType: mimeType,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("chatplan: uploading attached image to genai: %w", err)
+		}
+	}
 
 	recentRecipes, err := h.getRecentRecipes(ctx, userID)
 	if err != nil {
@@ -99,8 +124,9 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 	}
 	chat.UpdatedAt = now
 	chat.Messages = append(chat.Messages, cookchatdb.ChatMessage{
-		Role:    cookchatdb.ChatRoleUser,
-		Content: req.GetMessage(),
+		Role:      cookchatdb.ChatRoleUser,
+		Content:   req.GetMessage(),
+		ImageURLs: req.GetImageUrls(),
 	})
 
 	content := make([]*genai.Content, len(chat.Messages))
@@ -109,7 +135,11 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 		if message.Role == cookchatdb.ChatRoleAssistant {
 			role = genai.RoleModel
 		}
-		content[i] = genai.NewContentFromText(message.Content, role)
+		parts := []*genai.Part{genai.NewPartFromText(message.Content)}
+		if i == len(chat.Messages)-1 && uploadedImage != nil {
+			parts = append(parts, genai.NewPartFromURI(uploadedImage.URI, uploadedImage.MIMEType))
+		}
+		content[i] = genai.NewContentFromParts(parts, role)
 	}
 
 	// Save so if user refreshes during the slow chat call we can continue in a pending state.
@@ -229,7 +259,8 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 	messages := make([]*frontendapi.ChatMessage, len(chat.Messages))
 	for i, message := range chat.Messages {
 		msg := &frontendapi.ChatMessage{
-			Content: message.Content,
+			Content:   message.Content,
+			ImageUrls: message.ImageURLs,
 		}
 		switch message.Role {
 		case cookchatdb.ChatRoleUser:
@@ -261,6 +292,63 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 		ChatId:   chat.ID,
 		Messages: messages,
 	}, nil
+}
+
+const maxAttachedImageBytes = 5 << 20
+
+var firebaseStorageEndpoint = "https://firebasestorage.googleapis.com"
+
+func downloadFirebaseImage(ctx context.Context, imageURL, filesBucket, userID string) ([]byte, string, error) {
+	parsed, err := url.Parse(imageURL)
+	if err != nil {
+		return nil, "", fmt.Errorf("chatplan: parsing image URL: %w", err)
+	}
+	if parsed.Scheme != "gs" || parsed.Host != filesBucket {
+		return nil, "", errors.New("chatplan: image URL references unexpected bucket")
+	}
+
+	objectPath := strings.TrimPrefix(parsed.Path, "/")
+	if objectPath == "" || !strings.HasPrefix(objectPath, userID+"/") {
+		return nil, "", errors.New("chatplan: image URL references unexpected user")
+	}
+
+	downloadURL := firebaseStorageEndpoint + "/v0/b/" +
+		url.PathEscape(filesBucket) + "/o/" + url.PathEscape(objectPath) + "?alt=media"
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodGet, downloadURL, nil)
+	if err != nil {
+		return nil, "", fmt.Errorf("chatplan: creating Firebase Storage request: %w", err)
+	}
+	// Firebase Storage Security Rules evaluate the end user's ID token. Deliberately
+	// do not use application default credentials or the server service account.
+	httpReq.Header.Set("Authorization", "Firebase "+firebaseauth.RawTokenFromContext(ctx))
+
+	res, err := http.DefaultClient.Do(httpReq)
+	if err != nil {
+		return nil, "", fmt.Errorf("chatplan: fetching attached image: %w", err)
+	}
+	defer func() {
+		_ = res.Body.Close()
+	}()
+	if res.StatusCode != http.StatusOK {
+		_, _ = io.Copy(io.Discard, io.LimitReader(res.Body, 4<<10))
+		return nil, "", fmt.Errorf("chatplan: unexpected Firebase Storage response status: %s", res.Status)
+	}
+	if res.ContentLength > maxAttachedImageBytes {
+		return nil, "", errors.New("chatplan: attached image exceeds 5 MiB")
+	}
+
+	mimeType := strings.TrimSpace(strings.Split(res.Header.Get("Content-Type"), ";")[0])
+	if !strings.HasPrefix(mimeType, "image/") {
+		return nil, "", fmt.Errorf("chatplan: unsupported attached image content type: %q", mimeType)
+	}
+	data, err := io.ReadAll(io.LimitReader(res.Body, maxAttachedImageBytes+1))
+	if err != nil {
+		return nil, "", fmt.Errorf("chatplan: reading attached image: %w", err)
+	}
+	if len(data) > maxAttachedImageBytes {
+		return nil, "", errors.New("chatplan: attached image exceeds 5 MiB")
+	}
+	return data, mimeType, nil
 }
 
 func (h *Handler) savePlan(ctx context.Context, recipeContents []cookchatdb.RecipeContent, now time.Time, index int) (cookchatdb.Plan, error) {

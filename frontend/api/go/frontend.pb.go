@@ -2635,7 +2635,9 @@ type ChatMessage struct {
 	// The role of the message.
 	Role ChatMessage_Role `protobuf:"varint,2,opt,name=role,proto3,enum=frontendapi.ChatMessage_Role" json:"role,omitempty"`
 	// Any grounding URLs associated with the message.
-	Urls          []string `protobuf:"bytes,3,rep,name=urls,proto3" json:"urls,omitempty"`
+	Urls []string `protobuf:"bytes,3,rep,name=urls,proto3" json:"urls,omitempty"`
+	// Images attached to the message.
+	ImageUrls     []string `protobuf:"bytes,4,rep,name=image_urls,json=imageUrls,proto3" json:"image_urls,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2691,6 +2693,13 @@ func (x *ChatMessage) GetUrls() []string {
 	return nil
 }
 
+func (x *ChatMessage) GetImageUrls() []string {
+	if x != nil {
+		return x.ImageUrls
+	}
+	return nil
+}
+
 // A request for FrontendService.ChatPlan.
 type ChatPlanRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2700,7 +2709,9 @@ type ChatPlanRequest struct {
 	// Whether to start a new chat session.
 	NewChat bool `protobuf:"varint,2,opt,name=new_chat,json=newChat,proto3" json:"new_chat,omitempty"`
 	// The message from the user.
-	Message       string `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	Message string `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	// Firebase Storage URLs of images attached to the message.
+	ImageUrls     []string `protobuf:"bytes,4,rep,name=image_urls,json=imageUrls,proto3" json:"image_urls,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2754,6 +2765,13 @@ func (x *ChatPlanRequest) GetMessage() string {
 		return x.Message
 	}
 	return ""
+}
+
+func (x *ChatPlanRequest) GetImageUrls() []string {
+	if x != nil {
+		return x.ImageUrls
+	}
+	return nil
 }
 
 // A response for FrontendService.ChatPlan.
@@ -3132,19 +3150,23 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\x13AddBookmarkResponse\"4\n" +
 	"\x15RemoveBookmarkRequest\x12\x1b\n" +
 	"\trecipe_id\x18\x01 \x01(\tR\brecipeId\"\x18\n" +
-	"\x16RemoveBookmarkResponse\"\xaf\x01\n" +
+	"\x16RemoveBookmarkResponse\"\xce\x01\n" +
 	"\vChatMessage\x12\x18\n" +
 	"\acontent\x18\x01 \x01(\tR\acontent\x121\n" +
 	"\x04role\x18\x02 \x01(\x0e2\x1d.frontendapi.ChatMessage.RoleR\x04role\x12\x12\n" +
-	"\x04urls\x18\x03 \x03(\tR\x04urls\"?\n" +
+	"\x04urls\x18\x03 \x03(\tR\x04urls\x12\x1d\n" +
+	"\n" +
+	"image_urls\x18\x04 \x03(\tR\timageUrls\"?\n" +
 	"\x04Role\x12\x14\n" +
 	"\x10ROLE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tROLE_USER\x10\x01\x12\x12\n" +
-	"\x0eROLE_ASSISTANT\x10\x02\"_\n" +
+	"\x0eROLE_ASSISTANT\x10\x02\"~\n" +
 	"\x0fChatPlanRequest\x12\x17\n" +
 	"\achat_id\x18\x01 \x01(\tR\x06chatId\x12\x19\n" +
 	"\bnew_chat\x18\x02 \x01(\bR\anewChat\x12\x18\n" +
-	"\amessage\x18\x03 \x01(\tR\amessage\"z\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\x12\x1d\n" +
+	"\n" +
+	"image_urls\x18\x04 \x03(\tR\timageUrls\"z\n" +
 	"\x10ChatPlanResponse\x12\x17\n" +
 	"\achat_id\x18\x01 \x01(\tR\x06chatId\x124\n" +
 	"\bmessages\x18\x02 \x03(\v2\x18.frontendapi.ChatMessageR\bmessages\x12\x17\n" +

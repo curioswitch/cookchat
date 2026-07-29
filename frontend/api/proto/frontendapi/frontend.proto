@@ -471,6 +471,9 @@ message ChatMessage {
 
   // Any grounding URLs associated with the message.
   repeated string urls = 3;
+
+  // Images attached to the message.
+  repeated string image_urls = 4;
 }
 
 // A request for FrontendService.ChatPlan.
@@ -484,6 +487,9 @@ message ChatPlanRequest {
 
   // The message from the user.
   string message = 3;
+
+  // Firebase Storage URLs of images attached to the message.
+  repeated string image_urls = 4;
 }
 
 // A response for FrontendService.ChatPlan.

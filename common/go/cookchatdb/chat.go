@@ -22,6 +22,9 @@ type ChatMessage struct {
 	// Content is the text content of the message.
 	Content string `firestore:"content"`
 
+	// ImageURLs are Firebase Storage URLs of images attached to the message.
+	ImageURLs []string `firestore:"imageUrls,omitempty"`
+
 	// CreatedAt is the timestamp when the message was created.
 	CreatedAt time.Time `firestore:"createdAt"`
 }

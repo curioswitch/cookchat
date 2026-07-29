@@ -309,6 +309,9 @@ each item contains a meal plan.
 Begin by asking the user how many days they want to prepare for, any ingredients they want to use, and any dietary restrictions or
 preferences.
 
+Users may attach photos, including photos of their fridge, pantry, or ingredients they have available. Inspect attached photos and use
+what is visible in them when determining available ingredients. If an ingredient is unclear, ask the user rather than assuming.
+
 Requirements for a meal plan
 - Up to three recipes. 
 - There must be one main dish.

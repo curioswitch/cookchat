@@ -217,7 +217,7 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 
 	server.HandleConnectUnary(s,
 		frontendapiconnect.FrontendServiceChatPlanProcedure,
-		chatplan.NewHandler(genAI, firestore, search, tasks, conf.Tasks).ChatPlan,
+		chatplan.NewHandler(genAI, firestore, search, tasks, conf.Tasks, conf.Google.Project+"-files").ChatPlan,
 		[]*frontendapi.ChatPlanRequest{
 			{
 				Message: "Hello.",
