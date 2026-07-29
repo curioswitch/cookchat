@@ -121,7 +121,7 @@ func (p *PostProcessor) PostProcessRecipe(ctx context.Context, recipe *cookchatd
 }
 
 func (p *PostProcessor) translateRecipe(ctx context.Context, rID string, contentJSON string, from cookchatdb.LanguageCode, to cookchatdb.LanguageCode) (*cookchatdb.RecipeContent, error) {
-	res, err := p.genAI.Models.GenerateContent(ctx, "gemini-3.5-flash", []*genai.Content{
+	res, err := p.genAI.Models.GenerateContent(ctx, "gemini-3.6-flash", []*genai.Content{
 		genai.NewContentFromText(contentJSON, genai.RoleUser),
 	}, &genai.GenerateContentConfig{
 		SystemInstruction: genai.NewContentFromText(prompts.TranslateRecipe(from, to), genai.RoleModel),
@@ -145,7 +145,7 @@ func (p *PostProcessor) translateRecipe(ctx context.Context, rID string, content
 }
 
 func (p *PostProcessor) rewriteRecipe(ctx context.Context, rID string, contentJSON string) (*cookchatdb.RecipeContent, error) {
-	res, err := p.genAI.Models.GenerateContent(ctx, "gemini-3.5-flash", []*genai.Content{
+	res, err := p.genAI.Models.GenerateContent(ctx, "gemini-3.6-flash", []*genai.Content{
 		genai.NewContentFromText(contentJSON, genai.RoleUser),
 	}, &genai.GenerateContentConfig{
 		SystemInstruction: genai.NewContentFromText(prompts.RewriteRecipe(), genai.RoleModel),
