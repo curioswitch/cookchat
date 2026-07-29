@@ -18,7 +18,7 @@ import (
 	taskspb "cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb"
 	discoveryengine "cloud.google.com/go/discoveryengine/apiv1"
 	"cloud.google.com/go/firestore"
-	"github.com/cenkalti/backoff/v5"
+	"github.com/cenkalti/backoff/v7"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/iterator"
