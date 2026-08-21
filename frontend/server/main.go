@@ -98,7 +98,6 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 
 	genAI, err := genai.NewClient(ctx, &genai.ClientConfig{
 		Backend: genai.BackendGeminiAPI,
-		Project: conf.Google.Project,
 	})
 	if err != nil {
 		return fmt.Errorf("creating genai client: %w", err)
@@ -149,7 +148,8 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 
 	mux.Use(i18n.Middleware())
 
-	server.HandleConnectUnary(s,
+	server.HandleConnectUnary(
+		s,
 		frontendapiconnect.FrontendServiceGetRecipeProcedure,
 		getrecipe.NewHandler(firestore).GetRecipe,
 		[]*frontendapi.GetRecipeRequest{
@@ -159,7 +159,8 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		},
 	)
 
-	server.HandleConnectUnary(s,
+	server.HandleConnectUnary(
+		s,
 		frontendapiconnect.FrontendServiceListRecipesProcedure,
 		listrecipes.NewHandler(firestore, search, conf.Search.Engine).ListRecipes,
 		[]*frontendapi.ListRecipesRequest{
@@ -207,7 +208,8 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 			},
 		})
 
-	server.HandleConnectUnary(s,
+	server.HandleConnectUnary(
+		s,
 		frontendapiconnect.FrontendServiceGetChatMessagesProcedure,
 		getchatmessages.NewHandler(firestore).GetChatMessages,
 		[]*frontendapi.GetChatMessagesRequest{

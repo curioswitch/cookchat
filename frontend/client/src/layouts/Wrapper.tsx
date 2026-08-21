@@ -16,24 +16,36 @@ function Authorizer({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    if (location.pathname === "/login") {
+    const isLogin =
+      location.pathname === "/login" || location.pathname === "/login/";
+    if (isLogin) {
       if (firebase.user) {
         const next = new URLSearchParams(location.searchStr).get("next");
         if (next) {
           const nextDecoded = decodeURIComponent(next);
           if (nextDecoded.startsWith("/")) {
+            if (!import.meta.env.PROD) {
+              window.location.replace(nextDecoded);
+              return;
+            }
             void navigate({ href: nextDecoded, replace: true });
             return;
           }
+        }
+        if (!import.meta.env.PROD) {
+          window.location.replace("/");
+          return;
         }
         void navigate({ to: "/", replace: true });
         return;
       }
     } else if (!firebase.user) {
-      void navigate({
-        href: `/login?next=${encodeURIComponent(location.pathname)}`,
-        replace: true,
-      });
+      const loginUrl = `/login?next=${encodeURIComponent(location.pathname)}`;
+      if (!import.meta.env.PROD) {
+        window.location.replace(loginUrl);
+        return;
+      }
+      void navigate({ href: loginUrl, replace: true });
       return;
     }
   }, [firebase, location.pathname, location.searchStr, navigate]);
