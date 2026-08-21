@@ -1,6 +1,6 @@
 module github.com/curioswitch/cookchat/crawler/api
 
-go 1.26.5
+go 1.26.6
 
 require (
 	connectrpc.com/connect v1.20.0
