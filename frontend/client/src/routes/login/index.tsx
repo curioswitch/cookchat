@@ -22,6 +22,10 @@ function getApp() {
 
 function Page() {
   useEffect(() => {
+    if (!import.meta.env.PROD) {
+      return;
+    }
+
     async function checkRedirectResult() {
       const auth = getAuth(getApp());
       try {
