@@ -10,6 +10,7 @@ import {
 } from "firebase/auth";
 import { useCallback, useEffect } from "react";
 
+import logoSVG from "../../assets/logo.svg";
 import { getFirebaseConfig } from "../../hooks/firebase/config";
 
 export const Route = createFileRoute("/login/")({
@@ -44,11 +45,14 @@ function Page() {
   }, []);
 
   return (
-    <Button
-      className="mx-4 mt-4 bg-yellow-400 text-white roundex-lg"
-      onPress={onLoginClick}
-    >
-      Login with Google
-    </Button>
+    <div className="flex w-full flex-col items-center justify-center gap-8">
+      <img className="w-56" src={logoSVG} alt="COOPii" />
+      <Button
+        className="h-14 w-[70%] max-w-[360px] rounded-lg bg-yellow-400 text-lg font-semibold text-white hover:bg-yellow-500"
+        onPress={onLoginClick}
+      >
+        Login with Google
+      </Button>
+    </div>
   );
 }
