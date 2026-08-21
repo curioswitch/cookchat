@@ -51,6 +51,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     select: (state) => state.location.pathname,
   });
   const isHome = path === "/";
+  const isLogin = path === "/login";
   const isCart = path === "/cart";
   const isBookmarks = path === "/bookmarks";
 
@@ -87,9 +88,14 @@ ${cart.extraItems.join("\n")}
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="flex flex-1 container mx-auto min-h-screen max-w-full md:w-4xl pt-2 pb-24 bg-white">
+      <div
+        className={twMerge(
+          "flex flex-1 container mx-auto min-h-screen max-w-full md:w-4xl pt-2 bg-white",
+          !isLogin && "pb-24",
+        )}
+      >
         <div className="p-2 flex flex-col flex-1">
-          {!isHome && (
+          {!isHome && !isLogin && (
             <div className="flex justify-between items-center pb-4">
               <BackButton className="flex-1/10 text-yellow-400" />
               <h1 className="mt-0 mb-0 flex-8/10 text-center">{title}</h1>
@@ -111,76 +117,79 @@ ${cart.extraItems.join("\n")}
                 "flex-1 bg-linear-to-r from-[#fff7ed] to-[#ffedd5]",
               isBookmarks && "flex-1 bg-white",
               path.startsWith("/recipes/") && "flex-1 bg-white",
+              isLogin && "flex flex-1 items-center justify-center bg-white",
             )}
           >
             {children}
           </div>
         </div>
       </div>
-      <div className="fixed bottom-0 w-full h-24 md:h-24 bg-white z-50">
-        <Separator className="bg-yellow-300" />
-        <div className="px-6 md:px-8 flex items-center justify-between h-full w-full">
-          <Link
-            to="/"
-            className={twMerge(
-              "flex flex-col gap-1 items-center",
-              path === "/" || path.startsWith("/recipes/")
-                ? "text-yellow-400"
-                : "text-gray-400",
-            )}
-          >
-            <FiBookOpen className="size-7 md:size-10" />
-            <div className="text-xs md:text-sm">{m.nav_recipe()}</div>
-          </Link>
-          <Link
-            to="/plans"
-            className={twMerge(
-              "flex flex-col gap-1 items-center",
-              path.startsWith("/plans") ? "text-yellow-400" : "text-gray-400",
-            )}
-          >
-            <FiCalendar className="size-7 md:size-10" />
-            <div className="text-xs md:text-sm">{m.nav_plan()}</div>
-          </Link>
-          {(chatStore.currentRecipeId || chatStore.currentPlanId) && (
-            <ChatButton
-              className={"fixed bottom-32 right-8"}
-              recipeId={chatStore.currentRecipeId}
-              planId={chatStore.currentPlanId}
-              navigateToStep={chatStore.navigateToStep}
-              navigateToIngredients={chatStore.navigateToIngredients}
-              prompt={chatStore.prompt}
-            />
-          )}
-          <Link
-            to="/bookmarks"
-            className={twMerge(
-              "flex flex-col gap-1 items-center",
-              path === "/bookmarks" ? "text-yellow-400" : "text-gray-400",
-            )}
-          >
-            <FiBookmark className="size-7 md:size-10" />
-            <div className="text-xs md:text-sm">{m.nav_bookmarks()}</div>
-          </Link>
-          <Link
-            to="/cart"
-            className={twMerge(
-              "flex flex-col gap-1 items-center",
-              path === "/cart" ? "text-yellow-400" : "text-gray-400",
-            )}
-          >
-            <Badge.Anchor>
-              <FiShoppingCart className="size-7 md:size-10" />
-              {cart.recipes.length > 0 && (
-                <Badge size="sm" className="border-2 border-white">
-                  {cart.recipes.length}
-                </Badge>
+      {!isLogin && (
+        <div className="fixed bottom-0 w-full h-24 md:h-24 bg-white z-50">
+          <Separator className="bg-yellow-300" />
+          <div className="px-6 md:px-8 flex items-center justify-between h-full w-full">
+            <Link
+              to="/"
+              className={twMerge(
+                "flex flex-col gap-1 items-center",
+                path === "/" || path.startsWith("/recipes/")
+                  ? "text-yellow-400"
+                  : "text-gray-400",
               )}
-            </Badge.Anchor>
-            <div className="text-xs md:text-sm">{m.nav_cart()}</div>
-          </Link>
+            >
+              <FiBookOpen className="size-7 md:size-10" />
+              <div className="text-xs md:text-sm">{m.nav_recipe()}</div>
+            </Link>
+            <Link
+              to="/plans"
+              className={twMerge(
+                "flex flex-col gap-1 items-center",
+                path.startsWith("/plans") ? "text-yellow-400" : "text-gray-400",
+              )}
+            >
+              <FiCalendar className="size-7 md:size-10" />
+              <div className="text-xs md:text-sm">{m.nav_plan()}</div>
+            </Link>
+            {(chatStore.currentRecipeId || chatStore.currentPlanId) && (
+              <ChatButton
+                className={"fixed bottom-32 right-8"}
+                recipeId={chatStore.currentRecipeId}
+                planId={chatStore.currentPlanId}
+                navigateToStep={chatStore.navigateToStep}
+                navigateToIngredients={chatStore.navigateToIngredients}
+                prompt={chatStore.prompt}
+              />
+            )}
+            <Link
+              to="/bookmarks"
+              className={twMerge(
+                "flex flex-col gap-1 items-center",
+                path === "/bookmarks" ? "text-yellow-400" : "text-gray-400",
+              )}
+            >
+              <FiBookmark className="size-7 md:size-10" />
+              <div className="text-xs md:text-sm">{m.nav_bookmarks()}</div>
+            </Link>
+            <Link
+              to="/cart"
+              className={twMerge(
+                "flex flex-col gap-1 items-center",
+                path === "/cart" ? "text-yellow-400" : "text-gray-400",
+              )}
+            >
+              <Badge.Anchor>
+                <FiShoppingCart className="size-7 md:size-10" />
+                {cart.recipes.length > 0 && (
+                  <Badge size="sm" className="border-2 border-white">
+                    {cart.recipes.length}
+                  </Badge>
+                )}
+              </Badge.Anchor>
+              <div className="text-xs md:text-sm">{m.nav_cart()}</div>
+            </Link>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

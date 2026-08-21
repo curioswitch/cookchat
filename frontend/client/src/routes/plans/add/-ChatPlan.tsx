@@ -149,14 +149,14 @@ const ChatBubble = forwardRef<HTMLDivElement, { message: ChatMessage }>(
     return (
       <div
         className={twMerge(
-          "flex items-center gap-5 px-5 py-2 md:py-4",
+          "flex w-full min-w-0 items-center gap-5 px-0 py-2 md:px-5 md:py-4",
           isUser && "flex-row-reverse",
         )}
         ref={ref}
       >
         <div
           className={twMerge(
-            "flex max-w-2xl flex-col gap-2",
+            "flex w-full min-w-0 max-w-2xl flex-col gap-2",
             isUser ? "items-end" : "items-start",
           )}
         >
@@ -166,13 +166,13 @@ const ChatBubble = forwardRef<HTMLDivElement, { message: ChatMessage }>(
           {showBubble && (
             <div
               className={twMerge(
-                "rounded-3xl py-3 px-4 md:px-7 h-fit whitespace-pre-line speech-bubble mt-2 leading-7 md:text-xl md:font-medium md:leading-8 flex items-center",
+                "max-w-full min-w-0 rounded-3xl py-3 px-4 md:px-7 h-fit whitespace-pre-line speech-bubble mt-2 leading-7 md:text-xl md:font-medium md:leading-8 flex items-center",
                 isUser
                   ? "right text-right bg-yellow-400 text-white"
                   : "left bg-white",
               )}
             >
-              <div>
+              <div className="min-w-0 max-w-full break-all">
                 {message.content || <ChatBubbleLoading />}
                 {message.urls && (
                   <>
@@ -395,7 +395,7 @@ export function ChatPlan() {
     !messages[messages.length - 1]?.content;
 
   return (
-    <div>
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden">
       {messages.map((msg, i) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: ordered list of items
         <ChatBubble key={i} message={msg} />
