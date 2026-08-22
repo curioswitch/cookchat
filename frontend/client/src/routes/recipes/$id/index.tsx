@@ -235,7 +235,7 @@ function Page() {
       </div>
       <div className="px-4 py-2">
         {recipe.status === RecipeStatus.PROCESSING && (
-          <div className="p-4 bg-[#ffedd5] border border-[#ffedd5] rounded-2xl flex gap-2 items-center mb-2">
+          <div className="p-4 bg-[#fef9c3] border border-[#fef9c3] rounded-2xl flex gap-2 items-center mb-2">
             <FaLightbulb className="text-yellow size-6" />
             <div>{m.recipe_processing_notice()}</div>
           </div>
@@ -255,7 +255,7 @@ function Page() {
               <Button
                 onPress={onAddToPlan}
                 size="sm"
-                className="text-white bg-orange-200"
+                className="text-white bg-yellow-400"
               >
                 {m.plan_add_to_plan_button()}
               </Button>
@@ -278,7 +278,7 @@ function Page() {
           >
             <Button
               fullWidth
-              className="mb-4 text-yellow-400 py-4 px-6 bg-orange-100 md:py-8 md:text-large rounded-lg"
+              className="mb-4 text-yellow-500 py-4 px-6 bg-yellow-100 md:py-8 md:text-large rounded-lg"
               onPress={onCartToggle}
             >
               <HiShoppingCart className="size-5 md:size-8" />
@@ -308,7 +308,7 @@ function Page() {
               className="p-4 bg-white rounded-xl border border-yellow-200"
             >
               <div className="flex gap-2">
-                <div className="flex-none bg-orange-200/20 text-yellow-400 size-8 md:size-10 text-base md:text-lg rounded-full flex justify-center items-center">
+                <div className="flex-none bg-yellow-200/20 text-yellow-500 size-8 md:size-10 text-base md:text-lg rounded-full flex justify-center items-center">
                   {i + 1}
                 </div>
                 <p className="text-md md:text-2xl font-light prose">

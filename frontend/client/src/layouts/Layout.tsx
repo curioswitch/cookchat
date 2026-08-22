@@ -107,7 +107,7 @@ ${cart.extraItems.join("\n")}
                 {isCart && (
                   <HiShare
                     onClick={onShareClick}
-                    className="size-6 text-orange-400 cursor-pointer"
+                    className="size-6 text-yellow-400 cursor-pointer"
                   />
                 )}
               </div>
@@ -118,7 +118,7 @@ ${cart.extraItems.join("\n")}
               !isHome &&
                 !isBookmarks &&
                 !path.startsWith("/recipes/") &&
-                "flex-1 bg-linear-to-r from-[#fff7ed] to-[#ffedd5]",
+                "flex-1 bg-linear-to-r from-[#fefce8] to-[#fef9c3]",
               isBookmarks && "flex-1 bg-white",
               path.startsWith("/recipes/") && "flex-1 bg-white",
               isLogin && "flex flex-1 items-center justify-center bg-white",

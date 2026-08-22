@@ -14,7 +14,6 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useCallback } from "react";
 import { FaMagic } from "react-icons/fa";
-import { twMerge } from "tailwind-merge";
 
 import { m } from "../../../paraglide/messages";
 import {
@@ -24,6 +23,8 @@ import {
   setPlanIngredients,
   usePlanStore,
 } from "../../../stores";
+
+import { getSelectableOptionClassName } from "./-styles";
 
 function MainDishPlaceholder() {
   return (
@@ -145,7 +146,7 @@ export function SimplePlan() {
                       </p>
                     </div>
                   </Switch.Content>
-                  <Switch.Control className={isSelected ? "bg-orange-400" : ""}>
+                  <Switch.Control className={isSelected ? "bg-yellow-400" : ""}>
                     <Switch.Thumb />
                   </Switch.Control>
                 </>
@@ -163,10 +164,7 @@ export function SimplePlan() {
               <Checkbox value={RecipeGenre.JAPANESE.toString()}>
                 {({ isSelected }) => (
                   <Checkbox.Content
-                    className={twMerge(
-                      "border border-yellow-400 rounded-4xl py-2 px-4 w-fit text-sm",
-                      isSelected && "bg-orange-400 text-white",
-                    )}
+                    className={getSelectableOptionClassName(isSelected)}
                   >
                     {m.genre_japanese()}
                   </Checkbox.Content>
@@ -175,10 +173,7 @@ export function SimplePlan() {
               <Checkbox value={RecipeGenre.CHINESE.toString()}>
                 {({ isSelected }) => (
                   <Checkbox.Content
-                    className={twMerge(
-                      "border border-yellow-400 rounded-4xl py-2 px-4 w-fit text-sm",
-                      isSelected && "bg-orange-400 text-white",
-                    )}
+                    className={getSelectableOptionClassName(isSelected)}
                   >
                     {m.genre_chinese()}
                   </Checkbox.Content>
@@ -187,10 +182,7 @@ export function SimplePlan() {
               <Checkbox value={RecipeGenre.WESTERN.toString()}>
                 {({ isSelected }) => (
                   <Checkbox.Content
-                    className={twMerge(
-                      "border border-yellow-400 rounded-4xl py-2 px-4 w-fit text-sm",
-                      isSelected && "bg-orange-400 text-white",
-                    )}
+                    className={getSelectableOptionClassName(isSelected)}
                   >
                     {m.genre_western()}
                   </Checkbox.Content>
@@ -199,10 +191,7 @@ export function SimplePlan() {
               <Checkbox value={RecipeGenre.KOREAN.toString()}>
                 {({ isSelected }) => (
                   <Checkbox.Content
-                    className={twMerge(
-                      "border border-yellow-400 rounded-4xl py-2 px-4 w-fit text-sm",
-                      isSelected && "bg-orange-400 text-white",
-                    )}
+                    className={getSelectableOptionClassName(isSelected)}
                   >
                     {m.genre_korean()}
                   </Checkbox.Content>
@@ -211,10 +200,7 @@ export function SimplePlan() {
               <Checkbox value={RecipeGenre.ITALIAN.toString()}>
                 {({ isSelected }) => (
                   <Checkbox.Content
-                    className={twMerge(
-                      "border border-yellow-400 rounded-4xl py-2 px-4 w-fit text-sm",
-                      isSelected && "bg-orange-400 text-white",
-                    )}
+                    className={getSelectableOptionClassName(isSelected)}
                   >
                     {m.genre_italian()}
                   </Checkbox.Content>
@@ -223,10 +209,7 @@ export function SimplePlan() {
               <Checkbox value={RecipeGenre.ETHNIC.toString()}>
                 {({ isSelected }) => (
                   <Checkbox.Content
-                    className={twMerge(
-                      "border border-yellow-400 rounded-4xl py-2 px-4 w-fit text-sm",
-                      isSelected && "bg-orange-400 text-white",
-                    )}
+                    className={getSelectableOptionClassName(isSelected)}
                   >
                     {m.genre_ethnic()}
                   </Checkbox.Content>
