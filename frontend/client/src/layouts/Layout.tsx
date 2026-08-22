@@ -5,6 +5,7 @@ import {
   FiBookmark,
   FiBookOpen,
   FiCalendar,
+  FiPlusSquare,
   FiShoppingCart,
 } from "react-icons/fi";
 import { HiShare } from "react-icons/hi";
@@ -14,6 +15,8 @@ import { BackButton } from "../components/BackButton";
 import { ChatButton } from "../components/ChatButton";
 import { m } from "../paraglide/messages";
 import { useCartStore, useChatStore } from "../stores";
+
+import { getPlanNavigationState } from "./navigation";
 
 function getPageTitle(path: string) {
   if (path === "/bookmarks") {
@@ -54,6 +57,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isLogin = path === "/login";
   const isCart = path === "/cart";
   const isBookmarks = path === "/bookmarks";
+  const { isPlanCreate, isPlanView } = getPlanNavigationState(path);
 
   const cart = useCartStore();
   const chatStore = useChatStore();
@@ -127,28 +131,44 @@ ${cart.extraItems.join("\n")}
       {!isLogin && (
         <div className="fixed bottom-0 w-full h-24 md:h-24 bg-white z-50">
           <Separator className="bg-yellow-300" />
-          <div className="px-6 md:px-8 flex items-center justify-between h-full w-full">
+          <div className="px-2 md:px-8 flex items-center justify-between gap-1 md:gap-4 h-full w-full">
             <Link
               to="/"
               className={twMerge(
-                "flex flex-col gap-1 items-center",
+                "flex flex-1 min-w-0 flex-col gap-1 items-center",
                 path === "/" || path.startsWith("/recipes/")
                   ? "text-yellow-400"
                   : "text-gray-400",
               )}
             >
-              <FiBookOpen className="size-7 md:size-10" />
-              <div className="text-xs md:text-sm">{m.nav_recipe()}</div>
+              <FiBookOpen className="size-6 md:size-10" />
+              <div className="text-[10px] md:text-sm whitespace-nowrap">
+                {m.nav_recipe()}
+              </div>
             </Link>
             <Link
               to="/plans"
               className={twMerge(
-                "flex flex-col gap-1 items-center",
-                path.startsWith("/plans") ? "text-yellow-400" : "text-gray-400",
+                "flex flex-1 min-w-0 flex-col gap-1 items-center",
+                isPlanView ? "text-yellow-400" : "text-gray-400",
               )}
             >
-              <FiCalendar className="size-7 md:size-10" />
-              <div className="text-xs md:text-sm">{m.nav_plan()}</div>
+              <FiCalendar className="size-6 md:size-10" />
+              <div className="text-[10px] md:text-sm whitespace-nowrap">
+                {m.nav_plan_view()}
+              </div>
+            </Link>
+            <Link
+              to="/plans/add"
+              className={twMerge(
+                "flex flex-1 min-w-0 flex-col gap-1 items-center",
+                isPlanCreate ? "text-yellow-400" : "text-gray-400",
+              )}
+            >
+              <FiPlusSquare className="size-6 md:size-10" />
+              <div className="text-[10px] md:text-sm whitespace-nowrap">
+                {m.nav_plan_create()}
+              </div>
             </Link>
             {(chatStore.currentRecipeId || chatStore.currentPlanId) && (
               <ChatButton
@@ -163,29 +183,33 @@ ${cart.extraItems.join("\n")}
             <Link
               to="/bookmarks"
               className={twMerge(
-                "flex flex-col gap-1 items-center",
+                "flex flex-1 min-w-0 flex-col gap-1 items-center",
                 path === "/bookmarks" ? "text-yellow-400" : "text-gray-400",
               )}
             >
-              <FiBookmark className="size-7 md:size-10" />
-              <div className="text-xs md:text-sm">{m.nav_bookmarks()}</div>
+              <FiBookmark className="size-6 md:size-10" />
+              <div className="text-[10px] md:text-sm whitespace-nowrap">
+                {m.nav_bookmarks()}
+              </div>
             </Link>
             <Link
               to="/cart"
               className={twMerge(
-                "flex flex-col gap-1 items-center",
+                "flex flex-1 min-w-0 flex-col gap-1 items-center",
                 path === "/cart" ? "text-yellow-400" : "text-gray-400",
               )}
             >
               <Badge.Anchor>
-                <FiShoppingCart className="size-7 md:size-10" />
+                <FiShoppingCart className="size-6 md:size-10" />
                 {cart.recipes.length > 0 && (
                   <Badge size="sm" className="border-2 border-white">
                     {cart.recipes.length}
                   </Badge>
                 )}
               </Badge.Anchor>
-              <div className="text-xs md:text-sm">{m.nav_cart()}</div>
+              <div className="text-[10px] md:text-sm whitespace-nowrap">
+                {m.nav_cart()}
+              </div>
             </Link>
           </div>
         </div>

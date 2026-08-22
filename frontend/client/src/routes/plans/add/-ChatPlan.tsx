@@ -34,6 +34,8 @@ import { getFirebaseConfig } from "../../../hooks/firebase/config";
 import { useFrontendQueries } from "../../../hooks/rpc";
 import { m } from "../../../paraglide/messages";
 
+import { ChatMessageContent } from "./-ChatMessageContent";
+
 const maxImageBytes = 5 * 1024 * 1024;
 const maxImageDimension = 2048;
 
@@ -166,14 +168,21 @@ const ChatBubble = forwardRef<HTMLDivElement, { message: ChatMessage }>(
           {showBubble && (
             <div
               className={twMerge(
-                "max-w-full min-w-0 rounded-3xl py-3 px-4 md:px-7 h-fit whitespace-pre-line speech-bubble mt-2 leading-7 md:text-xl md:font-medium md:leading-8 flex items-center",
+                "max-w-full min-w-0 rounded-3xl py-3 px-4 md:px-7 h-fit speech-bubble mt-2 leading-7 md:text-xl md:font-medium md:leading-8 flex items-center",
                 isUser
                   ? "right text-right bg-yellow-400 text-white"
                   : "left bg-white",
               )}
             >
-              <div className="min-w-0 max-w-full break-all">
-                {message.content || <ChatBubbleLoading />}
+              <div className="min-w-0 max-w-full break-words [overflow-wrap:anywhere]">
+                {message.content ? (
+                  <ChatMessageContent
+                    content={message.content}
+                    isUser={isUser}
+                  />
+                ) : (
+                  <ChatBubbleLoading />
+                )}
                 {message.urls && (
                   <>
                     <br />
