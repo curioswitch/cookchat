@@ -30,7 +30,7 @@ function Page() {
           <Tabs.Panel id="simple">
             <SimplePlan />
           </Tabs.Panel>
-          <Tabs.Panel id="deep-research">
+          <Tabs.Panel id="deep-research" className="p-0!">
             <ChatPlan />
           </Tabs.Panel>
         </div>
