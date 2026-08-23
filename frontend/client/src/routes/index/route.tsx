@@ -3,9 +3,7 @@ import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { FaRegUserCircle } from "react-icons/fa";
 
-import logoSVG from "../../assets/logo.svg";
 import { useFrontendQueries } from "../../hooks/rpc";
 import { m } from "../../paraglide/messages";
 
@@ -63,12 +61,6 @@ function Page() {
 
   return (
     <div className="p-4">
-      <div className="flex items-center justify-between mt-2 mb-4">
-        <img src={logoSVG} alt={m.app_logo_alt()} />
-        <Link to="/settings">
-          <FaRegUserCircle className="size-6 text-yellow-400" />
-        </Link>
-      </div>
       <Input
         fullWidth
         placeholder={m.home_search_placeholder()}
