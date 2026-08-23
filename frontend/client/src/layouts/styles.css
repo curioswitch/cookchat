@@ -2,6 +2,12 @@
 @import "@heroui/styles";
 @plugin "@tailwindcss/typography";
 
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
 .mic-bubble {
   @apply bg-contain bg-no-repeat bg-center bg-[url('../assets/mic-bubble.svg')];
 }
