@@ -38,6 +38,7 @@ import { ChatComposerShell } from "./-ChatComposerShell";
 import { ChatMessageContent } from "./-ChatMessageContent";
 import { ChatQuickActions } from "./-ChatQuickActions";
 import { getQuickReplies } from "./-quickReplies";
+import { scrollChatToEnd } from "./-scrollChatToEnd";
 
 const maxImageBytes = 5 * 1024 * 1024;
 const maxImageDimension = 2048;
@@ -241,6 +242,7 @@ export function ChatPlan() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string>();
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   const doChatPlan = useMutation(chatPlan, {
     onMutate: (req) => {
@@ -397,7 +399,7 @@ export function ChatPlan() {
   useEffect(() => {
     const _ = getChatMessagesRes;
     const __ = doChatPlan.isPending;
-    window.scrollTo(0, document.body.scrollHeight);
+    scrollChatToEnd(chatEndRef.current);
   }, [getChatMessagesRes, doChatPlan.isPending]);
 
   const messages = getChatMessagesRes?.messages ?? [];
@@ -525,6 +527,7 @@ export function ChatPlan() {
           </p>
         )}
       </ChatComposerShell>
+      <div ref={chatEndRef} aria-hidden />
     </div>
   );
 }
