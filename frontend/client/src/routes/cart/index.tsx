@@ -139,7 +139,7 @@ function SwipeableRecipeCard({
             params={{ id: recipe.id }}
             className="text-gray-600 w-full block"
           >
-            <div className="bg-amber-50 p-4 rounded-lg w-full">
+            <div className="bg-yellow-50 p-4 rounded-lg w-full">
               <div>{recipe.title}</div>
               <div className="text-sm text-gray-400">
                 {recipe.servingSize}の素材
@@ -241,7 +241,7 @@ function Page() {
         <Button
           onPress={onAddItemClick}
           fullWidth
-          className="text-white mt-2 bg-orange-400"
+          className="text-white mt-2 bg-yellow-400"
           variant="primary"
         >
           {m.cart_add_item_button()}

@@ -34,6 +34,11 @@ import { getFirebaseConfig } from "../../../hooks/firebase/config";
 import { useFrontendQueries } from "../../../hooks/rpc";
 import { m } from "../../../paraglide/messages";
 
+import { ChatComposerShell } from "./-ChatComposerShell";
+import { ChatMessageContent } from "./-ChatMessageContent";
+import { ChatQuickActions } from "./-ChatQuickActions";
+import { getQuickReplies } from "./-quickReplies";
+
 const maxImageBytes = 5 * 1024 * 1024;
 const maxImageDimension = 2048;
 
@@ -166,14 +171,21 @@ const ChatBubble = forwardRef<HTMLDivElement, { message: ChatMessage }>(
           {showBubble && (
             <div
               className={twMerge(
-                "max-w-full min-w-0 rounded-3xl py-3 px-4 md:px-7 h-fit whitespace-pre-line speech-bubble mt-2 leading-7 md:text-xl md:font-medium md:leading-8 flex items-center",
+                "max-w-full min-w-0 rounded-3xl py-3 px-4 md:px-7 h-fit speech-bubble mt-2 leading-7 md:text-xl md:font-medium md:leading-8 flex items-center",
                 isUser
                   ? "right text-right bg-yellow-400 text-white"
                   : "left bg-white",
               )}
             >
-              <div className="min-w-0 max-w-full break-all">
-                {message.content || <ChatBubbleLoading />}
+              <div className="min-w-0 max-w-full break-words [overflow-wrap:anywhere]">
+                {message.content ? (
+                  <ChatMessageContent
+                    content={message.content}
+                    isUser={isUser}
+                  />
+                ) : (
+                  <ChatBubbleLoading />
+                )}
                 {message.urls && (
                   <>
                     <br />
@@ -292,6 +304,19 @@ export function ChatPlan() {
     startNewChat();
   }, [startNewChat]);
 
+  const sendMessage = useCallback(
+    (message: string, imageUrls: string[] = []) => {
+      doChatPlan.mutate({
+        chatId: getChatMessagesRes?.chatId,
+        message,
+        imageUrls,
+      });
+      setInputText("");
+      setSelectedImage(undefined);
+    },
+    [doChatPlan, getChatMessagesRes?.chatId],
+  );
+
   const onSendClick = useCallback(async () => {
     if (!firebaseUser) {
       return;
@@ -327,14 +352,8 @@ export function ChatPlan() {
       }
     }
 
-    doChatPlan.mutate({
-      chatId: getChatMessagesRes?.chatId,
-      message: message,
-      imageUrls: imageURLs,
-    });
-    setInputText("");
-    setSelectedImage(undefined);
-  }, [firebaseUser, getChatMessagesRes, inputText, selectedImage, doChatPlan]);
+    sendMessage(message, imageURLs);
+  }, [firebaseUser, inputText, selectedImage, sendMessage]);
 
   const onImageChange = useCallback(
     async (event: ChangeEvent<HTMLInputElement>) => {
@@ -381,6 +400,26 @@ export function ChatPlan() {
     window.scrollTo(0, document.body.scrollHeight);
   }, [getChatMessagesRes, doChatPlan.isPending]);
 
+  const messages = getChatMessagesRes?.messages ?? [];
+  const assistantPending =
+    messages[messages.length - 1]?.role === ChatMessage_Role.ASSISTANT &&
+    !messages[messages.length - 1]?.content;
+  const latestMessage = messages[messages.length - 1];
+  const quickReplies =
+    latestMessage?.role === ChatMessage_Role.ASSISTANT && latestMessage.content
+      ? getQuickReplies(latestMessage.content)
+      : [];
+
+  const onQuickReplyClick = useCallback(
+    (reply: string) => {
+      if (!firebaseUser || doChatPlan.isPending || assistantPending) {
+        return;
+      }
+      sendMessage(reply);
+    },
+    [firebaseUser, doChatPlan.isPending, assistantPending, sendMessage],
+  );
+
   if (isPending) {
     return <div>{m.common_loading()}</div>;
   }
@@ -389,26 +428,14 @@ export function ChatPlan() {
     throw new Error("Chat messages not loaded");
   }
 
-  const messages = getChatMessagesRes.messages;
-  const assistantPending =
-    messages[messages.length - 1]?.role === ChatMessage_Role.ASSISTANT &&
-    !messages[messages.length - 1]?.content;
-
   return (
     <div className="w-full min-w-0 max-w-full overflow-x-hidden">
       {messages.map((msg, i) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: ordered list of items
         <ChatBubble key={i} message={msg} />
       ))}
-      <div className="p-4 flex gap-4">
-        <Button
-          className="bg-yellow-400"
-          onPress={onNewChatClick}
-          isDisabled={doChatPlan.isPending || assistantPending}
-        >
-          {m.add_plan_new_chat()}
-        </Button>
-        {getChatMessagesRes.planId && (
+      {getChatMessagesRes.planId && (
+        <div className="flex gap-4 p-4">
           <Link
             to="/plans/$id"
             params={{ id: getChatMessagesRes.planId }}
@@ -416,9 +443,16 @@ export function ChatPlan() {
           >
             <Button className="bg-yellow-400">{m.add_plan_view_plan()}</Button>
           </Link>
-        )}
-      </div>
-      <div className="w-full min-w-0 rounded-2xl border border-gray-200 bg-white p-4 md:p-6">
+        </div>
+      )}
+      <ChatComposerShell>
+        <ChatQuickActions
+          quickReplies={quickReplies}
+          newChatLabel={m.add_plan_new_chat()}
+          isDisabled={doChatPlan.isPending || assistantPending}
+          onQuickReply={onQuickReplyClick}
+          onNewChat={onNewChatClick}
+        />
         {selectedImage && (
           <div className="relative mb-4 w-fit">
             <img
@@ -437,7 +471,7 @@ export function ChatPlan() {
             </Button>
           </div>
         )}
-        <div className="flex min-w-0 gap-3">
+        <div className="flex w-full min-w-0 gap-2 md:gap-3">
           <input
             ref={imageInputRef}
             type="file"
@@ -464,7 +498,11 @@ export function ChatPlan() {
             onChange={setInputText}
             className="min-w-0 flex-1"
           >
-            <Input fullWidth placeholder={m.chat_input_placeholder()} />
+            <Input
+              fullWidth
+              className="w-full"
+              placeholder={m.chat_input_placeholder()}
+            />
           </TextField>
           <Button
             isIconOnly
@@ -486,7 +524,7 @@ export function ChatPlan() {
             {uploadError}
           </p>
         )}
-      </div>
+      </ChatComposerShell>
     </div>
   );
 }

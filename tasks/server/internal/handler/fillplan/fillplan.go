@@ -14,6 +14,7 @@ import (
 	"google.golang.org/genai"
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
+	"github.com/curioswitch/cookchat/common/planexec"
 	"github.com/curioswitch/cookchat/common/recipegen"
 	tasksapi "github.com/curioswitch/cookchat/tasks/api/go"
 	"github.com/curioswitch/cookchat/tasks/server/internal/llm"
@@ -78,10 +79,9 @@ func (h *Handler) FillPlan(ctx context.Context, req *tasksapi.FillPlanRequest) (
 
 	content := make([]*genai.Content, len(recipes))
 	for i, recipe := range recipes {
-		recipeJSON, err := json.Marshal(contentWithID{
-			RecipeID:      recipe.ID,
-			Content:       recipe.Content,
-			StepImageURLs: recipe.StepImageURLs,
+		recipeJSON, err := json.Marshal(planexec.RecipeInput{
+			RecipeID: recipe.ID,
+			Content:  recipe.Content,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("fillplan: marshaling recipe content: %w", err)
@@ -92,63 +92,7 @@ func (h *Handler) FillPlan(ctx context.Context, req *tasksapi.FillPlanRequest) (
 	res, err := h.genAI.Models.GenerateContent(ctx, "gemini-3.6-flash", content, &genai.GenerateContentConfig{
 		SystemInstruction: genai.NewContentFromText(llm.GenerateExecutionPlanPrompt(), genai.RoleModel),
 		ResponseMIMEType:  "application/json",
-		ResponseSchema: &genai.Schema{
-			Type:        "object",
-			Description: "The recipes of a day in the meal plan.",
-			Properties: map[string]*genai.Schema{
-				"recipes": {
-					Type:        "array",
-					Description: "The recipe IDs for the day.",
-					Items: &genai.Schema{
-						Type: "string",
-					},
-				},
-				"stepGroups": {
-					Type:        "array",
-					Description: "The groups of recipe steps to make the plan.",
-					Items: &genai.Schema{
-						Type: "object",
-						Properties: map[string]*genai.Schema{
-							"label": {
-								Type:        "string",
-								Description: "The label of the step group, e.g. 準備, 調理, 仕上げ.",
-							},
-							"steps": {
-								Type:        "array",
-								Description: "The steps in the step group.",
-								Items: &genai.Schema{
-									Type: "object",
-									Properties: map[string]*genai.Schema{
-										"description": {
-											Type:        "string",
-											Description: "The description of the step.",
-										},
-										"imageUrl": {
-											Type:        "string",
-											Description: "The image URL for the step.",
-										},
-									},
-									Required: []string{"description"},
-								},
-							},
-							"note": {
-								Type:        "string",
-								Description: "Any note that can help when doing the steps in the group, such as what to do while waiting for one",
-							},
-						},
-						Required: []string{"label", "steps"},
-					},
-				},
-				"notes": {
-					Type:        "array",
-					Description: "Any useful notes for preparing the plan",
-					Items: &genai.Schema{
-						Type: "string",
-					},
-				},
-			},
-			Required: []string{"recipes", "stepGroups"},
-		},
+		ResponseSchema:    planexec.ResponseSchema(),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("fillplan: generating execution plan: %w", err)
@@ -157,19 +101,20 @@ func (h *Handler) FillPlan(ctx context.Context, req *tasksapi.FillPlanRequest) (
 		return nil, fmt.Errorf("fillplan: unexpected generation result: %v", res)
 	}
 
-	if err := json.Unmarshal([]byte(res.Candidates[0].Content.Parts[0].Text), &plan); err != nil {
+	var generatedPlan planexec.GeneratedPlan
+	if err := json.Unmarshal([]byte(res.Candidates[0].Content.Parts[0].Text), &generatedPlan); err != nil {
 		return nil, fmt.Errorf("fillplan: parsing generation result: %w", err)
 	}
+	stepGroups, err := planexec.ResolveStepGroups(generatedPlan.StepGroups, recipes)
+	if err != nil {
+		return nil, fmt.Errorf("fillplan: resolving generated step references: %w", err)
+	}
+	plan.StepGroups = stepGroups
+	plan.Notes = generatedPlan.Notes
 	plan.Status = cookchatdb.PlanStatusActive
 	if _, err := planDoc.Ref.Set(ctx, plan); err != nil {
 		return nil, fmt.Errorf("fillplan: updating plan doc: %w", err)
 	}
 
 	return &tasksapi.FillPlanResponse{}, nil
-}
-
-type contentWithID struct {
-	RecipeID      string                   `json:"recipeId"`
-	Content       cookchatdb.RecipeContent `json:"content"`
-	StepImageURLs []string                 `json:"stepImageUrls"`
 }

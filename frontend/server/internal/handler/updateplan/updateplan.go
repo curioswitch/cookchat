@@ -13,6 +13,7 @@ import (
 	"google.golang.org/genai"
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
+	"github.com/curioswitch/cookchat/common/planexec"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
 	"github.com/curioswitch/cookchat/frontend/server/internal/llm"
 )
@@ -70,9 +71,16 @@ func (h *Handler) fillPlan(ctx context.Context, plan cookchatdb.Plan) (cookchatd
 		return plan, fmt.Errorf("updateplan: fetching recipes for plan: %w", err)
 	}
 
+	recipes := make([]cookchatdb.Recipe, len(recipeDocs))
 	content := make([]*genai.Content, len(recipeDocs))
 	for i, doc := range recipeDocs {
-		recipeJSON, err := json.Marshal(doc.Data())
+		if err := doc.DataTo(&recipes[i]); err != nil {
+			return plan, fmt.Errorf("updateplan: decoding recipe: %w", err)
+		}
+		recipeJSON, err := json.Marshal(planexec.RecipeInput{
+			RecipeID: recipes[i].ID,
+			Content:  recipes[i].Content,
+		})
 		if err != nil {
 			return plan, fmt.Errorf("updateplan: marshalling recipe document to JSON: %w", err)
 		}
@@ -82,63 +90,7 @@ func (h *Handler) fillPlan(ctx context.Context, plan cookchatdb.Plan) (cookchatd
 	res, err := h.genAI.Models.GenerateContent(ctx, "gemini-3.6-flash", content, &genai.GenerateContentConfig{
 		SystemInstruction: genai.NewContentFromText(llm.GenerateExecutionPlanPrompt(), genai.RoleModel),
 		ResponseMIMEType:  "application/json",
-		ResponseSchema: &genai.Schema{
-			Type:        "object",
-			Description: "The recipes of a day in the meal plan.",
-			Properties: map[string]*genai.Schema{
-				"recipes": {
-					Type:        "array",
-					Description: "The recipe IDs for the day.",
-					Items: &genai.Schema{
-						Type: "string",
-					},
-				},
-				"stepGroups": {
-					Type:        "array",
-					Description: "The groups of recipe steps to make the plan.",
-					Items: &genai.Schema{
-						Type: "object",
-						Properties: map[string]*genai.Schema{
-							"label": {
-								Type:        "string",
-								Description: "The label of the step group, e.g. 準備, 調理, 仕上げ.",
-							},
-							"steps": {
-								Type:        "array",
-								Description: "The steps in the step group.",
-								Items: &genai.Schema{
-									Type: "object",
-									Properties: map[string]*genai.Schema{
-										"description": {
-											Type:        "string",
-											Description: "The description of the step.",
-										},
-										"imageUrl": {
-											Type:        "string",
-											Description: "The image URL for the step.",
-										},
-									},
-									Required: []string{"description"},
-								},
-							},
-							"note": {
-								Type:        "string",
-								Description: "Any note that can help when doing the steps in the group, such as what to do while waiting for one",
-							},
-						},
-						Required: []string{"label", "steps"},
-					},
-				},
-				"notes": {
-					Type:        "array",
-					Description: "Any useful notes for preparing the plan",
-					Items: &genai.Schema{
-						Type: "string",
-					},
-				},
-			},
-			Required: []string{"recipes", "stepGroups"},
-		},
+		ResponseSchema:    planexec.ResponseSchema(),
 	})
 	if err != nil {
 		return plan, fmt.Errorf("updateplan: calling GenerateContent for execution plan: %w", err)
@@ -146,8 +98,15 @@ func (h *Handler) fillPlan(ctx context.Context, plan cookchatdb.Plan) (cookchatd
 	if len(res.Candidates) != 1 || len(res.Candidates[0].Content.Parts) != 1 || res.Candidates[0].Content.Parts[0].Text == "" {
 		return plan, fmt.Errorf("updateplan: unexpected response from generate ai for execution plan: %v", res)
 	}
-	if err := json.Unmarshal([]byte(res.Candidates[0].Content.Parts[0].Text), &plan); err != nil {
+	var generatedPlan planexec.GeneratedPlan
+	if err := json.Unmarshal([]byte(res.Candidates[0].Content.Parts[0].Text), &generatedPlan); err != nil {
 		return plan, fmt.Errorf("updateplan: failed to unmarshal received plan: %w", err)
 	}
+	stepGroups, err := planexec.ResolveStepGroups(generatedPlan.StepGroups, recipes)
+	if err != nil {
+		return plan, fmt.Errorf("updateplan: resolving generated step references: %w", err)
+	}
+	plan.StepGroups = stepGroups
+	plan.Notes = generatedPlan.Notes
 	return plan, nil
 }

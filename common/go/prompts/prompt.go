@@ -98,7 +98,7 @@ You support users generating recipes they will cook. Given the details of a reci
 for step #%d in the recipe, with the first step being step 0. The steps are in the JSON field "steps". 
 The image will be rendered along with the step as the user cooks the recipe. When generating images for a step except for
 step 0, it is generally necessary to understand the steps before it to know what the state of cooking should look like for
-that step. Return the same number of images as steps, one image per step.
+that step. Generate exactly one image for the requested step.
 
 # Instructions / Rules
 

@@ -221,7 +221,7 @@ function DateSelect({
           {m.plans_month_title({ month })}
         </h2>
         <div className="flex justify-between items-center">
-          <Button isIconOnly className="bg-orange-400 size-3" onClick={onLeft}>
+          <Button isIconOnly className="bg-yellow-400 size-3" onClick={onLeft}>
             <FaArrowLeft className="text-white size-2" />
           </Button>
           <div
@@ -241,7 +241,7 @@ function DateSelect({
                   type="button"
                   className={twMerge(
                     "p-1 md:p-10 cursor-pointer",
-                    plans.length > 0 && "border-3 rounded-xl border-orange-400",
+                    plans.length > 0 && "border-3 rounded-xl border-yellow-400",
                   )}
                   data-offset={i}
                   data-date={date.toString()}
@@ -250,7 +250,7 @@ function DateSelect({
                   <div className="flex flex-col items-center">
                     <div
                       className={twMerge(
-                        "bg-orange-500 text-white! px-1 py-1 text-xs rounded",
+                        "bg-yellow-500 text-white! px-1 py-1 text-xs rounded",
                         plans.length === 0 && "invisible",
                       )}
                     >
@@ -259,7 +259,7 @@ function DateSelect({
                     <div
                       className={twMerge(
                         date.equals(selectedDate)
-                          ? "text-orange-500"
+                          ? "text-yellow-500"
                           : "text-gray-600",
                       )}
                     >
@@ -270,7 +270,7 @@ function DateSelect({
               </div>
             ))}
           </div>
-          <Button isIconOnly className="bg-orange-400 size-3" onClick={onRight}>
+          <Button isIconOnly className="bg-yellow-400 size-3" onClick={onRight}>
             <FaArrowRight className="text-white size-2" />
           </Button>
         </div>
@@ -327,7 +327,7 @@ function Page() {
       />
       <div className="flex justify-center">
         <RouterLink to="/plans/add" className="block fixed bottom-30">
-          <Button className="text-white bg-orange-400">
+          <Button className="text-white bg-yellow-400">
             {m.plans_add_button()}
           </Button>
         </RouterLink>

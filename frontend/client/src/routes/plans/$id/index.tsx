@@ -54,7 +54,7 @@ function StepGroup({
               // biome-ignore lint/suspicious/noArrayIndexKey: indexed list of items
               key={i}
               ref={(node) => setStepRef(groupIdx, i, node)}
-              className="border-l-6 border-orange-400 p-4 bg-[#fff7ed] rounded-r-xl"
+              className="border-l-6 border-yellow-400 p-4 bg-[#fefce8] rounded-r-xl"
             >
               <h4 className="text-gray-600">{step.description}</h4>
               {step.imageUrl && (
@@ -68,8 +68,8 @@ function StepGroup({
           ))}
         </div>
         {group.note && (
-          <div className="p-4 bg-[#fff7ed] mt-4 rounded-2xl border-1 border-yellow-400 flex gap-2 items-center">
-            <FaLightbulb className="flex-1/12 size-6 text-orange-400" />
+          <div className="p-4 bg-[#fefce8] mt-4 rounded-2xl border-1 border-yellow-400 flex gap-2 items-center">
+            <FaLightbulb className="flex-1/12 size-6 text-yellow-400" />
             <div className="flex-11/12">{group.note}</div>
           </div>
         )}
@@ -90,9 +90,9 @@ function Ingredients({
     <div
       className={twMerge(
         "px-4 py-2 rounded-xl border-1",
-        styleIdx === 0 && "border-[#fed7aa] bg-[#fff7ed]",
-        styleIdx === 1 && "border-[#bbf7d0] bg-[#f0fdf4]",
-        styleIdx === 2 && "border-[#fde68a] bg-[#fffbeb]",
+        styleIdx === 0 && "border-[#fef08a] bg-[#fefce8]",
+        styleIdx === 1 && "border-[#fde047] bg-[#fef9c3]",
+        styleIdx === 2 && "border-[#fef08a] bg-[#fefce8]",
       )}
     >
       <h3 className="mt-0 prose">{section.title}</h3>
@@ -104,9 +104,9 @@ function Ingredients({
             <div
               className={twMerge(
                 "text-xs!",
-                styleIdx === 0 && "text-[#ea580c]",
-                styleIdx === 1 && "text-[#16a34a]",
-                styleIdx === 2 && "text-[#d97706]",
+                styleIdx === 0 && "text-[#ca8a04]",
+                styleIdx === 1 && "text-[#a16207]",
+                styleIdx === 2 && "text-[#eab308]",
               )}
             >
               {ingredient.quantity}
@@ -234,8 +234,8 @@ function Page() {
     <>
       <div className="px-4 py-2 border-y-1 border-yellow-400 bg-white">
         {plan.status === PlanStatus.PROCESSING && (
-          <div className="p-4 bg-[#ffedd5] border-1 border-[#ffedd5] rounded-2xl flex gap-2 items-center mb-2">
-            <FaLightbulb className="text-orange-400 size-6" />
+          <div className="p-4 bg-[#fef9c3] border-1 border-[#fef9c3] rounded-2xl flex gap-2 items-center mb-2">
+            <FaLightbulb className="text-yellow-400 size-6" />
             <div>{m.plan_processing_notice()}</div>
           </div>
         )}
@@ -270,7 +270,7 @@ function Page() {
           <h2 className="text-gray-600 text-xl">{m.common_ingredients()}</h2>
           <button
             type="button"
-            className="flex gap-2 items-center text-orange-400 cursor-pointer"
+            className="flex gap-2 items-center text-yellow-400 cursor-pointer"
             onClick={addToCart}
           >
             <HiShoppingCart className="size-5 md:size-8" />{" "}
@@ -309,16 +309,16 @@ function Page() {
       ))}
       {plan.notes.length > 0 && (
         <div className="p-4">
-          <div className="p-4 border-1 border-yellow-400 rounded-2xl bg-linear-to-r from-[#ffedd5] to-[#fed7aa]">
+          <div className="p-4 border-1 border-yellow-400 rounded-2xl bg-linear-to-r from-[#fef9c3] to-[#fef08a]">
             <div className="flex gap-2 items-center">
-              <FaStar className="text-orange-400" />
+              <FaStar className="text-yellow-400" />
               <div className="text-large">{m.plan_notes_title()}</div>
             </div>
             <ol className="flex flex-col gap-2 mt-2">
               {plan.notes.map((note, i) => (
                 // biome-ignore lint/suspicious/noArrayIndexKey: indexed list of items
                 <li key={i} className="flex gap-2 items-center">
-                  <FaCheck className="flex-1/12 size-3 text-orange-400" />
+                  <FaCheck className="flex-1/12 size-3 text-yellow-400" />
                   <div className="flex-11/12 text-gray-600 text-small ">
                     {note}
                   </div>

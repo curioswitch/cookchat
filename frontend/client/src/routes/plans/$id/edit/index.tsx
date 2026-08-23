@@ -76,7 +76,7 @@ function Page() {
         onPress={onSaveClick}
         isDisabled={doUpdatePlan.isPending}
         fullWidth
-        className="mt-4 bg-orange-400"
+        className="mt-4 bg-yellow-400"
       >
         {m.common_save()}
       </Button>
