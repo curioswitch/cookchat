@@ -27,6 +27,7 @@ import { enableEditPlan } from "../../stores";
 import { hasPendingRecipeImages, PlanRecipeImage } from "./-PlanRecipeImage";
 
 const validator = createValidator();
+const EMPTY_RECIPE_IMAGE_IDS: ReadonlySet<string> = new Set();
 
 export const Route = createFileRoute("/plans/")({
   component: Page,
@@ -35,9 +36,13 @@ export const Route = createFileRoute("/plans/")({
 function PlanSnippet({
   plan,
   invalidatePlans,
+  failedRecipeImageIds,
+  onRecipeImageError,
 }: {
   plan: PlanSnippetValid;
   invalidatePlans: () => void;
+  failedRecipeImageIds: ReadonlySet<string>;
+  onRecipeImageError: (recipeId: string) => void;
 }) {
   const navigate = useNavigate();
 
@@ -97,6 +102,8 @@ function PlanSnippet({
                 imageUrl={plan.recipes[0].imageUrl}
                 title={plan.recipes[0].title}
                 loadingLabel={m.plan_image_generating()}
+                hasLoadError={failedRecipeImageIds.has(plan.recipes[0].id)}
+                onLoadError={() => onRecipeImageError(plan.recipes[0].id)}
               />
               <h5 className="text-base text-gray-600">
                 {plan.recipes[0].title}
@@ -115,6 +122,8 @@ function PlanSnippet({
                     imageUrl={recipe.imageUrl}
                     title={recipe.title}
                     loadingLabel={m.plan_image_generating()}
+                    hasLoadError={failedRecipeImageIds.has(recipe.id)}
+                    onLoadError={() => onRecipeImageError(recipe.id)}
                   />
                   <h5 className="text-sm text-gray-600">{recipe.title}</h5>
                 </div>
@@ -137,11 +146,15 @@ function DateSelect({
   startDate,
   setStartDate,
   invalidatePlans,
+  failedRecipeImageIds,
+  onRecipeImageError,
 }: {
   plans: PlanSnippetValid[] | undefined;
   startDate: Temporal.PlainDate;
   setStartDate: React.Dispatch<React.SetStateAction<Temporal.PlainDate>>;
   invalidatePlans: () => void;
+  failedRecipeImageIds: ReadonlySet<string>;
+  onRecipeImageError: (recipeId: string) => void;
 }) {
   const [selectedOffset, setSelectedOffset] = useState(3);
   const locale = getLocale();
@@ -286,6 +299,8 @@ function DateSelect({
             key={plan.id}
             plan={plan}
             invalidatePlans={invalidatePlans}
+            failedRecipeImageIds={failedRecipeImageIds}
+            onRecipeImageError={onRecipeImageError}
           />
         ))}
       </div>
@@ -299,6 +314,10 @@ function Page() {
 
   const today = useMemo(() => Temporal.Now.plainDateISO(), []);
   const [startDate, setStartDate] = useState(today.subtract({ days: 3 }));
+  const [recipeImageFailures, setRecipeImageFailures] = useState<{
+    dataUpdatedAt: number;
+    recipeIds: ReadonlySet<string>;
+  }>(() => ({ dataUpdatedAt: 0, recipeIds: new Set() }));
 
   const getPlansQuery = queries.getPlans({
     startDate: new Date(
@@ -314,12 +333,45 @@ function Page() {
     });
   }, [queryClient, getPlansQuery]);
 
-  const { data: plansRes } = useQuery({
+  const { data: plansRes, dataUpdatedAt } = useQuery({
     ...getPlansQuery,
-    refetchInterval: (query) =>
-      hasPendingRecipeImages(query.state.data?.plans) ? 3000 : false,
+    refetchInterval: (query) => {
+      const failedRecipeImageIds =
+        recipeImageFailures.dataUpdatedAt === query.state.dataUpdatedAt
+          ? recipeImageFailures.recipeIds
+          : EMPTY_RECIPE_IMAGE_IDS;
+      return hasPendingRecipeImages(
+        query.state.data?.plans,
+        failedRecipeImageIds,
+      )
+        ? 3000
+        : false;
+    },
     refetchIntervalInBackground: true,
   });
+
+  const failedRecipeImageIds =
+    recipeImageFailures.dataUpdatedAt === dataUpdatedAt
+      ? recipeImageFailures.recipeIds
+      : EMPTY_RECIPE_IMAGE_IDS;
+  const onRecipeImageError = useCallback(
+    (recipeId: string) => {
+      setRecipeImageFailures((currentFailures) => {
+        const currentIds =
+          currentFailures.dataUpdatedAt === dataUpdatedAt
+            ? currentFailures.recipeIds
+            : EMPTY_RECIPE_IMAGE_IDS;
+        if (currentIds.has(recipeId)) {
+          return currentFailures;
+        }
+        return {
+          dataUpdatedAt,
+          recipeIds: new Set([...currentIds, recipeId]),
+        };
+      });
+    },
+    [dataUpdatedAt],
+  );
 
   const plans = plansRes?.plans
     .map((p) => validator.validate(PlanSnippetSchema, p))
@@ -333,6 +385,8 @@ function Page() {
         startDate={startDate}
         setStartDate={setStartDate}
         invalidatePlans={invalidatePlans}
+        failedRecipeImageIds={failedRecipeImageIds}
+        onRecipeImageError={onRecipeImageError}
       />
       <div className="flex justify-center">
         <RouterLink to="/plans/add" className="block fixed bottom-30">
