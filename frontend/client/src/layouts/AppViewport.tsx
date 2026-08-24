@@ -1,18 +1,12 @@
-import type { ReactNode, Ref } from "react";
+import type { ReactNode } from "react";
 
 type AppViewportProps = {
   children: ReactNode;
   header?: ReactNode;
   footer?: ReactNode;
-  contentRef?: Ref<HTMLDivElement>;
 };
 
-export function AppViewport({
-  children,
-  header,
-  footer,
-  contentRef,
-}: AppViewportProps) {
+export function AppViewport({ children, header, footer }: AppViewportProps) {
   return (
     <div className="flex h-dvh w-full flex-col overflow-hidden">
       {header && (
@@ -21,8 +15,8 @@ export function AppViewport({
         </div>
       )}
       <div
-        ref={contentRef}
         data-app-scroll-content
+        data-scroll-restoration-id="app-content"
         className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
       >
         {children}

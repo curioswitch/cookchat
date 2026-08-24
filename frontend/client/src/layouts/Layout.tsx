@@ -1,6 +1,6 @@
 import { Badge, Separator } from "@heroui/react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback } from "react";
 import { FaRegUserCircle } from "react-icons/fa";
 import {
   FiBookmark,
@@ -20,7 +20,6 @@ import { useCartStore, useChatStore } from "../stores";
 
 import { AppViewport } from "./AppViewport";
 import { getPlanNavigationState } from "./navigation";
-import { resetScrollPosition } from "./scrollPosition";
 
 function getPageTitle(path: string) {
   if (path === "/bookmarks") {
@@ -66,12 +65,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const cart = useCartStore();
   const chatStore = useChatStore();
   const title = getPageTitle(path);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const _ = path;
-    resetScrollPosition(contentRef.current);
-  }, [path]);
 
   const onShareClick = useCallback(() => {
     const texts = [];
@@ -214,7 +207,7 @@ ${cart.extraItems.join("\n")}
   );
 
   return (
-    <AppViewport header={header} contentRef={contentRef} footer={footer}>
+    <AppViewport header={header} footer={footer}>
       <div className="container mx-auto min-h-full max-w-full bg-white md:w-4xl">
         <div className="flex min-h-full flex-col p-2">
           <div

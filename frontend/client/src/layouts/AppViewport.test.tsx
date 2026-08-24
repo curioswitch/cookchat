@@ -18,6 +18,7 @@ describe("AppViewport", () => {
     expect(html).toContain("overflow-hidden");
     expect(html).toContain('data-app-header="true"');
     expect(html).toContain('data-app-scroll-content="true"');
+    expect(html).toContain('data-scroll-restoration-id="app-content"');
     expect(html).toContain("min-h-0 flex-1 overflow-y-auto");
     expect(html).toContain('data-app-footer="true"');
     expect(html).not.toContain("position:fixed");
