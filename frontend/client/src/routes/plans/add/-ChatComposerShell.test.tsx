@@ -11,7 +11,10 @@ describe("ChatComposerShell", () => {
       </ChatComposerShell>,
     );
 
-    expect(html).toContain('class="w-full');
+    expect(html).toContain("w-full");
+    expect(html).toContain("sticky");
+    expect(html).toContain("bottom-0");
+    expect(html).toContain("z-40");
     expect(html).not.toContain("-mx-");
     expect(html).not.toContain("calc(100%+");
   });

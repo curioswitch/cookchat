@@ -1,6 +1,7 @@
 import { Badge, Separator } from "@heroui/react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useCallback } from "react";
+import { FaRegUserCircle } from "react-icons/fa";
 import {
   FiBookmark,
   FiBookOpen,
@@ -11,11 +12,13 @@ import {
 import { HiShare } from "react-icons/hi";
 import { twMerge } from "tailwind-merge";
 
+import logoSVG from "../assets/logo.svg";
 import { BackButton } from "../components/BackButton";
 import { ChatButton } from "../components/ChatButton";
 import { m } from "../paraglide/messages";
 import { useCartStore, useChatStore } from "../stores";
 
+import { AppViewport } from "./AppViewport";
 import { getPlanNavigationState } from "./navigation";
 
 function getPageTitle(path: string) {
@@ -90,130 +93,142 @@ ${cart.extraItems.join("\n")}
     navigator.share({ text: texts.join("\n\n") });
   }, [cart]);
 
-  return (
-    <div className="flex flex-col min-h-screen">
-      <div
-        className={twMerge(
-          "flex flex-1 container mx-auto min-h-screen max-w-full md:w-4xl pt-2 bg-white",
-          !isLogin && "pb-24",
-        )}
-      >
-        <div className="p-2 flex flex-col flex-1">
-          {!isHome && !isLogin && (
-            <div className="flex justify-between items-center pb-4">
-              <BackButton className="flex-1/10 text-yellow-400" />
-              <h1 className="mt-0 mb-0 flex-8/10 text-center">{title}</h1>
-              <div className="flex-1/10 w-full flex justify-end">
-                {isCart && (
-                  <HiShare
-                    onClick={onShareClick}
-                    className="size-6 text-yellow-400 cursor-pointer"
-                  />
-                )}
-              </div>
-            </div>
-          )}
-          <div
-            className={twMerge(
-              !isHome &&
-                !isBookmarks &&
-                !path.startsWith("/recipes/") &&
-                "flex-1 bg-linear-to-r from-[#fefce8] to-[#fef9c3]",
-              isBookmarks && "flex-1 bg-white",
-              path.startsWith("/recipes/") && "flex-1 bg-white",
-              isLogin && "flex flex-1 items-center justify-center bg-white",
-            )}
-          >
-            {children}
-          </div>
+  const header = isLogin ? undefined : (
+    <div className="container mx-auto max-w-full bg-white p-2 pt-4 md:w-4xl">
+      {isHome ? (
+        <div className="flex items-center justify-between">
+          <img src={logoSVG} alt={m.app_logo_alt()} />
+          <Link to="/settings" aria-label={m.page_settings_title()}>
+            <FaRegUserCircle className="size-6 text-yellow-400" />
+          </Link>
         </div>
-      </div>
-      {!isLogin && (
-        <div className="fixed bottom-0 w-full h-24 md:h-24 bg-white z-50">
-          <Separator className="bg-yellow-300" />
-          <div className="px-2 md:px-8 flex items-center justify-between gap-1 md:gap-4 h-full w-full">
-            <Link
-              to="/"
-              className={twMerge(
-                "flex flex-1 min-w-0 flex-col gap-1 items-center",
-                path === "/" || path.startsWith("/recipes/")
-                  ? "text-yellow-400"
-                  : "text-gray-400",
-              )}
-            >
-              <FiBookOpen className="size-6 md:size-10" />
-              <div className="text-[10px] md:text-sm whitespace-nowrap">
-                {m.nav_recipe()}
-              </div>
-            </Link>
-            <Link
-              to="/plans"
-              className={twMerge(
-                "flex flex-1 min-w-0 flex-col gap-1 items-center",
-                isPlanView ? "text-yellow-400" : "text-gray-400",
-              )}
-            >
-              <FiCalendar className="size-6 md:size-10" />
-              <div className="text-[10px] md:text-sm whitespace-nowrap">
-                {m.nav_plan_view()}
-              </div>
-            </Link>
-            <Link
-              to="/plans/add"
-              className={twMerge(
-                "flex flex-1 min-w-0 flex-col gap-1 items-center",
-                isPlanCreate ? "text-yellow-400" : "text-gray-400",
-              )}
-            >
-              <FiPlusSquare className="size-6 md:size-10" />
-              <div className="text-[10px] md:text-sm whitespace-nowrap">
-                {m.nav_plan_create()}
-              </div>
-            </Link>
-            {(chatStore.currentRecipeId || chatStore.currentPlanId) && (
-              <ChatButton
-                className={"fixed bottom-32 right-8"}
-                recipeId={chatStore.currentRecipeId}
-                planId={chatStore.currentPlanId}
-                navigateToStep={chatStore.navigateToStep}
-                navigateToIngredients={chatStore.navigateToIngredients}
-                prompt={chatStore.prompt}
+      ) : (
+        <div className="flex items-center justify-between pb-2">
+          <BackButton className="flex-1/10 text-yellow-400" />
+          <h1 className="m-0 flex-8/10 text-center">{title}</h1>
+          <div className="flex w-full flex-1/10 justify-end">
+            {isCart && (
+              <HiShare
+                onClick={onShareClick}
+                className="size-6 cursor-pointer text-yellow-400"
               />
             )}
-            <Link
-              to="/bookmarks"
-              className={twMerge(
-                "flex flex-1 min-w-0 flex-col gap-1 items-center",
-                path === "/bookmarks" ? "text-yellow-400" : "text-gray-400",
-              )}
-            >
-              <FiBookmark className="size-6 md:size-10" />
-              <div className="text-[10px] md:text-sm whitespace-nowrap">
-                {m.nav_bookmarks()}
-              </div>
-            </Link>
-            <Link
-              to="/cart"
-              className={twMerge(
-                "flex flex-1 min-w-0 flex-col gap-1 items-center",
-                path === "/cart" ? "text-yellow-400" : "text-gray-400",
-              )}
-            >
-              <Badge.Anchor>
-                <FiShoppingCart className="size-6 md:size-10" />
-                {cart.recipes.length > 0 && (
-                  <Badge size="sm" className="border-2 border-white">
-                    {cart.recipes.length}
-                  </Badge>
-                )}
-              </Badge.Anchor>
-              <div className="text-[10px] md:text-sm whitespace-nowrap">
-                {m.nav_cart()}
-              </div>
-            </Link>
           </div>
         </div>
       )}
     </div>
+  );
+
+  const footer = isLogin ? undefined : (
+    <>
+      <Separator className="bg-yellow-300" />
+      <div className="flex h-24 w-full items-center justify-between gap-1 px-2 md:gap-4 md:px-8">
+        <Link
+          to="/"
+          className={twMerge(
+            "flex min-w-0 flex-1 flex-col items-center gap-1",
+            path === "/" || path.startsWith("/recipes/")
+              ? "text-yellow-400"
+              : "text-gray-400",
+          )}
+        >
+          <FiBookOpen className="size-6 md:size-10" />
+          <div className="whitespace-nowrap text-[10px] md:text-sm">
+            {m.nav_recipe()}
+          </div>
+        </Link>
+        <Link
+          to="/plans"
+          className={twMerge(
+            "flex min-w-0 flex-1 flex-col items-center gap-1",
+            isPlanView ? "text-yellow-400" : "text-gray-400",
+          )}
+        >
+          <FiCalendar className="size-6 md:size-10" />
+          <div className="whitespace-nowrap text-[10px] md:text-sm">
+            {m.nav_plan_view()}
+          </div>
+        </Link>
+        <Link
+          to="/plans/add"
+          className={twMerge(
+            "flex min-w-0 flex-1 flex-col items-center gap-1",
+            isPlanCreate ? "text-yellow-400" : "text-gray-400",
+          )}
+        >
+          <FiPlusSquare className="size-6 md:size-10" />
+          <div className="whitespace-nowrap text-[10px] md:text-sm">
+            {m.nav_plan_create()}
+          </div>
+        </Link>
+        {(chatStore.currentRecipeId || chatStore.currentPlanId) && (
+          <ChatButton
+            className="fixed bottom-32 right-8"
+            recipeId={chatStore.currentRecipeId}
+            planId={chatStore.currentPlanId}
+            navigateToStep={chatStore.navigateToStep}
+            navigateToIngredients={chatStore.navigateToIngredients}
+            prompt={chatStore.prompt}
+          />
+        )}
+        <Link
+          to="/bookmarks"
+          className={twMerge(
+            "flex min-w-0 flex-1 flex-col items-center gap-1",
+            path === "/bookmarks" ? "text-yellow-400" : "text-gray-400",
+          )}
+        >
+          <FiBookmark className="size-6 md:size-10" />
+          <div className="whitespace-nowrap text-[10px] md:text-sm">
+            {m.nav_bookmarks()}
+          </div>
+        </Link>
+        <Link
+          to="/cart"
+          className={twMerge(
+            "flex min-w-0 flex-1 flex-col items-center gap-1",
+            path === "/cart" ? "text-yellow-400" : "text-gray-400",
+          )}
+        >
+          <Badge.Anchor>
+            <FiShoppingCart className="size-6 md:size-10" />
+            {cart.recipes.length > 0 && (
+              <Badge size="sm" className="border-2 border-white">
+                {cart.recipes.length}
+              </Badge>
+            )}
+          </Badge.Anchor>
+          <div className="whitespace-nowrap text-[10px] md:text-sm">
+            {m.nav_cart()}
+          </div>
+        </Link>
+      </div>
+    </>
+  );
+
+  return (
+    <AppViewport header={header} footer={footer} centerContent={isLogin}>
+      {isLogin ? (
+        children
+      ) : (
+        <div className="container mx-auto min-h-full max-w-full bg-white md:w-4xl">
+          <div className="flex min-h-full flex-col p-2">
+            <div
+              className={twMerge(
+                "min-h-0 flex-1",
+                !isHome &&
+                  !isBookmarks &&
+                  !path.startsWith("/recipes/") &&
+                  "bg-linear-to-r from-[#fefce8] to-[#fef9c3]",
+                isBookmarks && "bg-white",
+                path.startsWith("/recipes/") && "bg-white",
+              )}
+            >
+              {children}
+            </div>
+          </div>
+        </div>
+      )}
+    </AppViewport>
   );
 }

@@ -12,7 +12,7 @@ export const Route = createFileRoute("/plans/add/")({
 
 function Page() {
   return (
-    <div className="min-h-screen w-full min-w-0 max-w-full overflow-x-hidden bg-white p-4">
+    <div className="min-h-full w-full min-w-0 max-w-full overflow-x-hidden bg-white p-4">
       <Tabs>
         <Tabs.ListContainer>
           <Tabs.List className="bg-white">

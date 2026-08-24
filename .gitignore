@@ -10,3 +10,5 @@ go.work.sum
 __debug_bin*
 
 .firebase/
+
+docs/superpowers
