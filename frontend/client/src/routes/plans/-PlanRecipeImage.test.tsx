@@ -55,6 +55,23 @@ describe("PlanRecipeImage", () => {
     expect(html).not.toContain("<img");
   });
 
+  test("shows only a compact spinner for a calendar thumbnail while loading", () => {
+    const html = renderToStaticMarkup(
+      <PlanRecipeImage
+        imageUrl=""
+        title="シンプル温やっこ"
+        loadingLabel="AIが画像を生成中…"
+        compact
+        className="size-10"
+      />,
+    );
+
+    expect(html).toContain('role="status"');
+    expect(html).toContain('aria-label="AIが画像を生成中…"');
+    expect(html).toContain("animate-spin");
+    expect(html).not.toContain(">AIが画像を生成中…</span>");
+  });
+
   test("reports an image load failure", () => {
     const onLoadError = () => {};
     const image = PlanRecipeImage({

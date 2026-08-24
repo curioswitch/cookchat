@@ -246,46 +246,59 @@ function DateSelect({
             style={{ transform: `translateX(${swipeOffset}px)` }}
             {...swipeHandlers}
           >
-            {dates.map(({ date, plans }, i) => (
-              <div
-                key={date.toString()}
-                className="flex flex-col gap-2 items-center"
-              >
-                <div className="text-gray-400">
-                  {date.toLocaleString(locale, { weekday: "short" })}
-                </div>
-                <button
-                  type="button"
-                  className={twMerge(
-                    "p-1 md:p-10 cursor-pointer",
-                    plans.length > 0 && "border-3 rounded-xl border-yellow-400",
-                  )}
-                  data-offset={i}
-                  data-date={date.toString()}
-                  onClick={onDateClick}
+            {dates.map(({ date, plans }, i) => {
+              const representativeRecipe = plans[0]?.recipes[0];
+
+              return (
+                <div
+                  key={date.toString()}
+                  className="flex flex-col gap-2 items-center"
                 >
-                  <div className="flex flex-col items-center">
-                    <div
-                      className={twMerge(
-                        "bg-yellow-500 text-white! px-1 py-1 text-xs rounded",
-                        plans.length === 0 && "invisible",
-                      )}
-                    >
-                      {m.plan_title()}
-                    </div>
-                    <div
-                      className={twMerge(
-                        date.equals(selectedDate)
-                          ? "text-yellow-500"
-                          : "text-gray-600",
-                      )}
-                    >
-                      {date.day}
-                    </div>
+                  <div className="text-gray-400">
+                    {date.toLocaleString(locale, { weekday: "short" })}
                   </div>
-                </button>
-              </div>
-            ))}
+                  <button
+                    type="button"
+                    className="p-1 md:p-10 cursor-pointer"
+                    data-offset={i}
+                    data-date={date.toString()}
+                    onClick={onDateClick}
+                  >
+                    <div className="flex flex-col items-center gap-1">
+                      {representativeRecipe ? (
+                        <PlanRecipeImage
+                          imageUrl={representativeRecipe.imageUrl}
+                          title={representativeRecipe.title}
+                          loadingLabel={m.plan_image_generating()}
+                          hasLoadError={failedRecipeImageIds.has(
+                            representativeRecipe.id,
+                          )}
+                          onLoadError={() =>
+                            onRecipeImageError(representativeRecipe.id)
+                          }
+                          compact
+                          className="size-9 rounded-md object-cover md:size-11"
+                        />
+                      ) : (
+                        <div
+                          aria-hidden
+                          className="size-9 invisible md:size-11"
+                        />
+                      )}
+                      <div
+                        className={twMerge(
+                          date.equals(selectedDate)
+                            ? "text-yellow-500"
+                            : "text-gray-600",
+                        )}
+                      >
+                        {date.day}
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              );
+            })}
           </div>
           <Button isIconOnly className="bg-yellow-400 size-3" onClick={onRight}>
             <FaArrowRight className="text-white size-2" />

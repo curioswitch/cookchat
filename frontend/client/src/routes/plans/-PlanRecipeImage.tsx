@@ -7,6 +7,7 @@ type PlanRecipeImageProps = {
   hasLoadError?: boolean;
   onLoadError?: () => void;
   className?: string;
+  compact?: boolean;
 };
 
 export function PlanRecipeImage({
@@ -16,24 +17,32 @@ export function PlanRecipeImage({
   hasLoadError = false,
   onLoadError,
   className,
+  compact = false,
 }: PlanRecipeImageProps) {
   if (!imageUrl || hasLoadError) {
     return (
       <div
         role="status"
         aria-live="polite"
+        aria-label={compact ? loadingLabel : undefined}
         className={twMerge(
           className,
-          "flex flex-col items-center justify-center gap-2 bg-yellow-50 px-3 text-center",
+          "flex flex-col items-center justify-center bg-yellow-50 text-center",
+          compact ? "p-1" : "gap-2 px-3",
         )}
       >
         <span
           aria-hidden
-          className="size-8 animate-spin rounded-full border-4 border-yellow-200 border-t-yellow-500"
+          className={twMerge(
+            "animate-spin rounded-full border-yellow-200 border-t-yellow-500",
+            compact ? "size-5 border-2" : "size-8 border-4",
+          )}
         />
-        <span className="text-xs font-medium text-yellow-700">
-          {loadingLabel}
-        </span>
+        {!compact && (
+          <span className="text-xs font-medium text-yellow-700">
+            {loadingLabel}
+          </span>
+        )}
       </div>
     );
   }
