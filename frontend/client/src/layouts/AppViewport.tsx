@@ -4,9 +4,15 @@ type AppViewportProps = {
   children: ReactNode;
   header?: ReactNode;
   footer?: ReactNode;
+  centerContent?: boolean;
 };
 
-export function AppViewport({ children, header, footer }: AppViewportProps) {
+export function AppViewport({
+  children,
+  header,
+  footer,
+  centerContent = false,
+}: AppViewportProps) {
   return (
     <div className="flex h-dvh w-full flex-col overflow-hidden">
       {header && (
@@ -17,7 +23,9 @@ export function AppViewport({ children, header, footer }: AppViewportProps) {
       <div
         data-app-scroll-content
         data-scroll-restoration-id="app-content"
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+        className={`min-h-0 flex-1 overflow-y-auto overscroll-contain ${
+          centerContent ? "flex items-center justify-center" : ""
+        }`}
       >
         {children}
       </div>

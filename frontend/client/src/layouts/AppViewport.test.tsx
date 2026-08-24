@@ -25,10 +25,13 @@ describe("AppViewport", () => {
   });
 
   test("allows the login content to fill the viewport without app chrome", () => {
-    const html = renderToStaticMarkup(<AppViewport>ログイン</AppViewport>);
+    const html = renderToStaticMarkup(
+      <AppViewport centerContent>ログイン</AppViewport>,
+    );
 
     expect(html).not.toContain("data-app-header");
     expect(html).not.toContain("data-app-footer");
     expect(html).toContain('data-app-scroll-content="true"');
+    expect(html).toContain("flex items-center justify-center");
   });
 });

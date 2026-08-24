@@ -207,25 +207,28 @@ ${cart.extraItems.join("\n")}
   );
 
   return (
-    <AppViewport header={header} footer={footer}>
-      <div className="container mx-auto min-h-full max-w-full bg-white md:w-4xl">
-        <div className="flex min-h-full flex-col p-2">
-          <div
-            className={twMerge(
-              "min-h-0 flex-1",
-              !isHome &&
-                !isBookmarks &&
-                !path.startsWith("/recipes/") &&
-                "bg-linear-to-r from-[#fefce8] to-[#fef9c3]",
-              isBookmarks && "bg-white",
-              path.startsWith("/recipes/") && "bg-white",
-              isLogin && "flex min-h-full items-center justify-center bg-white",
-            )}
-          >
-            {children}
+    <AppViewport header={header} footer={footer} centerContent={isLogin}>
+      {isLogin ? (
+        children
+      ) : (
+        <div className="container mx-auto min-h-full max-w-full bg-white md:w-4xl">
+          <div className="flex min-h-full flex-col p-2">
+            <div
+              className={twMerge(
+                "min-h-0 flex-1",
+                !isHome &&
+                  !isBookmarks &&
+                  !path.startsWith("/recipes/") &&
+                  "bg-linear-to-r from-[#fefce8] to-[#fef9c3]",
+                isBookmarks && "bg-white",
+                path.startsWith("/recipes/") && "bg-white",
+              )}
+            >
+              {children}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </AppViewport>
   );
 }
