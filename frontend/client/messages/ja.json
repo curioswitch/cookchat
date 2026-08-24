@@ -71,6 +71,7 @@
   "plan_simple_mode": "らくらく献立",
   "plan_chat_mode": "AIとチャット",
   "plan_processing_notice": "あなたの献立は処理中です。まもなく準備が整います！",
+  "plan_image_generating": "AIが画像を生成中…",
   "plan_today_title": "今日の献立",
   "plan_notes_title": "完成のコツ",
   "plan_not_found": "献立が見つかりません",

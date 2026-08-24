@@ -24,6 +24,8 @@ import { m } from "../../paraglide/messages";
 import { getLocale } from "../../paraglide/runtime";
 import { enableEditPlan } from "../../stores";
 
+import { hasPendingRecipeImages, PlanRecipeImage } from "./-PlanRecipeImage";
+
 const validator = createValidator();
 
 export const Route = createFileRoute("/plans/")({
@@ -90,10 +92,11 @@ function PlanSnippet({
         <div className="flex flex-col gap-4">
           {plan.recipes[0] && (
             <div className="block text-center p-2 border border-gray-200 bg-gray-100 rounded-xl">
-              <img
+              <PlanRecipeImage
                 className="mt-0 mb-2 rounded-lg w-full h-40 object-cover"
-                src={plan.recipes[0].imageUrl}
-                alt={plan.recipes[0].title}
+                imageUrl={plan.recipes[0].imageUrl}
+                title={plan.recipes[0].title}
+                loadingLabel={m.plan_image_generating()}
               />
               <h5 className="text-base text-gray-600">
                 {plan.recipes[0].title}
@@ -107,10 +110,11 @@ function PlanSnippet({
                   key={recipe.id}
                   className="block text-center p-2 border border-gray-200 bg-gray-100 rounded-xl"
                 >
-                  <img
+                  <PlanRecipeImage
                     className="mt-0 mb-2 rounded-lg w-full h-28 object-cover"
-                    src={recipe.imageUrl}
-                    alt={recipe.title}
+                    imageUrl={recipe.imageUrl}
+                    title={recipe.title}
+                    loadingLabel={m.plan_image_generating()}
                   />
                   <h5 className="text-sm text-gray-600">{recipe.title}</h5>
                 </div>
@@ -310,7 +314,12 @@ function Page() {
     });
   }, [queryClient, getPlansQuery]);
 
-  const { data: plansRes } = useQuery(getPlansQuery);
+  const { data: plansRes } = useQuery({
+    ...getPlansQuery,
+    refetchInterval: (query) =>
+      hasPendingRecipeImages(query.state.data?.plans) ? 3000 : false,
+    refetchIntervalInBackground: true,
+  });
 
   const plans = plansRes?.plans
     .map((p) => validator.validate(PlanSnippetSchema, p))
