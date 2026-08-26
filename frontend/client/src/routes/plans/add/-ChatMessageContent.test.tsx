@@ -25,4 +25,19 @@ describe("ChatMessageContent", () => {
     expect(html).toContain("**太字にしない**");
     expect(html).not.toContain("<strong>");
   });
+
+  test("shows a status cursor after a partial assistant response", () => {
+    const html = renderToStaticMarkup(
+      <ChatMessageContent
+        content="献立を考えています"
+        isUser={false}
+        isStreaming
+        streamingLabel="AIが回答を生成中"
+      />,
+    );
+
+    expect(html).toContain('role="status"');
+    expect(html).toContain('aria-label="AIが回答を生成中"');
+    expect(html).toContain("献立を考えています");
+  });
 });

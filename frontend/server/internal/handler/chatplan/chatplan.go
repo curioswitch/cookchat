@@ -59,6 +59,45 @@ type Handler struct {
 	filesBucket string
 }
 
+const (
+	generatedMealPlanPrefix = "GENERATED MEAL PLAN\n"
+	partialUpdateInterval   = 500 * time.Millisecond
+)
+
+type chatPlanGeneration struct {
+	text string
+	urls []string
+}
+
+func visibleStreamingContent(text string) string {
+	normalized := strings.TrimLeft(text, " \t\r\n")
+	if strings.HasPrefix(generatedMealPlanPrefix, normalized) || strings.HasPrefix(normalized, generatedMealPlanPrefix) {
+		return ""
+	}
+	return strings.TrimSpace(text)
+}
+
+func addResponseURLs(urls map[string]struct{}, res *genai.GenerateContentResponse) {
+	if len(res.Candidates) == 0 {
+		return
+	}
+	candidate := res.Candidates[0]
+	if cm := candidate.CitationMetadata; cm != nil {
+		for _, citation := range cm.Citations {
+			if u := citation.URI; u != "" {
+				urls[u] = struct{}{}
+			}
+		}
+	}
+	if gm := candidate.GroundingMetadata; gm != nil {
+		for _, chunk := range gm.GroundingChunks {
+			if chunk.Web != nil && chunk.Web.URI != "" {
+				urls[chunk.Web.URI] = struct{}{}
+			}
+		}
+	}
+}
+
 func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest) (*frontendapi.ChatPlanResponse, error) {
 	userID := firebaseauth.TokenFromContext(ctx).UID
 
@@ -146,14 +185,39 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 	chat.Messages = append(chat.Messages, cookchatdb.ChatMessage{
 		Role:      cookchatdb.ChatRoleAssistant,
 		CreatedAt: time.Now(),
+		Pending:   true,
 	})
 	if _, err := chats.Doc(chat.ID).Set(ctx, chat); err != nil {
 		return nil, fmt.Errorf("chatplan: saving chat document: %w", err)
 	}
 	ctx = context.WithoutCancel(ctx)
 
-	res, err := backoff.Retry(ctx, func() (*genai.GenerateContentResponse, error) {
-		res, err := h.genAI.Models.GenerateContent(ctx, "gemini-3.6-flash", content, &genai.GenerateContentConfig{
+	lastPublishedContent := ""
+	lastPublishedAt := time.Time{}
+	publishPartial := func(text string) error {
+		visible := visibleStreamingContent(text)
+		if visible == "" || visible == lastPublishedContent {
+			return nil
+		}
+		now := time.Now()
+		if !lastPublishedAt.IsZero() && now.Sub(lastPublishedAt) < partialUpdateInterval {
+			return nil
+		}
+		chat.Messages[len(chat.Messages)-1].Content = visible
+		chat.UpdatedAt = now
+		if _, err := chats.Doc(chat.ID).Set(ctx, chat); err != nil {
+			return fmt.Errorf("chatplan: saving partial chat response: %w", err)
+		}
+		lastPublishedContent = visible
+		lastPublishedAt = now
+		return nil
+	}
+
+	generation, err := backoff.Retry(ctx, func() (*chatPlanGeneration, error) {
+		var text strings.Builder
+		urls := make(map[string]struct{})
+		receivedText := false
+		stream := h.genAI.Models.GenerateContentStream(ctx, "gemini-3.6-flash", content, &genai.GenerateContentConfig{
 			SystemInstruction: genai.NewContentFromText(llm.ChatPlanPrompt(strings.Join(recentRecipes, ", ")), genai.RoleModel),
 			ThinkingConfig: &genai.ThinkingConfig{
 				ThinkingLevel: genai.ThinkingLevelMinimal,
@@ -164,13 +228,31 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 				},
 			},
 		})
-		if err != nil {
-			return nil, fmt.Errorf("chatplan: calling GenerateContent for plan: %w", err)
+		for res, streamErr := range stream {
+			if streamErr != nil {
+				err := fmt.Errorf("chatplan: streaming GenerateContent for plan: %w", streamErr)
+				if receivedText {
+					return nil, backoff.Permanent(err)
+				}
+				return nil, err
+			}
+			chunkText := res.Text()
+			if chunkText != "" {
+				receivedText = true
+				text.WriteString(chunkText)
+				if err := publishPartial(text.String()); err != nil {
+					return nil, backoff.Permanent(err)
+				}
+			}
+			addResponseURLs(urls, res)
 		}
-		if len(res.Candidates) != 1 || len(res.Candidates[0].Content.Parts) != 1 || res.Candidates[0].Content.Parts[0].Text == "" {
-			return nil, fmt.Errorf("chatplan: unexpected response from generate ai for plan: %v", res)
+		if text.Len() == 0 {
+			return nil, errors.New("chatplan: generate ai returned an empty response")
 		}
-		return res, nil
+		return &chatPlanGeneration{
+			text: text.String(),
+			urls: slices.Collect(maps.Keys(urls)),
+		}, nil
 	})
 	if err != nil {
 		// Back out with best-effort
@@ -181,8 +263,8 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 		return nil, err
 	}
 
-	resText := strings.TrimSpace(res.Candidates[0].Content.Parts[0].Text)
-	if _, resJSON, ok := strings.Cut(resText, "GENERATED MEAL PLAN\n"); ok {
+	resText := strings.TrimSpace(generation.text)
+	if _, resJSON, ok := strings.Cut(resText, generatedMealPlanPrefix); ok {
 		var plans [][]cookchatdb.RecipeContent
 		if err := json.Unmarshal([]byte(resJSON), &plans); err != nil {
 			return nil, fmt.Errorf("chatplan: error deserializing LLM JSON response: %w", err)
@@ -240,6 +322,7 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 			default:
 				chat.Messages[len(chat.Messages)-1].Content = "Created your meal plan."
 			}
+			chat.Messages[len(chat.Messages)-1].Pending = false
 			if _, err := chats.Doc(chat.ID).Set(ctx, chat); err != nil {
 				return nil, fmt.Errorf("chatplan: saving chat plan ID: %w", err)
 			}
@@ -251,6 +334,7 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 	}
 
 	chat.Messages[len(chat.Messages)-1].Content = resText
+	chat.Messages[len(chat.Messages)-1].Pending = false
 
 	if _, err := chats.Doc(chat.ID).Set(ctx, chat); err != nil {
 		return nil, fmt.Errorf("chatplan: saving chat document: %w", err)
@@ -261,6 +345,7 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 		msg := &frontendapi.ChatMessage{
 			Content:   message.Content,
 			ImageUrls: message.ImageURLs,
+			Pending:   message.Pending,
 		}
 		switch message.Role {
 		case cookchatdb.ChatRoleUser:
@@ -270,23 +355,7 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 		}
 		messages[i] = msg
 	}
-	message := messages[len(messages)-1]
-	if cm := res.Candidates[0].CitationMetadata; cm != nil {
-		for _, citation := range cm.Citations {
-			if u := citation.URI; u != "" {
-				message.Urls = append(message.Urls, u)
-			}
-		}
-	}
-	if gm := res.Candidates[0].GroundingMetadata; gm != nil {
-		for _, g := range gm.GroundingChunks {
-			if w := g.Web; w != nil {
-				if u := w.URI; u != "" {
-					message.Urls = append(message.Urls, u)
-				}
-			}
-		}
-	}
+	messages[len(messages)-1].Urls = generation.urls
 
 	return &frontendapi.ChatPlanResponse{
 		ChatId:   chat.ID,

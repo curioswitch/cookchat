@@ -183,6 +183,8 @@ const ChatBubble = forwardRef<HTMLDivElement, { message: ChatMessage }>(
                   <ChatMessageContent
                     content={message.content}
                     isUser={isUser}
+                    isStreaming={!isUser && message.pending}
+                    streamingLabel={m.chat_ai_response_streaming()}
                   />
                 ) : (
                   <ChatBubbleLoading />
@@ -226,8 +228,9 @@ export function ChatPlan() {
       const messages = query.state.data?.messages ?? [];
       const last = messages[messages.length - 1];
 
-      return last?.role === ChatMessage_Role.ASSISTANT && !last?.content
-        ? 3000
+      return last?.role === ChatMessage_Role.ASSISTANT &&
+        (last.pending || !last.content)
+        ? 500
         : false;
     },
     refetchIntervalInBackground: true,
@@ -261,6 +264,7 @@ export function ChatPlan() {
               }),
               create(ChatMessageSchema, {
                 role: ChatMessage_Role.ASSISTANT,
+                pending: true,
               }),
             ],
           }),
@@ -405,7 +409,8 @@ export function ChatPlan() {
   const messages = getChatMessagesRes?.messages ?? [];
   const assistantPending =
     messages[messages.length - 1]?.role === ChatMessage_Role.ASSISTANT &&
-    !messages[messages.length - 1]?.content;
+    (messages[messages.length - 1]?.pending ||
+      !messages[messages.length - 1]?.content);
   const latestMessage = messages[messages.length - 1];
   const quickReplies =
     latestMessage?.role === ChatMessage_Role.ASSISTANT && latestMessage.content

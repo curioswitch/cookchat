@@ -474,6 +474,9 @@ message ChatMessage {
 
   // Images attached to the message.
   repeated string image_urls = 4;
+
+  // Whether the assistant is still generating this message.
+  bool pending = 5;
 }
 
 // A request for FrontendService.ChatPlan.

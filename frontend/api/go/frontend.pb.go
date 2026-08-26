@@ -2637,7 +2637,9 @@ type ChatMessage struct {
 	// Any grounding URLs associated with the message.
 	Urls []string `protobuf:"bytes,3,rep,name=urls,proto3" json:"urls,omitempty"`
 	// Images attached to the message.
-	ImageUrls     []string `protobuf:"bytes,4,rep,name=image_urls,json=imageUrls,proto3" json:"image_urls,omitempty"`
+	ImageUrls []string `protobuf:"bytes,4,rep,name=image_urls,json=imageUrls,proto3" json:"image_urls,omitempty"`
+	// Whether the assistant is still generating this message.
+	Pending       bool `protobuf:"varint,5,opt,name=pending,proto3" json:"pending,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2698,6 +2700,13 @@ func (x *ChatMessage) GetImageUrls() []string {
 		return x.ImageUrls
 	}
 	return nil
+}
+
+func (x *ChatMessage) GetPending() bool {
+	if x != nil {
+		return x.Pending
+	}
+	return false
 }
 
 // A request for FrontendService.ChatPlan.
@@ -3150,13 +3159,14 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\x13AddBookmarkResponse\"4\n" +
 	"\x15RemoveBookmarkRequest\x12\x1b\n" +
 	"\trecipe_id\x18\x01 \x01(\tR\brecipeId\"\x18\n" +
-	"\x16RemoveBookmarkResponse\"\xce\x01\n" +
+	"\x16RemoveBookmarkResponse\"\xe8\x01\n" +
 	"\vChatMessage\x12\x18\n" +
 	"\acontent\x18\x01 \x01(\tR\acontent\x121\n" +
 	"\x04role\x18\x02 \x01(\x0e2\x1d.frontendapi.ChatMessage.RoleR\x04role\x12\x12\n" +
 	"\x04urls\x18\x03 \x03(\tR\x04urls\x12\x1d\n" +
 	"\n" +
-	"image_urls\x18\x04 \x03(\tR\timageUrls\"?\n" +
+	"image_urls\x18\x04 \x03(\tR\timageUrls\x12\x18\n" +
+	"\apending\x18\x05 \x01(\bR\apending\"?\n" +
 	"\x04Role\x12\x14\n" +
 	"\x10ROLE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tROLE_USER\x10\x01\x12\x12\n" +
