@@ -92,6 +92,7 @@
   "plan_invalid_data": "献立データが不正です",
   "chat_greeting": "こんにちは",
   "chat_input_placeholder": "メッセージを入力...",
+  "chat_ai_response_streaming": "AIが回答を生成中",
   "chat_original_recipe_title": "レシピ元",
   "chat_add_photo": "写真を追加",
   "chat_remove_photo": "写真を削除",

@@ -4,9 +4,13 @@ import remarkGfm from "remark-gfm";
 export function ChatMessageContent({
   content,
   isUser,
+  isStreaming = false,
+  streamingLabel = "",
 }: {
   content: string;
   isUser: boolean;
+  isStreaming?: boolean;
+  streamingLabel?: string;
 }) {
   if (isUser) {
     return <span className="whitespace-pre-line">{content}</span>;
@@ -31,6 +35,15 @@ export function ChatMessageContent({
       >
         {content}
       </ReactMarkdown>
+      {isStreaming && (
+        <span
+          role="status"
+          aria-label={streamingLabel}
+          className="ml-1 inline-block animate-pulse text-yellow-500"
+        >
+          ▍
+        </span>
+      )}
     </div>
   );
 }

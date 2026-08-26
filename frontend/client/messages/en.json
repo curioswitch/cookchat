@@ -92,6 +92,7 @@
   "plan_invalid_data": "Invalid plan data",
   "chat_greeting": "Hello",
   "chat_input_placeholder": "Enter message...",
+  "chat_ai_response_streaming": "AI is generating a response",
   "chat_original_recipe_title": "Original Recipe",
   "chat_add_photo": "Add a photo",
   "chat_remove_photo": "Remove photo",

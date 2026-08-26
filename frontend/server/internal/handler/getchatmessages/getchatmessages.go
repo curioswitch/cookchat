@@ -43,7 +43,7 @@ func (h *Handler) GetChatMessages(ctx context.Context, _ *frontendapi.GetChatMes
 	}
 	if len(chat.Messages) > 0 && chat.Messages[len(chat.Messages)-1].Role == cookchatdb.ChatRoleAssistant {
 		lastMessage := chat.Messages[len(chat.Messages)-1]
-		if lastMessage.Content == "" && lastMessage.CreatedAt.Add(5*time.Minute).Before(time.Now()) {
+		if (lastMessage.Pending || lastMessage.Content == "") && lastMessage.CreatedAt.Add(5*time.Minute).Before(time.Now()) {
 			// Assume chat failed if it's been 5 minutes pending on the assistant.
 			return &frontendapi.GetChatMessagesResponse{}, nil
 		}
@@ -59,6 +59,7 @@ func (h *Handler) GetChatMessages(ctx context.Context, _ *frontendapi.GetChatMes
 			Role:      role,
 			Content:   msg.Content,
 			ImageUrls: msg.ImageURLs,
+			Pending:   msg.Pending,
 		}
 	}
 	return &frontendapi.GetChatMessagesResponse{

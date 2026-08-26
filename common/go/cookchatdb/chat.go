@@ -27,6 +27,9 @@ type ChatMessage struct {
 
 	// CreatedAt is the timestamp when the message was created.
 	CreatedAt time.Time `firestore:"createdAt"`
+
+	// Pending is true while an assistant response is still being generated.
+	Pending bool `firestore:"pending,omitempty"`
 }
 
 type Chat struct {
