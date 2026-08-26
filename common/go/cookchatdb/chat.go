@@ -42,6 +42,9 @@ type Chat struct {
 	// PlanID is the ID of the plan created from the chat as a final result.
 	PlanID string `firestore:"planId"`
 
+	// Start is the time to start plans from.
+	Start time.Time `firestore:"start,omitempty"`
+
 	// CreatedAt is the timestamp when the chat was created.
 	CreatedAt time.Time `firestore:"createdAt"`
 

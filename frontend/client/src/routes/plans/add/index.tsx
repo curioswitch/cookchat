@@ -1,5 +1,6 @@
 import { Tabs } from "@heroui/react";
 import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
 
 import { m } from "../../../paraglide/messages";
 
@@ -8,9 +9,12 @@ import { SimplePlan } from "./-SimplePlan";
 
 export const Route = createFileRoute("/plans/add/")({
   component: Page,
+  validateSearch: z.object({ start: z.iso.date().optional().catch(undefined) }),
 });
 
 function Page() {
+  const { start } = Route.useSearch();
+
   return (
     <div className="min-h-full w-full min-w-0 max-w-full overflow-x-hidden bg-white p-4">
       <Tabs>
@@ -31,7 +35,7 @@ function Page() {
             <SimplePlan />
           </Tabs.Panel>
           <Tabs.Panel id="deep-research" className="p-0!">
-            <ChatPlan />
+            <ChatPlan start={start} />
           </Tabs.Panel>
         </div>
       </Tabs>

@@ -1,4 +1,5 @@
 import { create } from "@bufbuild/protobuf";
+import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { useMutation } from "@connectrpc/connect-query";
 import {
   type ChatMessage,
@@ -9,6 +10,7 @@ import {
   GetChatMessagesResponseSchema,
 } from "@cookchat/frontend-api";
 import { Button, Input, TextField } from "@heroui/react";
+import { Temporal } from "@js-temporal/polyfill";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { getApp } from "firebase/app";
@@ -215,7 +217,23 @@ const ChatBubble = forwardRef<HTMLDivElement, { message: ChatMessage }>(
   },
 );
 
-export function ChatPlan() {
+function startTimeFromDate(start: string | undefined) {
+  if (!start) {
+    return undefined;
+  }
+
+  try {
+    const now = Temporal.Now.zonedDateTimeISO();
+    const dateDelta = now.toPlainDate().until(Temporal.PlainDate.from(start));
+    return timestampFromDate(
+      new Date(now.add(dateDelta).toInstant().epochMilliseconds),
+    );
+  } catch {
+    return undefined;
+  }
+}
+
+export function ChatPlan({ start }: { start?: string }) {
   const navigate = useNavigate();
   const firebaseUser = useFirebaseUser();
   const queries = useFrontendQueries();
@@ -292,8 +310,9 @@ export function ChatPlan() {
     doChatPlan.mutate({
       newChat: true,
       message: m.chat_greeting(),
+      startTime: startTimeFromDate(start),
     });
-  }, [doChatPlan]);
+  }, [doChatPlan, start]);
 
   useEffect(() => {
     if (loaded || !getChatMessagesRes) {

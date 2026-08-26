@@ -2729,7 +2729,9 @@ type ChatPlanRequest struct {
 	// The message from the user.
 	Message string `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
 	// Firebase Storage URLs of images attached to the message.
-	ImageUrls     []string `protobuf:"bytes,4,rep,name=image_urls,json=imageUrls,proto3" json:"image_urls,omitempty"`
+	ImageUrls []string `protobuf:"bytes,4,rep,name=image_urls,json=imageUrls,proto3" json:"image_urls,omitempty"`
+	// The time to start planning from.
+	StartTime     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2788,6 +2790,13 @@ func (x *ChatPlanRequest) GetMessage() string {
 func (x *ChatPlanRequest) GetImageUrls() []string {
 	if x != nil {
 		return x.ImageUrls
+	}
+	return nil
+}
+
+func (x *ChatPlanRequest) GetStartTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.StartTime
 	}
 	return nil
 }
@@ -3346,13 +3355,15 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\x04Role\x12\x14\n" +
 	"\x10ROLE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tROLE_USER\x10\x01\x12\x12\n" +
-	"\x0eROLE_ASSISTANT\x10\x02\"~\n" +
+	"\x0eROLE_ASSISTANT\x10\x02\"\xb9\x01\n" +
 	"\x0fChatPlanRequest\x12\x17\n" +
 	"\achat_id\x18\x01 \x01(\tR\x06chatId\x12\x19\n" +
 	"\bnew_chat\x18\x02 \x01(\bR\anewChat\x12\x18\n" +
 	"\amessage\x18\x03 \x01(\tR\amessage\x12\x1d\n" +
 	"\n" +
-	"image_urls\x18\x04 \x03(\tR\timageUrls\"z\n" +
+	"image_urls\x18\x04 \x03(\tR\timageUrls\x129\n" +
+	"\n" +
+	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\"z\n" +
 	"\x10ChatPlanResponse\x12\x17\n" +
 	"\achat_id\x18\x01 \x01(\tR\x06chatId\x124\n" +
 	"\bmessages\x18\x02 \x03(\v2\x18.frontendapi.ChatMessageR\bmessages\x12\x17\n" +
@@ -3524,47 +3535,48 @@ var file_frontendapi_frontend_proto_depIdxs = []int32{
 	32, // 30: frontendapi.GetPlanResponse.plan:type_name -> frontendapi.Plan
 	32, // 31: frontendapi.UpdatePlanResponse.plan:type_name -> frontendapi.Plan
 	6,  // 32: frontendapi.ChatMessage.role:type_name -> frontendapi.ChatMessage.Role
-	43, // 33: frontendapi.ChatPlanResponse.messages:type_name -> frontendapi.ChatMessage
-	43, // 34: frontendapi.GetChatMessagesResponse.messages:type_name -> frontendapi.ChatMessage
-	8,  // 35: frontendapi.ChatService.Chat:input_type -> frontendapi.ChatRequest
-	14, // 36: frontendapi.FrontendService.GetRecipe:input_type -> frontendapi.GetRecipeRequest
-	18, // 37: frontendapi.FrontendService.ListRecipes:input_type -> frontendapi.ListRecipesRequest
-	20, // 38: frontendapi.FrontendService.StartChat:input_type -> frontendapi.StartChatRequest
-	22, // 39: frontendapi.FrontendService.AddRecipe:input_type -> frontendapi.AddRecipeRequest
-	24, // 40: frontendapi.FrontendService.GenerateRecipe:input_type -> frontendapi.GenerateRecipeRequest
-	26, // 41: frontendapi.FrontendService.GeneratePlan:input_type -> frontendapi.GeneratePlanRequest
-	44, // 42: frontendapi.FrontendService.ChatPlan:input_type -> frontendapi.ChatPlanRequest
-	46, // 43: frontendapi.FrontendService.GetChatMessages:input_type -> frontendapi.GetChatMessagesRequest
-	30, // 44: frontendapi.FrontendService.GetPlans:input_type -> frontendapi.GetPlansRequest
-	33, // 45: frontendapi.FrontendService.GetPlan:input_type -> frontendapi.GetPlanRequest
-	35, // 46: frontendapi.FrontendService.UpdatePlan:input_type -> frontendapi.UpdatePlanRequest
-	37, // 47: frontendapi.FrontendService.DeletePlan:input_type -> frontendapi.DeletePlanRequest
-	39, // 48: frontendapi.FrontendService.AddBookmark:input_type -> frontendapi.AddBookmarkRequest
-	41, // 49: frontendapi.FrontendService.RemoveBookmark:input_type -> frontendapi.RemoveBookmarkRequest
-	48, // 50: frontendapi.FrontendService.GetUser:input_type -> frontendapi.GetUserRequest
-	50, // 51: frontendapi.FrontendService.EditUser:input_type -> frontendapi.EditUserRequest
-	9,  // 52: frontendapi.ChatService.Chat:output_type -> frontendapi.ChatResponse
-	15, // 53: frontendapi.FrontendService.GetRecipe:output_type -> frontendapi.GetRecipeResponse
-	19, // 54: frontendapi.FrontendService.ListRecipes:output_type -> frontendapi.ListRecipesResponse
-	21, // 55: frontendapi.FrontendService.StartChat:output_type -> frontendapi.StartChatResponse
-	23, // 56: frontendapi.FrontendService.AddRecipe:output_type -> frontendapi.AddRecipeResponse
-	25, // 57: frontendapi.FrontendService.GenerateRecipe:output_type -> frontendapi.GenerateRecipeResponse
-	27, // 58: frontendapi.FrontendService.GeneratePlan:output_type -> frontendapi.GeneratePlanResponse
-	45, // 59: frontendapi.FrontendService.ChatPlan:output_type -> frontendapi.ChatPlanResponse
-	47, // 60: frontendapi.FrontendService.GetChatMessages:output_type -> frontendapi.GetChatMessagesResponse
-	31, // 61: frontendapi.FrontendService.GetPlans:output_type -> frontendapi.GetPlansResponse
-	34, // 62: frontendapi.FrontendService.GetPlan:output_type -> frontendapi.GetPlanResponse
-	36, // 63: frontendapi.FrontendService.UpdatePlan:output_type -> frontendapi.UpdatePlanResponse
-	38, // 64: frontendapi.FrontendService.DeletePlan:output_type -> frontendapi.DeletePlanResponse
-	40, // 65: frontendapi.FrontendService.AddBookmark:output_type -> frontendapi.AddBookmarkResponse
-	42, // 66: frontendapi.FrontendService.RemoveBookmark:output_type -> frontendapi.RemoveBookmarkResponse
-	49, // 67: frontendapi.FrontendService.GetUser:output_type -> frontendapi.GetUserResponse
-	51, // 68: frontendapi.FrontendService.EditUser:output_type -> frontendapi.EditUserResponse
-	52, // [52:69] is the sub-list for method output_type
-	35, // [35:52] is the sub-list for method input_type
-	35, // [35:35] is the sub-list for extension type_name
-	35, // [35:35] is the sub-list for extension extendee
-	0,  // [0:35] is the sub-list for field type_name
+	53, // 33: frontendapi.ChatPlanRequest.start_time:type_name -> google.protobuf.Timestamp
+	43, // 34: frontendapi.ChatPlanResponse.messages:type_name -> frontendapi.ChatMessage
+	43, // 35: frontendapi.GetChatMessagesResponse.messages:type_name -> frontendapi.ChatMessage
+	8,  // 36: frontendapi.ChatService.Chat:input_type -> frontendapi.ChatRequest
+	14, // 37: frontendapi.FrontendService.GetRecipe:input_type -> frontendapi.GetRecipeRequest
+	18, // 38: frontendapi.FrontendService.ListRecipes:input_type -> frontendapi.ListRecipesRequest
+	20, // 39: frontendapi.FrontendService.StartChat:input_type -> frontendapi.StartChatRequest
+	22, // 40: frontendapi.FrontendService.AddRecipe:input_type -> frontendapi.AddRecipeRequest
+	24, // 41: frontendapi.FrontendService.GenerateRecipe:input_type -> frontendapi.GenerateRecipeRequest
+	26, // 42: frontendapi.FrontendService.GeneratePlan:input_type -> frontendapi.GeneratePlanRequest
+	44, // 43: frontendapi.FrontendService.ChatPlan:input_type -> frontendapi.ChatPlanRequest
+	46, // 44: frontendapi.FrontendService.GetChatMessages:input_type -> frontendapi.GetChatMessagesRequest
+	30, // 45: frontendapi.FrontendService.GetPlans:input_type -> frontendapi.GetPlansRequest
+	33, // 46: frontendapi.FrontendService.GetPlan:input_type -> frontendapi.GetPlanRequest
+	35, // 47: frontendapi.FrontendService.UpdatePlan:input_type -> frontendapi.UpdatePlanRequest
+	37, // 48: frontendapi.FrontendService.DeletePlan:input_type -> frontendapi.DeletePlanRequest
+	39, // 49: frontendapi.FrontendService.AddBookmark:input_type -> frontendapi.AddBookmarkRequest
+	41, // 50: frontendapi.FrontendService.RemoveBookmark:input_type -> frontendapi.RemoveBookmarkRequest
+	48, // 51: frontendapi.FrontendService.GetUser:input_type -> frontendapi.GetUserRequest
+	50, // 52: frontendapi.FrontendService.EditUser:input_type -> frontendapi.EditUserRequest
+	9,  // 53: frontendapi.ChatService.Chat:output_type -> frontendapi.ChatResponse
+	15, // 54: frontendapi.FrontendService.GetRecipe:output_type -> frontendapi.GetRecipeResponse
+	19, // 55: frontendapi.FrontendService.ListRecipes:output_type -> frontendapi.ListRecipesResponse
+	21, // 56: frontendapi.FrontendService.StartChat:output_type -> frontendapi.StartChatResponse
+	23, // 57: frontendapi.FrontendService.AddRecipe:output_type -> frontendapi.AddRecipeResponse
+	25, // 58: frontendapi.FrontendService.GenerateRecipe:output_type -> frontendapi.GenerateRecipeResponse
+	27, // 59: frontendapi.FrontendService.GeneratePlan:output_type -> frontendapi.GeneratePlanResponse
+	45, // 60: frontendapi.FrontendService.ChatPlan:output_type -> frontendapi.ChatPlanResponse
+	47, // 61: frontendapi.FrontendService.GetChatMessages:output_type -> frontendapi.GetChatMessagesResponse
+	31, // 62: frontendapi.FrontendService.GetPlans:output_type -> frontendapi.GetPlansResponse
+	34, // 63: frontendapi.FrontendService.GetPlan:output_type -> frontendapi.GetPlanResponse
+	36, // 64: frontendapi.FrontendService.UpdatePlan:output_type -> frontendapi.UpdatePlanResponse
+	38, // 65: frontendapi.FrontendService.DeletePlan:output_type -> frontendapi.DeletePlanResponse
+	40, // 66: frontendapi.FrontendService.AddBookmark:output_type -> frontendapi.AddBookmarkResponse
+	42, // 67: frontendapi.FrontendService.RemoveBookmark:output_type -> frontendapi.RemoveBookmarkResponse
+	49, // 68: frontendapi.FrontendService.GetUser:output_type -> frontendapi.GetUserResponse
+	51, // 69: frontendapi.FrontendService.EditUser:output_type -> frontendapi.EditUserResponse
+	53, // [53:70] is the sub-list for method output_type
+	36, // [36:53] is the sub-list for method input_type
+	36, // [36:36] is the sub-list for extension type_name
+	36, // [36:36] is the sub-list for extension extendee
+	0,  // [0:36] is the sub-list for field type_name
 }
 
 func init() { file_frontendapi_frontend_proto_init() }

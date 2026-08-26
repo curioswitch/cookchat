@@ -145,6 +145,7 @@ function DateSelect({
   plans,
   startDate,
   setStartDate,
+  setSelectedDate,
   invalidatePlans,
   failedRecipeImageIds,
   onRecipeImageError,
@@ -152,6 +153,7 @@ function DateSelect({
   plans: PlanSnippetValid[] | undefined;
   startDate: Temporal.PlainDate;
   setStartDate: React.Dispatch<React.SetStateAction<Temporal.PlainDate>>;
+  setSelectedDate: React.Dispatch<React.SetStateAction<Temporal.PlainDate>>;
   invalidatePlans: () => void;
   failedRecipeImageIds: ReadonlySet<string>;
   onRecipeImageError: (recipeId: string) => void;
@@ -164,12 +166,16 @@ function DateSelect({
     [startDate, selectedOffset],
   );
 
-  const onDateClick = useCallback((event: React.MouseEvent) => {
-    const offset = (event.currentTarget as HTMLDivElement).dataset.offset;
-    if (offset) {
-      setSelectedOffset(Number(offset));
-    }
-  }, []);
+  const onDateClick = useCallback(
+    (event: React.MouseEvent) => {
+      const offset = (event.currentTarget as HTMLDivElement).dataset.offset;
+      if (offset) {
+        setSelectedOffset(Number(offset));
+        setSelectedDate(startDate.add({ days: Number(offset) }));
+      }
+    },
+    [startDate, setSelectedDate],
+  );
 
   const dates: DatePlans[] = useMemo(() => {
     const dates: DatePlans[] = [
@@ -327,6 +333,7 @@ function Page() {
 
   const today = useMemo(() => Temporal.Now.plainDateISO(), []);
   const [startDate, setStartDate] = useState(today.subtract({ days: 3 }));
+  const [selectedDate, setSelectedDate] = useState(today);
   const [recipeImageFailures, setRecipeImageFailures] = useState<{
     dataUpdatedAt: number;
     recipeIds: ReadonlySet<string>;
@@ -397,12 +404,19 @@ function Page() {
         plans={plans}
         startDate={startDate}
         setStartDate={setStartDate}
+        setSelectedDate={setSelectedDate}
         invalidatePlans={invalidatePlans}
         failedRecipeImageIds={failedRecipeImageIds}
         onRecipeImageError={onRecipeImageError}
       />
       <div className="flex justify-center">
-        <RouterLink to="/plans/add" className="block fixed bottom-30">
+        <RouterLink
+          to="/plans/add"
+          search={{
+            start: selectedDate.toString(),
+          }}
+          className="block fixed bottom-30"
+        >
           <Button className="text-white bg-yellow-400">
             {m.plans_add_button()}
           </Button>

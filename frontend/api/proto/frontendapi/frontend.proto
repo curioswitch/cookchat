@@ -496,6 +496,9 @@ message ChatPlanRequest {
 
   // Firebase Storage URLs of images attached to the message.
   repeated string image_urls = 4;
+
+  // The time to start planning from.
+  google.protobuf.Timestamp start_time = 5;
 }
 
 // A response for FrontendService.ChatPlan.

@@ -34,6 +34,7 @@
     "remark-gfm": "^4.0.1",
     "ringbuf.js": "^0.4.0",
     "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3",
     "zustand": "^5.0.15"
   },
   "devDependencies": {
