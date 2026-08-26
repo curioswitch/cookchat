@@ -9,7 +9,7 @@ import { SimplePlan } from "./-SimplePlan";
 
 export const Route = createFileRoute("/plans/add/")({
   component: Page,
-  validateSearch: z.object({ start: z.string().optional() }),
+  validateSearch: z.object({ start: z.iso.date().optional().catch(undefined) }),
 });
 
 function Page() {
