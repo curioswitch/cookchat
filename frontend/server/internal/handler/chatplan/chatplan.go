@@ -168,6 +168,9 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 				ID:        cid,
 				CreatedAt: now,
 			}
+			if start := req.GetStartTime(); start != nil {
+				chat.Start = start.AsTime()
+			}
 		}
 	}
 	chat.UpdatedAt = now
@@ -278,9 +281,12 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 		if err := json.Unmarshal([]byte(resJSON), &plans); err != nil {
 			return nil, fmt.Errorf("chatplan: error deserializing LLM JSON response: %w", err)
 		}
-		now := time.Now()
+		start := chat.Start
+		if start.IsZero() {
+			start = time.Now()
+		}
 		for i, planContent := range plans {
-			plan, err := h.savePlan(ctx, planContent, now, i)
+			plan, err := h.savePlan(ctx, planContent, start, i)
 			if err != nil {
 				return nil, err
 			}
@@ -429,7 +435,7 @@ func downloadFirebaseImage(ctx context.Context, imageURL, filesBucket, userID st
 	return data, mimeType, nil
 }
 
-func (h *Handler) savePlan(ctx context.Context, recipeContents []cookchatdb.RecipeContent, now time.Time, index int) (cookchatdb.Plan, error) {
+func (h *Handler) savePlan(ctx context.Context, recipeContents []cookchatdb.RecipeContent, start time.Time, index int) (cookchatdb.Plan, error) {
 	language := i18n.UserLanguage(ctx)
 	var grp errgroup.Group
 	plan := cookchatdb.Plan{
@@ -489,8 +495,8 @@ func (h *Handler) savePlan(ctx context.Context, recipeContents []cookchatdb.Reci
 	plansCol := h.store.Collection("users").Doc(userID).Collection("plans")
 	planDoc := plansCol.NewDoc()
 	plan.ID = planDoc.ID
-	plan.ScheduledAt = now.Add(time.Duration(index) * 24 * time.Hour)
-	plan.CreatedAt = now
+	plan.ScheduledAt = start.Add(time.Duration(index) * 24 * time.Hour)
+	plan.CreatedAt = start
 	plan.Status = cookchatdb.PlanStatusProcessing
 	if _, err := planDoc.Set(ctx, plan); err != nil {
 		return plan, fmt.Errorf("chatplan: failed to set plan document: %w", err)
