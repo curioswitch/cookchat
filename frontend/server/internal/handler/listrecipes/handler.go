@@ -184,7 +184,7 @@ func splitRecommendations(snippets []*frontendapi.RecipeSnippet, count int) ([]*
 
 	recommendedIndexes := make([]bool, len(snippets))
 	recommendations := make([]*frontendapi.RecipeSnippet, 0, count)
-	for _, idx := range rand.Perm(len(snippets))[:count] {
+	for _, idx := range rand.Perm(len(snippets))[:count] { //nolint:gosec
 		recommendedIndexes[idx] = true
 		recommendations = append(recommendations, snippets[idx])
 	}
