@@ -525,6 +525,24 @@ message GetChatMessagesResponse {
   string plan_id = 3;
 }
 
+// A request for FrontendService.GetUser
+message GetUserRequest {}
+
+// A response for FrontendService.GetUser.
+message GetUserResponse {
+  // The prompt to use for the user's plan generation.
+  string plan_prompt = 1;
+}
+
+// A request for FrontendService.EditUser.
+message EditUserRequest {
+  // The prompt to use for the user's plan generation.
+  optional string plan_prompt = 1;
+}
+
+// A response for FrontendService.EditUser.
+message EditUserResponse {}
+
 service FrontendService {
   // Get the recipe for a given recipe ID.
   rpc GetRecipe(GetRecipeRequest) returns (GetRecipeResponse);
@@ -567,4 +585,10 @@ service FrontendService {
 
   // Remove a bookmark for a recipe.
   rpc RemoveBookmark(RemoveBookmarkRequest) returns (RemoveBookmarkResponse);
+
+  // Get the user's settings.
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+
+  // Edit the user's settings.
+  rpc EditUser(EditUserRequest) returns (EditUserResponse);
 }

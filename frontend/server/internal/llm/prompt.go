@@ -298,9 +298,12 @@ a step group, such as which step to execute while waiting on another, provide it
 entire plan, return them. Only return text in Japanese.
 `
 
-func ChatPlanPrompt(recentRecipes string) string {
+func ChatPlanPrompt(recentRecipes string, instructions string) string {
 	schemaBytes, _ := json.Marshal(cookchatdb.RecipeContentSchema) //nolint
-	return fmt.Sprintf(chatPlanPrompt, recentRecipes, schemaBytes)
+	if instructions != "" {
+		instructions = "The user's saved instructions for planning are: " + instructions
+	}
+	return fmt.Sprintf(chatPlanPrompt, recentRecipes, instructions, schemaBytes)
 }
 
 const chatPlanPrompt = `You are a cooking assistant helping users to schedule meal plans via a text chat. Your goal is to assign
@@ -336,6 +339,8 @@ Search the web for recipes to consider for meal plans. The sites you should sear
 Only return recipes that are sourced. If you do not have a URL for a recipe, do not include it.
 
 The recipes the user has recently cooked are: %s. Avoid recommending the same recipe as one of these.
+
+%s
 
 Suggest the recipes to the user with a useful snippet. Confirm if they want to include them in the plan. Do not present the recipe itself,
 just a title and description of it. If they confirm, continue until filling in the requsted plans.
