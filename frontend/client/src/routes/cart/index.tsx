@@ -1,6 +1,8 @@
 import { Button, Checkbox, Input, TextField } from "@heroui/react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FaAmazon } from "react-icons/fa";
+import { FiExternalLink, FiShoppingBag } from "react-icons/fi";
 import { HiCheck, HiTrash } from "react-icons/hi";
 
 import { m } from "../../paraglide/messages";
@@ -12,6 +14,14 @@ import {
   toggleCartIngredientSelection,
   useCartStore,
 } from "../../stores";
+
+import {
+  getAmazonFreshSearchStep,
+  getAmazonFreshStorefrontUrl,
+  getAmazonShoppingItems,
+  getSeikatsuClubSearchStep,
+  scrollAmazonSearchResultsIntoView,
+} from "./-amazonFresh";
 
 function IngredientSelect({
   ingredient,
@@ -177,8 +187,27 @@ function Page() {
   const cart = useCartStore();
 
   const [addingItem, setAddingItem] = useState(false);
+  const [showAmazonSearch, setShowAmazonSearch] = useState(false);
+  const [amazonSearchIndex, setAmazonSearchIndex] = useState(0);
+  const [showSeikatsuClubSearch, setShowSeikatsuClubSearch] = useState(false);
+  const [seikatsuClubSearchIndex, setSeikatsuClubSearchIndex] = useState(0);
   const [extraItem, setExtraItem] = useState("");
   const itemInput = useRef<HTMLInputElement | null>(null);
+  const amazonSearchResults = useRef<HTMLElement | null>(null);
+  const seikatsuClubSearchResults = useRef<HTMLElement | null>(null);
+  const amazonShoppingItems = useMemo(
+    () => getAmazonShoppingItems(cart),
+    [cart],
+  );
+  const amazonSearchStep = useMemo(
+    () => getAmazonFreshSearchStep(amazonShoppingItems, amazonSearchIndex),
+    [amazonShoppingItems, amazonSearchIndex],
+  );
+  const seikatsuClubSearchStep = useMemo(
+    () =>
+      getSeikatsuClubSearchStep(amazonShoppingItems, seikatsuClubSearchIndex),
+    [amazonShoppingItems, seikatsuClubSearchIndex],
+  );
 
   const onAddItemClick = useCallback(() => {
     setAddingItem(true);
@@ -193,6 +222,20 @@ function Page() {
     setExtraItem("");
   }, [extraItem]);
 
+  const onAmazonSearchToggle = useCallback(() => {
+    if (!showAmazonSearch) {
+      setAmazonSearchIndex(0);
+    }
+    setShowAmazonSearch(!showAmazonSearch);
+  }, [showAmazonSearch]);
+
+  const onSeikatsuClubSearchToggle = useCallback(() => {
+    if (!showSeikatsuClubSearch) {
+      setSeikatsuClubSearchIndex(0);
+    }
+    setShowSeikatsuClubSearch(!showSeikatsuClubSearch);
+  }, [showSeikatsuClubSearch]);
+
   useEffect(() => {
     if (itemInput.current) {
       if (addingItem) {
@@ -202,6 +245,18 @@ function Page() {
       }
     }
   }, [addingItem]);
+
+  useEffect(() => {
+    if (showAmazonSearch && amazonSearchResults.current) {
+      scrollAmazonSearchResultsIntoView(amazonSearchResults.current);
+    }
+  }, [showAmazonSearch]);
+
+  useEffect(() => {
+    if (showSeikatsuClubSearch && seikatsuClubSearchResults.current) {
+      scrollAmazonSearchResultsIntoView(seikatsuClubSearchResults.current);
+    }
+  }, [showSeikatsuClubSearch]);
 
   return (
     <div className="p-4">
@@ -246,6 +301,172 @@ function Page() {
         >
           {m.cart_add_item_button()}
         </Button>
+      )}
+      {amazonShoppingItems.length > 0 && (
+        <div className="mt-4">
+          <Button
+            onPress={onAmazonSearchToggle}
+            fullWidth
+            className="bg-yellow-400 text-white"
+            variant="primary"
+            aria-expanded={showAmazonSearch}
+            aria-controls="amazon-shopping-results"
+          >
+            <FaAmazon aria-hidden />
+            {m.cart_amazon_fresh_button()}
+          </Button>
+          {showAmazonSearch && (
+            <section
+              ref={amazonSearchResults}
+              id="amazon-shopping-results"
+              className="mt-3 scroll-mb-4 rounded-xl bg-yellow-50 p-4"
+            >
+              <h3 className="text-gray-700">{m.cart_amazon_fresh_title()}</h3>
+              <ul className="mt-3 list-disc space-y-1 pl-5 text-gray-700">
+                {amazonShoppingItems.map((item, index) => (
+                  <li
+                    key={item}
+                    className={`break-words ${
+                      index < amazonSearchIndex
+                        ? "text-gray-400 line-through"
+                        : index === amazonSearchIndex
+                          ? "font-semibold text-yellow-700"
+                          : ""
+                    }`}
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-3 text-xs text-gray-500">
+                {m.cart_amazon_fresh_hint()}
+              </p>
+              {amazonSearchStep ? (
+                <>
+                  <p className="mt-4 text-center text-sm text-gray-600">
+                    {m.cart_amazon_fresh_progress({
+                      current: amazonSearchStep.current,
+                      total: amazonSearchStep.total,
+                    })}
+                  </p>
+                  <a
+                    href={amazonSearchStep.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() =>
+                      setAmazonSearchIndex(amazonSearchStep.nextIndex)
+                    }
+                    className="mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-yellow-400 px-4 py-3 text-center font-semibold text-white"
+                  >
+                    {m.cart_amazon_fresh_search_item({
+                      item: amazonSearchStep.item,
+                    })}
+                    <FiExternalLink aria-hidden />
+                  </a>
+                </>
+              ) : (
+                <div className="mt-4 text-center">
+                  <p className="font-semibold text-gray-700">
+                    {m.cart_amazon_fresh_complete()}
+                  </p>
+                  <a
+                    href={getAmazonFreshStorefrontUrl()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-yellow-400 px-4 py-3 font-semibold text-white"
+                  >
+                    {m.cart_amazon_fresh_open_store()}
+                    <FiExternalLink aria-hidden />
+                  </a>
+                </div>
+              )}
+            </section>
+          )}
+        </div>
+      )}
+      {amazonShoppingItems.length > 0 && (
+        <div className="mt-3">
+          <Button
+            onPress={onSeikatsuClubSearchToggle}
+            fullWidth
+            className="bg-yellow-400 text-white"
+            variant="primary"
+            aria-expanded={showSeikatsuClubSearch}
+            aria-controls="seikatsu-club-shopping-results"
+          >
+            <FiShoppingBag aria-hidden />
+            {m.cart_seikatsu_club_button()}
+          </Button>
+          {showSeikatsuClubSearch && (
+            <section
+              ref={seikatsuClubSearchResults}
+              id="seikatsu-club-shopping-results"
+              className="mt-3 scroll-mb-4 rounded-xl bg-yellow-50 p-4"
+            >
+              <h3 className="text-gray-700">{m.cart_seikatsu_club_title()}</h3>
+              <ul className="mt-3 list-disc space-y-1 pl-5 text-gray-700">
+                {amazonShoppingItems.map((item, index) => (
+                  <li
+                    key={item}
+                    className={`break-words ${
+                      index < seikatsuClubSearchIndex
+                        ? "text-gray-400 line-through"
+                        : index === seikatsuClubSearchIndex
+                          ? "font-semibold text-yellow-700"
+                          : ""
+                    }`}
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-3 text-xs text-gray-500">
+                {m.cart_seikatsu_club_hint()}
+              </p>
+              {seikatsuClubSearchStep ? (
+                <>
+                  <p className="mt-4 text-center text-sm text-gray-600">
+                    {m.cart_seikatsu_club_progress({
+                      current: seikatsuClubSearchStep.current,
+                      total: seikatsuClubSearchStep.total,
+                    })}
+                  </p>
+                  <a
+                    href={seikatsuClubSearchStep.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() =>
+                      setSeikatsuClubSearchIndex(
+                        seikatsuClubSearchStep.nextIndex,
+                      )
+                    }
+                    className="mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-yellow-400 px-4 py-3 text-center font-semibold text-white"
+                  >
+                    {m.cart_seikatsu_club_search_item({
+                      item: seikatsuClubSearchStep.item,
+                    })}
+                    <FiExternalLink aria-hidden />
+                  </a>
+                </>
+              ) : (
+                <div className="mt-4 text-center">
+                  <p className="font-semibold text-gray-700">
+                    {m.cart_seikatsu_club_complete()}
+                  </p>
+                  <a
+                    href="https://shop.seikatsuclub.coop/eclub_top.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-yellow-400 px-4 py-3 font-semibold text-white"
+                  >
+                    {m.cart_seikatsu_club_open_store()}
+                    <FiExternalLink aria-hidden />
+                  </a>
+                </div>
+              )}
+            </section>
+          )}
+        </div>
       )}
     </div>
   );
