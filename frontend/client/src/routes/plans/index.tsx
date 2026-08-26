@@ -24,7 +24,10 @@ import { m } from "../../paraglide/messages";
 import { getLocale } from "../../paraglide/runtime";
 import { enableEditPlan } from "../../stores";
 
+import { hasPendingRecipeImages, PlanRecipeImage } from "./-PlanRecipeImage";
+
 const validator = createValidator();
+const EMPTY_RECIPE_IMAGE_IDS: ReadonlySet<string> = new Set();
 
 export const Route = createFileRoute("/plans/")({
   component: Page,
@@ -33,9 +36,13 @@ export const Route = createFileRoute("/plans/")({
 function PlanSnippet({
   plan,
   invalidatePlans,
+  failedRecipeImageIds,
+  onRecipeImageError,
 }: {
   plan: PlanSnippetValid;
   invalidatePlans: () => void;
+  failedRecipeImageIds: ReadonlySet<string>;
+  onRecipeImageError: (recipeId: string) => void;
 }) {
   const navigate = useNavigate();
 
@@ -90,10 +97,13 @@ function PlanSnippet({
         <div className="flex flex-col gap-4">
           {plan.recipes[0] && (
             <div className="block text-center p-2 border border-gray-200 bg-gray-100 rounded-xl">
-              <img
+              <PlanRecipeImage
                 className="mt-0 mb-2 rounded-lg w-full h-40 object-cover"
-                src={plan.recipes[0].imageUrl}
-                alt={plan.recipes[0].title}
+                imageUrl={plan.recipes[0].imageUrl}
+                title={plan.recipes[0].title}
+                loadingLabel={m.plan_image_generating()}
+                hasLoadError={failedRecipeImageIds.has(plan.recipes[0].id)}
+                onLoadError={() => onRecipeImageError(plan.recipes[0].id)}
               />
               <h5 className="text-base text-gray-600">
                 {plan.recipes[0].title}
@@ -107,10 +117,13 @@ function PlanSnippet({
                   key={recipe.id}
                   className="block text-center p-2 border border-gray-200 bg-gray-100 rounded-xl"
                 >
-                  <img
+                  <PlanRecipeImage
                     className="mt-0 mb-2 rounded-lg w-full h-28 object-cover"
-                    src={recipe.imageUrl}
-                    alt={recipe.title}
+                    imageUrl={recipe.imageUrl}
+                    title={recipe.title}
+                    loadingLabel={m.plan_image_generating()}
+                    hasLoadError={failedRecipeImageIds.has(recipe.id)}
+                    onLoadError={() => onRecipeImageError(recipe.id)}
                   />
                   <h5 className="text-sm text-gray-600">{recipe.title}</h5>
                 </div>
@@ -133,11 +146,15 @@ function DateSelect({
   startDate,
   setStartDate,
   invalidatePlans,
+  failedRecipeImageIds,
+  onRecipeImageError,
 }: {
   plans: PlanSnippetValid[] | undefined;
   startDate: Temporal.PlainDate;
   setStartDate: React.Dispatch<React.SetStateAction<Temporal.PlainDate>>;
   invalidatePlans: () => void;
+  failedRecipeImageIds: ReadonlySet<string>;
+  onRecipeImageError: (recipeId: string) => void;
 }) {
   const [selectedOffset, setSelectedOffset] = useState(3);
   const locale = getLocale();
@@ -229,46 +246,59 @@ function DateSelect({
             style={{ transform: `translateX(${swipeOffset}px)` }}
             {...swipeHandlers}
           >
-            {dates.map(({ date, plans }, i) => (
-              <div
-                key={date.toString()}
-                className="flex flex-col gap-2 items-center"
-              >
-                <div className="text-gray-400">
-                  {date.toLocaleString(locale, { weekday: "short" })}
-                </div>
-                <button
-                  type="button"
-                  className={twMerge(
-                    "p-1 md:p-10 cursor-pointer",
-                    plans.length > 0 && "border-3 rounded-xl border-yellow-400",
-                  )}
-                  data-offset={i}
-                  data-date={date.toString()}
-                  onClick={onDateClick}
+            {dates.map(({ date, plans }, i) => {
+              const representativeRecipe = plans[0]?.recipes[0];
+
+              return (
+                <div
+                  key={date.toString()}
+                  className="flex flex-col gap-2 items-center"
                 >
-                  <div className="flex flex-col items-center">
-                    <div
-                      className={twMerge(
-                        "bg-yellow-500 text-white! px-1 py-1 text-xs rounded",
-                        plans.length === 0 && "invisible",
-                      )}
-                    >
-                      {m.plan_title()}
-                    </div>
-                    <div
-                      className={twMerge(
-                        date.equals(selectedDate)
-                          ? "text-yellow-500"
-                          : "text-gray-600",
-                      )}
-                    >
-                      {date.day}
-                    </div>
+                  <div className="text-gray-400">
+                    {date.toLocaleString(locale, { weekday: "short" })}
                   </div>
-                </button>
-              </div>
-            ))}
+                  <button
+                    type="button"
+                    className="p-1 md:p-10 cursor-pointer"
+                    data-offset={i}
+                    data-date={date.toString()}
+                    onClick={onDateClick}
+                  >
+                    <div className="flex flex-col items-center gap-1">
+                      {representativeRecipe ? (
+                        <PlanRecipeImage
+                          imageUrl={representativeRecipe.imageUrl}
+                          title={representativeRecipe.title}
+                          loadingLabel={m.plan_image_generating()}
+                          hasLoadError={failedRecipeImageIds.has(
+                            representativeRecipe.id,
+                          )}
+                          onLoadError={() =>
+                            onRecipeImageError(representativeRecipe.id)
+                          }
+                          compact
+                          className="size-9 rounded-md object-cover md:size-11"
+                        />
+                      ) : (
+                        <div
+                          aria-hidden
+                          className="size-9 invisible md:size-11"
+                        />
+                      )}
+                      <div
+                        className={twMerge(
+                          date.equals(selectedDate)
+                            ? "text-yellow-500"
+                            : "text-gray-600",
+                        )}
+                      >
+                        {date.day}
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              );
+            })}
           </div>
           <Button isIconOnly className="bg-yellow-400 size-3" onClick={onRight}>
             <FaArrowRight className="text-white size-2" />
@@ -282,6 +312,8 @@ function DateSelect({
             key={plan.id}
             plan={plan}
             invalidatePlans={invalidatePlans}
+            failedRecipeImageIds={failedRecipeImageIds}
+            onRecipeImageError={onRecipeImageError}
           />
         ))}
       </div>
@@ -295,6 +327,10 @@ function Page() {
 
   const today = useMemo(() => Temporal.Now.plainDateISO(), []);
   const [startDate, setStartDate] = useState(today.subtract({ days: 3 }));
+  const [recipeImageFailures, setRecipeImageFailures] = useState<{
+    dataUpdatedAt: number;
+    recipeIds: ReadonlySet<string>;
+  }>(() => ({ dataUpdatedAt: 0, recipeIds: new Set() }));
 
   const getPlansQuery = queries.getPlans({
     startDate: new Date(
@@ -310,7 +346,45 @@ function Page() {
     });
   }, [queryClient, getPlansQuery]);
 
-  const { data: plansRes } = useQuery(getPlansQuery);
+  const { data: plansRes, dataUpdatedAt } = useQuery({
+    ...getPlansQuery,
+    refetchInterval: (query) => {
+      const failedRecipeImageIds =
+        recipeImageFailures.dataUpdatedAt === query.state.dataUpdatedAt
+          ? recipeImageFailures.recipeIds
+          : EMPTY_RECIPE_IMAGE_IDS;
+      return hasPendingRecipeImages(
+        query.state.data?.plans,
+        failedRecipeImageIds,
+      )
+        ? 3000
+        : false;
+    },
+    refetchIntervalInBackground: true,
+  });
+
+  const failedRecipeImageIds =
+    recipeImageFailures.dataUpdatedAt === dataUpdatedAt
+      ? recipeImageFailures.recipeIds
+      : EMPTY_RECIPE_IMAGE_IDS;
+  const onRecipeImageError = useCallback(
+    (recipeId: string) => {
+      setRecipeImageFailures((currentFailures) => {
+        const currentIds =
+          currentFailures.dataUpdatedAt === dataUpdatedAt
+            ? currentFailures.recipeIds
+            : EMPTY_RECIPE_IMAGE_IDS;
+        if (currentIds.has(recipeId)) {
+          return currentFailures;
+        }
+        return {
+          dataUpdatedAt,
+          recipeIds: new Set([...currentIds, recipeId]),
+        };
+      });
+    },
+    [dataUpdatedAt],
+  );
 
   const plans = plansRes?.plans
     .map((p) => validator.validate(PlanSnippetSchema, p))
@@ -324,6 +398,8 @@ function Page() {
         startDate={startDate}
         setStartDate={setStartDate}
         invalidatePlans={invalidatePlans}
+        failedRecipeImageIds={failedRecipeImageIds}
+        onRecipeImageError={onRecipeImageError}
       />
       <div className="flex justify-center">
         <RouterLink to="/plans/add" className="block fixed bottom-30">
