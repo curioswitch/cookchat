@@ -95,8 +95,8 @@ class FrontendQueries {
   }
 
   listRecipes(query: string) {
-    return infiniteQueryOptions(
-      createInfiniteQueryOptions(
+    return infiniteQueryOptions({
+      ...createInfiniteQueryOptions(
         listRecipes,
         {
           query,
@@ -108,7 +108,11 @@ class FrontendQueries {
           getNextPageParam: (lastPage) => lastPage.pagination,
         },
       ),
-    );
+      // Keep server-selected recommendations stable while this query remains
+      // cached. A reload, logout, or normal inactive-query collection creates a
+      // new first-page request and therefore a new recommendation set.
+      staleTime: query === "" ? Number.POSITIVE_INFINITY : undefined,
+    });
   }
 
   listBookmarks() {

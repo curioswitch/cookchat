@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"math/rand/v2"
 	"strings"
 	"time"
 
@@ -18,6 +19,12 @@ import (
 	"github.com/curioswitch/cookchat/common/cookchatdb"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
 	"github.com/curioswitch/cookchat/frontend/server/internal/i18n"
+)
+
+const (
+	recipePageSize               = 5
+	recommendationCandidateCount = 20
+	recommendationCount          = 4
 )
 
 func NewHandler(store *firestore.Client, search *discoveryengine.SearchClient, searchEngine string) *Handler {
@@ -40,6 +47,7 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 		return h.searchRecipes(ctx, req)
 	}
 
+	isRecommendationPage := !req.GetBookmarks() && req.GetPagination().GetLastId() == ""
 	var recipeDocs []*firestore.DocumentSnapshot
 	var lastBookmark time.Time
 
@@ -49,7 +57,7 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 			ts := time.Unix(0, lts)
 			q = q.Where("createdAt", "<", ts)
 		}
-		q = q.OrderBy("createdAt", firestore.Desc).Limit(5)
+		q = q.OrderBy("createdAt", firestore.Desc).Limit(recipePageSize)
 		bookmarkDocs, err := q.Documents(ctx).GetAll()
 		if err != nil {
 			return nil, fmt.Errorf("listrecipes: getting bookmarks from firestore: %w", err)
@@ -83,7 +91,13 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 		if lid := req.GetPagination().GetLastId(); lid != "" {
 			q = q.Where("id", ">", lid)
 		}
-		q = q.OrderBy("id", firestore.Asc).Limit(5)
+		limit := recipePageSize
+		if isRecommendationPage {
+			// Firestore has no native random ordering. Approximate it by choosing
+			// from a larger prefix until recipes have a stored random sort field.
+			limit = recommendationCandidateCount
+		}
+		q = q.OrderBy("id", firestore.Asc).Limit(limit)
 		nonUserDocs, err := q.Documents(ctx).GetAll()
 		if err != nil {
 			return nil, fmt.Errorf("listrecipes: getting recipes from firestore: %w", err)
@@ -134,17 +148,55 @@ func (h *Handler) ListRecipes(ctx context.Context, req *frontendapi.ListRecipesR
 		})
 	}
 
+	var lastRecipeID string
+	if !req.GetBookmarks() && len(snippets) > 0 {
+		// Capture the pagination boundary before removing recommendations from
+		// the listed recipes.
+		lastRecipeID = snippets[len(snippets)-1].GetId()
+	}
+
+	var recommendations []*frontendapi.RecipeSnippet
+	if isRecommendationPage {
+		snippets, recommendations = splitRecommendations(snippets, recommendationCount)
+	}
+
 	token := &frontendapi.Pagination{}
 	if req.GetBookmarks() && !lastBookmark.IsZero() {
 		token.LastTimestampNanos = lastBookmark.UnixNano()
-	} else {
-		token.LastId = snippets[len(snippets)-1].GetId()
+	} else if lastRecipeID != "" {
+		token.LastId = lastRecipeID
 	}
 
 	return &frontendapi.ListRecipesResponse{
-		Recipes:    snippets,
-		Pagination: token,
+		Recipes:         snippets,
+		Recommendations: recommendations,
+		Pagination:      token,
 	}, nil
+}
+
+func splitRecommendations(snippets []*frontendapi.RecipeSnippet, count int) ([]*frontendapi.RecipeSnippet, []*frontendapi.RecipeSnippet) {
+	if count > len(snippets) {
+		count = len(snippets)
+	}
+	if count <= 0 {
+		return snippets, nil
+	}
+
+	recommendedIndexes := make([]bool, len(snippets))
+	recommendations := make([]*frontendapi.RecipeSnippet, 0, count)
+	for _, idx := range rand.Perm(len(snippets))[:count] {
+		recommendedIndexes[idx] = true
+		recommendations = append(recommendations, snippets[idx])
+	}
+
+	recipes := make([]*frontendapi.RecipeSnippet, 0, len(snippets)-count)
+	for idx, snippet := range snippets {
+		if !recommendedIndexes[idx] {
+			recipes = append(recipes, snippet)
+		}
+	}
+
+	return recipes, recommendations
 }
 
 func (h *Handler) searchRecipes(ctx context.Context, req *frontendapi.ListRecipesRequest) (*frontendapi.ListRecipesResponse, error) {
