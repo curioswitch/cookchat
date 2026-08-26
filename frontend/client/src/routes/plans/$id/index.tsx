@@ -24,8 +24,10 @@ import {
   setPrompt,
   useChatStore,
 } from "../../../stores";
+import { PlanRecipeImage, shouldPollPlanDetails } from "../-PlanRecipeImage";
 
 const validator = createValidator();
+const EMPTY_RECIPE_IMAGE_IDS: ReadonlySet<string> = new Set();
 
 export const Route = createFileRoute("/plans/$id/")({
   component: Page,
@@ -123,9 +125,59 @@ function Page() {
 
   const chatStore = useChatStore();
 
-  const { data: planRes, isPending } = useQuery(getPlan, {
-    planId,
-  });
+  const [recipeImageFailures, setRecipeImageFailures] = useState<{
+    dataUpdatedAt: number;
+    recipeIds: ReadonlySet<string>;
+  }>(() => ({ dataUpdatedAt: 0, recipeIds: new Set() }));
+
+  const {
+    data: planRes,
+    dataUpdatedAt,
+    isPending,
+  } = useQuery(
+    getPlan,
+    { planId },
+    {
+      refetchInterval: (query) => {
+        const failedRecipeImageIds =
+          recipeImageFailures.dataUpdatedAt === query.state.dataUpdatedAt
+            ? recipeImageFailures.recipeIds
+            : EMPTY_RECIPE_IMAGE_IDS;
+        const plan = query.state.data?.plan;
+        return shouldPollPlanDetails({
+          plan,
+          isProcessing: plan?.status === PlanStatus.PROCESSING,
+          failedRecipeImageIds,
+        })
+          ? 3000
+          : false;
+      },
+      refetchIntervalInBackground: true,
+    },
+  );
+
+  const failedRecipeImageIds =
+    recipeImageFailures.dataUpdatedAt === dataUpdatedAt
+      ? recipeImageFailures.recipeIds
+      : EMPTY_RECIPE_IMAGE_IDS;
+  const onRecipeImageError = useCallback(
+    (recipeId: string) => {
+      setRecipeImageFailures((currentFailures) => {
+        const currentIds =
+          currentFailures.dataUpdatedAt === dataUpdatedAt
+            ? currentFailures.recipeIds
+            : EMPTY_RECIPE_IMAGE_IDS;
+        if (currentIds.has(recipeId)) {
+          return currentFailures;
+        }
+        return {
+          dataUpdatedAt,
+          recipeIds: new Set([...currentIds, recipeId]),
+        };
+      });
+    },
+    [dataUpdatedAt],
+  );
 
   const ingredientsRef = useRef<HTMLDivElement | null>(null);
 
@@ -246,12 +298,15 @@ function Page() {
               key={recipe.id}
               to="/recipes/$id"
               params={{ id: recipe.id }}
-              className="flex flex-col gap-2 items-center"
+              className="flex min-w-0 flex-1 flex-col gap-2 items-center"
             >
-              <img
-                src={recipe.imageUrl}
-                alt={recipe.title}
-                className="h-20 rounded-xl"
+              <PlanRecipeImage
+                imageUrl={recipe.imageUrl}
+                title={recipe.title}
+                loadingLabel={m.plan_image_generating()}
+                hasLoadError={failedRecipeImageIds.has(recipe.id)}
+                onLoadError={() => onRecipeImageError(recipe.id)}
+                className="h-20 w-full rounded-xl object-cover"
               />
               <div className="max-w-20 truncate text-xs text-gray-600">
                 {recipe.title}

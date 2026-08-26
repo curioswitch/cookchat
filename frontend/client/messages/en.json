@@ -85,6 +85,7 @@
   "plan_simple_mode": "Simple Plan",
   "plan_chat_mode": "Chat with AI",
   "plan_processing_notice": "Your plan is being processed. It should be ready soon!",
+  "plan_image_generating": "AI is generating the image…",
   "plan_today_title": "Today's Plan",
   "plan_notes_title": "Plan Notes",
   "plan_not_found": "No plan found",
