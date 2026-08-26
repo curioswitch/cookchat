@@ -2957,6 +2957,172 @@ func (x *GetChatMessagesResponse) GetPlanId() string {
 	return ""
 }
 
+// A request for FrontendService.GetUser
+type GetUserRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetUserRequest) Reset() {
+	*x = GetUserRequest{}
+	mi := &file_frontendapi_frontend_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUserRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUserRequest) ProtoMessage() {}
+
+func (x *GetUserRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_frontendapi_frontend_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUserRequest.ProtoReflect.Descriptor instead.
+func (*GetUserRequest) Descriptor() ([]byte, []int) {
+	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{41}
+}
+
+// A response for FrontendService.GetUser.
+type GetUserResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The prompt to use for the user's plan generation.
+	PlanPrompt    string `protobuf:"bytes,1,opt,name=plan_prompt,json=planPrompt,proto3" json:"plan_prompt,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetUserResponse) Reset() {
+	*x = GetUserResponse{}
+	mi := &file_frontendapi_frontend_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUserResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUserResponse) ProtoMessage() {}
+
+func (x *GetUserResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_frontendapi_frontend_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUserResponse.ProtoReflect.Descriptor instead.
+func (*GetUserResponse) Descriptor() ([]byte, []int) {
+	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *GetUserResponse) GetPlanPrompt() string {
+	if x != nil {
+		return x.PlanPrompt
+	}
+	return ""
+}
+
+// A request for FrontendService.EditUser.
+type EditUserRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The prompt to use for the user's plan generation.
+	PlanPrompt    *string `protobuf:"bytes,1,opt,name=plan_prompt,json=planPrompt,proto3,oneof" json:"plan_prompt,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EditUserRequest) Reset() {
+	*x = EditUserRequest{}
+	mi := &file_frontendapi_frontend_proto_msgTypes[43]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EditUserRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EditUserRequest) ProtoMessage() {}
+
+func (x *EditUserRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_frontendapi_frontend_proto_msgTypes[43]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EditUserRequest.ProtoReflect.Descriptor instead.
+func (*EditUserRequest) Descriptor() ([]byte, []int) {
+	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{43}
+}
+
+func (x *EditUserRequest) GetPlanPrompt() string {
+	if x != nil && x.PlanPrompt != nil {
+		return *x.PlanPrompt
+	}
+	return ""
+}
+
+// A response for FrontendService.EditUser.
+type EditUserResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EditUserResponse) Reset() {
+	*x = EditUserResponse{}
+	mi := &file_frontendapi_frontend_proto_msgTypes[44]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EditUserResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EditUserResponse) ProtoMessage() {}
+
+func (x *EditUserResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_frontendapi_frontend_proto_msgTypes[44]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EditUserResponse.ProtoReflect.Descriptor instead.
+func (*EditUserResponse) Descriptor() ([]byte, []int) {
+	return file_frontendapi_frontend_proto_rawDescGZIP(), []int{44}
+}
+
 type AddRecipeRequest_AddRecipeStep struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The description of the step.
@@ -2969,7 +3135,7 @@ type AddRecipeRequest_AddRecipeStep struct {
 
 func (x *AddRecipeRequest_AddRecipeStep) Reset() {
 	*x = AddRecipeRequest_AddRecipeStep{}
-	mi := &file_frontendapi_frontend_proto_msgTypes[41]
+	mi := &file_frontendapi_frontend_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2981,7 +3147,7 @@ func (x *AddRecipeRequest_AddRecipeStep) String() string {
 func (*AddRecipeRequest_AddRecipeStep) ProtoMessage() {}
 
 func (x *AddRecipeRequest_AddRecipeStep) ProtoReflect() protoreflect.Message {
-	mi := &file_frontendapi_frontend_proto_msgTypes[41]
+	mi := &file_frontendapi_frontend_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3195,7 +3361,16 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\x17GetChatMessagesResponse\x12\x17\n" +
 	"\achat_id\x18\x01 \x01(\tR\x06chatId\x124\n" +
 	"\bmessages\x18\x02 \x03(\v2\x18.frontendapi.ChatMessageR\bmessages\x12\x17\n" +
-	"\aplan_id\x18\x03 \x01(\tR\x06planId*Q\n" +
+	"\aplan_id\x18\x03 \x01(\tR\x06planId\"\x10\n" +
+	"\x0eGetUserRequest\"2\n" +
+	"\x0fGetUserResponse\x12\x1f\n" +
+	"\vplan_prompt\x18\x01 \x01(\tR\n" +
+	"planPrompt\"G\n" +
+	"\x0fEditUserRequest\x12$\n" +
+	"\vplan_prompt\x18\x01 \x01(\tH\x00R\n" +
+	"planPrompt\x88\x01\x01B\x0e\n" +
+	"\f_plan_prompt\"\x12\n" +
+	"\x10EditUserResponse*Q\n" +
 	"\bLanguage\x12\x18\n" +
 	"\x14LANGUAGE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10LANGUAGE_ENGLISH\x10\x01\x12\x15\n" +
@@ -3223,7 +3398,8 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\x16PLAN_STATUS_PROCESSING\x10\x01\x12\x16\n" +
 	"\x12PLAN_STATUS_ACTIVE\x10\x022N\n" +
 	"\vChatService\x12?\n" +
-	"\x04Chat\x12\x18.frontendapi.ChatRequest\x1a\x19.frontendapi.ChatResponse(\x010\x012\xf8\b\n" +
+	"\x04Chat\x12\x18.frontendapi.ChatRequest\x1a\x19.frontendapi.ChatResponse(\x010\x012\x87\n" +
+	"\n" +
 	"\x0fFrontendService\x12J\n" +
 	"\tGetRecipe\x12\x1d.frontendapi.GetRecipeRequest\x1a\x1e.frontendapi.GetRecipeResponse\x12P\n" +
 	"\vListRecipes\x12\x1f.frontendapi.ListRecipesRequest\x1a .frontendapi.ListRecipesResponse\x12J\n" +
@@ -3240,7 +3416,9 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\n" +
 	"DeletePlan\x12\x1e.frontendapi.DeletePlanRequest\x1a\x1f.frontendapi.DeletePlanResponse\x12P\n" +
 	"\vAddBookmark\x12\x1f.frontendapi.AddBookmarkRequest\x1a .frontendapi.AddBookmarkResponse\x12Y\n" +
-	"\x0eRemoveBookmark\x12\".frontendapi.RemoveBookmarkRequest\x1a#.frontendapi.RemoveBookmarkResponseB=Z;github.com/curioswitch/cookchat/frontend/api/go;frontendapib\x06proto3"
+	"\x0eRemoveBookmark\x12\".frontendapi.RemoveBookmarkRequest\x1a#.frontendapi.RemoveBookmarkResponse\x12D\n" +
+	"\aGetUser\x12\x1b.frontendapi.GetUserRequest\x1a\x1c.frontendapi.GetUserResponse\x12G\n" +
+	"\bEditUser\x12\x1c.frontendapi.EditUserRequest\x1a\x1d.frontendapi.EditUserResponseB=Z;github.com/curioswitch/cookchat/frontend/api/go;frontendapib\x06proto3"
 
 var (
 	file_frontendapi_frontend_proto_rawDescOnce sync.Once
@@ -3255,7 +3433,7 @@ func file_frontendapi_frontend_proto_rawDescGZIP() []byte {
 }
 
 var file_frontendapi_frontend_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
-var file_frontendapi_frontend_proto_msgTypes = make([]protoimpl.MessageInfo, 42)
+var file_frontendapi_frontend_proto_msgTypes = make([]protoimpl.MessageInfo, 46)
 var file_frontendapi_frontend_proto_goTypes = []any{
 	(Language)(0),                          // 0: frontendapi.Language
 	(RecipeGenre)(0),                       // 1: frontendapi.RecipeGenre
@@ -3305,8 +3483,12 @@ var file_frontendapi_frontend_proto_goTypes = []any{
 	(*ChatPlanResponse)(nil),               // 45: frontendapi.ChatPlanResponse
 	(*GetChatMessagesRequest)(nil),         // 46: frontendapi.GetChatMessagesRequest
 	(*GetChatMessagesResponse)(nil),        // 47: frontendapi.GetChatMessagesResponse
-	(*AddRecipeRequest_AddRecipeStep)(nil), // 48: frontendapi.AddRecipeRequest.AddRecipeStep
-	(*timestamppb.Timestamp)(nil),          // 49: google.protobuf.Timestamp
+	(*GetUserRequest)(nil),                 // 48: frontendapi.GetUserRequest
+	(*GetUserResponse)(nil),                // 49: frontendapi.GetUserResponse
+	(*EditUserRequest)(nil),                // 50: frontendapi.EditUserRequest
+	(*EditUserResponse)(nil),               // 51: frontendapi.EditUserResponse
+	(*AddRecipeRequest_AddRecipeStep)(nil), // 52: frontendapi.AddRecipeRequest.AddRecipeStep
+	(*timestamppb.Timestamp)(nil),          // 53: google.protobuf.Timestamp
 }
 var file_frontendapi_frontend_proto_depIdxs = []int32{
 	7,  // 0: frontendapi.ChatRequest.content:type_name -> frontendapi.ChatContent
@@ -3326,14 +3508,14 @@ var file_frontendapi_frontend_proto_depIdxs = []int32{
 	5,  // 14: frontendapi.StartChatRequest.model_provider:type_name -> frontendapi.StartChatRequest.ModelProvider
 	10, // 15: frontendapi.AddRecipeRequest.ingredients:type_name -> frontendapi.RecipeIngredient
 	12, // 16: frontendapi.AddRecipeRequest.additional_ingredients:type_name -> frontendapi.IngredientSection
-	48, // 17: frontendapi.AddRecipeRequest.steps:type_name -> frontendapi.AddRecipeRequest.AddRecipeStep
+	52, // 17: frontendapi.AddRecipeRequest.steps:type_name -> frontendapi.AddRecipeRequest.AddRecipeStep
 	0,  // 18: frontendapi.AddRecipeRequest.language:type_name -> frontendapi.Language
 	22, // 19: frontendapi.GenerateRecipeResponse.add_recipe_request:type_name -> frontendapi.AddRecipeRequest
 	1,  // 20: frontendapi.GeneratePlanRequest.genres:type_name -> frontendapi.RecipeGenre
 	11, // 21: frontendapi.StepGroup.steps:type_name -> frontendapi.RecipeStep
-	49, // 22: frontendapi.PlanSnippet.date:type_name -> google.protobuf.Timestamp
+	53, // 22: frontendapi.PlanSnippet.date:type_name -> google.protobuf.Timestamp
 	17, // 23: frontendapi.PlanSnippet.recipes:type_name -> frontendapi.RecipeSnippet
-	49, // 24: frontendapi.GetPlansRequest.start_date:type_name -> google.protobuf.Timestamp
+	53, // 24: frontendapi.GetPlansRequest.start_date:type_name -> google.protobuf.Timestamp
 	29, // 25: frontendapi.GetPlansResponse.plans:type_name -> frontendapi.PlanSnippet
 	4,  // 26: frontendapi.Plan.status:type_name -> frontendapi.PlanStatus
 	17, // 27: frontendapi.Plan.recipes:type_name -> frontendapi.RecipeSnippet
@@ -3359,23 +3541,27 @@ var file_frontendapi_frontend_proto_depIdxs = []int32{
 	37, // 47: frontendapi.FrontendService.DeletePlan:input_type -> frontendapi.DeletePlanRequest
 	39, // 48: frontendapi.FrontendService.AddBookmark:input_type -> frontendapi.AddBookmarkRequest
 	41, // 49: frontendapi.FrontendService.RemoveBookmark:input_type -> frontendapi.RemoveBookmarkRequest
-	9,  // 50: frontendapi.ChatService.Chat:output_type -> frontendapi.ChatResponse
-	15, // 51: frontendapi.FrontendService.GetRecipe:output_type -> frontendapi.GetRecipeResponse
-	19, // 52: frontendapi.FrontendService.ListRecipes:output_type -> frontendapi.ListRecipesResponse
-	21, // 53: frontendapi.FrontendService.StartChat:output_type -> frontendapi.StartChatResponse
-	23, // 54: frontendapi.FrontendService.AddRecipe:output_type -> frontendapi.AddRecipeResponse
-	25, // 55: frontendapi.FrontendService.GenerateRecipe:output_type -> frontendapi.GenerateRecipeResponse
-	27, // 56: frontendapi.FrontendService.GeneratePlan:output_type -> frontendapi.GeneratePlanResponse
-	45, // 57: frontendapi.FrontendService.ChatPlan:output_type -> frontendapi.ChatPlanResponse
-	47, // 58: frontendapi.FrontendService.GetChatMessages:output_type -> frontendapi.GetChatMessagesResponse
-	31, // 59: frontendapi.FrontendService.GetPlans:output_type -> frontendapi.GetPlansResponse
-	34, // 60: frontendapi.FrontendService.GetPlan:output_type -> frontendapi.GetPlanResponse
-	36, // 61: frontendapi.FrontendService.UpdatePlan:output_type -> frontendapi.UpdatePlanResponse
-	38, // 62: frontendapi.FrontendService.DeletePlan:output_type -> frontendapi.DeletePlanResponse
-	40, // 63: frontendapi.FrontendService.AddBookmark:output_type -> frontendapi.AddBookmarkResponse
-	42, // 64: frontendapi.FrontendService.RemoveBookmark:output_type -> frontendapi.RemoveBookmarkResponse
-	50, // [50:65] is the sub-list for method output_type
-	35, // [35:50] is the sub-list for method input_type
+	48, // 50: frontendapi.FrontendService.GetUser:input_type -> frontendapi.GetUserRequest
+	50, // 51: frontendapi.FrontendService.EditUser:input_type -> frontendapi.EditUserRequest
+	9,  // 52: frontendapi.ChatService.Chat:output_type -> frontendapi.ChatResponse
+	15, // 53: frontendapi.FrontendService.GetRecipe:output_type -> frontendapi.GetRecipeResponse
+	19, // 54: frontendapi.FrontendService.ListRecipes:output_type -> frontendapi.ListRecipesResponse
+	21, // 55: frontendapi.FrontendService.StartChat:output_type -> frontendapi.StartChatResponse
+	23, // 56: frontendapi.FrontendService.AddRecipe:output_type -> frontendapi.AddRecipeResponse
+	25, // 57: frontendapi.FrontendService.GenerateRecipe:output_type -> frontendapi.GenerateRecipeResponse
+	27, // 58: frontendapi.FrontendService.GeneratePlan:output_type -> frontendapi.GeneratePlanResponse
+	45, // 59: frontendapi.FrontendService.ChatPlan:output_type -> frontendapi.ChatPlanResponse
+	47, // 60: frontendapi.FrontendService.GetChatMessages:output_type -> frontendapi.GetChatMessagesResponse
+	31, // 61: frontendapi.FrontendService.GetPlans:output_type -> frontendapi.GetPlansResponse
+	34, // 62: frontendapi.FrontendService.GetPlan:output_type -> frontendapi.GetPlanResponse
+	36, // 63: frontendapi.FrontendService.UpdatePlan:output_type -> frontendapi.UpdatePlanResponse
+	38, // 64: frontendapi.FrontendService.DeletePlan:output_type -> frontendapi.DeletePlanResponse
+	40, // 65: frontendapi.FrontendService.AddBookmark:output_type -> frontendapi.AddBookmarkResponse
+	42, // 66: frontendapi.FrontendService.RemoveBookmark:output_type -> frontendapi.RemoveBookmarkResponse
+	49, // 67: frontendapi.FrontendService.GetUser:output_type -> frontendapi.GetUserResponse
+	51, // 68: frontendapi.FrontendService.EditUser:output_type -> frontendapi.EditUserResponse
+	52, // [52:69] is the sub-list for method output_type
+	35, // [35:52] is the sub-list for method input_type
 	35, // [35:35] is the sub-list for extension type_name
 	35, // [35:35] is the sub-list for extension extendee
 	0,  // [0:35] is the sub-list for field type_name
@@ -3399,13 +3585,14 @@ func file_frontendapi_frontend_proto_init() {
 		(*StartChatRequest_RecipeId)(nil),
 		(*StartChatRequest_PlanId)(nil),
 	}
+	file_frontendapi_frontend_proto_msgTypes[43].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_frontendapi_frontend_proto_rawDesc), len(file_frontendapi_frontend_proto_rawDesc)),
 			NumEnums:      7,
-			NumMessages:   42,
+			NumMessages:   46,
 			NumExtensions: 0,
 			NumServices:   2,
 		},

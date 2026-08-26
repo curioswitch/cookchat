@@ -101,3 +101,17 @@ export const addBookmark = FrontendService.method.addBookmark;
  * @generated from rpc frontendapi.FrontendService.RemoveBookmark
  */
 export const removeBookmark = FrontendService.method.removeBookmark;
+
+/**
+ * Get the user's settings.
+ *
+ * @generated from rpc frontendapi.FrontendService.GetUser
+ */
+export const getUser = FrontendService.method.getUser;
+
+/**
+ * Edit the user's settings.
+ *
+ * @generated from rpc frontendapi.FrontendService.EditUser
+ */
+export const editUser = FrontendService.method.editUser;

@@ -14,10 +14,13 @@ import {
 } from "@connectrpc/connect-query";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import {
+  type EditUserRequestSchema,
+  editUser,
   type GetRecipeRequestSchema,
   getChatMessages,
   getPlans,
   getRecipe,
+  getUser,
   listRecipes,
   PaginationSchema,
   type StartChatRequestSchema,
@@ -134,6 +137,14 @@ class FrontendQueries {
 
   startChat(req: MessageInitShape<typeof StartChatRequestSchema>) {
     return createQueryOptions(startChat, req, { transport: this.transport });
+  }
+
+  getUser() {
+    return createQueryOptions(getUser, {}, { transport: this.transport });
+  }
+
+  editUser(req: MessageInitShape<typeof EditUserRequestSchema>) {
+    return createQueryOptions(editUser, req, { transport: this.transport });
   }
 }
 

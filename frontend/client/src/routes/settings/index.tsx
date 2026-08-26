@@ -1,7 +1,19 @@
-import { Checkbox, type Key, Label, ListBox, Select } from "@heroui/react";
+import { useMutation } from "@connectrpc/connect-query";
+import { editUser } from "@cookchat/frontend-api";
+import {
+  Checkbox,
+  type Key,
+  Label,
+  ListBox,
+  Select,
+  TextArea,
+} from "@heroui/react";
+import { useDebouncedValue } from "@tanstack/react-pacer";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useFrontendQueries } from "../../hooks/rpc";
 import { m } from "../../paraglide/messages";
 import { getLocale, setLocale } from "../../paraglide/runtime";
 import {
@@ -51,8 +63,38 @@ function Page() {
     getDevices();
   }, []);
 
+  const [planPrompt, setPlanPrompt] = useState("");
+  const [debouncedPlanPrompt] = useDebouncedValue(planPrompt, { wait: 500 });
+  const planPromptEdited = useRef(false);
+
+  const doUpdatePlanPrompt = useMutation(editUser);
+
+  const queries = useFrontendQueries();
+  const getUserQuery = queries.getUser();
+  const { data: userRes, isPending } = useQuery(getUserQuery);
+
+  useEffect(() => {
+    if (userRes && !planPromptEdited.current) {
+      setPlanPrompt(userRes.planPrompt);
+    }
+  }, [userRes]);
+
+  useEffect(() => {
+    if (planPromptEdited.current) {
+      doUpdatePlanPrompt.mutate({ planPrompt: debouncedPlanPrompt });
+    }
+  }, [debouncedPlanPrompt, doUpdatePlanPrompt.mutate]);
+
+  if (isPending) {
+    return <div>{m.common_loading()}</div>;
+  }
+
+  if (!userRes) {
+    throw new Error("User data not available");
+  }
+
   return (
-    <div className="p-4">
+    <div className="p-4 flex flex-col gap-2 md:gap-3">
       <Select value={locale} onChange={onLanguageChange}>
         <Label>{m.settings_language_label()}</Label>
         <Select.Trigger>
@@ -66,6 +108,16 @@ function Page() {
           </ListBox>
         </Select.Popover>
       </Select>
+
+      <Label htmlFor="plan-prompt">{m.settings_plan_prompt_label()}</Label>
+      <TextArea
+        id="plan-prompt"
+        value={planPrompt}
+        onChange={(e) => {
+          planPromptEdited.current = true;
+          setPlanPrompt(e.target.value);
+        }}
+      />
       <Select
         value={settings.speakerDeviceId}
         onChange={onSpeakerChange}

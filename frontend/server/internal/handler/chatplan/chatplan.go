@@ -127,7 +127,16 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 
 	now := time.Now()
 
-	chats := h.store.Collection("users").Doc(userID).Collection("chats")
+	userDoc := h.store.Collection("users").Doc(userID)
+	var user cookchatdb.User
+	doc, err := userDoc.Get(ctx)
+	if err == nil {
+		if err := doc.DataTo(&user); err != nil {
+			return nil, fmt.Errorf("chatplan: deserializing firestore user: %w", err)
+		}
+	}
+
+	chats := userDoc.Collection("chats")
 	var chat cookchatdb.Chat
 	if cid := req.GetChatId(); cid != "" {
 		doc, err := chats.Doc(cid).Get(ctx)
@@ -218,7 +227,7 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 		urls := make(map[string]struct{})
 		receivedText := false
 		stream := h.genAI.Models.GenerateContentStream(ctx, "gemini-3.6-flash", content, &genai.GenerateContentConfig{
-			SystemInstruction: genai.NewContentFromText(llm.ChatPlanPrompt(strings.Join(recentRecipes, ", ")), genai.RoleModel),
+			SystemInstruction: genai.NewContentFromText(llm.ChatPlanPrompt(strings.Join(recentRecipes, ", "), user.PlanPrompt), genai.RoleModel),
 			ThinkingConfig: &genai.ThinkingConfig{
 				ThinkingLevel: genai.ThinkingLevelMinimal,
 			},

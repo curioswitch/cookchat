@@ -31,12 +31,14 @@ import (
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/addrecipe"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/chatplan"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/deleteplan"
+	"github.com/curioswitch/cookchat/frontend/server/internal/handler/edituser"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/generateplan"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/generaterecipe"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getchatmessages"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getplan"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getplans"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getrecipe"
+	"github.com/curioswitch/cookchat/frontend/server/internal/handler/getuser"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/listrecipes"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/removebookmark"
 	"github.com/curioswitch/cookchat/frontend/server/internal/handler/startchat"
@@ -344,6 +346,22 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		[]*frontendapi.RemoveBookmarkRequest{
 			{
 				RecipeId: "02JNMi0W1605TLxzQt6v",
+			},
+		})
+
+	server.HandleConnectUnary(s,
+		frontendapiconnect.FrontendServiceGetUserProcedure,
+		getuser.NewHandler(firestore).GetUser,
+		[]*frontendapi.GetUserRequest{
+			{},
+		})
+
+	server.HandleConnectUnary(s,
+		frontendapiconnect.FrontendServiceEditUserProcedure,
+		edituser.NewHandler(firestore).EditUser,
+		[]*frontendapi.EditUserRequest{
+			{
+				PlanPrompt: new("No seafood, have 3 stoves."),
 			},
 		})
 
