@@ -1,6 +1,6 @@
 module github.com/curioswitch/cookchat/crawler/api/build
 
-go 1.26.6
+go 1.27.0
 
 require (
 	github.com/curioswitch/go-build v0.9.0

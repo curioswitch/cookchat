@@ -48,16 +48,13 @@ function Page() {
   );
 
   const recipes = useMemo(
-    () => data?.pages.flatMap((page) => page.recipes),
+    () => data?.pages.flatMap((page) => page.recipes) ?? [],
     [data],
   );
-
   const recommendedRecipes = useMemo(
-    () => recipes?.slice(0, 4) || [],
-    [recipes],
+    () => data?.pages[0]?.recommendations ?? [],
+    [data],
   );
-
-  const popularRecipes = useMemo(() => recipes?.slice(4) || [], [recipes]);
 
   return (
     <div className="p-4">
@@ -71,62 +68,68 @@ function Page() {
 
       {isPending && <div className="mt-4">{m.common_loading()}</div>}
 
-      {!isPending && recipes && recipes.length > 0 && (
+      {!isPending && (recommendedRecipes.length > 0 || recipes.length > 0) && (
         <>
-          <div className="mt-6">
-            <h2 className="text-lg font-bold mb-4">
-              {m.home_recommended_recipes()}
-            </h2>
-            <div className="grid grid-cols-2 gap-4">
-              {recommendedRecipes.map((recipe) => (
-                <Link
-                  to="/recipes/$id"
-                  params={{ id: recipe.id }}
-                  key={recipe.id}
-                  className="block"
-                >
-                  <img
-                    src={recipe.imageUrl}
-                    alt={recipe.title}
-                    className="w-full aspect-square object-cover rounded-2xl"
-                  />
-                  <h3 className="mt-2 mb-0 text-sm font-semibold line-clamp-2">
-                    {recipe.title}
-                  </h3>
-                </Link>
-              ))}
-            </div>
-          </div>
-          <div className="mt-6">
-            <h2 className="text-lg font-bold mb-4 pr-[3px]">
-              {m.home_popular_recipes()}
-            </h2>
-            <div className="flex flex-col gap-2">
-              {popularRecipes.map((recipe, i) => (
-                <Link
-                  to="/recipes/$id"
-                  params={{ id: recipe.id }}
-                  key={recipe.id}
-                  className="flex border rounded-2xl border-primary-100 items-center gap-4 h-32 overflow-hidden"
-                  ref={i === popularRecipes.length - 1 ? handleLastItem : null}
-                >
-                  <div className="w-1/4 h-full flex-none">
+          {recommendedRecipes.length > 0 && (
+            <div className="mt-6">
+              <h2 className="text-lg font-bold mb-4">
+                {m.home_recommended_recipes()}
+              </h2>
+              <div className="grid grid-cols-2 gap-4">
+                {recommendedRecipes.map((recipe) => (
+                  <Link
+                    to="/recipes/$id"
+                    params={{ id: recipe.id }}
+                    key={recipe.id}
+                    className="block"
+                  >
                     <img
                       src={recipe.imageUrl}
                       alt={recipe.title}
-                      className="rounded-tl-2xl rounded-bl-2xl object-cover h-full w-full"
+                      className="w-full aspect-square object-cover rounded-2xl"
                     />
-                  </div>
-                  <div className="min-w-0 flex-1 pr-4">
-                    <h3 className="mt-0 mb-1 text-[0.95rem]">{recipe.title}</h3>
-                    <p className="mb-2 text-small font-thin text-gray-400 line-clamp-1">
-                      {recipe.summary}
-                    </p>
-                  </div>
-                </Link>
-              ))}
+                    <h3 className="mt-2 mb-0 text-sm font-semibold line-clamp-2">
+                      {recipe.title}
+                    </h3>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+          {recipes.length > 0 && (
+            <div className="mt-6">
+              <h2 className="text-lg font-bold mb-4 pr-[3px]">
+                {m.home_popular_recipes()}
+              </h2>
+              <div className="flex flex-col gap-2">
+                {recipes.map((recipe, i) => (
+                  <Link
+                    to="/recipes/$id"
+                    params={{ id: recipe.id }}
+                    key={recipe.id}
+                    className="flex border rounded-2xl border-primary-100 items-center gap-4 h-32 overflow-hidden"
+                    ref={i === recipes.length - 1 ? handleLastItem : null}
+                  >
+                    <div className="w-1/4 h-full flex-none">
+                      <img
+                        src={recipe.imageUrl}
+                        alt={recipe.title}
+                        className="rounded-tl-2xl rounded-bl-2xl object-cover h-full w-full"
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1 pr-4">
+                      <h3 className="mt-0 mb-1 text-[0.95rem]">
+                        {recipe.title}
+                      </h3>
+                      <p className="mb-2 text-small font-thin text-gray-400 line-clamp-1">
+                        {recipe.summary}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

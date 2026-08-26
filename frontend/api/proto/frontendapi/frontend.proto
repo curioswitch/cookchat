@@ -208,6 +208,9 @@ message ListRecipesResponse {
   // The recipes.
   repeated RecipeSnippet recipes = 1;
 
+  // Recommended recipes for the user that can be shown along listed recipes.
+  repeated RecipeSnippet recommendations = 3;
+
   // The pagination token for the next page of recipes.
   Pagination pagination = 2;
 }
