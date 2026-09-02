@@ -258,6 +258,22 @@ function Page() {
     }
   }, [showSeikatsuClubSearch]);
 
+  const nextAmazonItem = useCallback(() => {
+    if (!amazonSearchStep) return;
+    const nextIndex = amazonSearchStep.nextIndex;
+    window.setTimeout(() => {
+      setAmazonSearchIndex(nextIndex);
+    });
+  }, [amazonSearchStep]);
+
+  const nextSeikatsuClubItem = useCallback(() => {
+    if (!seikatsuClubSearchStep) return;
+    const nextIndex = seikatsuClubSearchStep.nextIndex;
+    window.setTimeout(() => {
+      setSeikatsuClubSearchIndex(nextIndex);
+    });
+  }, [seikatsuClubSearchStep]);
+
   return (
     <div className="p-4">
       {cart.recipes.length === 0 && (
@@ -345,7 +361,7 @@ function Page() {
                 <>
                   <p className="mt-4 text-center text-sm text-gray-600">
                     {m.cart_amazon_fresh_progress({
-                      current: amazonSearchStep.current,
+                      current: amazonSearchStep.current + 1,
                       total: amazonSearchStep.total,
                     })}
                   </p>
@@ -353,9 +369,7 @@ function Page() {
                     href={amazonSearchStep.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    onClick={() =>
-                      setAmazonSearchIndex(amazonSearchStep.nextIndex)
-                    }
+                    onClick={nextAmazonItem}
                     className="mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-yellow-400 px-4 py-3 text-center font-semibold text-white"
                   >
                     {m.cart_amazon_fresh_search_item({
@@ -427,7 +441,7 @@ function Page() {
                 <>
                   <p className="mt-4 text-center text-sm text-gray-600">
                     {m.cart_seikatsu_club_progress({
-                      current: seikatsuClubSearchStep.current,
+                      current: seikatsuClubSearchStep.current + 1,
                       total: seikatsuClubSearchStep.total,
                     })}
                   </p>
@@ -435,11 +449,7 @@ function Page() {
                     href={seikatsuClubSearchStep.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    onClick={() =>
-                      setSeikatsuClubSearchIndex(
-                        seikatsuClubSearchStep.nextIndex,
-                      )
-                    }
+                    onClick={nextSeikatsuClubItem}
                     className="mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-yellow-400 px-4 py-3 text-center font-semibold text-white"
                   >
                     {m.cart_seikatsu_club_search_item({
