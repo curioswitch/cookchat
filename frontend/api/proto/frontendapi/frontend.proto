@@ -74,6 +74,8 @@ enum RecipeSource {
   RECIPE_SOURCE_ORANGE_PAGE = 2;
   // Recipe from delish kitchen.
   RECIPE_SOURCE_DELISH_KITCHEN = 3;
+  // Recipe from Japan Heart Foundation.
+  RECIPE_SOURCE_JHF = 4;
 }
 
 // The status of a recipe.

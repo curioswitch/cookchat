@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sync"
 
 	"cloud.google.com/go/firestore"
 	"golang.org/x/sync/errgroup"
@@ -52,26 +53,38 @@ func (p *PostProcessor) PostProcessRecipe(ctx context.Context, recipe *cookchatd
 	if recipe.LocalizedContent == nil {
 		recipe.LocalizedContent = map[string]*cookchatdb.RecipeContent{}
 	}
+	var localizedContentMu sync.Mutex
 
-	var grp errgroup.Group
+	var translations errgroup.Group
 	for _, lang := range targetLanguages {
-		grp.Go(func() error {
+		translations.Go(func() error {
 			cnt, err := p.translateRecipe(ctx, recipe.ID, contentJSON, cookchatdb.LanguageCode(recipe.LanguageCode), lang)
 			if err != nil {
 				return err
 			}
+			localizedContentMu.Lock()
 			recipe.LocalizedContent[string(lang)] = cnt
+			localizedContentMu.Unlock()
 			return nil
 		})
 	}
+	if err := translations.Wait(); err != nil {
+		return err
+	}
+
+	var grp errgroup.Group
 	for _, lang := range cookchatdb.AllLanguageCodes {
 		langAI := string(lang) + "-ai"
-		if cnt := recipe.LocalizedContent[langAI]; cnt != nil && cnt.Version == prompts.VerRewriteRecipe {
+		localizedContentMu.Lock()
+		existingRewrite := recipe.LocalizedContent[langAI]
+		langContent := recipe.LocalizedContent[string(lang)]
+		localizedContentMu.Unlock()
+		if existingRewrite != nil && existingRewrite.Version == prompts.VerRewriteRecipe {
 			continue
 		}
 		var langContentJSON string
-		if cnt := recipe.LocalizedContent[string(lang)]; cnt != nil {
-			cj, err := json.Marshal(cnt)
+		if langContent != nil {
+			cj, err := json.Marshal(langContent)
 			if err != nil {
 				return fmt.Errorf("recipegen: marshalling recipe content for rewrite: %w", err)
 			}
@@ -84,7 +97,9 @@ func (p *PostProcessor) PostProcessRecipe(ctx context.Context, recipe *cookchatd
 			if err != nil {
 				return err
 			}
+			localizedContentMu.Lock()
 			recipe.LocalizedContent[langAI] = cnt
+			localizedContentMu.Unlock()
 			return nil
 		})
 	}

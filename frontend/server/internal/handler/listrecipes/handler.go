@@ -200,6 +200,7 @@ func splitRecommendations(snippets []*frontendapi.RecipeSnippet, count int) ([]*
 }
 
 func (h *Handler) searchRecipes(ctx context.Context, req *frontendapi.ListRecipesRequest) (*frontendapi.ListRecipesResponse, error) {
+	lang := i18n.UserLanguage(ctx)
 	response := h.search.Search(ctx, &discoveryenginepb.SearchRequest{
 		ServingConfig: h.searchEngine + "/servingConfigs/default_search",
 		Query:         req.GetQuery(),
@@ -219,11 +220,17 @@ func (h *Handler) searchRecipes(ctx context.Context, req *frontendapi.ListRecipe
 			slog.WarnContext(ctx, "listrecipes: search result has no struct data", "result", result)
 			continue
 		}
+		content := data.GetFields()["content"].GetStructValue()
+		if data.GetFields()["languageCode"].GetStringValue() != lang {
+			if lc, ok := data.GetFields()["localizedContent"].GetStructValue().GetFields()[lang]; ok {
+				content = lc.GetStructValue()
+			}
+		}
 		id := data.GetFields()["id"].GetStringValue()
-		title := data.GetFields()["title"].GetStringValue()
+		title := content.GetFields()["title"].GetStringValue()
 		imageURL := data.GetFields()["imageUrl"].GetStringValue()
 		var summaryBuilder strings.Builder
-		for _, ingredient := range data.GetFields()["ingredients"].GetListValue().GetValues() {
+		for _, ingredient := range content.GetFields()["ingredients"].GetListValue().GetValues() {
 			name := ingredient.GetStructValue().GetFields()["name"].GetStringValue()
 			summaryBuilder.WriteString(name)
 			summaryBuilder.WriteString("・")
