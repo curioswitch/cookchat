@@ -221,8 +221,8 @@ func (h *Handler) searchRecipes(ctx context.Context, req *frontendapi.ListRecipe
 			continue
 		}
 		content := data.GetFields()["content"].GetStructValue()
-		if data.GetFields()["languageCode"].GetStringValue() != string(lang) {
-			if lc, ok := data.GetFields()["localizedContent"].GetStructValue().GetFields()[string(lang)]; ok {
+		if data.GetFields()["languageCode"].GetStringValue() != lang {
+			if lc, ok := data.GetFields()["localizedContent"].GetStructValue().GetFields()[lang]; ok {
 				content = lc.GetStructValue()
 			}
 		}
