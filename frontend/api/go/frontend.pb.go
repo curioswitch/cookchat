@@ -148,6 +148,8 @@ const (
 	RecipeSource_RECIPE_SOURCE_ORANGE_PAGE RecipeSource = 2
 	// Recipe from delish kitchen.
 	RecipeSource_RECIPE_SOURCE_DELISH_KITCHEN RecipeSource = 3
+	// Recipe from Japan Heart Foundation.
+	RecipeSource_RECIPE_SOURCE_JHF RecipeSource = 4
 )
 
 // Enum value maps for RecipeSource.
@@ -157,12 +159,14 @@ var (
 		1: "RECIPE_SOURCE_COOKPAD",
 		2: "RECIPE_SOURCE_ORANGE_PAGE",
 		3: "RECIPE_SOURCE_DELISH_KITCHEN",
+		4: "RECIPE_SOURCE_JHF",
 	}
 	RecipeSource_value = map[string]int32{
 		"RECIPE_SOURCE_UNSPECIFIED":    0,
 		"RECIPE_SOURCE_COOKPAD":        1,
 		"RECIPE_SOURCE_ORANGE_PAGE":    2,
 		"RECIPE_SOURCE_DELISH_KITCHEN": 3,
+		"RECIPE_SOURCE_JHF":            4,
 	}
 )
 
@@ -3393,12 +3397,13 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\x14RECIPE_GENRE_WESTERN\x10\x03\x12\x17\n" +
 	"\x13RECIPE_GENRE_KOREAN\x10\x04\x12\x18\n" +
 	"\x14RECIPE_GENRE_ITALIAN\x10\x05\x12\x17\n" +
-	"\x13RECIPE_GENRE_ETHNIC\x10\x06*\x89\x01\n" +
+	"\x13RECIPE_GENRE_ETHNIC\x10\x06*\xa0\x01\n" +
 	"\fRecipeSource\x12\x1d\n" +
 	"\x19RECIPE_SOURCE_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15RECIPE_SOURCE_COOKPAD\x10\x01\x12\x1d\n" +
 	"\x19RECIPE_SOURCE_ORANGE_PAGE\x10\x02\x12 \n" +
-	"\x1cRECIPE_SOURCE_DELISH_KITCHEN\x10\x03*e\n" +
+	"\x1cRECIPE_SOURCE_DELISH_KITCHEN\x10\x03\x12\x15\n" +
+	"\x11RECIPE_SOURCE_JHF\x10\x04*e\n" +
 	"\fRecipeStatus\x12\x1d\n" +
 	"\x19RECIPE_STATUS_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18RECIPE_STATUS_PROCESSING\x10\x01\x12\x18\n" +
