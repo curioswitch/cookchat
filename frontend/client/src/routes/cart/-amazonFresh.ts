@@ -38,7 +38,7 @@ export function getAmazonFreshSearchStep(
 
   return {
     item,
-    current: index + 1,
+    current: index,
     total: items.length,
     nextIndex: index + 1,
     url: url.toString(),
@@ -57,7 +57,7 @@ export function getSeikatsuClubSearchStep(
 
   return {
     item,
-    current: index + 1,
+    current: index,
     total: items.length,
     nextIndex: index + 1,
     url: url.toString(),

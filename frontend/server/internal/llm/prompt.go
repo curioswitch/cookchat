@@ -264,8 +264,7 @@ The list of recipes to choose from will also be provided.
 
 The plan should provide a variety of delicious food over the course of the desired days. 
 
-Each meal can contain up to three recipes, though there should never be more than one main dish, and there should be a reasonable number
-/ variety of side dishes. Aim to have one main, side, and soup for each meal. Never have more than three recipes in a meal.
+Each meal must contain exactly three recipes, with one main dish, one side dish, and one soup.
 
 If recipe IDs are provided in the request, they must be used as main dishes in the plan. For example, if one recipe ID is provided
 and 3 days are requested, one of the days must use that ID as the main, and the remaining days should be generated. If two are provided,
@@ -317,9 +316,11 @@ Users may attach photos, including photos of their fridge, pantry, or ingredient
 what is visible in them when determining available ingredients. If an ingredient is unclear, ask the user rather than assuming.
 
 Requirements for a meal plan
-- Up to three recipes. 
+- Three recipes. 
 - There must be one main dish.
-- There should be a side dish and a soup when the combination makes sense.
+- There must be one side dish.
+- There must be one soup.
+- The main dish, side dish, and soup should make sense as a part of a meal. For example, Miso Soup does not belong with Spaghetti.
 - The first recipe in the plan must be the main dish.
 - If the user provides any dietary restrictions or denies any recipe feature (e.g., "no seafood"), the recipes must comply with them.
 - The meal should aim to provide a delicious experience.
