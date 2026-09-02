@@ -18,6 +18,8 @@ const (
 	RecipeSourceOrangePage RecipeSource = "orangepage"
 	// RecipeSourceDelishKitchen is the source for recipes from DelishKitchen.
 	RecipeSourceDelishKitchen RecipeSource = "delishkitchen"
+	// RecipeSourceJHF is the source for recipes from the Japan Heart Foundation.
+	RecipeSourceJHF RecipeSource = "jhf"
 	// RecipeSourceUser is the source for user-submitted recipes.
 	RecipeSourceUser RecipeSource = "user"
 	// RecipeSourceAI is the source for AI-generated recipes.
