@@ -118,32 +118,6 @@ class ChatStream {
       model: this.model,
       callbacks: {
         onmessage: (e: LiveServerMessage) => {
-          if (e.setupComplete) {
-            this.session.sendClientContent({
-              turns: [
-                {
-                  role: "user",
-                  parts: [
-                    {
-                      text: "こんにちは！",
-                    },
-                  ],
-                },
-              ],
-              turnComplete: true,
-            });
-            this.micWorklet.port.onmessage = (e) => {
-              if (e.data.event === "chunk") {
-                this.session.sendRealtimeInput({
-                  audio: {
-                    mimeType: "audio/pcm",
-                    data: btoa(e.data.data.str),
-                  },
-                });
-              }
-            };
-            return;
-          }
           const toolCall = e.toolCall?.functionCalls?.[0];
           if (toolCall?.name === "navigate_to_step" && toolCall.args) {
             const idx = toolCall.args.step as number;
@@ -164,6 +138,30 @@ class ChatStream {
         },
       },
     });
+
+    this.session.sendClientContent({
+      turns: [
+        {
+          role: "user",
+          parts: [
+            {
+              text: "こんにちは！",
+            },
+          ],
+        },
+      ],
+      turnComplete: true,
+    });
+    this.micWorklet.port.onmessage = (e) => {
+      if (e.data.event === "chunk") {
+        this.session.sendRealtimeInput({
+          audio: {
+            mimeType: "audio/pcm",
+            data: btoa(e.data.data.str),
+          },
+        });
+      }
+    };
   }
 
   async stop() {
