@@ -32,6 +32,20 @@ export default defineConfig(({ command }) => ({
     }),
     react({}),
     tailwindcss(),
+    {
+      name: "cross-origin-isolated-workers",
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (
+            req.headers["sec-fetch-dest"] === "worker" ||
+            req.url?.includes("worker_file")
+          ) {
+            res.setHeader("Cross-Origin-Embedder-Policy", "credentialless");
+          }
+          next();
+        });
+      },
+    },
   ],
   server: {
     port: process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 8080,

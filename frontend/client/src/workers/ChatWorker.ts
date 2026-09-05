@@ -35,23 +35,6 @@ class ChatStream {
       model: this.model,
       callbacks: {
         onmessage: (e: LiveServerMessage) => {
-          if (e.setupComplete) {
-            this.session.sendRealtimeInput({
-              text: this.startMessage,
-            });
-            this.micPort.onmessage = (e: MessageEvent<Float32Array>) => {
-              if (receivingAudio || isInitialTurn) {
-                return;
-              }
-              this.session.sendRealtimeInput({
-                audio: {
-                  mimeType: "audio/pcm",
-                  data: b64Encode(float32ToPcm16(e.data)),
-                },
-              });
-            };
-          }
-
           const toolCall = e.toolCall?.functionCalls?.[0];
           if (toolCall) {
             this.session.sendToolResponse({
@@ -104,6 +87,21 @@ class ChatStream {
         },
       },
     });
+
+    this.session.sendRealtimeInput({
+      text: this.startMessage,
+    });
+    this.micPort.onmessage = (e: MessageEvent<Float32Array>) => {
+      if (receivingAudio || isInitialTurn) {
+        return;
+      }
+      this.session.sendRealtimeInput({
+        audio: {
+          mimeType: "audio/pcm",
+          data: b64Encode(float32ToPcm16(e.data)),
+        },
+      });
+    };
   }
 
   async stop() {
