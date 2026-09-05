@@ -30,7 +30,7 @@
     ],
     "headers": [
       {
-        "source": "**",
+        "source": "!/login{,/**}",
         "headers": [
           {
             "key": "Cross-Origin-Opener-Policy",
