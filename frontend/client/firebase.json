@@ -30,7 +30,7 @@
     ],
     "headers": [
       {
-        "source": "!/login{,/**}",
+        "source": "**",
         "headers": [
           {
             "key": "Cross-Origin-Opener-Policy",
@@ -39,6 +39,19 @@
           {
             "key": "Cross-Origin-Embedder-Policy",
             "value": "credentialless"
+          }
+        ]
+      },
+      {
+        "source": "/login{,/**}",
+        "headers": [
+          {
+            "key": "Cross-Origin-Opener-Policy",
+            "value": "unsafe-none"
+          },
+          {
+            "key": "Cross-Origin-Embedder-Policy",
+            "value": "unsafe-none"
           }
         ]
       },
