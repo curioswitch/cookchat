@@ -5,19 +5,19 @@ go 1.27.1
 require (
 	cloud.google.com/go/discoveryengine v1.33.0
 	cloud.google.com/go/firestore v1.25.0
-	cloud.google.com/go/storage v1.66.0
+	cloud.google.com/go/storage v1.67.1
 	firebase.google.com/go/v4 v4.21.0
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/tasks/api v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/go-curiostack v0.0.0-20260128051004-075609c7945e
 	github.com/curioswitch/go-usegcp v0.0.0-20251112061520-c500c3a65003
 	github.com/go-chi/chi/v5 v5.3.2
-	golang.org/x/sync v0.22.0
-	google.golang.org/genai v1.70.0
+	golang.org/x/sync v0.23.0
+	google.golang.org/genai v1.71.0
 )
 
 require (
-	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.12-20260825204119-511051f7f437.1 // indirect
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.12-20260825204119-511051f7f437.2 // indirect
 	cel.dev/expr v0.25.2 // indirect
 	cloud.google.com/go v0.123.0 // indirect
 	cloud.google.com/go/auth v0.23.2 // indirect
@@ -26,7 +26,7 @@ require (
 	cloud.google.com/go/iam v1.12.0 // indirect
 	cloud.google.com/go/longrunning v1.2.0 // indirect
 	cloud.google.com/go/monitoring v1.30.0 // indirect
-	connectrpc.com/connect v1.20.0 // indirect
+	connectrpc.com/connect v1.21.0 // indirect
 	connectrpc.com/otelconnect v0.9.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.33.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.57.0 // indirect
@@ -86,7 +86,7 @@ require (
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/text v0.41.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
-	google.golang.org/api v0.296.0 // indirect
+	google.golang.org/api v0.298.0 // indirect
 	google.golang.org/appengine/v2 v2.0.6 // indirect
 	google.golang.org/genproto v0.0.0-20260715232425-e75dac1f907d // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260715232425-e75dac1f907d // indirect
