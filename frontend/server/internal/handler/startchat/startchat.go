@@ -176,7 +176,7 @@ func (h *Handler) startChatGemini(ctx context.Context, prompt string) (*frontend
 	}
 
 	// Until genai Go SDK supports token creation, issue request manually.
-	model := "gemini-3.1-flash-live-preview"
+	model := "gemini-3.8-live"
 	cfg := tokenConfig{
 		Uses: 1,
 		BidiGenerateContentSetup: &bidiGenerateContentSetup{
