@@ -3,28 +3,25 @@ module github.com/curioswitch/cookchat/frontend/server/build
 go 1.27.1
 
 require (
-	github.com/curioswitch/go-build v0.9.0
-	github.com/curioswitch/go-curiostack v0.0.0-20260128051004-075609c7945e
+	github.com/curioswitch/go-build v0.10.0
+	github.com/curioswitch/go-curiostack v0.0.0-20261013024109-d857da0b0f68
 	github.com/goyek/x v0.4.0
 )
 
 require (
-	github.com/fatih/color v1.18.0 // indirect
+	github.com/fatih/color v1.19.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/goyek/goyek/v3 v3.0.1 // indirect
 	github.com/knadh/koanf/maps v0.1.2 // indirect
-	github.com/knadh/koanf/parsers/yaml v1.1.0 // indirect
-	github.com/knadh/koanf/providers/env/v2 v2.0.0 // indirect
-	github.com/knadh/koanf/providers/rawbytes v1.0.0 // indirect
-	github.com/knadh/koanf/v2 v2.3.2 // indirect
-	github.com/kr/pretty v0.3.1 // indirect
+	github.com/knadh/koanf/parsers/yaml v1.1.1 // indirect
+	github.com/knadh/koanf/providers/env/v2 v2.0.2 // indirect
+	github.com/knadh/koanf/providers/rawbytes v1.0.1 // indirect
+	github.com/knadh/koanf/v2 v2.3.8 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
-	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/mattn/go-shellwords v1.0.12 // indirect
+	github.com/mattn/go-isatty v0.0.21 // indirect
+	github.com/mattn/go-shellwords v1.0.13 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
-	github.com/rogpeppe/go-internal v1.14.1 // indirect
-	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/sys v0.48.0 // indirect
-	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
+	go.yaml.in/yaml/v3 v3.0.5 // indirect
+	golang.org/x/sys v0.49.0 // indirect
 )
