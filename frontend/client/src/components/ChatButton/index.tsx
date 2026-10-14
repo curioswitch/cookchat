@@ -1,7 +1,6 @@
 import { StartChatRequest_ModelProvider } from "@cookchat/frontend-api";
-import { RealtimeAgent, RealtimeSession } from "@openai/agents-realtime";
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { HiMicrophone, HiStop } from "react-icons/hi2";
 import { RingBuffer } from "ringbuf.js";
 import { twMerge } from "tailwind-merge";
@@ -13,11 +12,16 @@ import ChatWorker from "../../workers/ChatWorker?worker";
 import MicWorkletURL from "../../workers/MicWorklet?worker&url";
 import SpeakerWorkletURL from "../../workers/SpeakerWorklet?worker&url";
 
+import { OpenAILiveSession } from "./sessions/OpenAILiveSession";
+import { OpenAIRealtimeSession } from "./sessions/OpenAIRealtimeSession";
+import type { ChatSession } from "./sessions/types";
+
 class ChatStream implements ChatSession {
   private readonly micAudioContext: AudioContext;
   private readonly speakerAudioContext: AudioContext;
 
   private micSource: MediaStreamAudioSourceNode | undefined;
+  private microphone: MediaStream | undefined;
   private micWorklet: AudioWorkletNode | undefined;
   private micWorker: Worker | undefined;
   private chatWorker: Worker | undefined;
@@ -48,14 +52,21 @@ class ChatStream implements ChatSession {
           : undefined,
       },
     });
+    this.microphone = micStream;
+    if (this.stopped) {
+      for (const track of micStream.getTracks()) track.stop();
+      return;
+    }
     const micAudioContext = this.micAudioContext;
     this.micSource = micAudioContext.createMediaStreamSource(micStream);
     await micAudioContext.audioWorklet.addModule(MicWorkletURL);
+    if (this.stopped) return;
     this.micWorklet = new AudioWorkletNode(micAudioContext, "mic-worklet");
     this.micSource.connect(this.micWorklet);
 
     const speakerAudioContext = this.speakerAudioContext;
     await speakerAudioContext.audioWorklet.addModule(SpeakerWorkletURL);
+    if (this.stopped) return;
     const outputBuffer = RingBuffer.getStorageForCapacity(
       speakerAudioContext.sampleRate * 60, // 60 seconds
       Float32Array,
@@ -113,6 +124,7 @@ class ChatStream implements ChatSession {
       return;
     }
     this.stopped = true;
+    for (const track of this.microphone?.getTracks() ?? []) track.stop();
     if (this.micWorklet) {
       this.micWorklet.disconnect();
     }
@@ -127,18 +139,6 @@ class ChatStream implements ChatSession {
     }
     await this.micAudioContext.close();
     await this.speakerAudioContext.close();
-  }
-}
-
-interface ChatSession {
-  stop(): void;
-}
-
-class OpenAISession implements ChatSession {
-  constructor(private readonly session: RealtimeSession) {}
-
-  stop(): void {
-    this.session.close();
   }
 }
 
@@ -157,7 +157,10 @@ export function ChatButton({
   navigateToIngredients?: () => void;
   prompt?: string;
 }) {
-  const [stream, setStream] = useState<ChatSession | undefined>(undefined);
+  const sessionRef = useRef<ChatSession | undefined>(undefined);
+  const startingRef = useRef(false);
+  const operationRef = useRef(0);
+  const [error, setError] = useState<string>();
   const [playing, setPlaying] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [waiting, setWaiting] = useState(false);
@@ -167,124 +170,106 @@ export function ChatButton({
   const settings = useSettingsStore();
 
   const onClick = useCallback(async () => {
-    if (!navigateToStep || !navigateToIngredients) {
-      return;
-    }
+    if (!navigateToStep || !navigateToIngredients) return;
 
-    if (stream) {
-      stream.stop();
-      setStream(undefined);
+    if (sessionRef.current || startingRef.current) {
+      operationRef.current++;
+      sessionRef.current?.stop();
+      sessionRef.current = undefined;
+      startingRef.current = false;
       setPlaying(false);
       setSpeaking(false);
       setWaiting(false);
-      return false;
+      return;
     }
 
+    const operation = ++operationRef.current;
+    startingRef.current = true;
+    setError(undefined);
     setPlaying(true);
+    const request = {
+      recipe: recipeId
+        ? { case: "recipeId" as const, value: recipeId }
+        : { case: "planId" as const, value: planId },
+      modelProvider: settings.useOpenAI
+        ? StartChatRequest_ModelProvider.OPENAI
+        : StartChatRequest_ModelProvider.GOOGLE_GENAI,
+      llmPrompt: prompt,
+      model: settings.model,
+    };
 
-    const modelProvider = settings.useOpenAI
-      ? StartChatRequest_ModelProvider.OPENAI
-      : StartChatRequest_ModelProvider.GOOGLE_GENAI;
-
-    const res = await queryClient.fetchQuery({
-      ...frontendQueries.startChat({
-        recipe: recipeId
-          ? {
-              case: "recipeId",
-              value: recipeId,
-            }
-          : {
-              case: "planId",
-              value: planId,
-            },
-        modelProvider,
-        llmPrompt: prompt,
-        model: settings.model,
-      }),
-      staleTime: 0,
-    });
-
-    if (modelProvider === StartChatRequest_ModelProvider.OPENAI) {
-      const agent = new RealtimeAgent({
-        name: "CookChat",
-        instructions: res.chatInstructions,
-        tools: [
-          {
-            name: "navigate_to_step",
-            description:
-              "Call this immediately before reading any step aloud. Use 1-based indexes: the first step is 1, the second step is 2, and if the user asks for step 5 you must pass 5.",
-            type: "function",
-            parameters: {
-              type: "object",
-              properties: {
-                step: {
-                  type: "integer",
-                  description:
-                    "The index of the step to navigate to, starting from 1.",
-                },
-              },
-              additionalProperties: false,
-              required: ["step"],
-            },
-            strict: false,
-            isEnabled: async () => true,
-            needsApproval: async () => false,
-            invoke: async (_, input) => {
-              console.log(input);
-              const req = JSON.parse(input);
-              navigateToStep(req.step - 1);
-              return `Navigated to step ${req.step}. Read only that step.`;
-            },
-          },
-          {
-            name: "navigate_to_ingredients",
-            description:
-              "Call this immediately before reading the ingredients aloud.",
-            type: "function",
-            parameters: {
-              type: "object",
-              properties: {},
-              additionalProperties: false,
-              required: [],
-            },
-            strict: false,
-            isEnabled: async () => true,
-            needsApproval: async () => false,
-            invoke: async () => {
-              console.log("Navigating to ingredients");
-              navigateToIngredients();
-              return "Navigated to ingredients.";
-            },
-          },
-        ],
-      });
-      const session = new RealtimeSession(agent, {
-        model: res.chatModel,
-      });
-      await session.connect({ apiKey: res.chatApiKey });
-      session.sendMessage(res.startMessage);
-      setStream(new OpenAISession(session));
-    } else {
-      const s = new ChatStream(
-        res.chatApiKey,
-        res.chatModel,
-        res.startMessage,
-        navigateToStep,
-        navigateToIngredients,
-        setSpeaking,
-        setWaiting,
-        settings.microphoneDeviceId !== ""
-          ? settings.microphoneDeviceId
-          : undefined,
-      );
-      await s.start();
-      setStream(s);
+    try {
+      if (settings.useOpenAI && settings.model === "gpt-live-1") {
+        const reset = (sessionError?: Error) => {
+          if (operationRef.current !== operation) return;
+          operationRef.current++;
+          sessionRef.current = undefined;
+          startingRef.current = false;
+          setPlaying(false);
+          setSpeaking(false);
+          setWaiting(false);
+          if (sessionError) setError(sessionError.message);
+        };
+        const session = new OpenAILiveSession({
+          navigateToStep,
+          navigateToIngredients,
+          microphoneDeviceId: settings.microphoneDeviceId || undefined,
+          speakerDeviceId: settings.speakerDeviceId || undefined,
+          createSession: (sdpOffer, signal) =>
+            frontendQueries.startChatSession({ ...request, sdpOffer }, signal),
+          onError: reset,
+          onClosed: () => reset(),
+        });
+        sessionRef.current = session;
+        await session.start();
+        if (operationRef.current === operation) setWaiting(true);
+      } else {
+        const res = await queryClient.fetchQuery({
+          ...frontendQueries.startChat(request),
+          staleTime: 0,
+          retry: false,
+        });
+        if (operationRef.current !== operation) return;
+        if (settings.useOpenAI) {
+          const session = new OpenAIRealtimeSession();
+          sessionRef.current = session;
+          await session.start({
+            apiKey: res.chatApiKey,
+            model: res.chatModel,
+            instructions: res.chatInstructions,
+            startMessage: res.startMessage,
+            navigateToStep,
+            navigateToIngredients,
+          });
+        } else {
+          const session = new ChatStream(
+            res.chatApiKey,
+            res.chatModel,
+            res.startMessage,
+            navigateToStep,
+            navigateToIngredients,
+            setSpeaking,
+            setWaiting,
+            settings.microphoneDeviceId || undefined,
+          );
+          sessionRef.current = session;
+          await session.start();
+        }
+      }
+    } catch (err) {
+      if (operationRef.current !== operation) return;
+      sessionRef.current?.stop();
+      sessionRef.current = undefined;
+      setPlaying(false);
+      setSpeaking(false);
+      setWaiting(false);
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      if (operationRef.current === operation) startingRef.current = false;
     }
-    return false;
   }, [
     queryClient,
     frontendQueries,
-    stream,
     recipeId,
     planId,
     navigateToStep,
@@ -293,13 +278,15 @@ export function ChatButton({
     settings,
   ]);
 
-  useEffect(() => {
-    return () => {
-      if (stream) {
-        stream.stop();
-      }
-    };
-  }, [stream]);
+  useEffect(
+    () => () => {
+      operationRef.current++;
+      sessionRef.current?.stop();
+      sessionRef.current = undefined;
+      startingRef.current = false;
+    },
+    [],
+  );
 
   return (
     <div
@@ -308,6 +295,11 @@ export function ChatButton({
         className,
       )}
     >
+      {error && (
+        <p role="alert" className="text-red-600 text-sm">
+          {error}
+        </p>
+      )}
       <div className="relative">
         {/* Play animation after assistant finishes speaking. */}
         {playing && waiting && <span className="mic-ping" />}

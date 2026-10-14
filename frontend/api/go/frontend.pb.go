@@ -1323,7 +1323,9 @@ type StartChatRequest struct {
 	// Only recognized for users with debugging access.
 	LlmPrompt string `protobuf:"bytes,5,opt,name=llm_prompt,json=llmPrompt,proto3" json:"llm_prompt,omitempty"`
 	// The model to use for the chat.
-	Model         string `protobuf:"bytes,7,opt,name=model,proto3" json:"model,omitempty"`
+	Model string `protobuf:"bytes,7,opt,name=model,proto3" json:"model,omitempty"`
+	// WebRTC offer for models that create a session through the server.
+	SdpOffer      string `protobuf:"bytes,8,opt,name=sdp_offer,json=sdpOffer,proto3" json:"sdp_offer,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1413,6 +1415,13 @@ func (x *StartChatRequest) GetModel() string {
 	return ""
 }
 
+func (x *StartChatRequest) GetSdpOffer() string {
+	if x != nil {
+		return x.SdpOffer
+	}
+	return ""
+}
+
 type isStartChatRequest_Recipe interface {
 	isStartChatRequest_Recipe()
 }
@@ -1448,7 +1457,11 @@ type StartChatResponse struct {
 	// Instructions for the chat session.
 	ChatInstructions string `protobuf:"bytes,3,opt,name=chat_instructions,json=chatInstructions,proto3" json:"chat_instructions,omitempty"`
 	// The message to send to start the voice chat.
-	StartMessage  string `protobuf:"bytes,4,opt,name=start_message,json=startMessage,proto3" json:"start_message,omitempty"`
+	StartMessage string `protobuf:"bytes,4,opt,name=start_message,json=startMessage,proto3" json:"start_message,omitempty"`
+	// WebRTC answer, when the server created the media session.
+	SdpAnswer string `protobuf:"bytes,5,opt,name=sdp_answer,json=sdpAnswer,proto3" json:"sdp_answer,omitempty"`
+	// The identifier of the server-created media session.
+	SessionId     string `protobuf:"bytes,6,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1507,6 +1520,20 @@ func (x *StartChatResponse) GetChatInstructions() string {
 func (x *StartChatResponse) GetStartMessage() string {
 	if x != nil {
 		return x.StartMessage
+	}
+	return ""
+}
+
+func (x *StartChatResponse) GetSdpAnswer() string {
+	if x != nil {
+		return x.SdpAnswer
+	}
+	return ""
+}
+
+func (x *StartChatResponse) GetSessionId() string {
+	if x != nil {
+		return x.SessionId
 	}
 	return ""
 }
@@ -3258,7 +3285,7 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\x0frecommendations\x18\x03 \x03(\v2\x1a.frontendapi.RecipeSnippetR\x0frecommendations\x127\n" +
 	"\n" +
 	"pagination\x18\x02 \x01(\v2\x17.frontendapi.PaginationR\n" +
-	"pagination\"\xef\x02\n" +
+	"pagination\"\x8c\x03\n" +
 	"\x10StartChatRequest\x12!\n" +
 	"\vrecipe_text\x18\x02 \x01(\tH\x00R\n" +
 	"recipeText\x12\x1d\n" +
@@ -3267,19 +3294,24 @@ const file_frontendapi_frontend_proto_rawDesc = "" +
 	"\x0emodel_provider\x18\x04 \x01(\x0e2+.frontendapi.StartChatRequest.ModelProviderR\rmodelProvider\x12\x1d\n" +
 	"\n" +
 	"llm_prompt\x18\x05 \x01(\tR\tllmPrompt\x12\x14\n" +
-	"\x05model\x18\a \x01(\tR\x05model\"k\n" +
+	"\x05model\x18\a \x01(\tR\x05model\x12\x1b\n" +
+	"\tsdp_offer\x18\b \x01(\tR\bsdpOffer\"k\n" +
 	"\rModelProvider\x12\x1e\n" +
 	"\x1aMODEL_PROVIDER_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bMODEL_PROVIDER_GOOGLE_GENAI\x10\x01\x12\x19\n" +
 	"\x15MODEL_PROVIDER_OPENAI\x10\x02B\b\n" +
-	"\x06recipe\"\xa6\x01\n" +
+	"\x06recipe\"\xe4\x01\n" +
 	"\x11StartChatResponse\x12 \n" +
 	"\fchat_api_key\x18\x01 \x01(\tR\n" +
 	"chatApiKey\x12\x1d\n" +
 	"\n" +
 	"chat_model\x18\x02 \x01(\tR\tchatModel\x12+\n" +
 	"\x11chat_instructions\x18\x03 \x01(\tR\x10chatInstructions\x12#\n" +
-	"\rstart_message\x18\x04 \x01(\tR\fstartMessage\"\x83\x04\n" +
+	"\rstart_message\x18\x04 \x01(\tR\fstartMessage\x12\x1d\n" +
+	"\n" +
+	"sdp_answer\x18\x05 \x01(\tR\tsdpAnswer\x12\x1d\n" +
+	"\n" +
+	"session_id\x18\x06 \x01(\tR\tsessionId\"\x83\x04\n" +
 	"\x10AddRecipeRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12-\n" +
 	"\x13main_image_data_url\x18\x02 \x01(\tR\x10mainImageDataUrl\x12 \n" +

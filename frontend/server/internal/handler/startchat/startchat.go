@@ -266,6 +266,9 @@ type tokenResponse struct {
 }
 
 func (h *Handler) startChatOpenAI(ctx context.Context, req *frontendapi.StartChatRequest, prompt string) (*frontendapi.StartChatResponse, error) {
+	if req.GetModel() == "gpt-live-1" {
+		return h.startChatLive(ctx, req, prompt)
+	}
 	model := "gpt-realtime-2.1-mini"
 	if m := req.GetModel(); m != "" {
 		model = m
