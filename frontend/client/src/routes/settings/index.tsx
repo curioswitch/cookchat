@@ -189,6 +189,7 @@ function Page() {
                 gpt-realtime-2.1-mini
               </ListBox.Item>
               <ListBox.Item id="gpt-realtime">gpt-realtime-2.1</ListBox.Item>
+              <ListBox.Item id="gpt-live-1">gpt-live-1</ListBox.Item>
             </ListBox>
           </Select.Popover>
         </Select>

@@ -250,6 +250,9 @@ message StartChatRequest {
 
   // The model to use for the chat.
   string model = 7;
+
+  // WebRTC offer for models that create a session through the server.
+  string sdp_offer = 8;
 }
 
 // A response to start a chat session.
@@ -265,6 +268,12 @@ message StartChatResponse {
 
   // The message to send to start the voice chat.
   string start_message = 4;
+
+  // WebRTC answer, when the server created the media session.
+  string sdp_answer = 5;
+
+  // The identifier of the server-created media session.
+  string session_id = 6;
 }
 
 message AddRecipeRequest {

@@ -5,6 +5,11 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 export default defineConfig(({ command }) => ({
+  optimizeDeps: {
+    // TanStack's store imports this CommonJS shim. Include it directly so
+    // conversion to ESM does not depend on where the store is hoisted.
+    include: ["use-sync-external-store/shim/with-selector"],
+  },
   plugins: [
     paraglideVitePlugin({
       project: "./project.inlang",

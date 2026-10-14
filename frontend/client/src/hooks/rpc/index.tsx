@@ -139,6 +139,21 @@ class FrontendQueries {
     return createQueryOptions(startChat, req, { transport: this.transport });
   }
 
+  // Session creation is a mutation: never cache or automatically retry an SDP offer.
+  async startChatSession(
+    req: MessageInitShape<typeof StartChatRequestSchema>,
+    signal: AbortSignal,
+  ) {
+    const response = await this.transport.unary(
+      startChat,
+      signal,
+      30_000,
+      undefined,
+      req,
+    );
+    return response.message;
+  }
+
   getUser() {
     return createQueryOptions(getUser, {}, { transport: this.transport });
   }
