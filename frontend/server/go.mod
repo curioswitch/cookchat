@@ -7,7 +7,7 @@ require (
 	cloud.google.com/go/discoveryengine v1.35.0
 	cloud.google.com/go/firestore v1.26.0
 	cloud.google.com/go/storage v1.69.0
-	connectrpc.com/connect v1.21.0
+	connectrpc.com/connect v1.21.1
 	firebase.google.com/go/v4 v4.22.0
 	github.com/cenkalti/backoff/v7 v7.0.1
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
@@ -15,11 +15,11 @@ require (
 	github.com/curioswitch/cookchat/tasks/api v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/go-curiostack v0.0.0-20261013024109-d857da0b0f68
 	github.com/curioswitch/go-usegcp v0.0.0-20260929060807-df34bf363f35
-	github.com/go-chi/chi/v5 v5.4.0
-	github.com/openai/openai-go/v3 v3.77.0
+	github.com/go-chi/chi/v5 v5.5.0
+	github.com/openai/openai-go/v3 v3.82.0
 	golang.org/x/sync v0.24.0
-	google.golang.org/api v0.302.0
-	google.golang.org/genai v1.73.0
+	google.golang.org/api v0.305.0
+	google.golang.org/genai v1.75.0
 	google.golang.org/grpc v1.84.0
 	google.golang.org/protobuf v1.36.12
 )
@@ -34,7 +34,7 @@ require (
 	cloud.google.com/go/iam v1.12.0 // indirect
 	cloud.google.com/go/longrunning v1.2.0 // indirect
 	cloud.google.com/go/monitoring v1.30.0 // indirect
-	connectrpc.com/connect/v2 v2.0.0 // indirect
+	connectrpc.com/connect/v2 v2.0.1 // indirect
 	connectrpc.com/otelconnect v0.12.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.57.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.57.0 // indirect

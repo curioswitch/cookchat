@@ -11,9 +11,9 @@ require (
 	github.com/curioswitch/cookchat/tasks/api v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/go-curiostack v0.0.0-20261013024109-d857da0b0f68
 	github.com/curioswitch/go-usegcp v0.0.0-20260929060807-df34bf363f35
-	github.com/go-chi/chi/v5 v5.4.0
+	github.com/go-chi/chi/v5 v5.5.0
 	golang.org/x/sync v0.24.0
-	google.golang.org/genai v1.73.0
+	google.golang.org/genai v1.75.0
 )
 
 require (
@@ -26,8 +26,8 @@ require (
 	cloud.google.com/go/iam v1.12.0 // indirect
 	cloud.google.com/go/longrunning v1.2.0 // indirect
 	cloud.google.com/go/monitoring v1.30.0 // indirect
-	connectrpc.com/connect v1.21.0 // indirect
-	connectrpc.com/connect/v2 v2.0.0 // indirect
+	connectrpc.com/connect v1.21.1 // indirect
+	connectrpc.com/connect/v2 v2.0.1 // indirect
 	connectrpc.com/otelconnect v0.12.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.57.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.57.0 // indirect
@@ -86,7 +86,7 @@ require (
 	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/text v0.43.0 // indirect
 	golang.org/x/time v0.16.0 // indirect
-	google.golang.org/api v0.302.0 // indirect
+	google.golang.org/api v0.305.0 // indirect
 	google.golang.org/appengine/v2 v2.0.6 // indirect
 	google.golang.org/genproto v0.0.0-20260715232425-e75dac1f907d // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260928230214-8a89bd6388cc // indirect

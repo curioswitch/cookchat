@@ -5,7 +5,7 @@ go 1.27.1
 require (
 	cloud.google.com/go/firestore v1.26.0
 	cloud.google.com/go/storage v1.69.0
-	connectrpc.com/connect v1.21.0
+	connectrpc.com/connect v1.21.1
 	firebase.google.com/go/v4 v4.22.0
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/crawler/api v0.0.0-00010101000000-000000000000
@@ -13,7 +13,7 @@ require (
 	github.com/gocolly/colly/v2 v2.3.0
 	github.com/wandb/parallel v0.2.3
 	golang.org/x/sync v0.24.0
-	google.golang.org/genai v1.73.0
+	google.golang.org/genai v1.75.0
 	google.golang.org/grpc v1.84.0
 )
 
@@ -26,7 +26,7 @@ require (
 	cloud.google.com/go/iam v1.12.0 // indirect
 	cloud.google.com/go/longrunning v1.2.0 // indirect
 	cloud.google.com/go/monitoring v1.30.0 // indirect
-	connectrpc.com/connect/v2 v2.0.0 // indirect
+	connectrpc.com/connect/v2 v2.0.1 // indirect
 	connectrpc.com/otelconnect v0.12.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.57.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.57.0 // indirect
@@ -46,7 +46,7 @@ require (
 	github.com/envoyproxy/go-control-plane/envoy v1.37.0 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.3.3 // indirect
 	github.com/felixge/httpsnoop v1.1.0 // indirect
-	github.com/go-chi/chi/v5 v5.4.0 // indirect
+	github.com/go-chi/chi/v5 v5.5.0 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -99,7 +99,7 @@ require (
 	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/text v0.43.0 // indirect
 	golang.org/x/time v0.16.0 // indirect
-	google.golang.org/api v0.302.0 // indirect
+	google.golang.org/api v0.305.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/appengine/v2 v2.0.6 // indirect
 	google.golang.org/genproto v0.0.0-20260715232425-e75dac1f907d // indirect
