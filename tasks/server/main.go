@@ -123,7 +123,7 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		},
 	)
 
-	s.EnableDocsFirebaseAuth("alpha.cookchat.curioswitch.org")
+	s.EnableDocsFirebaseAuth("alpha.coopii.app")
 
 	if err := s.Start(ctx); err != nil {
 		return fmt.Errorf("main: starting server: %w", err)

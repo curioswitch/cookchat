@@ -13,7 +13,7 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/firestore"
-	"connectrpc.com/connect"
+	"connectrpc.com/connect/v2"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
 	"github.com/openai/openai-go/v3"
 	"github.com/openai/openai-go/v3/realtime"
@@ -57,7 +57,7 @@ func (h *Handler) StartChat(ctx context.Context, req *frontendapi.StartChatReque
 		recipeDoc, err := h.store.Collection("recipes").Where("id", "==", rid).Limit(1).Documents(ctx).Next()
 		if err != nil {
 			if errors.Is(err, iterator.Done) {
-				return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("chat: recipe not found: %w", err))
+				return nil, connect.NewError(connect.CodeNotFound, "chat: recipe not found")
 			}
 			return nil, fmt.Errorf("chat: getting recipe from firestore: %w", err)
 		}

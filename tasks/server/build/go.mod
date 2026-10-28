@@ -4,7 +4,7 @@ go 1.27.2
 
 require (
 	github.com/curioswitch/go-build v0.10.0
-	github.com/curioswitch/go-curiostack v0.0.0-20261013024109-d857da0b0f68
+	github.com/curioswitch/go-curiostack v0.0.0-20261028051842-0db18cf4135a
 	github.com/goyek/x v0.4.0
 )
 
@@ -16,7 +16,7 @@ require (
 	github.com/knadh/koanf/parsers/yaml v1.1.1 // indirect
 	github.com/knadh/koanf/providers/env/v2 v2.0.2 // indirect
 	github.com/knadh/koanf/providers/rawbytes v1.0.1 // indirect
-	github.com/knadh/koanf/v2 v2.3.8 // indirect
+	github.com/knadh/koanf/v2 v2.4.1 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.21 // indirect
 	github.com/mattn/go-shellwords v1.0.13 // indirect
