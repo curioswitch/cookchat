@@ -1,10 +1,10 @@
 module github.com/curioswitch/cookchat/crawler/server
 
-go 1.27.2
+go 1.27.3
 
 require (
-	cloud.google.com/go/firestore v1.26.0
-	cloud.google.com/go/storage v1.69.0
+	cloud.google.com/go/firestore v1.29.0
+	cloud.google.com/go/storage v1.70.0
 	connectrpc.com/connect/v2 v2.0.2
 	connectrpc.com/otelconnect v0.12.0
 	firebase.google.com/go/v4 v4.22.0
@@ -14,14 +14,14 @@ require (
 	github.com/gocolly/colly/v2 v2.3.0
 	github.com/wandb/parallel v0.2.3
 	golang.org/x/sync v0.24.0
-	google.golang.org/genai v1.75.0
+	google.golang.org/genai v1.76.0
 	google.golang.org/grpc v1.84.0
 )
 
 require (
 	cel.dev/expr v0.25.2 // indirect
 	cloud.google.com/go v0.123.0 // indirect
-	cloud.google.com/go/auth v0.24.1-0.20261001053825-dbc26066f70a // indirect
+	cloud.google.com/go/auth v0.24.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.3.0 // indirect
 	cloud.google.com/go/compute/metadata v0.10.0 // indirect
 	cloud.google.com/go/iam v1.12.0 // indirect
@@ -35,7 +35,7 @@ require (
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/antchfx/htmlquery v1.3.5 // indirect
 	github.com/antchfx/xmlquery v1.5.0 // indirect
-	github.com/antchfx/xpath v1.3.5 // indirect
+	github.com/antchfx/xpath v1.3.6 // indirect
 	github.com/bits-and-blooms/bitset v1.24.4 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect

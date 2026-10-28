@@ -1,18 +1,18 @@
 module github.com/curioswitch/cookchat/common
 
-go 1.27.2
+go 1.27.3
 
 require (
-	cloud.google.com/go/firestore v1.26.0
-	cloud.google.com/go/storage v1.69.0
+	cloud.google.com/go/firestore v1.29.0
+	cloud.google.com/go/storage v1.70.0
 	golang.org/x/sync v0.24.0
-	google.golang.org/genai v1.75.0
+	google.golang.org/genai v1.76.0
 )
 
 require (
 	cel.dev/expr v0.25.2 // indirect
 	cloud.google.com/go v0.123.0 // indirect
-	cloud.google.com/go/auth v0.24.1-0.20261001053825-dbc26066f70a // indirect
+	cloud.google.com/go/auth v0.24.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.3.0 // indirect
 	cloud.google.com/go/compute/metadata v0.10.0 // indirect
 	cloud.google.com/go/iam v1.12.0 // indirect
