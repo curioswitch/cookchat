@@ -9,15 +9,14 @@ require (
 	firebase.google.com/go/v4 v4.22.0
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/tasks/api v0.0.0-00010101000000-000000000000
-	github.com/curioswitch/go-curiostack v0.0.0-20261013024109-d857da0b0f68
-	github.com/curioswitch/go-usegcp v0.0.0-20260929060807-df34bf363f35
+	github.com/curioswitch/go-curiostack v0.0.0-20261028051842-0db18cf4135a
+	github.com/curioswitch/go-usegcp v0.0.0-20261020041049-535591654147
 	github.com/go-chi/chi/v5 v5.5.0
 	golang.org/x/sync v0.24.0
 	google.golang.org/genai v1.76.0
 )
 
 require (
-	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.12-20260825204119-511051f7f437.2 // indirect
 	cel.dev/expr v0.25.2 // indirect
 	cloud.google.com/go v0.123.0 // indirect
 	cloud.google.com/go/auth v0.24.1 // indirect
@@ -57,7 +56,7 @@ require (
 	github.com/knadh/koanf/parsers/yaml v1.1.1 // indirect
 	github.com/knadh/koanf/providers/env/v2 v2.0.2 // indirect
 	github.com/knadh/koanf/providers/rawbytes v1.0.1 // indirect
-	github.com/knadh/koanf/v2 v2.3.8 // indirect
+	github.com/knadh/koanf/v2 v2.4.1 // indirect
 	github.com/magefile/mage v1.17.1 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect

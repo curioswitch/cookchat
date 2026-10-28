@@ -1,7 +1,7 @@
 github.com/curioswitch/go-build v0.10.0 h1:+j02rb7lD9Y9UOTHoMwR48FfElnKsqP0oTnuyfcjzj0=
 github.com/curioswitch/go-build v0.10.0/go.mod h1:ZQuRTBRXk5b812Xs3RU6mgln2uuQ0MzYYkCkMdmkNeU=
-github.com/curioswitch/go-curiostack v0.0.0-20261013024109-d857da0b0f68 h1:bUuQ1rp5qS0d2LxJkT5v+KwXVLQrn6hXVUqnKgzyxOM=
-github.com/curioswitch/go-curiostack v0.0.0-20261013024109-d857da0b0f68/go.mod h1:mhXjc77sbPgcOiwKGsECipbJ7haPQw8PBbQGlCkkuLg=
+github.com/curioswitch/go-curiostack v0.0.0-20261028051842-0db18cf4135a h1:JcfvLMzWBlmYYjiSND/kgBM7rC8YzDu+gleGWwQ+l4g=
+github.com/curioswitch/go-curiostack v0.0.0-20261028051842-0db18cf4135a/go.mod h1:obJxXR5+eMFvnyR0uL45NoOfWqHQtejk5hUOnsGxnC8=
 github.com/fatih/color v1.19.0 h1:Zp3PiM21/9Ld6FzSKyL5c/BULoe/ONr9KlbYVOfG8+w=
 github.com/fatih/color v1.19.0/go.mod h1:zNk67I0ZUT1bEGsSGyCZYZNrHuTkJJB+r6Q9VuMi0LE=
 github.com/go-viper/mapstructure/v2 v2.5.0 h1:vM5IJoUAy3d7zRSVtIwQgBj7BiWtMPfmPEgAXnvj1Ro=
@@ -18,8 +18,8 @@ github.com/knadh/koanf/providers/env/v2 v2.0.2 h1:nLZ4Ct/i7kXX2Ne8tkwEVThI0HxO6P
 github.com/knadh/koanf/providers/env/v2 v2.0.2/go.mod h1:1g01PE+Ve1gBfWNNw2wmULRP0tc8RJrjn5p2N/jNCIc=
 github.com/knadh/koanf/providers/rawbytes v1.0.1 h1:JCQoly+djX23Okr8kqtS19R7UXKleTAp62Vib2VrVYs=
 github.com/knadh/koanf/providers/rawbytes v1.0.1/go.mod h1:KxwYJf1uezTKy6PBtfE+m725NGp4GPVA7XoNTJ/PtLo=
-github.com/knadh/koanf/v2 v2.3.8 h1:NftEOf0Y456FqpLJj31RYYZQnfBQ+DDhsNQPqJ6nuk4=
-github.com/knadh/koanf/v2 v2.3.8/go.mod h1:gRb40VRAbd4iJMYYD5IxZ6hfuopFcXBpc9bbQpZwo28=
+github.com/knadh/koanf/v2 v2.4.1 h1:MK2JDkLy4UGzEUkW1CCCKQftd9+M+NX8hAZ2axbf/jo=
+github.com/knadh/koanf/v2 v2.4.1/go.mod h1:gRb40VRAbd4iJMYYD5IxZ6hfuopFcXBpc9bbQpZwo28=
 github.com/mattn/go-colorable v0.1.14 h1:9A9LHSqF/7dyVVX6g0U9cwm9pG3kP9gSzcuIPHPsaIE=
 github.com/mattn/go-colorable v0.1.14/go.mod h1:6LmQG8QLFO4G5z1gPvYEzlUgJ2wF+stgPZH1UqBm1s8=
 github.com/mattn/go-isatty v0.0.21 h1:xYae+lCNBP7QuW4PUnNG61ffM4hVIfm+zUzDuSzYLGs=

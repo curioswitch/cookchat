@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 
-	"connectrpc.com/connect"
 	"github.com/gocolly/colly/v2"
 
 	crawlerapi "github.com/curioswitch/cookchat/crawler/api/go"
@@ -42,9 +41,9 @@ func (h *Handler) CrawlCookpadUser(ctx context.Context, req *crawlerapi.CrawlCoo
 			return
 		}
 
-		if _, err := h.crawlerClient.CrawlCookpadRecipe(ctx, connect.NewRequest(&crawlerapi.CrawlCookpadRecipeRequest{
+		if _, err := h.crawlerClient.CrawlCookpadRecipe(ctx, &crawlerapi.CrawlCookpadRecipeRequest{
 			RecipeId: id,
-		})); err != nil {
+		}); err != nil {
 			// TODO: Log error
 			return
 		}

@@ -39,7 +39,7 @@ func main() {
 }
 
 func setupServer(ctx context.Context, conf *config.Config, s *server.Server) error {
-	mux := server.Mux(s)
+	mux := s.Mux()
 
 	fbApp, err := firebase.NewApp(ctx, &firebase.Config{ProjectID: conf.Google.Project})
 	if err != nil {
@@ -114,20 +114,18 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		}
 	}))
 
-	server.HandleConnectUnary(
-		s,
+	service := newTasksService(fillplan.NewHandler(firestore, genAI, processor))
+	s.AddConnectService(tasksapiconnect.RegisterTasksServiceHandler, service)
+	s.AddSampleRequests(
 		tasksapiconnect.TasksServiceFillPlanProcedure,
-		fillplan.NewHandler(firestore, genAI, processor).FillPlan,
-		[]*tasksapi.FillPlanRequest{
-			{
-				PlanId: "9dtuoh4be12Otv8cevrM",
-			},
+		&tasksapi.FillPlanRequest{
+			PlanId: "9dtuoh4be12Otv8cevrM",
 		},
 	)
 
-	server.EnableDocsFirebaseAuth(s, "alpha.cookchat.curioswitch.org")
+	s.EnableDocsFirebaseAuth("alpha.coopii.app")
 
-	if err := server.Start(ctx, s); err != nil {
+	if err := s.Start(ctx); err != nil {
 		return fmt.Errorf("main: starting server: %w", err)
 	}
 	return nil

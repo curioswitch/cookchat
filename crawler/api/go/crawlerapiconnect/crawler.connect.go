@@ -5,169 +5,173 @@
 package crawlerapiconnect
 
 import (
-	connect "connectrpc.com/connect"
+	connect "connectrpc.com/connect/v2"
 	context "context"
-	errors "errors"
 	_go "github.com/curioswitch/cookchat/crawler/api/go"
-	http "net/http"
-	strings "strings"
+	sync "sync"
 )
-
-// This is a compile-time assertion to ensure that this generated file and the connect package are
-// compatible. If you get a compiler error that this constant is not defined, this code was
-// generated with a version of connect newer than the one compiled into your binary. You can fix the
-// problem by either regenerating this code with an older version of connect or updating the connect
-// version compiled into your binary.
-const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// CrawlerServiceName is the fully-qualified name of the CrawlerService service.
 	CrawlerServiceName = "crawlerapi.CrawlerService"
 )
 
-// These constants are the fully-qualified names of the RPCs defined in this package. They're
-// exposed at runtime as Spec.Procedure and as the final two segments of the HTTP route.
+// These constants are the procedure names of the RPCs defined in this package. They're exposed at
+// runtime as Spec.Procedure and as the final two segments of the HTTP route.
 //
 // Note that these are different from the fully-qualified method names used by
 // google.golang.org/protobuf/reflect/protoreflect. To convert from these constants to
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
-	// CrawlerServiceCrawlCookpadUserProcedure is the fully-qualified name of the CrawlerService's
+	// CrawlerServiceCrawlCookpadUserProcedure is the procedure name of the CrawlerService's
 	// CrawlCookpadUser RPC.
 	CrawlerServiceCrawlCookpadUserProcedure = "/crawlerapi.CrawlerService/CrawlCookpadUser"
-	// CrawlerServiceCrawlCookpadRecipeProcedure is the fully-qualified name of the CrawlerService's
+	// CrawlerServiceCrawlCookpadRecipeProcedure is the procedure name of the CrawlerService's
 	// CrawlCookpadRecipe RPC.
 	CrawlerServiceCrawlCookpadRecipeProcedure = "/crawlerapi.CrawlerService/CrawlCookpadRecipe"
-	// CrawlerServiceCrawlRecipeProcedure is the fully-qualified name of the CrawlerService's
-	// CrawlRecipe RPC.
+	// CrawlerServiceCrawlRecipeProcedure is the procedure name of the CrawlerService's CrawlRecipe RPC.
 	CrawlerServiceCrawlRecipeProcedure = "/crawlerapi.CrawlerService/CrawlRecipe"
+)
+
+var (
+	crawlerServiceCrawlCookpadUserSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_crawlerapi_crawler_proto.Services().ByName("CrawlerService").Methods().ByName("CrawlCookpadUser"),
+			Procedure:  CrawlerServiceCrawlCookpadUserProcedure,
+		}
+	})
+	crawlerServiceCrawlCookpadRecipeSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_crawlerapi_crawler_proto.Services().ByName("CrawlerService").Methods().ByName("CrawlCookpadRecipe"),
+			Procedure:  CrawlerServiceCrawlCookpadRecipeProcedure,
+		}
+	})
+	crawlerServiceCrawlRecipeSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_crawlerapi_crawler_proto.Services().ByName("CrawlerService").Methods().ByName("CrawlRecipe"),
+			Procedure:  CrawlerServiceCrawlRecipeProcedure,
+		}
+	})
 )
 
 // CrawlerServiceClient is a client for the crawlerapi.CrawlerService service.
 type CrawlerServiceClient interface {
 	// Crawl a cookpad user, crawling all of their recipes.
-	CrawlCookpadUser(context.Context, *connect.Request[_go.CrawlCookpadUserRequest]) (*connect.Response[_go.CrawlCookpadUserResponse], error)
+	CrawlCookpadUser(context.Context, *_go.CrawlCookpadUserRequest) (*_go.CrawlCookpadUserResponse, error)
 	// Crawl a cookpad recipe.
-	CrawlCookpadRecipe(context.Context, *connect.Request[_go.CrawlCookpadRecipeRequest]) (*connect.Response[_go.CrawlCookpadRecipeResponse], error)
+	CrawlCookpadRecipe(context.Context, *_go.CrawlCookpadRecipeRequest) (*_go.CrawlCookpadRecipeResponse, error)
 	// Crawl a recipe.
-	CrawlRecipe(context.Context, *connect.Request[_go.CrawlRecipeRequest]) (*connect.Response[_go.CrawlRecipeResponse], error)
+	CrawlRecipe(context.Context, *_go.CrawlRecipeRequest) (*_go.CrawlRecipeResponse, error)
 }
 
-// NewCrawlerServiceClient constructs a client for the crawlerapi.CrawlerService service. By
-// default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
-// and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
-// connect.WithGRPC() or connect.WithGRPCWeb() options.
-//
-// The URL supplied here should be the base URL for the Connect or gRPC server (for example,
-// http://api.acme.com or https://acme.com/grpc).
-func NewCrawlerServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) CrawlerServiceClient {
-	baseURL = strings.TrimRight(baseURL, "/")
-	crawlerServiceMethods := _go.File_crawlerapi_crawler_proto.Services().ByName("CrawlerService").Methods()
-	return &crawlerServiceClient{
-		crawlCookpadUser: connect.NewClient[_go.CrawlCookpadUserRequest, _go.CrawlCookpadUserResponse](
-			httpClient,
-			baseURL+CrawlerServiceCrawlCookpadUserProcedure,
-			connect.WithSchema(crawlerServiceMethods.ByName("CrawlCookpadUser")),
-			connect.WithClientOptions(opts...),
-		),
-		crawlCookpadRecipe: connect.NewClient[_go.CrawlCookpadRecipeRequest, _go.CrawlCookpadRecipeResponse](
-			httpClient,
-			baseURL+CrawlerServiceCrawlCookpadRecipeProcedure,
-			connect.WithSchema(crawlerServiceMethods.ByName("CrawlCookpadRecipe")),
-			connect.WithClientOptions(opts...),
-		),
-		crawlRecipe: connect.NewClient[_go.CrawlRecipeRequest, _go.CrawlRecipeResponse](
-			httpClient,
-			baseURL+CrawlerServiceCrawlRecipeProcedure,
-			connect.WithSchema(crawlerServiceMethods.ByName("CrawlRecipe")),
-			connect.WithClientOptions(opts...),
-		),
-	}
-}
-
-// crawlerServiceClient implements CrawlerServiceClient.
-type crawlerServiceClient struct {
-	crawlCookpadUser   *connect.Client[_go.CrawlCookpadUserRequest, _go.CrawlCookpadUserResponse]
-	crawlCookpadRecipe *connect.Client[_go.CrawlCookpadRecipeRequest, _go.CrawlCookpadRecipeResponse]
-	crawlRecipe        *connect.Client[_go.CrawlRecipeRequest, _go.CrawlRecipeResponse]
-}
-
-// CrawlCookpadUser calls crawlerapi.CrawlerService.CrawlCookpadUser.
-func (c *crawlerServiceClient) CrawlCookpadUser(ctx context.Context, req *connect.Request[_go.CrawlCookpadUserRequest]) (*connect.Response[_go.CrawlCookpadUserResponse], error) {
-	return c.crawlCookpadUser.CallUnary(ctx, req)
-}
-
-// CrawlCookpadRecipe calls crawlerapi.CrawlerService.CrawlCookpadRecipe.
-func (c *crawlerServiceClient) CrawlCookpadRecipe(ctx context.Context, req *connect.Request[_go.CrawlCookpadRecipeRequest]) (*connect.Response[_go.CrawlCookpadRecipeResponse], error) {
-	return c.crawlCookpadRecipe.CallUnary(ctx, req)
-}
-
-// CrawlRecipe calls crawlerapi.CrawlerService.CrawlRecipe.
-func (c *crawlerServiceClient) CrawlRecipe(ctx context.Context, req *connect.Request[_go.CrawlRecipeRequest]) (*connect.Response[_go.CrawlRecipeResponse], error) {
-	return c.crawlRecipe.CallUnary(ctx, req)
+// NewCrawlerServiceClient constructs a client for the crawlerapi.CrawlerService service. Multiple
+// service clients may share a single connect.Client.
+func NewCrawlerServiceClient(client *connect.Client) CrawlerServiceClient {
+	return &crawlerServiceClient{client: client}
 }
 
 // CrawlerServiceHandler is an implementation of the crawlerapi.CrawlerService service.
 type CrawlerServiceHandler interface {
 	// Crawl a cookpad user, crawling all of their recipes.
-	CrawlCookpadUser(context.Context, *connect.Request[_go.CrawlCookpadUserRequest]) (*connect.Response[_go.CrawlCookpadUserResponse], error)
+	CrawlCookpadUser(context.Context, *_go.CrawlCookpadUserRequest) (*_go.CrawlCookpadUserResponse, error)
 	// Crawl a cookpad recipe.
-	CrawlCookpadRecipe(context.Context, *connect.Request[_go.CrawlCookpadRecipeRequest]) (*connect.Response[_go.CrawlCookpadRecipeResponse], error)
+	CrawlCookpadRecipe(context.Context, *_go.CrawlCookpadRecipeRequest) (*_go.CrawlCookpadRecipeResponse, error)
 	// Crawl a recipe.
-	CrawlRecipe(context.Context, *connect.Request[_go.CrawlRecipeRequest]) (*connect.Response[_go.CrawlRecipeResponse], error)
+	CrawlRecipe(context.Context, *_go.CrawlRecipeRequest) (*_go.CrawlRecipeResponse, error)
 }
 
-// NewCrawlerServiceHandler builds an HTTP handler from the service implementation. It returns the
-// path on which to mount the handler and the handler itself.
-//
-// By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
-// and JSON codecs. They also support gzip compression.
-func NewCrawlerServiceHandler(svc CrawlerServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	crawlerServiceMethods := _go.File_crawlerapi_crawler_proto.Services().ByName("CrawlerService").Methods()
-	crawlerServiceCrawlCookpadUserHandler := connect.NewUnaryHandler(
-		CrawlerServiceCrawlCookpadUserProcedure,
-		svc.CrawlCookpadUser,
-		connect.WithSchema(crawlerServiceMethods.ByName("CrawlCookpadUser")),
-		connect.WithHandlerOptions(opts...),
+// RegisterCrawlerServiceHandler registers svc as the crawlerapi.CrawlerService implementation on
+// server.
+func RegisterCrawlerServiceHandler(server *connect.Server, svc CrawlerServiceHandler) {
+	adapter := crawlerServiceHandler{svc: svc}
+	server.Register(
+		connect.Method{Spec: crawlerServiceCrawlCookpadUserSpec(), Handler: adapter.crawlCookpadUser},
+		connect.Method{Spec: crawlerServiceCrawlCookpadRecipeSpec(), Handler: adapter.crawlCookpadRecipe},
+		connect.Method{Spec: crawlerServiceCrawlRecipeSpec(), Handler: adapter.crawlRecipe},
 	)
-	crawlerServiceCrawlCookpadRecipeHandler := connect.NewUnaryHandler(
-		CrawlerServiceCrawlCookpadRecipeProcedure,
-		svc.CrawlCookpadRecipe,
-		connect.WithSchema(crawlerServiceMethods.ByName("CrawlCookpadRecipe")),
-		connect.WithHandlerOptions(opts...),
-	)
-	crawlerServiceCrawlRecipeHandler := connect.NewUnaryHandler(
-		CrawlerServiceCrawlRecipeProcedure,
-		svc.CrawlRecipe,
-		connect.WithSchema(crawlerServiceMethods.ByName("CrawlRecipe")),
-		connect.WithHandlerOptions(opts...),
-	)
-	return "/crawlerapi.CrawlerService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.URL.Path {
-		case CrawlerServiceCrawlCookpadUserProcedure:
-			crawlerServiceCrawlCookpadUserHandler.ServeHTTP(w, r)
-		case CrawlerServiceCrawlCookpadRecipeProcedure:
-			crawlerServiceCrawlCookpadRecipeHandler.ServeHTTP(w, r)
-		case CrawlerServiceCrawlRecipeProcedure:
-			crawlerServiceCrawlRecipeHandler.ServeHTTP(w, r)
-		default:
-			http.NotFound(w, r)
-		}
-	})
 }
 
 // UnimplementedCrawlerServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedCrawlerServiceHandler struct{}
 
-func (UnimplementedCrawlerServiceHandler) CrawlCookpadUser(context.Context, *connect.Request[_go.CrawlCookpadUserRequest]) (*connect.Response[_go.CrawlCookpadUserResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("crawlerapi.CrawlerService.CrawlCookpadUser is not implemented"))
+func (UnimplementedCrawlerServiceHandler) CrawlCookpadUser(context.Context, *_go.CrawlCookpadUserRequest) (*_go.CrawlCookpadUserResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "crawlerapi.CrawlerService.CrawlCookpadUser is not implemented")
 }
 
-func (UnimplementedCrawlerServiceHandler) CrawlCookpadRecipe(context.Context, *connect.Request[_go.CrawlCookpadRecipeRequest]) (*connect.Response[_go.CrawlCookpadRecipeResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("crawlerapi.CrawlerService.CrawlCookpadRecipe is not implemented"))
+func (UnimplementedCrawlerServiceHandler) CrawlCookpadRecipe(context.Context, *_go.CrawlCookpadRecipeRequest) (*_go.CrawlCookpadRecipeResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "crawlerapi.CrawlerService.CrawlCookpadRecipe is not implemented")
 }
 
-func (UnimplementedCrawlerServiceHandler) CrawlRecipe(context.Context, *connect.Request[_go.CrawlRecipeRequest]) (*connect.Response[_go.CrawlRecipeResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("crawlerapi.CrawlerService.CrawlRecipe is not implemented"))
+func (UnimplementedCrawlerServiceHandler) CrawlRecipe(context.Context, *_go.CrawlRecipeRequest) (*_go.CrawlRecipeResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "crawlerapi.CrawlerService.CrawlRecipe is not implemented")
+}
+
+type crawlerServiceClient struct {
+	client *connect.Client
+}
+
+func (c *crawlerServiceClient) CrawlCookpadUser(ctx context.Context, req *_go.CrawlCookpadUserRequest) (*_go.CrawlCookpadUserResponse, error) {
+	var res _go.CrawlCookpadUserResponse
+	if err := c.client.CallUnary(ctx, crawlerServiceCrawlCookpadUserSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *crawlerServiceClient) CrawlCookpadRecipe(ctx context.Context, req *_go.CrawlCookpadRecipeRequest) (*_go.CrawlCookpadRecipeResponse, error) {
+	var res _go.CrawlCookpadRecipeResponse
+	if err := c.client.CallUnary(ctx, crawlerServiceCrawlCookpadRecipeSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *crawlerServiceClient) CrawlRecipe(ctx context.Context, req *_go.CrawlRecipeRequest) (*_go.CrawlRecipeResponse, error) {
+	var res _go.CrawlRecipeResponse
+	if err := c.client.CallUnary(ctx, crawlerServiceCrawlRecipeSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+type crawlerServiceHandler struct{ svc CrawlerServiceHandler }
+
+func (h crawlerServiceHandler) crawlCookpadUser(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.CrawlCookpadUserRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.CrawlCookpadUser(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h crawlerServiceHandler) crawlCookpadRecipe(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.CrawlCookpadRecipeRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.CrawlCookpadRecipe(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h crawlerServiceHandler) crawlRecipe(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.CrawlRecipeRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.CrawlRecipe(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
 }

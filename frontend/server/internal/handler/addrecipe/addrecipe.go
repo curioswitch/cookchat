@@ -6,13 +6,12 @@ package addrecipe
 import (
 	"context"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"strings"
 
 	"cloud.google.com/go/firestore"
 	"cloud.google.com/go/storage"
-	"connectrpc.com/connect"
+	"connectrpc.com/connect/v2"
 
 	"github.com/curioswitch/cookchat/common/cookchatdb"
 	frontendapi "github.com/curioswitch/cookchat/frontend/api/go"
@@ -35,7 +34,7 @@ type Handler struct {
 
 func (h *Handler) AddRecipe(ctx context.Context, req *frontendapi.AddRecipeRequest) (*frontendapi.AddRecipeResponse, error) {
 	if !auth.IsCurioSwitchUser(ctx) {
-		return nil, connect.NewError(connect.CodePermissionDenied, errors.New("only CurioSwitch users can add recipes"))
+		return nil, connect.NewError(connect.CodePermissionDenied, "only CurioSwitch users can add recipes")
 	}
 
 	doc := h.store.Collection("recipes").NewDoc()

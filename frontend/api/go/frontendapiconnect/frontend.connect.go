@@ -5,20 +5,11 @@
 package frontendapiconnect
 
 import (
-	connect "connectrpc.com/connect"
+	connect "connectrpc.com/connect/v2"
 	context "context"
-	errors "errors"
 	_go "github.com/curioswitch/cookchat/frontend/api/go"
-	http "net/http"
-	strings "strings"
+	sync "sync"
 )
-
-// This is a compile-time assertion to ensure that this generated file and the connect package are
-// compatible. If you get a compiler error that this constant is not defined, this code was
-// generated with a version of connect newer than the one compiled into your binary. You can fix the
-// problem by either regenerating this code with an older version of connect or updating the connect
-// version compiled into your binary.
-const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// ChatServiceName is the fully-qualified name of the ChatService service.
@@ -27,624 +18,783 @@ const (
 	FrontendServiceName = "frontendapi.FrontendService"
 )
 
-// These constants are the fully-qualified names of the RPCs defined in this package. They're
-// exposed at runtime as Spec.Procedure and as the final two segments of the HTTP route.
+// These constants are the procedure names of the RPCs defined in this package. They're exposed at
+// runtime as Spec.Procedure and as the final two segments of the HTTP route.
 //
 // Note that these are different from the fully-qualified method names used by
 // google.golang.org/protobuf/reflect/protoreflect. To convert from these constants to
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
-	// ChatServiceChatProcedure is the fully-qualified name of the ChatService's Chat RPC.
+	// ChatServiceChatProcedure is the procedure name of the ChatService's Chat RPC.
 	ChatServiceChatProcedure = "/frontendapi.ChatService/Chat"
-	// FrontendServiceGetRecipeProcedure is the fully-qualified name of the FrontendService's GetRecipe
-	// RPC.
+	// FrontendServiceGetRecipeProcedure is the procedure name of the FrontendService's GetRecipe RPC.
 	FrontendServiceGetRecipeProcedure = "/frontendapi.FrontendService/GetRecipe"
-	// FrontendServiceListRecipesProcedure is the fully-qualified name of the FrontendService's
-	// ListRecipes RPC.
+	// FrontendServiceListRecipesProcedure is the procedure name of the FrontendService's ListRecipes
+	// RPC.
 	FrontendServiceListRecipesProcedure = "/frontendapi.FrontendService/ListRecipes"
-	// FrontendServiceStartChatProcedure is the fully-qualified name of the FrontendService's StartChat
-	// RPC.
+	// FrontendServiceStartChatProcedure is the procedure name of the FrontendService's StartChat RPC.
 	FrontendServiceStartChatProcedure = "/frontendapi.FrontendService/StartChat"
-	// FrontendServiceAddRecipeProcedure is the fully-qualified name of the FrontendService's AddRecipe
-	// RPC.
+	// FrontendServiceAddRecipeProcedure is the procedure name of the FrontendService's AddRecipe RPC.
 	FrontendServiceAddRecipeProcedure = "/frontendapi.FrontendService/AddRecipe"
-	// FrontendServiceGenerateRecipeProcedure is the fully-qualified name of the FrontendService's
+	// FrontendServiceGenerateRecipeProcedure is the procedure name of the FrontendService's
 	// GenerateRecipe RPC.
 	FrontendServiceGenerateRecipeProcedure = "/frontendapi.FrontendService/GenerateRecipe"
-	// FrontendServiceGeneratePlanProcedure is the fully-qualified name of the FrontendService's
-	// GeneratePlan RPC.
-	FrontendServiceGeneratePlanProcedure = "/frontendapi.FrontendService/GeneratePlan"
-	// FrontendServiceChatPlanProcedure is the fully-qualified name of the FrontendService's ChatPlan
+	// FrontendServiceGeneratePlanProcedure is the procedure name of the FrontendService's GeneratePlan
 	// RPC.
+	FrontendServiceGeneratePlanProcedure = "/frontendapi.FrontendService/GeneratePlan"
+	// FrontendServiceChatPlanProcedure is the procedure name of the FrontendService's ChatPlan RPC.
 	FrontendServiceChatPlanProcedure = "/frontendapi.FrontendService/ChatPlan"
-	// FrontendServiceGetChatMessagesProcedure is the fully-qualified name of the FrontendService's
+	// FrontendServiceGetChatMessagesProcedure is the procedure name of the FrontendService's
 	// GetChatMessages RPC.
 	FrontendServiceGetChatMessagesProcedure = "/frontendapi.FrontendService/GetChatMessages"
-	// FrontendServiceGetPlansProcedure is the fully-qualified name of the FrontendService's GetPlans
-	// RPC.
+	// FrontendServiceGetPlansProcedure is the procedure name of the FrontendService's GetPlans RPC.
 	FrontendServiceGetPlansProcedure = "/frontendapi.FrontendService/GetPlans"
-	// FrontendServiceGetPlanProcedure is the fully-qualified name of the FrontendService's GetPlan RPC.
+	// FrontendServiceGetPlanProcedure is the procedure name of the FrontendService's GetPlan RPC.
 	FrontendServiceGetPlanProcedure = "/frontendapi.FrontendService/GetPlan"
-	// FrontendServiceUpdatePlanProcedure is the fully-qualified name of the FrontendService's
-	// UpdatePlan RPC.
+	// FrontendServiceUpdatePlanProcedure is the procedure name of the FrontendService's UpdatePlan RPC.
 	FrontendServiceUpdatePlanProcedure = "/frontendapi.FrontendService/UpdatePlan"
-	// FrontendServiceDeletePlanProcedure is the fully-qualified name of the FrontendService's
-	// DeletePlan RPC.
+	// FrontendServiceDeletePlanProcedure is the procedure name of the FrontendService's DeletePlan RPC.
 	FrontendServiceDeletePlanProcedure = "/frontendapi.FrontendService/DeletePlan"
-	// FrontendServiceAddBookmarkProcedure is the fully-qualified name of the FrontendService's
-	// AddBookmark RPC.
+	// FrontendServiceAddBookmarkProcedure is the procedure name of the FrontendService's AddBookmark
+	// RPC.
 	FrontendServiceAddBookmarkProcedure = "/frontendapi.FrontendService/AddBookmark"
-	// FrontendServiceRemoveBookmarkProcedure is the fully-qualified name of the FrontendService's
+	// FrontendServiceRemoveBookmarkProcedure is the procedure name of the FrontendService's
 	// RemoveBookmark RPC.
 	FrontendServiceRemoveBookmarkProcedure = "/frontendapi.FrontendService/RemoveBookmark"
-	// FrontendServiceGetUserProcedure is the fully-qualified name of the FrontendService's GetUser RPC.
+	// FrontendServiceGetUserProcedure is the procedure name of the FrontendService's GetUser RPC.
 	FrontendServiceGetUserProcedure = "/frontendapi.FrontendService/GetUser"
-	// FrontendServiceEditUserProcedure is the fully-qualified name of the FrontendService's EditUser
-	// RPC.
+	// FrontendServiceEditUserProcedure is the procedure name of the FrontendService's EditUser RPC.
 	FrontendServiceEditUserProcedure = "/frontendapi.FrontendService/EditUser"
+)
+
+var (
+	chatServiceChatSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeBidi,
+			Schema:     _go.File_frontendapi_frontend_proto.Services().ByName("ChatService").Methods().ByName("Chat"),
+			Procedure:  ChatServiceChatProcedure,
+		}
+	})
 )
 
 // ChatServiceClient is a client for the frontendapi.ChatService service.
 type ChatServiceClient interface {
 	// Chat with a stream of messages.
-	Chat(context.Context) *connect.BidiStreamForClient[_go.ChatRequest, _go.ChatResponse]
+	Chat(context.Context) (ChatServiceChatClientStream, error)
 }
 
-// NewChatServiceClient constructs a client for the frontendapi.ChatService service. By default, it
-// uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
-// uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
-// connect.WithGRPCWeb() options.
-//
-// The URL supplied here should be the base URL for the Connect or gRPC server (for example,
-// http://api.acme.com or https://acme.com/grpc).
-func NewChatServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ChatServiceClient {
-	baseURL = strings.TrimRight(baseURL, "/")
-	chatServiceMethods := _go.File_frontendapi_frontend_proto.Services().ByName("ChatService").Methods()
-	return &chatServiceClient{
-		chat: connect.NewClient[_go.ChatRequest, _go.ChatResponse](
-			httpClient,
-			baseURL+ChatServiceChatProcedure,
-			connect.WithSchema(chatServiceMethods.ByName("Chat")),
-			connect.WithClientOptions(opts...),
-		),
+// NewChatServiceClient constructs a client for the frontendapi.ChatService service. Multiple
+// service clients may share a single connect.Client.
+func NewChatServiceClient(client *connect.Client) ChatServiceClient {
+	return &chatServiceClient{client: client}
+}
+
+// ChatServiceChatClientStream is the client stream for the ChatService's Chat RPC.
+type ChatServiceChatClientStream struct {
+	stream connect.ClientStream
+}
+
+// SendHeaders opens the stream and flushes the request headers without a message. The first Send or
+// Receive does this implicitly.
+func (s ChatServiceChatClientStream) SendHeaders() error {
+	return s.stream.SendHeaders()
+}
+
+// Send sends a request message to the server.
+func (s ChatServiceChatClientStream) Send(req *_go.ChatRequest) error {
+	return s.stream.Send(req)
+}
+
+// CloseSend closes the request side of the stream.
+func (s ChatServiceChatClientStream) CloseSend() error {
+	return s.stream.CloseSend()
+}
+
+// Receive returns the next response message from the server.
+func (s ChatServiceChatClientStream) Receive() (*_go.ChatResponse, error) {
+	var res _go.ChatResponse
+	if err := s.stream.Receive(&res); err != nil {
+		return nil, err
 	}
+	return &res, nil
 }
 
-// chatServiceClient implements ChatServiceClient.
-type chatServiceClient struct {
-	chat *connect.Client[_go.ChatRequest, _go.ChatResponse]
-}
-
-// Chat calls frontendapi.ChatService.Chat.
-func (c *chatServiceClient) Chat(ctx context.Context) *connect.BidiStreamForClient[_go.ChatRequest, _go.ChatResponse] {
-	return c.chat.CallBidiStream(ctx)
+// Close releases the stream's resources. It is idempotent and is typically deferred to clean up a
+// stream abandoned before io.EOF.
+func (s ChatServiceChatClientStream) Close() error {
+	return s.stream.Close()
 }
 
 // ChatServiceHandler is an implementation of the frontendapi.ChatService service.
 type ChatServiceHandler interface {
 	// Chat with a stream of messages.
-	Chat(context.Context, *connect.BidiStream[_go.ChatRequest, _go.ChatResponse]) error
+	Chat(context.Context, ChatServiceChatServerStream) error
 }
 
-// NewChatServiceHandler builds an HTTP handler from the service implementation. It returns the path
-// on which to mount the handler and the handler itself.
-//
-// By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
-// and JSON codecs. They also support gzip compression.
-func NewChatServiceHandler(svc ChatServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	chatServiceMethods := _go.File_frontendapi_frontend_proto.Services().ByName("ChatService").Methods()
-	chatServiceChatHandler := connect.NewBidiStreamHandler(
-		ChatServiceChatProcedure,
-		svc.Chat,
-		connect.WithSchema(chatServiceMethods.ByName("Chat")),
-		connect.WithHandlerOptions(opts...),
+// RegisterChatServiceHandler registers svc as the frontendapi.ChatService implementation on server.
+func RegisterChatServiceHandler(server *connect.Server, svc ChatServiceHandler) {
+	adapter := chatServiceHandler{svc: svc}
+	server.Register(
+		connect.Method{Spec: chatServiceChatSpec(), Handler: adapter.chat},
 	)
-	return "/frontendapi.ChatService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.URL.Path {
-		case ChatServiceChatProcedure:
-			chatServiceChatHandler.ServeHTTP(w, r)
-		default:
-			http.NotFound(w, r)
-		}
-	})
+}
+
+// ChatServiceChatServerStream is the server stream for the ChatService's Chat RPC.
+type ChatServiceChatServerStream struct {
+	stream connect.ServerStream
+}
+
+// Receive returns the next request message from the client.
+func (s ChatServiceChatServerStream) Receive() (*_go.ChatRequest, error) {
+	var req _go.ChatRequest
+	if err := s.stream.Receive(&req); err != nil {
+		return nil, err
+	}
+	return &req, nil
+}
+
+// SendHeaders flushes the response headers without a message. The first Send does this implicitly.
+func (s ChatServiceChatServerStream) SendHeaders() error {
+	return s.stream.SendHeaders()
+}
+
+// Send sends a response message to the client.
+func (s ChatServiceChatServerStream) Send(res *_go.ChatResponse) error {
+	return s.stream.Send(res)
 }
 
 // UnimplementedChatServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedChatServiceHandler struct{}
 
-func (UnimplementedChatServiceHandler) Chat(context.Context, *connect.BidiStream[_go.ChatRequest, _go.ChatResponse]) error {
-	return connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.ChatService.Chat is not implemented"))
+func (UnimplementedChatServiceHandler) Chat(context.Context, ChatServiceChatServerStream) error {
+	return connect.NewError(connect.CodeUnimplemented, "frontendapi.ChatService.Chat is not implemented")
 }
+
+type chatServiceClient struct {
+	client *connect.Client
+}
+
+func (c *chatServiceClient) Chat(ctx context.Context) (ChatServiceChatClientStream, error) {
+	stream, err := c.client.CallClientStream(ctx, chatServiceChatSpec())
+	if err != nil {
+		return ChatServiceChatClientStream{}, err
+	}
+	return ChatServiceChatClientStream{stream: stream}, nil
+}
+
+type chatServiceHandler struct{ svc ChatServiceHandler }
+
+func (h chatServiceHandler) chat(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	return h.svc.Chat(ctx, ChatServiceChatServerStream{stream: stream})
+}
+
+var (
+	frontendServiceGetRecipeSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods().ByName("GetRecipe"),
+			Procedure:  FrontendServiceGetRecipeProcedure,
+		}
+	})
+	frontendServiceListRecipesSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods().ByName("ListRecipes"),
+			Procedure:  FrontendServiceListRecipesProcedure,
+		}
+	})
+	frontendServiceStartChatSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods().ByName("StartChat"),
+			Procedure:  FrontendServiceStartChatProcedure,
+		}
+	})
+	frontendServiceAddRecipeSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods().ByName("AddRecipe"),
+			Procedure:  FrontendServiceAddRecipeProcedure,
+		}
+	})
+	frontendServiceGenerateRecipeSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods().ByName("GenerateRecipe"),
+			Procedure:  FrontendServiceGenerateRecipeProcedure,
+		}
+	})
+	frontendServiceGeneratePlanSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods().ByName("GeneratePlan"),
+			Procedure:  FrontendServiceGeneratePlanProcedure,
+		}
+	})
+	frontendServiceChatPlanSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods().ByName("ChatPlan"),
+			Procedure:  FrontendServiceChatPlanProcedure,
+		}
+	})
+	frontendServiceGetChatMessagesSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods().ByName("GetChatMessages"),
+			Procedure:  FrontendServiceGetChatMessagesProcedure,
+		}
+	})
+	frontendServiceGetPlansSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods().ByName("GetPlans"),
+			Procedure:  FrontendServiceGetPlansProcedure,
+		}
+	})
+	frontendServiceGetPlanSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods().ByName("GetPlan"),
+			Procedure:  FrontendServiceGetPlanProcedure,
+		}
+	})
+	frontendServiceUpdatePlanSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods().ByName("UpdatePlan"),
+			Procedure:  FrontendServiceUpdatePlanProcedure,
+		}
+	})
+	frontendServiceDeletePlanSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods().ByName("DeletePlan"),
+			Procedure:  FrontendServiceDeletePlanProcedure,
+		}
+	})
+	frontendServiceAddBookmarkSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods().ByName("AddBookmark"),
+			Procedure:  FrontendServiceAddBookmarkProcedure,
+		}
+	})
+	frontendServiceRemoveBookmarkSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods().ByName("RemoveBookmark"),
+			Procedure:  FrontendServiceRemoveBookmarkProcedure,
+		}
+	})
+	frontendServiceGetUserSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods().ByName("GetUser"),
+			Procedure:  FrontendServiceGetUserProcedure,
+		}
+	})
+	frontendServiceEditUserSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods().ByName("EditUser"),
+			Procedure:  FrontendServiceEditUserProcedure,
+		}
+	})
+)
 
 // FrontendServiceClient is a client for the frontendapi.FrontendService service.
 type FrontendServiceClient interface {
 	// Get the recipe for a given recipe ID.
-	GetRecipe(context.Context, *connect.Request[_go.GetRecipeRequest]) (*connect.Response[_go.GetRecipeResponse], error)
+	GetRecipe(context.Context, *_go.GetRecipeRequest) (*_go.GetRecipeResponse, error)
 	// Get the list of recipes.
-	ListRecipes(context.Context, *connect.Request[_go.ListRecipesRequest]) (*connect.Response[_go.ListRecipesResponse], error)
+	ListRecipes(context.Context, *_go.ListRecipesRequest) (*_go.ListRecipesResponse, error)
 	// Start a chat session.
-	StartChat(context.Context, *connect.Request[_go.StartChatRequest]) (*connect.Response[_go.StartChatResponse], error)
+	StartChat(context.Context, *_go.StartChatRequest) (*_go.StartChatResponse, error)
 	// Add a new recipe.
-	AddRecipe(context.Context, *connect.Request[_go.AddRecipeRequest]) (*connect.Response[_go.AddRecipeResponse], error)
+	AddRecipe(context.Context, *_go.AddRecipeRequest) (*_go.AddRecipeResponse, error)
 	// Generate a recipe based on a prompt.
-	GenerateRecipe(context.Context, *connect.Request[_go.GenerateRecipeRequest]) (*connect.Response[_go.GenerateRecipeResponse], error)
+	GenerateRecipe(context.Context, *_go.GenerateRecipeRequest) (*_go.GenerateRecipeResponse, error)
 	// Generate a scheduled recipe plan.
-	GeneratePlan(context.Context, *connect.Request[_go.GeneratePlanRequest]) (*connect.Response[_go.GeneratePlanResponse], error)
+	GeneratePlan(context.Context, *_go.GeneratePlanRequest) (*_go.GeneratePlanResponse, error)
 	// Create a meal plan via a text chat.
-	ChatPlan(context.Context, *connect.Request[_go.ChatPlanRequest]) (*connect.Response[_go.ChatPlanResponse], error)
+	ChatPlan(context.Context, *_go.ChatPlanRequest) (*_go.ChatPlanResponse, error)
 	// Get the messages in the current chat session.
-	GetChatMessages(context.Context, *connect.Request[_go.GetChatMessagesRequest]) (*connect.Response[_go.GetChatMessagesResponse], error)
+	GetChatMessages(context.Context, *_go.GetChatMessagesRequest) (*_go.GetChatMessagesResponse, error)
 	// Get the plans for the user.
-	GetPlans(context.Context, *connect.Request[_go.GetPlansRequest]) (*connect.Response[_go.GetPlansResponse], error)
+	GetPlans(context.Context, *_go.GetPlansRequest) (*_go.GetPlansResponse, error)
 	// Get the details of a plan.
-	GetPlan(context.Context, *connect.Request[_go.GetPlanRequest]) (*connect.Response[_go.GetPlanResponse], error)
+	GetPlan(context.Context, *_go.GetPlanRequest) (*_go.GetPlanResponse, error)
 	// Update the recipes in a plan.
-	UpdatePlan(context.Context, *connect.Request[_go.UpdatePlanRequest]) (*connect.Response[_go.UpdatePlanResponse], error)
+	UpdatePlan(context.Context, *_go.UpdatePlanRequest) (*_go.UpdatePlanResponse, error)
 	// Delete a plan.
-	DeletePlan(context.Context, *connect.Request[_go.DeletePlanRequest]) (*connect.Response[_go.DeletePlanResponse], error)
+	DeletePlan(context.Context, *_go.DeletePlanRequest) (*_go.DeletePlanResponse, error)
 	// Add a bookmark for a recipe.
-	AddBookmark(context.Context, *connect.Request[_go.AddBookmarkRequest]) (*connect.Response[_go.AddBookmarkResponse], error)
+	AddBookmark(context.Context, *_go.AddBookmarkRequest) (*_go.AddBookmarkResponse, error)
 	// Remove a bookmark for a recipe.
-	RemoveBookmark(context.Context, *connect.Request[_go.RemoveBookmarkRequest]) (*connect.Response[_go.RemoveBookmarkResponse], error)
+	RemoveBookmark(context.Context, *_go.RemoveBookmarkRequest) (*_go.RemoveBookmarkResponse, error)
 	// Get the user's settings.
-	GetUser(context.Context, *connect.Request[_go.GetUserRequest]) (*connect.Response[_go.GetUserResponse], error)
+	GetUser(context.Context, *_go.GetUserRequest) (*_go.GetUserResponse, error)
 	// Edit the user's settings.
-	EditUser(context.Context, *connect.Request[_go.EditUserRequest]) (*connect.Response[_go.EditUserResponse], error)
+	EditUser(context.Context, *_go.EditUserRequest) (*_go.EditUserResponse, error)
 }
 
-// NewFrontendServiceClient constructs a client for the frontendapi.FrontendService service. By
-// default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
-// and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
-// connect.WithGRPC() or connect.WithGRPCWeb() options.
-//
-// The URL supplied here should be the base URL for the Connect or gRPC server (for example,
-// http://api.acme.com or https://acme.com/grpc).
-func NewFrontendServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) FrontendServiceClient {
-	baseURL = strings.TrimRight(baseURL, "/")
-	frontendServiceMethods := _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods()
-	return &frontendServiceClient{
-		getRecipe: connect.NewClient[_go.GetRecipeRequest, _go.GetRecipeResponse](
-			httpClient,
-			baseURL+FrontendServiceGetRecipeProcedure,
-			connect.WithSchema(frontendServiceMethods.ByName("GetRecipe")),
-			connect.WithClientOptions(opts...),
-		),
-		listRecipes: connect.NewClient[_go.ListRecipesRequest, _go.ListRecipesResponse](
-			httpClient,
-			baseURL+FrontendServiceListRecipesProcedure,
-			connect.WithSchema(frontendServiceMethods.ByName("ListRecipes")),
-			connect.WithClientOptions(opts...),
-		),
-		startChat: connect.NewClient[_go.StartChatRequest, _go.StartChatResponse](
-			httpClient,
-			baseURL+FrontendServiceStartChatProcedure,
-			connect.WithSchema(frontendServiceMethods.ByName("StartChat")),
-			connect.WithClientOptions(opts...),
-		),
-		addRecipe: connect.NewClient[_go.AddRecipeRequest, _go.AddRecipeResponse](
-			httpClient,
-			baseURL+FrontendServiceAddRecipeProcedure,
-			connect.WithSchema(frontendServiceMethods.ByName("AddRecipe")),
-			connect.WithClientOptions(opts...),
-		),
-		generateRecipe: connect.NewClient[_go.GenerateRecipeRequest, _go.GenerateRecipeResponse](
-			httpClient,
-			baseURL+FrontendServiceGenerateRecipeProcedure,
-			connect.WithSchema(frontendServiceMethods.ByName("GenerateRecipe")),
-			connect.WithClientOptions(opts...),
-		),
-		generatePlan: connect.NewClient[_go.GeneratePlanRequest, _go.GeneratePlanResponse](
-			httpClient,
-			baseURL+FrontendServiceGeneratePlanProcedure,
-			connect.WithSchema(frontendServiceMethods.ByName("GeneratePlan")),
-			connect.WithClientOptions(opts...),
-		),
-		chatPlan: connect.NewClient[_go.ChatPlanRequest, _go.ChatPlanResponse](
-			httpClient,
-			baseURL+FrontendServiceChatPlanProcedure,
-			connect.WithSchema(frontendServiceMethods.ByName("ChatPlan")),
-			connect.WithClientOptions(opts...),
-		),
-		getChatMessages: connect.NewClient[_go.GetChatMessagesRequest, _go.GetChatMessagesResponse](
-			httpClient,
-			baseURL+FrontendServiceGetChatMessagesProcedure,
-			connect.WithSchema(frontendServiceMethods.ByName("GetChatMessages")),
-			connect.WithClientOptions(opts...),
-		),
-		getPlans: connect.NewClient[_go.GetPlansRequest, _go.GetPlansResponse](
-			httpClient,
-			baseURL+FrontendServiceGetPlansProcedure,
-			connect.WithSchema(frontendServiceMethods.ByName("GetPlans")),
-			connect.WithClientOptions(opts...),
-		),
-		getPlan: connect.NewClient[_go.GetPlanRequest, _go.GetPlanResponse](
-			httpClient,
-			baseURL+FrontendServiceGetPlanProcedure,
-			connect.WithSchema(frontendServiceMethods.ByName("GetPlan")),
-			connect.WithClientOptions(opts...),
-		),
-		updatePlan: connect.NewClient[_go.UpdatePlanRequest, _go.UpdatePlanResponse](
-			httpClient,
-			baseURL+FrontendServiceUpdatePlanProcedure,
-			connect.WithSchema(frontendServiceMethods.ByName("UpdatePlan")),
-			connect.WithClientOptions(opts...),
-		),
-		deletePlan: connect.NewClient[_go.DeletePlanRequest, _go.DeletePlanResponse](
-			httpClient,
-			baseURL+FrontendServiceDeletePlanProcedure,
-			connect.WithSchema(frontendServiceMethods.ByName("DeletePlan")),
-			connect.WithClientOptions(opts...),
-		),
-		addBookmark: connect.NewClient[_go.AddBookmarkRequest, _go.AddBookmarkResponse](
-			httpClient,
-			baseURL+FrontendServiceAddBookmarkProcedure,
-			connect.WithSchema(frontendServiceMethods.ByName("AddBookmark")),
-			connect.WithClientOptions(opts...),
-		),
-		removeBookmark: connect.NewClient[_go.RemoveBookmarkRequest, _go.RemoveBookmarkResponse](
-			httpClient,
-			baseURL+FrontendServiceRemoveBookmarkProcedure,
-			connect.WithSchema(frontendServiceMethods.ByName("RemoveBookmark")),
-			connect.WithClientOptions(opts...),
-		),
-		getUser: connect.NewClient[_go.GetUserRequest, _go.GetUserResponse](
-			httpClient,
-			baseURL+FrontendServiceGetUserProcedure,
-			connect.WithSchema(frontendServiceMethods.ByName("GetUser")),
-			connect.WithClientOptions(opts...),
-		),
-		editUser: connect.NewClient[_go.EditUserRequest, _go.EditUserResponse](
-			httpClient,
-			baseURL+FrontendServiceEditUserProcedure,
-			connect.WithSchema(frontendServiceMethods.ByName("EditUser")),
-			connect.WithClientOptions(opts...),
-		),
-	}
-}
-
-// frontendServiceClient implements FrontendServiceClient.
-type frontendServiceClient struct {
-	getRecipe       *connect.Client[_go.GetRecipeRequest, _go.GetRecipeResponse]
-	listRecipes     *connect.Client[_go.ListRecipesRequest, _go.ListRecipesResponse]
-	startChat       *connect.Client[_go.StartChatRequest, _go.StartChatResponse]
-	addRecipe       *connect.Client[_go.AddRecipeRequest, _go.AddRecipeResponse]
-	generateRecipe  *connect.Client[_go.GenerateRecipeRequest, _go.GenerateRecipeResponse]
-	generatePlan    *connect.Client[_go.GeneratePlanRequest, _go.GeneratePlanResponse]
-	chatPlan        *connect.Client[_go.ChatPlanRequest, _go.ChatPlanResponse]
-	getChatMessages *connect.Client[_go.GetChatMessagesRequest, _go.GetChatMessagesResponse]
-	getPlans        *connect.Client[_go.GetPlansRequest, _go.GetPlansResponse]
-	getPlan         *connect.Client[_go.GetPlanRequest, _go.GetPlanResponse]
-	updatePlan      *connect.Client[_go.UpdatePlanRequest, _go.UpdatePlanResponse]
-	deletePlan      *connect.Client[_go.DeletePlanRequest, _go.DeletePlanResponse]
-	addBookmark     *connect.Client[_go.AddBookmarkRequest, _go.AddBookmarkResponse]
-	removeBookmark  *connect.Client[_go.RemoveBookmarkRequest, _go.RemoveBookmarkResponse]
-	getUser         *connect.Client[_go.GetUserRequest, _go.GetUserResponse]
-	editUser        *connect.Client[_go.EditUserRequest, _go.EditUserResponse]
-}
-
-// GetRecipe calls frontendapi.FrontendService.GetRecipe.
-func (c *frontendServiceClient) GetRecipe(ctx context.Context, req *connect.Request[_go.GetRecipeRequest]) (*connect.Response[_go.GetRecipeResponse], error) {
-	return c.getRecipe.CallUnary(ctx, req)
-}
-
-// ListRecipes calls frontendapi.FrontendService.ListRecipes.
-func (c *frontendServiceClient) ListRecipes(ctx context.Context, req *connect.Request[_go.ListRecipesRequest]) (*connect.Response[_go.ListRecipesResponse], error) {
-	return c.listRecipes.CallUnary(ctx, req)
-}
-
-// StartChat calls frontendapi.FrontendService.StartChat.
-func (c *frontendServiceClient) StartChat(ctx context.Context, req *connect.Request[_go.StartChatRequest]) (*connect.Response[_go.StartChatResponse], error) {
-	return c.startChat.CallUnary(ctx, req)
-}
-
-// AddRecipe calls frontendapi.FrontendService.AddRecipe.
-func (c *frontendServiceClient) AddRecipe(ctx context.Context, req *connect.Request[_go.AddRecipeRequest]) (*connect.Response[_go.AddRecipeResponse], error) {
-	return c.addRecipe.CallUnary(ctx, req)
-}
-
-// GenerateRecipe calls frontendapi.FrontendService.GenerateRecipe.
-func (c *frontendServiceClient) GenerateRecipe(ctx context.Context, req *connect.Request[_go.GenerateRecipeRequest]) (*connect.Response[_go.GenerateRecipeResponse], error) {
-	return c.generateRecipe.CallUnary(ctx, req)
-}
-
-// GeneratePlan calls frontendapi.FrontendService.GeneratePlan.
-func (c *frontendServiceClient) GeneratePlan(ctx context.Context, req *connect.Request[_go.GeneratePlanRequest]) (*connect.Response[_go.GeneratePlanResponse], error) {
-	return c.generatePlan.CallUnary(ctx, req)
-}
-
-// ChatPlan calls frontendapi.FrontendService.ChatPlan.
-func (c *frontendServiceClient) ChatPlan(ctx context.Context, req *connect.Request[_go.ChatPlanRequest]) (*connect.Response[_go.ChatPlanResponse], error) {
-	return c.chatPlan.CallUnary(ctx, req)
-}
-
-// GetChatMessages calls frontendapi.FrontendService.GetChatMessages.
-func (c *frontendServiceClient) GetChatMessages(ctx context.Context, req *connect.Request[_go.GetChatMessagesRequest]) (*connect.Response[_go.GetChatMessagesResponse], error) {
-	return c.getChatMessages.CallUnary(ctx, req)
-}
-
-// GetPlans calls frontendapi.FrontendService.GetPlans.
-func (c *frontendServiceClient) GetPlans(ctx context.Context, req *connect.Request[_go.GetPlansRequest]) (*connect.Response[_go.GetPlansResponse], error) {
-	return c.getPlans.CallUnary(ctx, req)
-}
-
-// GetPlan calls frontendapi.FrontendService.GetPlan.
-func (c *frontendServiceClient) GetPlan(ctx context.Context, req *connect.Request[_go.GetPlanRequest]) (*connect.Response[_go.GetPlanResponse], error) {
-	return c.getPlan.CallUnary(ctx, req)
-}
-
-// UpdatePlan calls frontendapi.FrontendService.UpdatePlan.
-func (c *frontendServiceClient) UpdatePlan(ctx context.Context, req *connect.Request[_go.UpdatePlanRequest]) (*connect.Response[_go.UpdatePlanResponse], error) {
-	return c.updatePlan.CallUnary(ctx, req)
-}
-
-// DeletePlan calls frontendapi.FrontendService.DeletePlan.
-func (c *frontendServiceClient) DeletePlan(ctx context.Context, req *connect.Request[_go.DeletePlanRequest]) (*connect.Response[_go.DeletePlanResponse], error) {
-	return c.deletePlan.CallUnary(ctx, req)
-}
-
-// AddBookmark calls frontendapi.FrontendService.AddBookmark.
-func (c *frontendServiceClient) AddBookmark(ctx context.Context, req *connect.Request[_go.AddBookmarkRequest]) (*connect.Response[_go.AddBookmarkResponse], error) {
-	return c.addBookmark.CallUnary(ctx, req)
-}
-
-// RemoveBookmark calls frontendapi.FrontendService.RemoveBookmark.
-func (c *frontendServiceClient) RemoveBookmark(ctx context.Context, req *connect.Request[_go.RemoveBookmarkRequest]) (*connect.Response[_go.RemoveBookmarkResponse], error) {
-	return c.removeBookmark.CallUnary(ctx, req)
-}
-
-// GetUser calls frontendapi.FrontendService.GetUser.
-func (c *frontendServiceClient) GetUser(ctx context.Context, req *connect.Request[_go.GetUserRequest]) (*connect.Response[_go.GetUserResponse], error) {
-	return c.getUser.CallUnary(ctx, req)
-}
-
-// EditUser calls frontendapi.FrontendService.EditUser.
-func (c *frontendServiceClient) EditUser(ctx context.Context, req *connect.Request[_go.EditUserRequest]) (*connect.Response[_go.EditUserResponse], error) {
-	return c.editUser.CallUnary(ctx, req)
+// NewFrontendServiceClient constructs a client for the frontendapi.FrontendService service.
+// Multiple service clients may share a single connect.Client.
+func NewFrontendServiceClient(client *connect.Client) FrontendServiceClient {
+	return &frontendServiceClient{client: client}
 }
 
 // FrontendServiceHandler is an implementation of the frontendapi.FrontendService service.
 type FrontendServiceHandler interface {
 	// Get the recipe for a given recipe ID.
-	GetRecipe(context.Context, *connect.Request[_go.GetRecipeRequest]) (*connect.Response[_go.GetRecipeResponse], error)
+	GetRecipe(context.Context, *_go.GetRecipeRequest) (*_go.GetRecipeResponse, error)
 	// Get the list of recipes.
-	ListRecipes(context.Context, *connect.Request[_go.ListRecipesRequest]) (*connect.Response[_go.ListRecipesResponse], error)
+	ListRecipes(context.Context, *_go.ListRecipesRequest) (*_go.ListRecipesResponse, error)
 	// Start a chat session.
-	StartChat(context.Context, *connect.Request[_go.StartChatRequest]) (*connect.Response[_go.StartChatResponse], error)
+	StartChat(context.Context, *_go.StartChatRequest) (*_go.StartChatResponse, error)
 	// Add a new recipe.
-	AddRecipe(context.Context, *connect.Request[_go.AddRecipeRequest]) (*connect.Response[_go.AddRecipeResponse], error)
+	AddRecipe(context.Context, *_go.AddRecipeRequest) (*_go.AddRecipeResponse, error)
 	// Generate a recipe based on a prompt.
-	GenerateRecipe(context.Context, *connect.Request[_go.GenerateRecipeRequest]) (*connect.Response[_go.GenerateRecipeResponse], error)
+	GenerateRecipe(context.Context, *_go.GenerateRecipeRequest) (*_go.GenerateRecipeResponse, error)
 	// Generate a scheduled recipe plan.
-	GeneratePlan(context.Context, *connect.Request[_go.GeneratePlanRequest]) (*connect.Response[_go.GeneratePlanResponse], error)
+	GeneratePlan(context.Context, *_go.GeneratePlanRequest) (*_go.GeneratePlanResponse, error)
 	// Create a meal plan via a text chat.
-	ChatPlan(context.Context, *connect.Request[_go.ChatPlanRequest]) (*connect.Response[_go.ChatPlanResponse], error)
+	ChatPlan(context.Context, *_go.ChatPlanRequest) (*_go.ChatPlanResponse, error)
 	// Get the messages in the current chat session.
-	GetChatMessages(context.Context, *connect.Request[_go.GetChatMessagesRequest]) (*connect.Response[_go.GetChatMessagesResponse], error)
+	GetChatMessages(context.Context, *_go.GetChatMessagesRequest) (*_go.GetChatMessagesResponse, error)
 	// Get the plans for the user.
-	GetPlans(context.Context, *connect.Request[_go.GetPlansRequest]) (*connect.Response[_go.GetPlansResponse], error)
+	GetPlans(context.Context, *_go.GetPlansRequest) (*_go.GetPlansResponse, error)
 	// Get the details of a plan.
-	GetPlan(context.Context, *connect.Request[_go.GetPlanRequest]) (*connect.Response[_go.GetPlanResponse], error)
+	GetPlan(context.Context, *_go.GetPlanRequest) (*_go.GetPlanResponse, error)
 	// Update the recipes in a plan.
-	UpdatePlan(context.Context, *connect.Request[_go.UpdatePlanRequest]) (*connect.Response[_go.UpdatePlanResponse], error)
+	UpdatePlan(context.Context, *_go.UpdatePlanRequest) (*_go.UpdatePlanResponse, error)
 	// Delete a plan.
-	DeletePlan(context.Context, *connect.Request[_go.DeletePlanRequest]) (*connect.Response[_go.DeletePlanResponse], error)
+	DeletePlan(context.Context, *_go.DeletePlanRequest) (*_go.DeletePlanResponse, error)
 	// Add a bookmark for a recipe.
-	AddBookmark(context.Context, *connect.Request[_go.AddBookmarkRequest]) (*connect.Response[_go.AddBookmarkResponse], error)
+	AddBookmark(context.Context, *_go.AddBookmarkRequest) (*_go.AddBookmarkResponse, error)
 	// Remove a bookmark for a recipe.
-	RemoveBookmark(context.Context, *connect.Request[_go.RemoveBookmarkRequest]) (*connect.Response[_go.RemoveBookmarkResponse], error)
+	RemoveBookmark(context.Context, *_go.RemoveBookmarkRequest) (*_go.RemoveBookmarkResponse, error)
 	// Get the user's settings.
-	GetUser(context.Context, *connect.Request[_go.GetUserRequest]) (*connect.Response[_go.GetUserResponse], error)
+	GetUser(context.Context, *_go.GetUserRequest) (*_go.GetUserResponse, error)
 	// Edit the user's settings.
-	EditUser(context.Context, *connect.Request[_go.EditUserRequest]) (*connect.Response[_go.EditUserResponse], error)
+	EditUser(context.Context, *_go.EditUserRequest) (*_go.EditUserResponse, error)
 }
 
-// NewFrontendServiceHandler builds an HTTP handler from the service implementation. It returns the
-// path on which to mount the handler and the handler itself.
-//
-// By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
-// and JSON codecs. They also support gzip compression.
-func NewFrontendServiceHandler(svc FrontendServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	frontendServiceMethods := _go.File_frontendapi_frontend_proto.Services().ByName("FrontendService").Methods()
-	frontendServiceGetRecipeHandler := connect.NewUnaryHandler(
-		FrontendServiceGetRecipeProcedure,
-		svc.GetRecipe,
-		connect.WithSchema(frontendServiceMethods.ByName("GetRecipe")),
-		connect.WithHandlerOptions(opts...),
+// RegisterFrontendServiceHandler registers svc as the frontendapi.FrontendService implementation on
+// server.
+func RegisterFrontendServiceHandler(server *connect.Server, svc FrontendServiceHandler) {
+	adapter := frontendServiceHandler{svc: svc}
+	server.Register(
+		connect.Method{Spec: frontendServiceGetRecipeSpec(), Handler: adapter.getRecipe},
+		connect.Method{Spec: frontendServiceListRecipesSpec(), Handler: adapter.listRecipes},
+		connect.Method{Spec: frontendServiceStartChatSpec(), Handler: adapter.startChat},
+		connect.Method{Spec: frontendServiceAddRecipeSpec(), Handler: adapter.addRecipe},
+		connect.Method{Spec: frontendServiceGenerateRecipeSpec(), Handler: adapter.generateRecipe},
+		connect.Method{Spec: frontendServiceGeneratePlanSpec(), Handler: adapter.generatePlan},
+		connect.Method{Spec: frontendServiceChatPlanSpec(), Handler: adapter.chatPlan},
+		connect.Method{Spec: frontendServiceGetChatMessagesSpec(), Handler: adapter.getChatMessages},
+		connect.Method{Spec: frontendServiceGetPlansSpec(), Handler: adapter.getPlans},
+		connect.Method{Spec: frontendServiceGetPlanSpec(), Handler: adapter.getPlan},
+		connect.Method{Spec: frontendServiceUpdatePlanSpec(), Handler: adapter.updatePlan},
+		connect.Method{Spec: frontendServiceDeletePlanSpec(), Handler: adapter.deletePlan},
+		connect.Method{Spec: frontendServiceAddBookmarkSpec(), Handler: adapter.addBookmark},
+		connect.Method{Spec: frontendServiceRemoveBookmarkSpec(), Handler: adapter.removeBookmark},
+		connect.Method{Spec: frontendServiceGetUserSpec(), Handler: adapter.getUser},
+		connect.Method{Spec: frontendServiceEditUserSpec(), Handler: adapter.editUser},
 	)
-	frontendServiceListRecipesHandler := connect.NewUnaryHandler(
-		FrontendServiceListRecipesProcedure,
-		svc.ListRecipes,
-		connect.WithSchema(frontendServiceMethods.ByName("ListRecipes")),
-		connect.WithHandlerOptions(opts...),
-	)
-	frontendServiceStartChatHandler := connect.NewUnaryHandler(
-		FrontendServiceStartChatProcedure,
-		svc.StartChat,
-		connect.WithSchema(frontendServiceMethods.ByName("StartChat")),
-		connect.WithHandlerOptions(opts...),
-	)
-	frontendServiceAddRecipeHandler := connect.NewUnaryHandler(
-		FrontendServiceAddRecipeProcedure,
-		svc.AddRecipe,
-		connect.WithSchema(frontendServiceMethods.ByName("AddRecipe")),
-		connect.WithHandlerOptions(opts...),
-	)
-	frontendServiceGenerateRecipeHandler := connect.NewUnaryHandler(
-		FrontendServiceGenerateRecipeProcedure,
-		svc.GenerateRecipe,
-		connect.WithSchema(frontendServiceMethods.ByName("GenerateRecipe")),
-		connect.WithHandlerOptions(opts...),
-	)
-	frontendServiceGeneratePlanHandler := connect.NewUnaryHandler(
-		FrontendServiceGeneratePlanProcedure,
-		svc.GeneratePlan,
-		connect.WithSchema(frontendServiceMethods.ByName("GeneratePlan")),
-		connect.WithHandlerOptions(opts...),
-	)
-	frontendServiceChatPlanHandler := connect.NewUnaryHandler(
-		FrontendServiceChatPlanProcedure,
-		svc.ChatPlan,
-		connect.WithSchema(frontendServiceMethods.ByName("ChatPlan")),
-		connect.WithHandlerOptions(opts...),
-	)
-	frontendServiceGetChatMessagesHandler := connect.NewUnaryHandler(
-		FrontendServiceGetChatMessagesProcedure,
-		svc.GetChatMessages,
-		connect.WithSchema(frontendServiceMethods.ByName("GetChatMessages")),
-		connect.WithHandlerOptions(opts...),
-	)
-	frontendServiceGetPlansHandler := connect.NewUnaryHandler(
-		FrontendServiceGetPlansProcedure,
-		svc.GetPlans,
-		connect.WithSchema(frontendServiceMethods.ByName("GetPlans")),
-		connect.WithHandlerOptions(opts...),
-	)
-	frontendServiceGetPlanHandler := connect.NewUnaryHandler(
-		FrontendServiceGetPlanProcedure,
-		svc.GetPlan,
-		connect.WithSchema(frontendServiceMethods.ByName("GetPlan")),
-		connect.WithHandlerOptions(opts...),
-	)
-	frontendServiceUpdatePlanHandler := connect.NewUnaryHandler(
-		FrontendServiceUpdatePlanProcedure,
-		svc.UpdatePlan,
-		connect.WithSchema(frontendServiceMethods.ByName("UpdatePlan")),
-		connect.WithHandlerOptions(opts...),
-	)
-	frontendServiceDeletePlanHandler := connect.NewUnaryHandler(
-		FrontendServiceDeletePlanProcedure,
-		svc.DeletePlan,
-		connect.WithSchema(frontendServiceMethods.ByName("DeletePlan")),
-		connect.WithHandlerOptions(opts...),
-	)
-	frontendServiceAddBookmarkHandler := connect.NewUnaryHandler(
-		FrontendServiceAddBookmarkProcedure,
-		svc.AddBookmark,
-		connect.WithSchema(frontendServiceMethods.ByName("AddBookmark")),
-		connect.WithHandlerOptions(opts...),
-	)
-	frontendServiceRemoveBookmarkHandler := connect.NewUnaryHandler(
-		FrontendServiceRemoveBookmarkProcedure,
-		svc.RemoveBookmark,
-		connect.WithSchema(frontendServiceMethods.ByName("RemoveBookmark")),
-		connect.WithHandlerOptions(opts...),
-	)
-	frontendServiceGetUserHandler := connect.NewUnaryHandler(
-		FrontendServiceGetUserProcedure,
-		svc.GetUser,
-		connect.WithSchema(frontendServiceMethods.ByName("GetUser")),
-		connect.WithHandlerOptions(opts...),
-	)
-	frontendServiceEditUserHandler := connect.NewUnaryHandler(
-		FrontendServiceEditUserProcedure,
-		svc.EditUser,
-		connect.WithSchema(frontendServiceMethods.ByName("EditUser")),
-		connect.WithHandlerOptions(opts...),
-	)
-	return "/frontendapi.FrontendService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.URL.Path {
-		case FrontendServiceGetRecipeProcedure:
-			frontendServiceGetRecipeHandler.ServeHTTP(w, r)
-		case FrontendServiceListRecipesProcedure:
-			frontendServiceListRecipesHandler.ServeHTTP(w, r)
-		case FrontendServiceStartChatProcedure:
-			frontendServiceStartChatHandler.ServeHTTP(w, r)
-		case FrontendServiceAddRecipeProcedure:
-			frontendServiceAddRecipeHandler.ServeHTTP(w, r)
-		case FrontendServiceGenerateRecipeProcedure:
-			frontendServiceGenerateRecipeHandler.ServeHTTP(w, r)
-		case FrontendServiceGeneratePlanProcedure:
-			frontendServiceGeneratePlanHandler.ServeHTTP(w, r)
-		case FrontendServiceChatPlanProcedure:
-			frontendServiceChatPlanHandler.ServeHTTP(w, r)
-		case FrontendServiceGetChatMessagesProcedure:
-			frontendServiceGetChatMessagesHandler.ServeHTTP(w, r)
-		case FrontendServiceGetPlansProcedure:
-			frontendServiceGetPlansHandler.ServeHTTP(w, r)
-		case FrontendServiceGetPlanProcedure:
-			frontendServiceGetPlanHandler.ServeHTTP(w, r)
-		case FrontendServiceUpdatePlanProcedure:
-			frontendServiceUpdatePlanHandler.ServeHTTP(w, r)
-		case FrontendServiceDeletePlanProcedure:
-			frontendServiceDeletePlanHandler.ServeHTTP(w, r)
-		case FrontendServiceAddBookmarkProcedure:
-			frontendServiceAddBookmarkHandler.ServeHTTP(w, r)
-		case FrontendServiceRemoveBookmarkProcedure:
-			frontendServiceRemoveBookmarkHandler.ServeHTTP(w, r)
-		case FrontendServiceGetUserProcedure:
-			frontendServiceGetUserHandler.ServeHTTP(w, r)
-		case FrontendServiceEditUserProcedure:
-			frontendServiceEditUserHandler.ServeHTTP(w, r)
-		default:
-			http.NotFound(w, r)
-		}
-	})
 }
 
 // UnimplementedFrontendServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedFrontendServiceHandler struct{}
 
-func (UnimplementedFrontendServiceHandler) GetRecipe(context.Context, *connect.Request[_go.GetRecipeRequest]) (*connect.Response[_go.GetRecipeResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.GetRecipe is not implemented"))
+func (UnimplementedFrontendServiceHandler) GetRecipe(context.Context, *_go.GetRecipeRequest) (*_go.GetRecipeResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "frontendapi.FrontendService.GetRecipe is not implemented")
 }
 
-func (UnimplementedFrontendServiceHandler) ListRecipes(context.Context, *connect.Request[_go.ListRecipesRequest]) (*connect.Response[_go.ListRecipesResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.ListRecipes is not implemented"))
+func (UnimplementedFrontendServiceHandler) ListRecipes(context.Context, *_go.ListRecipesRequest) (*_go.ListRecipesResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "frontendapi.FrontendService.ListRecipes is not implemented")
 }
 
-func (UnimplementedFrontendServiceHandler) StartChat(context.Context, *connect.Request[_go.StartChatRequest]) (*connect.Response[_go.StartChatResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.StartChat is not implemented"))
+func (UnimplementedFrontendServiceHandler) StartChat(context.Context, *_go.StartChatRequest) (*_go.StartChatResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "frontendapi.FrontendService.StartChat is not implemented")
 }
 
-func (UnimplementedFrontendServiceHandler) AddRecipe(context.Context, *connect.Request[_go.AddRecipeRequest]) (*connect.Response[_go.AddRecipeResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.AddRecipe is not implemented"))
+func (UnimplementedFrontendServiceHandler) AddRecipe(context.Context, *_go.AddRecipeRequest) (*_go.AddRecipeResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "frontendapi.FrontendService.AddRecipe is not implemented")
 }
 
-func (UnimplementedFrontendServiceHandler) GenerateRecipe(context.Context, *connect.Request[_go.GenerateRecipeRequest]) (*connect.Response[_go.GenerateRecipeResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.GenerateRecipe is not implemented"))
+func (UnimplementedFrontendServiceHandler) GenerateRecipe(context.Context, *_go.GenerateRecipeRequest) (*_go.GenerateRecipeResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "frontendapi.FrontendService.GenerateRecipe is not implemented")
 }
 
-func (UnimplementedFrontendServiceHandler) GeneratePlan(context.Context, *connect.Request[_go.GeneratePlanRequest]) (*connect.Response[_go.GeneratePlanResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.GeneratePlan is not implemented"))
+func (UnimplementedFrontendServiceHandler) GeneratePlan(context.Context, *_go.GeneratePlanRequest) (*_go.GeneratePlanResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "frontendapi.FrontendService.GeneratePlan is not implemented")
 }
 
-func (UnimplementedFrontendServiceHandler) ChatPlan(context.Context, *connect.Request[_go.ChatPlanRequest]) (*connect.Response[_go.ChatPlanResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.ChatPlan is not implemented"))
+func (UnimplementedFrontendServiceHandler) ChatPlan(context.Context, *_go.ChatPlanRequest) (*_go.ChatPlanResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "frontendapi.FrontendService.ChatPlan is not implemented")
 }
 
-func (UnimplementedFrontendServiceHandler) GetChatMessages(context.Context, *connect.Request[_go.GetChatMessagesRequest]) (*connect.Response[_go.GetChatMessagesResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.GetChatMessages is not implemented"))
+func (UnimplementedFrontendServiceHandler) GetChatMessages(context.Context, *_go.GetChatMessagesRequest) (*_go.GetChatMessagesResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "frontendapi.FrontendService.GetChatMessages is not implemented")
 }
 
-func (UnimplementedFrontendServiceHandler) GetPlans(context.Context, *connect.Request[_go.GetPlansRequest]) (*connect.Response[_go.GetPlansResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.GetPlans is not implemented"))
+func (UnimplementedFrontendServiceHandler) GetPlans(context.Context, *_go.GetPlansRequest) (*_go.GetPlansResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "frontendapi.FrontendService.GetPlans is not implemented")
 }
 
-func (UnimplementedFrontendServiceHandler) GetPlan(context.Context, *connect.Request[_go.GetPlanRequest]) (*connect.Response[_go.GetPlanResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.GetPlan is not implemented"))
+func (UnimplementedFrontendServiceHandler) GetPlan(context.Context, *_go.GetPlanRequest) (*_go.GetPlanResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "frontendapi.FrontendService.GetPlan is not implemented")
 }
 
-func (UnimplementedFrontendServiceHandler) UpdatePlan(context.Context, *connect.Request[_go.UpdatePlanRequest]) (*connect.Response[_go.UpdatePlanResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.UpdatePlan is not implemented"))
+func (UnimplementedFrontendServiceHandler) UpdatePlan(context.Context, *_go.UpdatePlanRequest) (*_go.UpdatePlanResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "frontendapi.FrontendService.UpdatePlan is not implemented")
 }
 
-func (UnimplementedFrontendServiceHandler) DeletePlan(context.Context, *connect.Request[_go.DeletePlanRequest]) (*connect.Response[_go.DeletePlanResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.DeletePlan is not implemented"))
+func (UnimplementedFrontendServiceHandler) DeletePlan(context.Context, *_go.DeletePlanRequest) (*_go.DeletePlanResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "frontendapi.FrontendService.DeletePlan is not implemented")
 }
 
-func (UnimplementedFrontendServiceHandler) AddBookmark(context.Context, *connect.Request[_go.AddBookmarkRequest]) (*connect.Response[_go.AddBookmarkResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.AddBookmark is not implemented"))
+func (UnimplementedFrontendServiceHandler) AddBookmark(context.Context, *_go.AddBookmarkRequest) (*_go.AddBookmarkResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "frontendapi.FrontendService.AddBookmark is not implemented")
 }
 
-func (UnimplementedFrontendServiceHandler) RemoveBookmark(context.Context, *connect.Request[_go.RemoveBookmarkRequest]) (*connect.Response[_go.RemoveBookmarkResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.RemoveBookmark is not implemented"))
+func (UnimplementedFrontendServiceHandler) RemoveBookmark(context.Context, *_go.RemoveBookmarkRequest) (*_go.RemoveBookmarkResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "frontendapi.FrontendService.RemoveBookmark is not implemented")
 }
 
-func (UnimplementedFrontendServiceHandler) GetUser(context.Context, *connect.Request[_go.GetUserRequest]) (*connect.Response[_go.GetUserResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.GetUser is not implemented"))
+func (UnimplementedFrontendServiceHandler) GetUser(context.Context, *_go.GetUserRequest) (*_go.GetUserResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "frontendapi.FrontendService.GetUser is not implemented")
 }
 
-func (UnimplementedFrontendServiceHandler) EditUser(context.Context, *connect.Request[_go.EditUserRequest]) (*connect.Response[_go.EditUserResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("frontendapi.FrontendService.EditUser is not implemented"))
+func (UnimplementedFrontendServiceHandler) EditUser(context.Context, *_go.EditUserRequest) (*_go.EditUserResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "frontendapi.FrontendService.EditUser is not implemented")
+}
+
+type frontendServiceClient struct {
+	client *connect.Client
+}
+
+func (c *frontendServiceClient) GetRecipe(ctx context.Context, req *_go.GetRecipeRequest) (*_go.GetRecipeResponse, error) {
+	var res _go.GetRecipeResponse
+	if err := c.client.CallUnary(ctx, frontendServiceGetRecipeSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *frontendServiceClient) ListRecipes(ctx context.Context, req *_go.ListRecipesRequest) (*_go.ListRecipesResponse, error) {
+	var res _go.ListRecipesResponse
+	if err := c.client.CallUnary(ctx, frontendServiceListRecipesSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *frontendServiceClient) StartChat(ctx context.Context, req *_go.StartChatRequest) (*_go.StartChatResponse, error) {
+	var res _go.StartChatResponse
+	if err := c.client.CallUnary(ctx, frontendServiceStartChatSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *frontendServiceClient) AddRecipe(ctx context.Context, req *_go.AddRecipeRequest) (*_go.AddRecipeResponse, error) {
+	var res _go.AddRecipeResponse
+	if err := c.client.CallUnary(ctx, frontendServiceAddRecipeSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *frontendServiceClient) GenerateRecipe(ctx context.Context, req *_go.GenerateRecipeRequest) (*_go.GenerateRecipeResponse, error) {
+	var res _go.GenerateRecipeResponse
+	if err := c.client.CallUnary(ctx, frontendServiceGenerateRecipeSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *frontendServiceClient) GeneratePlan(ctx context.Context, req *_go.GeneratePlanRequest) (*_go.GeneratePlanResponse, error) {
+	var res _go.GeneratePlanResponse
+	if err := c.client.CallUnary(ctx, frontendServiceGeneratePlanSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *frontendServiceClient) ChatPlan(ctx context.Context, req *_go.ChatPlanRequest) (*_go.ChatPlanResponse, error) {
+	var res _go.ChatPlanResponse
+	if err := c.client.CallUnary(ctx, frontendServiceChatPlanSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *frontendServiceClient) GetChatMessages(ctx context.Context, req *_go.GetChatMessagesRequest) (*_go.GetChatMessagesResponse, error) {
+	var res _go.GetChatMessagesResponse
+	if err := c.client.CallUnary(ctx, frontendServiceGetChatMessagesSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *frontendServiceClient) GetPlans(ctx context.Context, req *_go.GetPlansRequest) (*_go.GetPlansResponse, error) {
+	var res _go.GetPlansResponse
+	if err := c.client.CallUnary(ctx, frontendServiceGetPlansSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *frontendServiceClient) GetPlan(ctx context.Context, req *_go.GetPlanRequest) (*_go.GetPlanResponse, error) {
+	var res _go.GetPlanResponse
+	if err := c.client.CallUnary(ctx, frontendServiceGetPlanSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *frontendServiceClient) UpdatePlan(ctx context.Context, req *_go.UpdatePlanRequest) (*_go.UpdatePlanResponse, error) {
+	var res _go.UpdatePlanResponse
+	if err := c.client.CallUnary(ctx, frontendServiceUpdatePlanSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *frontendServiceClient) DeletePlan(ctx context.Context, req *_go.DeletePlanRequest) (*_go.DeletePlanResponse, error) {
+	var res _go.DeletePlanResponse
+	if err := c.client.CallUnary(ctx, frontendServiceDeletePlanSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *frontendServiceClient) AddBookmark(ctx context.Context, req *_go.AddBookmarkRequest) (*_go.AddBookmarkResponse, error) {
+	var res _go.AddBookmarkResponse
+	if err := c.client.CallUnary(ctx, frontendServiceAddBookmarkSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *frontendServiceClient) RemoveBookmark(ctx context.Context, req *_go.RemoveBookmarkRequest) (*_go.RemoveBookmarkResponse, error) {
+	var res _go.RemoveBookmarkResponse
+	if err := c.client.CallUnary(ctx, frontendServiceRemoveBookmarkSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *frontendServiceClient) GetUser(ctx context.Context, req *_go.GetUserRequest) (*_go.GetUserResponse, error) {
+	var res _go.GetUserResponse
+	if err := c.client.CallUnary(ctx, frontendServiceGetUserSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *frontendServiceClient) EditUser(ctx context.Context, req *_go.EditUserRequest) (*_go.EditUserResponse, error) {
+	var res _go.EditUserResponse
+	if err := c.client.CallUnary(ctx, frontendServiceEditUserSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+type frontendServiceHandler struct{ svc FrontendServiceHandler }
+
+func (h frontendServiceHandler) getRecipe(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.GetRecipeRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.GetRecipe(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h frontendServiceHandler) listRecipes(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.ListRecipesRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.ListRecipes(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h frontendServiceHandler) startChat(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.StartChatRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.StartChat(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h frontendServiceHandler) addRecipe(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.AddRecipeRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.AddRecipe(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h frontendServiceHandler) generateRecipe(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.GenerateRecipeRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.GenerateRecipe(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h frontendServiceHandler) generatePlan(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.GeneratePlanRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.GeneratePlan(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h frontendServiceHandler) chatPlan(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.ChatPlanRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.ChatPlan(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h frontendServiceHandler) getChatMessages(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.GetChatMessagesRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.GetChatMessages(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h frontendServiceHandler) getPlans(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.GetPlansRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.GetPlans(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h frontendServiceHandler) getPlan(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.GetPlanRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.GetPlan(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h frontendServiceHandler) updatePlan(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.UpdatePlanRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.UpdatePlan(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h frontendServiceHandler) deletePlan(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.DeletePlanRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.DeletePlan(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h frontendServiceHandler) addBookmark(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.AddBookmarkRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.AddBookmark(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h frontendServiceHandler) removeBookmark(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.RemoveBookmarkRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.RemoveBookmark(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h frontendServiceHandler) getUser(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.GetUserRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.GetUser(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h frontendServiceHandler) editUser(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.EditUserRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.EditUser(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
 }

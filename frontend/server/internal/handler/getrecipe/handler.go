@@ -10,7 +10,7 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/firestore"
-	"connectrpc.com/connect"
+	"connectrpc.com/connect/v2"
 	"github.com/curioswitch/go-usegcp/middleware/firebaseauth"
 	"google.golang.org/api/iterator"
 
@@ -20,8 +20,6 @@ import (
 	"github.com/curioswitch/cookchat/frontend/server/internal/i18n"
 	"github.com/curioswitch/cookchat/frontend/server/internal/llm"
 )
-
-var errRecipeNotFound = errors.New("recipe not found")
 
 func NewHandler(store *firestore.Client) *Handler {
 	return &Handler{
@@ -37,7 +35,7 @@ func (h *Handler) GetRecipe(ctx context.Context, req *frontendapi.GetRecipeReque
 	doc, err := h.store.Collection("recipes").Where("id", "==", req.GetRecipeId()).Limit(1).Documents(ctx).Next()
 	if err != nil {
 		if errors.Is(err, iterator.Done) {
-			return nil, connect.NewError(connect.CodeNotFound, errRecipeNotFound)
+			return nil, connect.NewError(connect.CodeNotFound, "recipe not found")
 		}
 		return nil, fmt.Errorf("getrecipe: getting recipe from firestore: %w", err)
 	}

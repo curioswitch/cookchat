@@ -5,11 +5,10 @@ package startchat
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 
-	"connectrpc.com/connect"
+	"connectrpc.com/connect/v2"
 	"github.com/openai/openai-go/v3"
 	"github.com/openai/openai-go/v3/live"
 	"github.com/openai/openai-go/v3/option"
@@ -22,7 +21,7 @@ import (
 // transport and executes the same navigation callbacks as the Realtime SDK.
 func (h *Handler) startChatLive(ctx context.Context, req *frontendapi.StartChatRequest, prompt string) (*frontendapi.StartChatResponse, error) {
 	if strings.TrimSpace(req.GetSdpOffer()) == "" || len(req.GetSdpOffer()) > 64*1024 {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("startchat: Live requires a WebRTC offer of at most 64 KiB"))
+		return nil, connect.NewError(connect.CodeInvalidArgument, "startchat: Live requires a WebRTC offer of at most 64 KiB")
 	}
 	language := "Japanese"
 	if i18n.UserLanguage(ctx) == "en" {

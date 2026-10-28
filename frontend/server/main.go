@@ -55,7 +55,7 @@ func main() {
 }
 
 func setupServer(ctx context.Context, conf *config.Config, s *server.Server) error {
-	mux := server.Mux(s)
+	mux := s.Mux()
 
 	fbApp, err := firebase.NewApp(ctx, &firebase.Config{ProjectID: conf.Google.Project})
 	if err != nil {
@@ -150,224 +150,206 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 
 	mux.Use(i18n.Middleware())
 
-	server.HandleConnectUnary(
-		s,
+	service := newFrontendService(
+		addbookmark.NewHandler(firestore),
+		addrecipe.NewHandler(firestore, storage, publicBucket),
+		chatplan.NewHandler(genAI, firestore, search, tasks, conf.Tasks, conf.Google.Project+"-files"),
+		deleteplan.NewHandler(genAI, firestore),
+		edituser.NewHandler(firestore),
+		generateplan.NewHandler(genAI, firestore, search, tasks, conf.Tasks),
+		generaterecipe.NewHandler(genAI, firestore, storage, publicBucket),
+		getchatmessages.NewHandler(firestore),
+		getplan.NewHandler(firestore),
+		getplans.NewHandler(firestore),
+		getrecipe.NewHandler(firestore),
+		getuser.NewHandler(firestore),
+		listrecipes.NewHandler(firestore, search, conf.Search.Engine),
+		removebookmark.NewHandler(firestore),
+		startchat.NewHandler(genAI, &oai, firestore),
+		updateplan.NewHandler(genAI, firestore),
+	)
+
+	s.AddConnectService(frontendapiconnect.RegisterFrontendServiceHandler, service)
+	s.AddSampleRequests(
 		frontendapiconnect.FrontendServiceGetRecipeProcedure,
-		getrecipe.NewHandler(firestore).GetRecipe,
-		[]*frontendapi.GetRecipeRequest{
-			{
+		&frontendapi.GetRecipeRequest{
+			RecipeId: "02JNMi0W1605TLxzQt6v",
+		},
+	)
+
+	s.AddSampleRequests(
+		frontendapiconnect.FrontendServiceListRecipesProcedure,
+		&frontendapi.ListRecipesRequest{},
+		&frontendapi.ListRecipesRequest{
+			Query: "玉ねぎ",
+		},
+		&frontendapi.ListRecipesRequest{
+			Bookmarks: true,
+		},
+	)
+
+	s.AddSampleRequests(
+		frontendapiconnect.FrontendServiceStartChatProcedure,
+		&frontendapi.StartChatRequest{
+			Recipe: &frontendapi.StartChatRequest_RecipeId{
 				RecipeId: "02JNMi0W1605TLxzQt6v",
 			},
 		},
 	)
 
-	server.HandleConnectUnary(
-		s,
-		frontendapiconnect.FrontendServiceListRecipesProcedure,
-		listrecipes.NewHandler(firestore, search, conf.Search.Engine).ListRecipes,
-		[]*frontendapi.ListRecipesRequest{
-			{},
-			{
-				Query: "玉ねぎ",
-			},
-			{
-				Bookmarks: true,
-			},
-		},
-	)
-
-	server.HandleConnectUnary(s,
-		frontendapiconnect.FrontendServiceStartChatProcedure,
-		startchat.NewHandler(genAI, &oai, firestore).StartChat,
-		[]*frontendapi.StartChatRequest{
-			{
-				Recipe: &frontendapi.StartChatRequest_RecipeId{
-					RecipeId: "02JNMi0W1605TLxzQt6v",
-				},
-			},
-		})
-
-	server.HandleConnectUnary(s,
+	s.AddSampleRequests(
 		frontendapiconnect.FrontendServiceGenerateRecipeProcedure,
-		generaterecipe.NewHandler(genAI, firestore, storage, publicBucket).GenerateRecipe,
-		[]*frontendapi.GenerateRecipeRequest{
-			{
-				Prompt: "I have potatoes and onions in my fridge. I want a nice Japanese dish to cook.",
-			},
-		})
-
-	server.HandleConnectUnary(s,
-		frontendapiconnect.FrontendServiceGeneratePlanProcedure,
-		generateplan.NewHandler(genAI, firestore, search, tasks, conf.Tasks).GeneratePlan,
-		[]*frontendapi.GeneratePlanRequest{
-			{
-				NumDays:     3,
-				Ingredients: []string{"onions", "potatoes"},
-				Genres: []frontendapi.RecipeGenre{
-					frontendapi.RecipeGenre_RECIPE_GENRE_JAPANESE,
-					frontendapi.RecipeGenre_RECIPE_GENRE_ITALIAN,
-				},
-			},
-		})
-
-	server.HandleConnectUnary(
-		s,
-		frontendapiconnect.FrontendServiceGetChatMessagesProcedure,
-		getchatmessages.NewHandler(firestore).GetChatMessages,
-		[]*frontendapi.GetChatMessagesRequest{
-			{},
+		&frontendapi.GenerateRecipeRequest{
+			Prompt: "I have potatoes and onions in my fridge. I want a nice Japanese dish to cook.",
 		},
 	)
 
-	server.HandleConnectUnary(s,
+	s.AddSampleRequests(
+		frontendapiconnect.FrontendServiceGeneratePlanProcedure,
+		&frontendapi.GeneratePlanRequest{
+			NumDays:     3,
+			Ingredients: []string{"onions", "potatoes"},
+			Genres: []frontendapi.RecipeGenre{
+				frontendapi.RecipeGenre_RECIPE_GENRE_JAPANESE,
+				frontendapi.RecipeGenre_RECIPE_GENRE_ITALIAN,
+			},
+		},
+	)
+
+	s.AddSampleRequests(
+		frontendapiconnect.FrontendServiceGetChatMessagesProcedure,
+		&frontendapi.GetChatMessagesRequest{},
+	)
+
+	s.AddSampleRequests(
 		frontendapiconnect.FrontendServiceChatPlanProcedure,
-		chatplan.NewHandler(genAI, firestore, search, tasks, conf.Tasks, conf.Google.Project+"-files").ChatPlan,
-		[]*frontendapi.ChatPlanRequest{
-			{
-				Message: "Hello.",
-				NewChat: true,
-			},
-			{
-				Message: "こんにちは",
-				NewChat: true,
-			},
-		})
+		&frontendapi.ChatPlanRequest{
+			Message: "Hello.",
+			NewChat: true,
+		},
+		&frontendapi.ChatPlanRequest{
+			Message: "こんにちは",
+			NewChat: true,
+		},
+	)
 
-	server.HandleConnectUnary(s,
+	s.AddSampleRequests(
 		frontendapiconnect.FrontendServiceUpdatePlanProcedure,
-		updateplan.NewHandler(genAI, firestore).UpdatePlan,
-		[]*frontendapi.UpdatePlanRequest{
-			{},
-		})
+		&frontendapi.UpdatePlanRequest{},
+	)
 
-	server.HandleConnectUnary(s,
+	s.AddSampleRequests(
 		frontendapiconnect.FrontendServiceDeletePlanProcedure,
-		deleteplan.NewHandler(genAI, firestore).DeletePlan,
-		[]*frontendapi.DeletePlanRequest{
-			{},
-		})
+		&frontendapi.DeletePlanRequest{},
+	)
 
-	server.HandleConnectUnary(s,
+	s.AddSampleRequests(
 		frontendapiconnect.FrontendServiceGetPlansProcedure,
-		getplans.NewHandler(firestore).GetPlans,
-		[]*frontendapi.GetPlansRequest{
-			{},
-		})
+		&frontendapi.GetPlansRequest{},
+	)
 
-	server.HandleConnectUnary(s,
+	s.AddSampleRequests(
 		frontendapiconnect.FrontendServiceGetPlanProcedure,
-		getplan.NewHandler(firestore).GetPlan,
-		[]*frontendapi.GetPlanRequest{
-			{},
-		})
+		&frontendapi.GetPlanRequest{},
+	)
 
-	server.HandleConnectUnary(s,
+	s.AddSampleRequests(
 		frontendapiconnect.FrontendServiceAddRecipeProcedure,
-		addrecipe.NewHandler(firestore, storage, publicBucket).AddRecipe,
-		[]*frontendapi.AddRecipeRequest{
-			{
-				Title:            "Test: 簡単・美味！トマトすき焼きパスタ",
-				ServingSize:      "2人分",
-				MainImageDataUrl: addRecipeStepImageURL,
-				Ingredients: []*frontendapi.RecipeIngredient{
-					{
-						Name:     "パスタ",
-						Quantity: "160~200g",
-					},
-					{
-						Name:     "牛肉",
-						Quantity: "150~200g",
-					},
-					{
-						Name:     "ミニトマト",
-						Quantity: "8~10個",
-					},
-					{
-						Name:     "玉ねぎ",
-						Quantity: "1/2個",
-					},
-					{
-						Name:     "油（炒め用）",
-						Quantity: "適量",
-					},
+		&frontendapi.AddRecipeRequest{
+			Title:            "Test: 簡単・美味！トマトすき焼きパスタ",
+			ServingSize:      "2人分",
+			MainImageDataUrl: addRecipeStepImageURL,
+			Ingredients: []*frontendapi.RecipeIngredient{
+				{
+					Name:     "パスタ",
+					Quantity: "160~200g",
 				},
-				AdditionalIngredients: []*frontendapi.IngredientSection{
-					{
-						Title: "割り下",
-						Ingredients: []*frontendapi.RecipeIngredient{
-							{
-								Name:     "しょう油",
-								Quantity: "大2~3",
-							},
-							{
-								Name:     "みりん",
-								Quantity: "大1.5~2",
-							},
-							{
-								Name:     "砂糖",
-								Quantity: "大1~1.5",
-							},
-							{
-								Name:     "酒か水",
-								Quantity: "大1~1.5",
-							},
+				{
+					Name:     "牛肉",
+					Quantity: "150~200g",
+				},
+				{
+					Name:     "ミニトマト",
+					Quantity: "8~10個",
+				},
+				{
+					Name:     "玉ねぎ",
+					Quantity: "1/2個",
+				},
+				{
+					Name:     "油（炒め用）",
+					Quantity: "適量",
+				},
+			},
+			AdditionalIngredients: []*frontendapi.IngredientSection{
+				{
+					Title: "割り下",
+					Ingredients: []*frontendapi.RecipeIngredient{
+						{
+							Name:     "しょう油",
+							Quantity: "大2~3",
+						},
+						{
+							Name:     "みりん",
+							Quantity: "大1.5~2",
+						},
+						{
+							Name:     "砂糖",
+							Quantity: "大1~1.5",
+						},
+						{
+							Name:     "酒か水",
+							Quantity: "大1~1.5",
 						},
 					},
 				},
-				Steps: []*frontendapi.AddRecipeRequest_AddRecipeStep{
-					{
-						Description:  "材料を揃える。玉ねぎはくし切り、ミニトマトは半分に切っておく。割り下は混ぜておく。",
-						ImageDataUrl: addRecipeStepImageURL,
-					},
-					{
-						Description:  "材料を揃える。玉ねぎはくし切り、ミニトマトは半分に切っておく。割り下は混ぜておく。",
-						ImageDataUrl: addRecipeStepImageURL,
-					},
-					{
-						Description:  "材料を揃える。玉ねぎはくし切り、ミニトマトは半分に切っておく。割り下は混ぜておく。",
-						ImageDataUrl: addRecipeStepImageURL,
-					},
+			},
+			Steps: []*frontendapi.AddRecipeRequest_AddRecipeStep{
+				{
+					Description:  "材料を揃える。玉ねぎはくし切り、ミニトマトは半分に切っておく。割り下は混ぜておく。",
+					ImageDataUrl: addRecipeStepImageURL,
+				},
+				{
+					Description:  "材料を揃える。玉ねぎはくし切り、ミニトマトは半分に切っておく。割り下は混ぜておく。",
+					ImageDataUrl: addRecipeStepImageURL,
+				},
+				{
+					Description:  "材料を揃える。玉ねぎはくし切り、ミニトマトは半分に切っておく。割り下は混ぜておく。",
+					ImageDataUrl: addRecipeStepImageURL,
 				},
 			},
-		})
+		},
+	)
 
-	server.HandleConnectUnary(s,
+	s.AddSampleRequests(
 		frontendapiconnect.FrontendServiceAddBookmarkProcedure,
-		addbookmark.NewHandler(firestore).AddBookmark,
-		[]*frontendapi.AddBookmarkRequest{
-			{
-				RecipeId: "02JNMi0W1605TLxzQt6v",
-			},
-		})
+		&frontendapi.AddBookmarkRequest{
+			RecipeId: "02JNMi0W1605TLxzQt6v",
+		},
+	)
 
-	server.HandleConnectUnary(s,
+	s.AddSampleRequests(
 		frontendapiconnect.FrontendServiceRemoveBookmarkProcedure,
-		removebookmark.NewHandler(firestore).RemoveBookmark,
-		[]*frontendapi.RemoveBookmarkRequest{
-			{
-				RecipeId: "02JNMi0W1605TLxzQt6v",
-			},
-		})
+		&frontendapi.RemoveBookmarkRequest{
+			RecipeId: "02JNMi0W1605TLxzQt6v",
+		},
+	)
 
-	server.HandleConnectUnary(s,
+	s.AddSampleRequests(
 		frontendapiconnect.FrontendServiceGetUserProcedure,
-		getuser.NewHandler(firestore).GetUser,
-		[]*frontendapi.GetUserRequest{
-			{},
-		})
+		&frontendapi.GetUserRequest{},
+	)
 
-	server.HandleConnectUnary(s,
+	s.AddSampleRequests(
 		frontendapiconnect.FrontendServiceEditUserProcedure,
-		edituser.NewHandler(firestore).EditUser,
-		[]*frontendapi.EditUserRequest{
-			{
-				PlanPrompt: new("No seafood, have 3 stoves."),
-			},
-		})
+		&frontendapi.EditUserRequest{
+			PlanPrompt: new("No seafood, have 3 stoves."),
+		},
+	)
 
-	server.EnableDocsFirebaseAuth(s, "alpha.cookchat.curioswitch.org")
+	s.EnableDocsFirebaseAuth("alpha.coopii.app")
 
-	if err := server.Start(ctx, s); err != nil {
+	if err := s.Start(ctx); err != nil {
 		return fmt.Errorf("main: starting server: %w", err)
 	}
 	return nil
