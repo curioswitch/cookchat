@@ -112,5 +112,3 @@ replace (
 	github.com/curioswitch/cookchat/common => ../../common/go
 	github.com/curioswitch/cookchat/crawler/api => ../api
 )
-
-replace github.com/curioswitch/go-curiostack => ../../../go-curiostack
