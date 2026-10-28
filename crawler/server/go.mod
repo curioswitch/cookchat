@@ -5,7 +5,8 @@ go 1.27.2
 require (
 	cloud.google.com/go/firestore v1.26.0
 	cloud.google.com/go/storage v1.69.0
-	connectrpc.com/connect v1.21.1
+	connectrpc.com/connect/v2 v2.0.1
+	connectrpc.com/otelconnect v0.12.0
 	firebase.google.com/go/v4 v4.22.0
 	github.com/curioswitch/cookchat/common v0.0.0-00010101000000-000000000000
 	github.com/curioswitch/cookchat/crawler/api v0.0.0-00010101000000-000000000000
@@ -26,8 +27,6 @@ require (
 	cloud.google.com/go/iam v1.12.0 // indirect
 	cloud.google.com/go/longrunning v1.2.0 // indirect
 	cloud.google.com/go/monitoring v1.30.0 // indirect
-	connectrpc.com/connect/v2 v2.0.1 // indirect
-	connectrpc.com/otelconnect v0.12.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.57.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.57.0 // indirect
 	github.com/MicahParks/keyfunc v1.9.0 // indirect
@@ -112,3 +111,5 @@ replace (
 	github.com/curioswitch/cookchat/common => ../../common/go
 	github.com/curioswitch/cookchat/crawler/api => ../api
 )
+
+replace github.com/curioswitch/go-curiostack => ../../../go-curiostack

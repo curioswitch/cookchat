@@ -5,106 +5,94 @@
 package tasksapiconnect
 
 import (
-	connect "connectrpc.com/connect"
+	connect "connectrpc.com/connect/v2"
 	context "context"
-	errors "errors"
 	_go "github.com/curioswitch/cookchat/tasks/api/go"
-	http "net/http"
-	strings "strings"
+	sync "sync"
 )
-
-// This is a compile-time assertion to ensure that this generated file and the connect package are
-// compatible. If you get a compiler error that this constant is not defined, this code was
-// generated with a version of connect newer than the one compiled into your binary. You can fix the
-// problem by either regenerating this code with an older version of connect or updating the connect
-// version compiled into your binary.
-const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// TasksServiceName is the fully-qualified name of the TasksService service.
 	TasksServiceName = "tasksapi.TasksService"
 )
 
-// These constants are the fully-qualified names of the RPCs defined in this package. They're
-// exposed at runtime as Spec.Procedure and as the final two segments of the HTTP route.
+// These constants are the procedure names of the RPCs defined in this package. They're exposed at
+// runtime as Spec.Procedure and as the final two segments of the HTTP route.
 //
 // Note that these are different from the fully-qualified method names used by
 // google.golang.org/protobuf/reflect/protoreflect. To convert from these constants to
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
-	// TasksServiceFillPlanProcedure is the fully-qualified name of the TasksService's FillPlan RPC.
+	// TasksServiceFillPlanProcedure is the procedure name of the TasksService's FillPlan RPC.
 	TasksServiceFillPlanProcedure = "/tasksapi.TasksService/FillPlan"
+)
+
+var (
+	tasksServiceFillPlanSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     _go.File_tasksapi_tasks_proto.Services().ByName("TasksService").Methods().ByName("FillPlan"),
+			Procedure:  TasksServiceFillPlanProcedure,
+		}
+	})
 )
 
 // TasksServiceClient is a client for the tasksapi.TasksService service.
 type TasksServiceClient interface {
 	// Fill details of a plan.
-	FillPlan(context.Context, *connect.Request[_go.FillPlanRequest]) (*connect.Response[_go.FillPlanResponse], error)
+	FillPlan(context.Context, *_go.FillPlanRequest) (*_go.FillPlanResponse, error)
 }
 
-// NewTasksServiceClient constructs a client for the tasksapi.TasksService service. By default, it
-// uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
-// uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
-// connect.WithGRPCWeb() options.
-//
-// The URL supplied here should be the base URL for the Connect or gRPC server (for example,
-// http://api.acme.com or https://acme.com/grpc).
-func NewTasksServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) TasksServiceClient {
-	baseURL = strings.TrimRight(baseURL, "/")
-	tasksServiceMethods := _go.File_tasksapi_tasks_proto.Services().ByName("TasksService").Methods()
-	return &tasksServiceClient{
-		fillPlan: connect.NewClient[_go.FillPlanRequest, _go.FillPlanResponse](
-			httpClient,
-			baseURL+TasksServiceFillPlanProcedure,
-			connect.WithSchema(tasksServiceMethods.ByName("FillPlan")),
-			connect.WithClientOptions(opts...),
-		),
-	}
-}
-
-// tasksServiceClient implements TasksServiceClient.
-type tasksServiceClient struct {
-	fillPlan *connect.Client[_go.FillPlanRequest, _go.FillPlanResponse]
-}
-
-// FillPlan calls tasksapi.TasksService.FillPlan.
-func (c *tasksServiceClient) FillPlan(ctx context.Context, req *connect.Request[_go.FillPlanRequest]) (*connect.Response[_go.FillPlanResponse], error) {
-	return c.fillPlan.CallUnary(ctx, req)
+// NewTasksServiceClient constructs a client for the tasksapi.TasksService service. Multiple service
+// clients may share a single connect.Client.
+func NewTasksServiceClient(client *connect.Client) TasksServiceClient {
+	return &tasksServiceClient{client: client}
 }
 
 // TasksServiceHandler is an implementation of the tasksapi.TasksService service.
 type TasksServiceHandler interface {
 	// Fill details of a plan.
-	FillPlan(context.Context, *connect.Request[_go.FillPlanRequest]) (*connect.Response[_go.FillPlanResponse], error)
+	FillPlan(context.Context, *_go.FillPlanRequest) (*_go.FillPlanResponse, error)
 }
 
-// NewTasksServiceHandler builds an HTTP handler from the service implementation. It returns the
-// path on which to mount the handler and the handler itself.
-//
-// By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
-// and JSON codecs. They also support gzip compression.
-func NewTasksServiceHandler(svc TasksServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	tasksServiceMethods := _go.File_tasksapi_tasks_proto.Services().ByName("TasksService").Methods()
-	tasksServiceFillPlanHandler := connect.NewUnaryHandler(
-		TasksServiceFillPlanProcedure,
-		svc.FillPlan,
-		connect.WithSchema(tasksServiceMethods.ByName("FillPlan")),
-		connect.WithHandlerOptions(opts...),
+// RegisterTasksServiceHandler registers svc as the tasksapi.TasksService implementation on server.
+func RegisterTasksServiceHandler(server *connect.Server, svc TasksServiceHandler) {
+	adapter := tasksServiceHandler{svc: svc}
+	server.Register(
+		connect.Method{Spec: tasksServiceFillPlanSpec(), Handler: adapter.fillPlan},
 	)
-	return "/tasksapi.TasksService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.URL.Path {
-		case TasksServiceFillPlanProcedure:
-			tasksServiceFillPlanHandler.ServeHTTP(w, r)
-		default:
-			http.NotFound(w, r)
-		}
-	})
 }
 
 // UnimplementedTasksServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedTasksServiceHandler struct{}
 
-func (UnimplementedTasksServiceHandler) FillPlan(context.Context, *connect.Request[_go.FillPlanRequest]) (*connect.Response[_go.FillPlanResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tasksapi.TasksService.FillPlan is not implemented"))
+func (UnimplementedTasksServiceHandler) FillPlan(context.Context, *_go.FillPlanRequest) (*_go.FillPlanResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "tasksapi.TasksService.FillPlan is not implemented")
+}
+
+type tasksServiceClient struct {
+	client *connect.Client
+}
+
+func (c *tasksServiceClient) FillPlan(ctx context.Context, req *_go.FillPlanRequest) (*_go.FillPlanResponse, error) {
+	var res _go.FillPlanResponse
+	if err := c.client.CallUnary(ctx, tasksServiceFillPlanSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+type tasksServiceHandler struct{ svc TasksServiceHandler }
+
+func (h tasksServiceHandler) fillPlan(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req _go.FillPlanRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.FillPlan(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
 }

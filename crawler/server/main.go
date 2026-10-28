@@ -13,9 +13,10 @@ import (
 	"os"
 
 	"cloud.google.com/go/storage"
-	"connectrpc.com/connect"
+	"connectrpc.com/connect/v2"
+	"connectrpc.com/connect/v2/connecthttp"
+	"connectrpc.com/otelconnect"
 	firebase "firebase.google.com/go/v4"
-	"github.com/curioswitch/go-curiostack/otel"
 	"github.com/curioswitch/go-curiostack/server"
 	"github.com/gocolly/colly/v2"
 	"google.golang.org/genai"
@@ -63,10 +64,12 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 	}()
 	publicBucket := conf.Google.Project + "-public"
 
+	interceptor, err := otelconnect.NewClientInterceptor()
+	if err != nil {
+		return fmt.Errorf("main: create connect client interceptor: %w", err)
+	}
 	crawlerClient := crawlerapiconnect.NewCrawlerServiceClient(
-		http.DefaultClient,
-		conf.Services.Crawler,
-		connect.WithInterceptors(otel.ConnectInterceptor()),
+		connect.NewClient(connecthttp.NewTransport(http.DefaultClient, conf.Services.Crawler), interceptor),
 	)
 
 	baseCollector := colly.NewCollector(
@@ -82,40 +85,35 @@ func setupServer(ctx context.Context, conf *config.Config, s *server.Server) err
 		return fmt.Errorf("creating genai client: %w", err)
 	}
 
-	server.HandleConnectUnary(s,
+	service := newCrawlerService(
+		recipe.NewHandler(baseCollector, firestore, storage, genAI, publicBucket),
+		cookpadrecipe.NewHandler(baseCollector, firestore, storage, genAI, publicBucket),
+		user.NewHandler(baseCollector, crawlerClient),
+	)
+	s.AddConnectService(crawlerapiconnect.RegisterCrawlerServiceHandler, service)
+	s.AddSampleRequests(
 		crawlerapiconnect.CrawlerServiceCrawlRecipeProcedure,
-		recipe.NewHandler(baseCollector, firestore, storage, genAI, publicBucket).CrawlRecipe,
-		[]*crawlerapi.CrawlRecipeRequest{
-			{
-				Url: "https://www.orangepage.net/recipes/300487",
-			},
-			{
-				Url: "https://delishkitchen.tv/recipes/144271072034816499",
-			},
+		&crawlerapi.CrawlRecipeRequest{
+			Url: "https://www.orangepage.net/recipes/300487",
+		},
+		&crawlerapi.CrawlRecipeRequest{
+			Url: "https://delishkitchen.tv/recipes/144271072034816499",
 		},
 	)
-
-	server.HandleConnectUnary(s,
+	s.AddSampleRequests(
 		crawlerapiconnect.CrawlerServiceCrawlCookpadRecipeProcedure,
-		cookpadrecipe.NewHandler(baseCollector, firestore, storage, genAI, publicBucket).CrawlCookpadRecipe,
-		[]*crawlerapi.CrawlCookpadRecipeRequest{
-			{
-				RecipeId: "24664122",
-			},
+		&crawlerapi.CrawlCookpadRecipeRequest{
+			RecipeId: "24664122",
 		},
 	)
-
-	server.HandleConnectUnary(s,
+	s.AddSampleRequests(
 		crawlerapiconnect.CrawlerServiceCrawlCookpadUserProcedure,
-		user.NewHandler(baseCollector, crawlerClient).CrawlCookpadUser,
-		[]*crawlerapi.CrawlCookpadUserRequest{
-			{
-				UserId: "40054625",
-			},
+		&crawlerapi.CrawlCookpadUserRequest{
+			UserId: "40054625",
 		},
 	)
 
-	if err := server.Start(ctx, s); err != nil {
+	if err := s.Start(ctx); err != nil {
 		return fmt.Errorf("main: start server: %w", err)
 	}
 	return nil
