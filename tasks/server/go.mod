@@ -1,6 +1,6 @@
 module github.com/curioswitch/cookchat/tasks/server
 
-go 1.27.3
+go 1.27.4
 
 require (
 	cloud.google.com/go/discoveryengine v1.37.0
