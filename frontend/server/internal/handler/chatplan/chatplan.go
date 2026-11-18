@@ -229,7 +229,7 @@ func (h *Handler) ChatPlan(ctx context.Context, req *frontendapi.ChatPlanRequest
 		var text strings.Builder
 		urls := make(map[string]struct{})
 		receivedText := false
-		stream := h.genAI.Models.GenerateContentStream(ctx, "gemini-3.6-flash", content, &genai.GenerateContentConfig{
+		stream := h.genAI.Models.GenerateContentStream(ctx, "gemini-4-hydrogen", content, &genai.GenerateContentConfig{
 			SystemInstruction: genai.NewContentFromText(llm.ChatPlanPrompt(strings.Join(recentRecipes, ", "), user.PlanPrompt), genai.RoleModel),
 			ThinkingConfig: &genai.ThinkingConfig{
 				ThinkingLevel: genai.ThinkingLevelMinimal,

@@ -87,7 +87,7 @@ func (h *Handler) fillPlan(ctx context.Context, plan cookchatdb.Plan) (cookchatd
 		content[i] = genai.NewContentFromText(string(recipeJSON), genai.RoleUser)
 	}
 
-	res, err := h.genAI.Models.GenerateContent(ctx, "gemini-3.6-flash", content, &genai.GenerateContentConfig{
+	res, err := h.genAI.Models.GenerateContent(ctx, "gemini-4-hydrogen", content, &genai.GenerateContentConfig{
 		SystemInstruction: genai.NewContentFromText(llm.GenerateExecutionPlanPrompt(), genai.RoleModel),
 		ResponseMIMEType:  "application/json",
 		ResponseSchema:    planexec.ResponseSchema(),
