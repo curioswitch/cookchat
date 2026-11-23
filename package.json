@@ -4,7 +4,7 @@
     "frontend/client",
     "landing"
   ],
-  "packageManager": "bun@1.4.4",
+  "packageManager": "bun@1.4.5",
   "trustedDependencies": [
     "@biomejs/biome",
     "@firebase/util",
