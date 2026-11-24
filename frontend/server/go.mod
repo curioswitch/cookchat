@@ -16,10 +16,10 @@ require (
 	github.com/curioswitch/go-curiostack v0.0.0-20261028051842-0db18cf4135a
 	github.com/curioswitch/go-usegcp v0.0.0-20261020041049-535591654147
 	github.com/go-chi/chi/v5 v5.5.0
-	github.com/openai/openai-go/v3 v3.99.0
+	github.com/openai/openai-go/v3 v3.106.0
 	golang.org/x/sync v0.25.0
-	google.golang.org/api v0.315.0
-	google.golang.org/genai v1.77.0
+	google.golang.org/api v0.316.0
+	google.golang.org/genai v1.79.1
 	google.golang.org/grpc v1.85.0
 	google.golang.org/protobuf v1.36.12
 )
@@ -71,7 +71,7 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
 	github.com/spiffe/go-spiffe/v2 v2.9.0 // indirect
-	github.com/tidwall/gjson v1.20.0 // indirect
+	github.com/tidwall/gjson v1.20.1 // indirect
 	github.com/tidwall/match v1.2.0 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect
@@ -91,7 +91,7 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.47.0 // indirect
 	go.opentelemetry.io/otel/trace v1.47.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.11.0 // indirect
-	go.yaml.in/yaml/v3 v3.0.5 // indirect
+	go.yaml.in/yaml/v3 v3.0.6 // indirect
 	golang.org/x/crypto v0.58.0 // indirect
 	golang.org/x/net v0.62.0 // indirect
 	golang.org/x/oauth2 v0.38.0 // indirect

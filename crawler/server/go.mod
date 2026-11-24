@@ -14,7 +14,7 @@ require (
 	github.com/gocolly/colly/v2 v2.3.0
 	github.com/wandb/parallel v0.2.3
 	golang.org/x/sync v0.25.0
-	google.golang.org/genai v1.77.0
+	google.golang.org/genai v1.79.1
 	google.golang.org/grpc v1.85.0
 )
 
@@ -99,7 +99,7 @@ require (
 	golang.org/x/sys v0.50.0 // indirect
 	golang.org/x/text v0.44.0 // indirect
 	golang.org/x/time v0.16.0 // indirect
-	google.golang.org/api v0.315.0 // indirect
+	google.golang.org/api v0.316.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/appengine/v2 v2.0.6 // indirect
 	google.golang.org/genproto v0.0.0-20261110000943-09e21b237f2c // indirect
